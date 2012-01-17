@@ -1401,19 +1401,30 @@ public class UserServiceImpl extends UserServiceBaseImpl {
 
 		User user = userPersistence.findByPrimaryKey(userId);
 
-		UsersAdminUtil.updateAddresses(
-			Contact.class.getName(), user.getContactId(), addresses);
+		if (serviceContext.isUpdateAddresses()) {
+			UsersAdminUtil.updateAddresses(
+				Contact.class.getName(), user.getContactId(), addresses);
+		}
 
-		UsersAdminUtil.updateEmailAddresses(
-			Contact.class.getName(), user.getContactId(), emailAddresses);
+		if (serviceContext.isUpdateAdditionalEmailAddresses()) {
+			UsersAdminUtil.updateEmailAddresses(
+				Contact.class.getName(), user.getContactId(), emailAddresses);
+		}
 
-		UsersAdminUtil.updatePhones(
-			Contact.class.getName(), user.getContactId(), phones);
+		if (serviceContext.isUpdatePhoneNumbers()) {
+			UsersAdminUtil.updatePhones(
+				Contact.class.getName(), user.getContactId(), phones);
+		}
 
-		UsersAdminUtil.updateWebsites(
-			Contact.class.getName(), user.getContactId(), websites);
+		if (serviceContext.isUpdateWebsites()) {
+			UsersAdminUtil.updateWebsites(
+				Contact.class.getName(), user.getContactId(), websites);
+		}
 
-		updateAnnouncementsDeliveries(user.getUserId(), announcementsDelivers);
+		if (serviceContext.isUpdateAnnouncements()) {
+			updateAnnouncementsDeliveries(
+				user.getUserId(), announcementsDelivers);
+		}
 
 		user = updateUser(
 			userId, oldPassword, newPassword1, newPassword2, passwordReset,
@@ -1527,15 +1538,15 @@ public class UserServiceImpl extends UserServiceBaseImpl {
 			groupIds = checkGroups(userId, groupIds);
 		}
 
-		if (organizationIds != null) {
+		if (serviceContext.isUpdateOrganizations() && organizationIds != null) {
 			organizationIds = checkOrganizations(userId, organizationIds);
 		}
 
-		if (roleIds != null) {
+		if (serviceContext.isUpdateRoles() && roleIds != null) {
 			roleIds = checkRoles(userId, roleIds);
 		}
 
-		if (userGroupRoles != null) {
+		if (serviceContext.isUpdateUserGroups() && userGroupRoles != null) {
 			userGroupRoles = checkUserGroupRoles(userId, userGroupRoles);
 		}
 

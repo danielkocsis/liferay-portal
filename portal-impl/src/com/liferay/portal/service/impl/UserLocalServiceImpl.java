@@ -4591,6 +4591,8 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 		ymSn = ymSn.trim().toLowerCase();
 		Date now = new Date();
 
+		boolean sendEmailAddressVerification = false;
+
 		EmailAddressGenerator emailAddressGenerator =
 			EmailAddressGeneratorFactory.getInstance();
 
@@ -4605,51 +4607,59 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 				user.getCompanyId(), userId);
 		}
 
-		validate(
-			userId, screenName, emailAddress, firstName, middleName, lastName,
-			smsSn);
+		if (serviceContext.isUpdatePassword()) {
+			if (Validator.isNotNull(newPassword1) ||
+				Validator.isNotNull(newPassword2)) {
 
-		if (Validator.isNotNull(newPassword1) ||
-			Validator.isNotNull(newPassword2)) {
+				user = updatePassword(
+					userId, newPassword1, newPassword2, passwordReset);
 
-			user = updatePassword(
-				userId, newPassword1, newPassword2, passwordReset);
+				password = newPassword1;
 
-			password = newPassword1;
+				user.setDigest(StringPool.BLANK);
+			}
 
-			user.setDigest(StringPool.BLANK);
+			user.setPasswordReset(passwordReset);
+
+			if (Validator.isNotNull(reminderQueryQuestion) &&
+					Validator.isNotNull(reminderQueryAnswer)) {
+
+					user.setReminderQueryQuestion(reminderQueryQuestion);
+					user.setReminderQueryAnswer(reminderQueryAnswer);
+				}
+		}
+
+		if (serviceContext.isUpdateDetails()) {
+			validate(
+					userId, screenName, emailAddress, firstName, middleName,
+					lastName, smsSn);
+
+			if (user.getContactId() <= 0) {
+				user.setContactId(counterLocalService.increment());
+			}
+
+			if (!user.getScreenName().equalsIgnoreCase(screenName)) {
+				user.setScreenName(screenName);
+
+				user.setDigest(StringPool.BLANK);
+			}
+
+			if (!company.isStrangersVerify()) {
+				setEmailAddress(
+					user, password, firstName, middleName, lastName,
+					emailAddress);
+			}
+			else {
+				sendEmailAddressVerification = true;
+			}
+			user.setFirstName(firstName);
+			user.setMiddleName(middleName);
+			user.setLastName(lastName);
+			user.setJobTitle(jobTitle);
+
 		}
 
 		user.setModifiedDate(now);
-
-		if (user.getContactId() <= 0) {
-			user.setContactId(counterLocalService.increment());
-		}
-
-		user.setPasswordReset(passwordReset);
-
-		if (Validator.isNotNull(reminderQueryQuestion) &&
-			Validator.isNotNull(reminderQueryAnswer)) {
-
-			user.setReminderQueryQuestion(reminderQueryQuestion);
-			user.setReminderQueryAnswer(reminderQueryAnswer);
-		}
-
-		if (!user.getScreenName().equalsIgnoreCase(screenName)) {
-			user.setScreenName(screenName);
-
-			user.setDigest(StringPool.BLANK);
-		}
-
-		boolean sendEmailAddressVerification = false;
-
-		if (!company.isStrangersVerify()) {
-			setEmailAddress(
-				user, password, firstName, middleName, lastName, emailAddress);
-		}
-		else {
-			sendEmailAddressVerification = true;
-		}
 
 		if (serviceContext != null) {
 			String uuid = serviceContext.getUuid();
@@ -4659,16 +4669,24 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			}
 		}
 
-		user.setFacebookId(facebookId);
-		user.setOpenId(openId);
-		user.setLanguageId(languageId);
-		user.setTimeZoneId(timeZoneId);
-		user.setGreeting(greeting);
-		user.setComments(comments);
-		user.setFirstName(firstName);
-		user.setMiddleName(middleName);
-		user.setLastName(lastName);
-		user.setJobTitle(jobTitle);
+		if (serviceContext.isUpdateOpenId()) {
+			user.setOpenId(openId);
+		}
+
+		if (serviceContext.isUpdateSocialNetwork()) {
+			user.setFacebookId(facebookId);
+		}
+
+		if (serviceContext.isUpdateDisplaySettings()) {
+
+			user.setLanguageId(languageId);
+			user.setTimeZoneId(timeZoneId);
+			user.setGreeting(greeting);
+		}
+
+		if (serviceContext.isUpdateComments()) {
+			user.setComments(comments);
+		}
 
 		userPersistence.update(user, false, serviceContext);
 
@@ -4694,24 +4712,36 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 		}
 
 		contact.setModifiedDate(now);
-		contact.setFirstName(firstName);
-		contact.setMiddleName(middleName);
-		contact.setLastName(lastName);
-		contact.setPrefixId(prefixId);
-		contact.setSuffixId(suffixId);
-		contact.setMale(male);
-		contact.setBirthday(birthday);
-		contact.setSmsSn(smsSn);
-		contact.setAimSn(aimSn);
-		contact.setFacebookSn(facebookSn);
-		contact.setIcqSn(icqSn);
-		contact.setJabberSn(jabberSn);
-		contact.setMsnSn(msnSn);
-		contact.setMySpaceSn(mySpaceSn);
-		contact.setSkypeSn(skypeSn);
-		contact.setTwitterSn(twitterSn);
-		contact.setYmSn(ymSn);
-		contact.setJobTitle(jobTitle);
+
+		if (serviceContext.isUpdateDetails()) {
+			contact.setFirstName(firstName);
+			contact.setMiddleName(middleName);
+			contact.setLastName(lastName);
+			contact.setPrefixId(prefixId);
+			contact.setSuffixId(suffixId);
+			contact.setMale(male);
+			contact.setBirthday(birthday);
+			contact.setJobTitle(jobTitle);
+		}
+
+		if (serviceContext.isUpdateSms()) {
+			contact.setSmsSn(smsSn);
+		}
+
+		if (serviceContext.isUpdateSocialNetwork()) {
+			contact.setFacebookSn(facebookSn);
+			contact.setMySpaceSn(mySpaceSn);
+			contact.setTwitterSn(twitterSn);
+		}
+
+		if (serviceContext.isUpdateInstantMessenger()) {
+			contact.setAimSn(aimSn);
+			contact.setIcqSn(icqSn);
+			contact.setJabberSn(jabberSn);
+			contact.setMsnSn(msnSn);
+			contact.setSkypeSn(skypeSn);
+			contact.setYmSn(ymSn);
+		}
 
 		contactPersistence.update(contact, false, serviceContext);
 
@@ -4732,7 +4762,10 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		try {
 			updateGroups(userId, groupIds, serviceContext);
-			updateOrganizations(userId, organizationIds, serviceContext);
+
+			if (serviceContext.isUpdateOrganizations()) {
+				updateOrganizations(userId, organizationIds, serviceContext);
+			}
 		}
 		finally {
 			serviceContext.setIndexingEnabled(indexingEnabled);
@@ -4740,7 +4773,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		// Roles
 
-		if (roleIds != null) {
+		if (serviceContext.isUpdateRoles() && roleIds != null) {
 			roleIds = UsersAdminUtil.addRequiredRoles(user, roleIds);
 
 			userPersistence.setRoles(userId, roleIds);
@@ -4752,7 +4785,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		// User groups
 
-		if (userGroupIds != null) {
+		if (serviceContext.isUpdateUserGroups() && userGroupIds != null) {
 			if (PropsValues.USER_GROUPS_COPY_LAYOUTS_TO_USER_PERSONAL_SITE) {
 				userGroupLocalService.copyUserGroupLayouts(
 					userGroupIds, userId);
@@ -4763,7 +4796,10 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		// Announcements
 
-		announcementsDeliveryLocalService.getUserDeliveries(user.getUserId());
+		if (serviceContext.isUpdateAnnouncements()) {
+			announcementsDeliveryLocalService.getUserDeliveries(
+				user.getUserId());
+		}
 
 		// Asset
 
@@ -4775,7 +4811,9 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		// Expando
 
-		user.setExpandoBridgeAttributes(serviceContext);
+		if (serviceContext.isUpdateCustomFields()) {
+			user.setExpandoBridgeAttributes(serviceContext);
+		}
 
 		// Message boards
 

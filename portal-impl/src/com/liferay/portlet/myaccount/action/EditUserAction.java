@@ -119,6 +119,8 @@ public class EditUserAction
 				UserPasswordException.PASSWORD_INVALID);
 		}
 
+		actionRequest.setAttribute("user-form-my-account", true);
+
 		return super.updateUser(actionRequest, actionResponse);
 	}
 

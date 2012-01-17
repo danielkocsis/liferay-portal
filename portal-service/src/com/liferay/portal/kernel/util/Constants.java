@@ -118,6 +118,14 @@ public interface Constants {
 
 	public static final String UPDATE_AND_CHECKIN = "update_and_checkin";
 
+	public static final String USER_FORM_IDENTIFICATION =
+		"user_form_identification";
+
+	public static final String USER_FORM_MAIN = "user_form_main";
+
+	public static final String USER_FORM_MISCELLANEOUS =
+		"user_form_miscellaneous";
+
 	public static final String VIEW = "view";
 
 	public static final String VOTE = "vote";

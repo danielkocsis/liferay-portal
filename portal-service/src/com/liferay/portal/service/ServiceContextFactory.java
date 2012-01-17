@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -59,6 +61,37 @@ public class ServiceContextFactory {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
+
+		Boolean calledFromMyAccount = (Boolean)request.getAttribute(
+			"user-form-my-account");
+
+		Map<String, String[]> enabledUserDataSections =
+			new HashMap<String, String[]>();
+
+		if (Validator.isNotNull(calledFromMyAccount) && calledFromMyAccount) {
+			enabledUserDataSections.put(Constants.USER_FORM_IDENTIFICATION,
+				PropsUtil.getArray(
+					PropsKeys.USERS_FORM_MY_ACCOUNT_IDENTIFICATION));
+
+			enabledUserDataSections.put(Constants.USER_FORM_MAIN,
+				PropsUtil.getArray(PropsKeys.USERS_FORM_MY_ACCOUNT_MAIN));
+
+			enabledUserDataSections.put(Constants.USER_FORM_MISCELLANEOUS,
+				PropsUtil.getArray(
+					PropsKeys.USERS_FORM_MY_ACCOUNT_MISCELLANEOUS));
+		}
+		else {
+			enabledUserDataSections.put(Constants.USER_FORM_IDENTIFICATION,
+				PropsUtil.getArray(PropsKeys.USERS_FORM_UPDATE_IDENTIFICATION));
+
+			enabledUserDataSections.put(Constants.USER_FORM_MAIN,
+				PropsUtil.getArray(PropsKeys.USERS_FORM_UPDATE_MAIN));
+
+			enabledUserDataSections.put(Constants.USER_FORM_MISCELLANEOUS,
+				PropsUtil.getArray(PropsKeys.USERS_FORM_UPDATE_MISCELLANEOUS));
+		}
+
+		serviceContext.setEnabledUserDataSections(enabledUserDataSections);
 
 		if (themeDisplay != null) {
 			serviceContext.setCompanyId(themeDisplay.getCompanyId());
@@ -272,6 +305,36 @@ public class ServiceContextFactory {
 			serviceContext.setUserId(user.getUserId());
 		}
 
+		Boolean calledFromMyAccount = (Boolean)portletRequest.getAttribute(
+			"user-form-my-account");
+
+		Map<String, String[]> enabledUserDataSections =
+			new HashMap<String, String[]>();
+
+		if (Validator.isNotNull(calledFromMyAccount) && calledFromMyAccount) {
+			enabledUserDataSections.put(Constants.USER_FORM_IDENTIFICATION,
+				PropsUtil.getArray(
+					PropsKeys.USERS_FORM_MY_ACCOUNT_IDENTIFICATION));
+
+			enabledUserDataSections.put(Constants.USER_FORM_MAIN,
+				PropsUtil.getArray(PropsKeys.USERS_FORM_MY_ACCOUNT_MAIN));
+
+			enabledUserDataSections.put(Constants.USER_FORM_MISCELLANEOUS,
+				PropsUtil.getArray(
+					PropsKeys.USERS_FORM_MY_ACCOUNT_MISCELLANEOUS));
+		}
+		else {
+			enabledUserDataSections.put(Constants.USER_FORM_IDENTIFICATION,
+				PropsUtil.getArray(PropsKeys.USERS_FORM_UPDATE_IDENTIFICATION));
+
+			enabledUserDataSections.put(Constants.USER_FORM_MAIN,
+				PropsUtil.getArray(PropsKeys.USERS_FORM_UPDATE_MAIN));
+
+			enabledUserDataSections.put(Constants.USER_FORM_MISCELLANEOUS,
+				PropsUtil.getArray(PropsKeys.USERS_FORM_UPDATE_MISCELLANEOUS));
+		}
+
+		serviceContext.setEnabledUserDataSections(enabledUserDataSections);
 		serviceContext.setScopeGroupId(themeDisplay.getScopeGroupId());
 
 		// Attributes

@@ -122,6 +122,8 @@ public class EditUserAction extends PortletAction {
 
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
+		actionRequest.setAttribute("user-form-my-account", false);
+
 		try {
 			User user = null;
 			String oldScreenName = StringPool.BLANK;
