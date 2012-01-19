@@ -4587,7 +4587,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 		String[] enabledUserSectionsArray = null;
 		try {
 			enabledUserSectionsArray =
-				(String[])serviceContext.getAttribute("user-enabled-sections");
+				(String[])serviceContext.getAttribute("enabled-user-sections");
 		}
 		catch (Exception e) {
 			if (_log.isWarnEnabled()) {
