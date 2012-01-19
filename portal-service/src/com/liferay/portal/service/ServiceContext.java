@@ -110,27 +110,6 @@ public class ServiceContext implements Cloneable, Serializable {
 		serviceContext.setUserDisplayURL(getUserDisplayURL());
 		serviceContext.setUserId(getUserId());
 		serviceContext.setUuid(getUuid());
-		serviceContext.setUpdateAdditionalEmailAddresses(
-			isUpdateAdditionalEmailAddresses());
-		serviceContext.setUpdateAddresses(isUpdateAddresses());
-		serviceContext.setUpdateAnnouncements(isUpdateAnnouncements());
-		serviceContext.setUpdateCategorization(isUpdateCategorization());
-		serviceContext.setUpdateComments(isUpdateComments());
-		serviceContext.setUpdateCustomFields(isUpdateCustomFields());
-		serviceContext.setUpdateDetails(isUpdateDetails());
-		serviceContext.setUpdateDisplaySettings(isUpdateDisplaySettings());
-		serviceContext.setUpdateInstantMessenger(isUpdateInstantMessenger());
-		serviceContext.setUpdateOpenId(isUpdateOpenId());
-		serviceContext.setUpdateOrganizations(isUpdateOrganizations());
-		serviceContext.setUpdatePassword(isUpdatePassword());
-		serviceContext.setUpdatePersonalSite(isUpdatePersonalSite());
-		serviceContext.setUpdatePhoneNumbers(isUpdatePhoneNumbers());
-		serviceContext.setUpdateRoles(isUpdateRoles());
-		serviceContext.setUpdateSites(isUpdateSites());
-		serviceContext.setUpdateSms(isUpdateSms());
-		serviceContext.setUpdateSocialNetwork(isUpdateSocialNetwork());
-		serviceContext.setUpdateUserGroups(isUpdateUserGroups());
-		serviceContext.setUpdateWebsites(isUpdateWebsites());
 		serviceContext.setWorkflowAction(getWorkflowAction());
 
 		return serviceContext;
@@ -721,86 +700,6 @@ public class ServiceContext implements Cloneable, Serializable {
 		return _signedIn;
 	}
 
-	public boolean isUpdateAdditionalEmailAddresses() {
-		return _updateAdditionalEmailAddresses;
-	}
-
-	public boolean isUpdateAddresses() {
-		return _updateAddresses;
-	}
-
-	public boolean isUpdateAnnouncements() {
-		return _updateAnnouncements;
-	}
-
-	public boolean isUpdateCategorization() {
-		return _updateCategorization;
-	}
-
-	public boolean isUpdateComments() {
-		return _updateComments;
-	}
-
-	public boolean isUpdateCustomFields() {
-		return _updateCustomFields;
-	}
-
-	public boolean isUpdateDetails() {
-		return _updateDetails;
-	}
-
-	public boolean isUpdateDisplaySettings() {
-		return _updateDisplaySettings;
-	}
-
-	public boolean isUpdateInstantMessenger() {
-		return _updateInstantMessenger;
-	}
-
-	public boolean isUpdateOpenId() {
-		return _updateOpenId;
-	}
-
-	public boolean isUpdateOrganizations() {
-		return _updateOrganizations;
-	}
-
-	public boolean isUpdatePassword() {
-		return _updatePassword;
-	}
-
-	public boolean isUpdatePersonalSite() {
-		return _updatePersonalSite;
-	}
-
-	public boolean isUpdatePhoneNumbers() {
-		return _updatePhoneNumbers;
-	}
-
-	public boolean isUpdateRoles() {
-		return _updateRoles;
-	}
-
-	public boolean isUpdateSites() {
-		return _updateSites;
-	}
-
-	public boolean isUpdateSms() {
-		return _updateSms;
-	}
-
-	public boolean isUpdateSocialNetwork() {
-		return _updateSocialNetwork;
-	}
-
-	public boolean isUpdateUserGroups() {
-		return _updateUserGroups;
-	}
-
-	public boolean isUpdateWebsites() {
-		return _updateWebsites;
-	}
-
 	/**
 	 * Removes the mapping of the serializable object to the name of the
 	 * standard parameter of this service context.
@@ -1181,197 +1080,6 @@ public class ServiceContext implements Cloneable, Serializable {
 	}
 
 	/**
-	 * Sets the sections of User edit form to be updated
-	 *
-	 * @param userDataSectionsToUpdate the sections of the User edit form to be
-	 *        updated
-	 */
-	public void setEnabledUserDataSections(
-		Map<String, String[]> enabledUserDataSections) {
-
-		String[] identification = enabledUserDataSections
-			.get(Constants.USER_FORM_IDENTIFICATION);
-
-		String[] main = enabledUserDataSections
-			.get(Constants.USER_FORM_MAIN);
-
-		String[] miscellaneous = enabledUserDataSections
-			.get(Constants.USER_FORM_MISCELLANEOUS);
-
-		_updateAddresses = false;
-		_updateAdditionalEmailAddresses = false;
-		_updateAnnouncements = false;
-		_updateCategorization = false;
-		_updateComments = false;
-		_updateCustomFields = false;
-		_updateDetails = false;
-		_updateDisplaySettings = false;
-		_updateInstantMessenger = false;
-		_updateOpenId = false;
-		_updateOrganizations = false;
-		_updatePassword = false;
-		_updatePersonalSite = false;
-		_updatePhoneNumbers = false;
-		_updateRoles = false;
-		_updateSites = false;
-		_updateSms = false;
-		_updateSocialNetwork = false;
-		_updateUserGroups = false;
-		_updateWebsites = false;
-
-		for (String item : main) {
-			if (item.equals("categorization")) {
-				_updateCategorization = true;
-			}
-			else if (item.equals("details")) {
-				_updateDetails = true;
-			}
-			else if (item.equals("organizations")) {
-				_updateOrganizations = true;
-			}
-			else if (item.equals("password")) {
-				_updatePassword = true;
-			}
-			else if (item.equals("personal-site")) {
-				_updatePersonalSite = true;
-			}
-			else if (item.equals("roles")) {
-				_updateRoles = true;
-			}
-			else if (item.equals("sites")) {
-				_updateSites = true;
-			}
-			else if (item.equals("user-groups")) {
-				_updateUserGroups = true;
-			}
-		}
-
-		for (String item : identification) {
-			if (item.equals("additional-email-addresses")) {
-				_updateAdditionalEmailAddresses = true;
-			}
-			else if (item.equals("addresses")) {
-				_updateAddresses = true;
-			}
-			else if (item.equals("instant-messenger")) {
-				_updateInstantMessenger = true;
-			}
-			else if (item.equals("phone-numbers")) {
-				_updatePhoneNumbers = true;
-			}
-			else if (item.equals("open-id")) {
-				_updateOpenId = true;
-			}
-			else if (item.equals("sms")) {
-				_updateSms = true;
-			}
-			else if (item.equals("social-network")) {
-				_updateSocialNetwork = true;
-			}
-			else if (item.equals("websites")) {
-				_updateWebsites = true;
-			}
-		}
-
-		for (String item : miscellaneous) {
-			if (item.equals("announcements")) {
-				_updateAnnouncements = true;
-			}
-			else if (item.equals("comments")) {
-				_updateComments = true;
-			}
-			else if (item.equals("custom-fields")) {
-				_updateCustomFields = true;
-			}
-			else if (item.equals("display-settings")) {
-				_updateDisplaySettings = true;
-			}
-		}
-
-	}
-
-	public void setUpdateAdditionalEmailAddresses(
-			boolean updateAdditionalEmailAddresses) {
-		_updateAdditionalEmailAddresses = updateAdditionalEmailAddresses;
-	}
-
-	public void setUpdateAddresses(boolean updateAddresses) {
-		_updateAddresses = updateAddresses;
-	}
-
-	public void setUpdateAnnouncements(boolean updateAnnouncements) {
-		_updateAnnouncements = updateAnnouncements;
-	}
-
-	public void setUpdateCategorization(boolean updateCategorization) {
-		_updateCategorization = updateCategorization;
-	}
-
-	public void setUpdateComments(boolean updateComments) {
-		_updateComments = updateComments;
-	}
-
-	public void setUpdateCustomFields(boolean updateCustomFields) {
-		_updateCustomFields = updateCustomFields;
-	}
-
-	public void setUpdateDetails(boolean updateDetails) {
-		_updateDetails = updateDetails;
-	}
-
-	public void setUpdateDisplaySettings(boolean updateDisplaySettings) {
-		_updateDisplaySettings = updateDisplaySettings;
-	}
-
-	public void setUpdateInstantMessenger(boolean updateInstantMessenger) {
-		_updateInstantMessenger = updateInstantMessenger;
-	}
-
-	public void setUpdateOpenId(boolean updateOpenId) {
-		_updateOpenId = updateOpenId;
-	}
-
-	public void setUpdateOrganizations(boolean updateOrganizations) {
-		_updateOrganizations = updateOrganizations;
-	}
-
-	public void setUpdatePassword(boolean updatePassword) {
-		_updatePassword = updatePassword;
-	}
-
-	public void setUpdatePersonalSite(boolean updatePersonalSite) {
-		_updatePersonalSite = updatePersonalSite;
-	}
-
-	public void setUpdatePhoneNumbers(boolean updatePhoneNumbers) {
-		_updatePhoneNumbers = updatePhoneNumbers;
-	}
-
-	public void setUpdateRoles(boolean updateRoles) {
-		_updateRoles = updateRoles;
-	}
-
-	public void setUpdateSites(boolean updateSites) {
-		_updateSites = updateSites;
-	}
-
-	public void setUpdateSms(boolean updateSms) {
-		_updateSms = updateSms;
-	}
-
-	public void setUpdateSocialNetwork(boolean updateSocialNetwork) {
-		_updateSocialNetwork = updateSocialNetwork;
-	}
-
-	public void setUpdateUserGroups(boolean updateUserGroups) {
-		_updateUserGroups = updateUserGroups;
-	}
-
-	public void setUpdateWebsites(boolean updateWebsites) {
-		_updateWebsites = updateWebsites;
-	}
-
-	/**
 	 * Sets the complete URL of this service context's current user's profile
 	 * page.
 	 *
@@ -1440,7 +1148,6 @@ public class ServiceContext implements Cloneable, Serializable {
 	private String _layoutURL;
 	private Date _modifiedDate;
 	private String _pathMain;
-	private long _plid;
 	private String _portalURL;
 	private PortletPreferencesIds _portletPreferencesIds;
 	private String _remoteAddr;
@@ -1448,29 +1155,10 @@ public class ServiceContext implements Cloneable, Serializable {
 	private transient HttpServletRequest _request;
 	private long _scopeGroupId;
 	private boolean _signedIn;
-	private boolean _updateAddresses;
-	private boolean _updateAdditionalEmailAddresses;
-	private boolean _updateAnnouncements;
-	private boolean _updateCategorization;
-	private boolean _updateComments;
-	private boolean _updateCustomFields;
-	private boolean _updateDetails;
-	private boolean _updateDisplaySettings;
-	private boolean _updateInstantMessenger;
-	private boolean _updateOpenId;
-	private boolean _updateOrganizations;
-	private boolean _updatePassword;
-	private boolean _updatePersonalSite;
-	private boolean _updatePhoneNumbers;
-	private boolean _updateRoles;
-	private boolean _updateSites;
-	private boolean _updateSms;
-	private boolean _updateSocialNetwork;
-	private boolean _updateUserGroups;
-	private boolean _updateWebsites;
 	private String _userDisplayURL;
+	private long _plid;
+	private int _workflowAction = WorkflowConstants.ACTION_PUBLISH;
 	private long _userId;
 	private String _uuid;
-	private int _workflowAction = WorkflowConstants.ACTION_PUBLISH;
 
 }
