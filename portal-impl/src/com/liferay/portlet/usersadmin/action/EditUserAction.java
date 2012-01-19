@@ -620,16 +620,10 @@ public class EditUserAction extends PortletAction {
 
 		String[] enabledUserSections;
 		if (Validator.isNotNull(myAccount) && myAccount.equals(Boolean.TRUE)) {
-			enabledUserSections =
-				PropsValues.USERS_FORM_MY_ACCOUNT_IDENTIFICATION;
-			enabledUserSections =
-				ArrayUtil.append(
-					enabledUserSections,
-					PropsValues.USERS_FORM_MY_ACCOUNT_MAIN);
-			enabledUserSections =
-				ArrayUtil.append(
-					enabledUserSections,
-					PropsValues.USERS_FORM_MY_ACCOUNT_MISCELLANEOUS);
+			enabledUserSections = ArrayUtil.append(
+				PropsValues.USERS_FORM_MY_ACCOUNT_IDENTIFICATION,
+				PropsValues.USERS_FORM_MY_ACCOUNT_MAIN,
+				PropsValues.USERS_FORM_MY_ACCOUNT_MISCELLANEOUS);
 		}
 		else {
 			enabledUserSections = ArrayUtil.append(
