@@ -45,16 +45,7 @@ import com.liferay.portal.kernel.bean.BeanParamUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
-import com.liferay.portal.kernel.util.CalendarFactoryUtil;
-import com.liferay.portal.kernel.util.CharPool;
-import com.liferay.portal.kernel.util.Constants;
-import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.*;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.Address;
 import com.liferay.portal.model.Company;
@@ -84,11 +75,6 @@ import com.liferay.portlet.announcements.model.impl.AnnouncementsDeliveryImpl;
 import com.liferay.portlet.sites.util.SitesUtil;
 import com.liferay.portlet.usersadmin.util.UsersAdminUtil;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
@@ -105,6 +91,11 @@ import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Brian Wing Shun Chan
@@ -181,7 +172,7 @@ public class EditUserAction extends PortletAction {
 								user.getScreenName();
 
 						redirect = StringUtil.replace(
-							redirect, oldPath, newPath);
+								redirect, oldPath, newPath);
 
 						redirect = StringUtil.replace(
 							redirect, HttpUtil.encodeURL(oldPath),
@@ -628,6 +619,23 @@ public class EditUserAction extends PortletAction {
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			User.class.getName(), actionRequest);
+
+		String[] enabledUserSections;
+		if (user.getUserId() == themeDisplay.getUserId()) {
+			enabledUserSections = ArrayUtil.append(
+				PropsValues.USERS_FORM_MY_ACCOUNT_IDENTIFICATION,
+				PropsValues.USERS_FORM_MY_ACCOUNT_MAIN,
+				PropsValues.USERS_FORM_MY_ACCOUNT_MISCELLANEOUS);
+		}
+		else {
+			enabledUserSections = ArrayUtil.append(
+				PropsValues.USERS_FORM_UPDATE_IDENTIFICATION,
+				PropsValues.USERS_FORM_UPDATE_MAIN,
+				PropsValues.USERS_FORM_UPDATE_MISCELLANEOUS);
+		}
+
+		serviceContext.setAttribute(
+			"enabled-user-sections", enabledUserSections);
 
 		user = UserServiceUtil.updateUser(
 			user.getUserId(), oldPassword, newPassword1, newPassword2,
