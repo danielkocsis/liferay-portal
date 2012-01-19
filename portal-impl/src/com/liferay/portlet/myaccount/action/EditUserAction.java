@@ -79,6 +79,8 @@ public class EditUserAction
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
+		myAccount = Boolean.TRUE;
+
 		String currentPassword = actionRequest.getParameter("password0");
 		String newPassword = actionRequest.getParameter("password1");
 
@@ -118,8 +120,6 @@ public class EditUserAction
 			throw new UserPasswordException(
 				UserPasswordException.PASSWORD_INVALID);
 		}
-
-		actionRequest.setAttribute("user-form-my-account", true);
 
 		return super.updateUser(actionRequest, actionResponse);
 	}

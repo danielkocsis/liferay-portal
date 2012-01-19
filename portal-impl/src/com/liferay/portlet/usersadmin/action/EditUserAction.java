@@ -113,8 +113,6 @@ public class EditUserAction extends PortletAction {
 
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
-		actionRequest.setAttribute("user-form-my-account", false);
-
 		try {
 			User user = null;
 			String oldScreenName = StringPool.BLANK;
@@ -621,11 +619,17 @@ public class EditUserAction extends PortletAction {
 			User.class.getName(), actionRequest);
 
 		String[] enabledUserSections;
-		if (user.getUserId() == themeDisplay.getUserId()) {
-			enabledUserSections = ArrayUtil.append(
-				PropsValues.USERS_FORM_MY_ACCOUNT_IDENTIFICATION,
-				PropsValues.USERS_FORM_MY_ACCOUNT_MAIN,
-				PropsValues.USERS_FORM_MY_ACCOUNT_MISCELLANEOUS);
+		if (Validator.isNotNull(myAccount) && myAccount.equals(Boolean.TRUE)) {
+			enabledUserSections =
+				PropsValues.USERS_FORM_MY_ACCOUNT_IDENTIFICATION;
+			enabledUserSections =
+				ArrayUtil.append(
+					enabledUserSections,
+					PropsValues.USERS_FORM_MY_ACCOUNT_MAIN);
+			enabledUserSections =
+				ArrayUtil.append(
+					enabledUserSections,
+					PropsValues.USERS_FORM_MY_ACCOUNT_MISCELLANEOUS);
 		}
 		else {
 			enabledUserSections = ArrayUtil.append(
@@ -711,5 +715,7 @@ public class EditUserAction extends PortletAction {
 
 		return new Object[] {user, oldScreenName, oldLanguageId};
 	}
+
+	protected Boolean myAccount = null;
 
 }
