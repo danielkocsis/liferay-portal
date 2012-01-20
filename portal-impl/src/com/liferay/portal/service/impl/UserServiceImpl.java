@@ -20,10 +20,14 @@ import com.liferay.portal.UserEmailAddressException;
 import com.liferay.portal.UserScreenNameException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.SetUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowThreadLocal;
 import com.liferay.portal.model.Address;
@@ -58,6 +62,7 @@ import com.liferay.portlet.usersadmin.util.UsersAdminUtil;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * The implementation of the user remote service.
@@ -67,6 +72,7 @@ import java.util.Locale;
  * @author Scott Lee
  * @author Jorge Ferrer
  * @author Julio Camarero
+ * @author Mate Thurzo
  */
 public class UserServiceImpl extends UserServiceBaseImpl {
 
@@ -1401,19 +1407,49 @@ public class UserServiceImpl extends UserServiceBaseImpl {
 
 		User user = userPersistence.findByPrimaryKey(userId);
 
-		UsersAdminUtil.updateAddresses(
-			Contact.class.getName(), user.getContactId(), addresses);
+		String[] enabledUserSectionsArray = null;
+		try {
+			enabledUserSectionsArray =
+				(String[])serviceContext.getAttribute("enabled-user-sections");
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Couldn't retrieve enabled user sections", e);
+			}
 
-		UsersAdminUtil.updateEmailAddresses(
-			Contact.class.getName(), user.getContactId(), emailAddresses);
+			enabledUserSectionsArray = ArrayUtil.append(
+				PropsValues.USERS_FORM_UPDATE_IDENTIFICATION,
+				PropsValues.USERS_FORM_UPDATE_MAIN,
+				PropsValues.USERS_FORM_UPDATE_MISCELLANEOUS);
+		}
+		Set<String> enabledUserSections =
+			SetUtil.fromArray(enabledUserSectionsArray);
 
-		UsersAdminUtil.updatePhones(
-			Contact.class.getName(), user.getContactId(), phones);
+		if (enabledUserSections.contains("addresses")) {
+			UsersAdminUtil.updateAddresses(
+				Contact.class.getName(), user.getContactId(), addresses);
+		}
 
-		UsersAdminUtil.updateWebsites(
-			Contact.class.getName(), user.getContactId(), websites);
+		if (enabledUserSections.contains("additional-email-addresses")) {
+			UsersAdminUtil.updateEmailAddresses(
+				Contact.class.getName(), user.getContactId(),
+				emailAddresses);
+		}
 
-		updateAnnouncementsDeliveries(user.getUserId(), announcementsDelivers);
+		if (enabledUserSections.contains("phone-numbers")) {
+			UsersAdminUtil.updatePhones(
+				Contact.class.getName(), user.getContactId(), phones);
+		}
+
+		if (enabledUserSections.contains("websites")) {
+			UsersAdminUtil.updateWebsites(
+				Contact.class.getName(), user.getContactId(), websites);
+		}
+
+		if (enabledUserSections.contains("announcements")) {
+			updateAnnouncementsDeliveries(
+				user.getUserId(), announcementsDelivers);
+		}
 
 		user = updateUser(
 			userId, oldPassword, newPassword1, newPassword2, passwordReset,
@@ -1527,16 +1563,47 @@ public class UserServiceImpl extends UserServiceBaseImpl {
 			groupIds = checkGroups(userId, groupIds);
 		}
 
-		if (organizationIds != null) {
-			organizationIds = checkOrganizations(userId, organizationIds);
+		Set<String> enabledUserSections = null;
+		try {
+			String[] enabledUserSectionsArray =
+				(String[])serviceContext.getAttribute("enabled-user-sections");
+			enabledUserSections = SetUtil.fromArray(enabledUserSectionsArray);
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Couldn't retrieve enabled user sections", e);
+			}
 		}
 
-		if (roleIds != null) {
-			roleIds = checkRoles(userId, roleIds);
-		}
+		if (Validator.isNotNull(enabledUserSections)) {
+			if (enabledUserSections.contains("organizations") &&
+				(organizationIds != null)) {
 
-		if (userGroupRoles != null) {
-			userGroupRoles = checkUserGroupRoles(userId, userGroupRoles);
+				organizationIds = checkOrganizations(userId, organizationIds);
+			}
+
+			if (enabledUserSections.contains("roles") && (roleIds != null)) {
+				roleIds = checkRoles(userId, roleIds);
+			}
+
+			if (enabledUserSections.contains("user-groups") &&
+				(userGroupRoles != null)) {
+
+				userGroupRoles = checkUserGroupRoles(userId, userGroupRoles);
+			}
+		}
+		else {
+			if (organizationIds != null) {
+				organizationIds = checkOrganizations(userId, organizationIds);
+			}
+
+			if (roleIds != null) {
+				roleIds = checkRoles(userId, roleIds);
+			}
+
+			if (userGroupRoles != null) {
+				userGroupRoles = checkUserGroupRoles(userId, userGroupRoles);
+			}
 		}
 
 		return userLocalService.updateUser(
@@ -1818,5 +1885,7 @@ public class UserServiceImpl extends UserServiceBaseImpl {
 			throw new UserScreenNameException();
 		}
 	}
+
+	private Log _log = LogFactoryUtil.getLog(UserServiceImpl.class);
 
 }

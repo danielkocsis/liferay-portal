@@ -45,16 +45,7 @@ import com.liferay.portal.kernel.bean.BeanParamUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
-import com.liferay.portal.kernel.util.CalendarFactoryUtil;
-import com.liferay.portal.kernel.util.CharPool;
-import com.liferay.portal.kernel.util.Constants;
-import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.*;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.Address;
 import com.liferay.portal.model.Company;
@@ -179,7 +170,7 @@ public class EditUserAction extends PortletAction {
 								user.getScreenName();
 
 						redirect = StringUtil.replace(
-							redirect, oldPath, newPath);
+								redirect, oldPath, newPath);
 
 						redirect = StringUtil.replace(
 							redirect, HttpUtil.encodeURL(oldPath),
@@ -627,6 +618,23 @@ public class EditUserAction extends PortletAction {
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			User.class.getName(), actionRequest);
 
+		String[] enabledUserSections;
+		if (Validator.isNotNull(myAccount) && myAccount.equals(Boolean.TRUE)) {
+			enabledUserSections = ArrayUtil.append(
+				PropsValues.USERS_FORM_MY_ACCOUNT_IDENTIFICATION,
+				PropsValues.USERS_FORM_MY_ACCOUNT_MAIN,
+				PropsValues.USERS_FORM_MY_ACCOUNT_MISCELLANEOUS);
+		}
+		else {
+			enabledUserSections = ArrayUtil.append(
+				PropsValues.USERS_FORM_UPDATE_IDENTIFICATION,
+				PropsValues.USERS_FORM_UPDATE_MAIN,
+				PropsValues.USERS_FORM_UPDATE_MISCELLANEOUS);
+		}
+
+		serviceContext.setAttribute(
+			"enabled-user-sections", enabledUserSections);
+
 		user = UserServiceUtil.updateUser(
 			user.getUserId(), oldPassword, newPassword1, newPassword2,
 			passwordReset, reminderQueryQuestion, reminderQueryAnswer,
@@ -701,5 +709,7 @@ public class EditUserAction extends PortletAction {
 
 		return new Object[] {user, oldScreenName, oldLanguageId};
 	}
+
+	protected Boolean myAccount = null;
 
 }

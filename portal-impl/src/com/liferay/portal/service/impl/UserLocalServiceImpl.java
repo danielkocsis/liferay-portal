@@ -58,17 +58,7 @@ import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
-import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.CharPool;
-import com.liferay.portal.kernel.util.Digester;
-import com.liferay.portal.kernel.util.DigesterUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.KeyValuePair;
-import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.*;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 import com.liferay.portal.kernel.workflow.WorkflowThreadLocal;
@@ -151,6 +141,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Julio Camarero
  * @author Wesley Gong
  * @author Zsigmond Rab
+ * @author Mate Thurzo
  */
 public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
@@ -4591,6 +4582,26 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 		ymSn = ymSn.trim().toLowerCase();
 		Date now = new Date();
 
+		boolean sendEmailAddressVerification = false;
+
+		String[] enabledUserSectionsArray = null;
+		try {
+			enabledUserSectionsArray =
+				(String[])serviceContext.getAttribute("enabled-user-sections");
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Couldn't retrieve enabled user sections", e);
+			}
+
+			enabledUserSectionsArray = ArrayUtil.append(
+				PropsValues.USERS_FORM_UPDATE_IDENTIFICATION,
+				PropsValues.USERS_FORM_UPDATE_MAIN,
+				PropsValues.USERS_FORM_UPDATE_MISCELLANEOUS);
+		}
+		Set<String> enabledUserSections =
+			SetUtil.fromArray(enabledUserSectionsArray);
+
 		EmailAddressGenerator emailAddressGenerator =
 			EmailAddressGeneratorFactory.getInstance();
 
@@ -4605,70 +4616,87 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 				user.getCompanyId(), userId);
 		}
 
-		validate(
-			userId, screenName, emailAddress, firstName, middleName, lastName,
-			smsSn);
-
-		if (Validator.isNotNull(newPassword1) ||
-			Validator.isNotNull(newPassword2)) {
-
-			user = updatePassword(
-				userId, newPassword1, newPassword2, passwordReset);
-
-			password = newPassword1;
-
-			user.setDigest(StringPool.BLANK);
-		}
-
-		user.setModifiedDate(now);
-
-		if (user.getContactId() <= 0) {
-			user.setContactId(counterLocalService.increment());
-		}
-
-		user.setPasswordReset(passwordReset);
-
-		if (Validator.isNotNull(reminderQueryQuestion) &&
-			Validator.isNotNull(reminderQueryAnswer)) {
-
-			user.setReminderQueryQuestion(reminderQueryQuestion);
-			user.setReminderQueryAnswer(reminderQueryAnswer);
-		}
-
-		if (!user.getScreenName().equalsIgnoreCase(screenName)) {
-			user.setScreenName(screenName);
-
-			user.setDigest(StringPool.BLANK);
-		}
-
-		boolean sendEmailAddressVerification = false;
-
-		if (!company.isStrangersVerify()) {
-			setEmailAddress(
-				user, password, firstName, middleName, lastName, emailAddress);
-		}
-		else {
-			sendEmailAddressVerification = true;
-		}
-
-		if (serviceContext != null) {
-			String uuid = serviceContext.getUuid();
-
-			if (Validator.isNotNull(uuid)) {
-				user.setUuid(uuid);
+			if (enabledUserSections.contains("details")) {
+				validate(
+					userId, screenName, emailAddress, firstName, middleName,
+					lastName, smsSn);
 			}
-		}
 
-		user.setFacebookId(facebookId);
-		user.setOpenId(openId);
-		user.setLanguageId(languageId);
-		user.setTimeZoneId(timeZoneId);
-		user.setGreeting(greeting);
-		user.setComments(comments);
-		user.setFirstName(firstName);
-		user.setMiddleName(middleName);
-		user.setLastName(lastName);
-		user.setJobTitle(jobTitle);
+			if (enabledUserSections.contains("password")) {
+				if (Validator.isNotNull(newPassword1) ||
+					Validator.isNotNull(newPassword2)) {
+
+					user = updatePassword(
+						userId, newPassword1, newPassword2, passwordReset);
+
+					password = newPassword1;
+
+					user.setDigest(StringPool.BLANK);
+				}
+
+				user.setPasswordReset(passwordReset);
+
+				if (Validator.isNotNull(reminderQueryQuestion) &&
+					Validator.isNotNull(reminderQueryAnswer)) {
+
+					user.setReminderQueryQuestion(reminderQueryQuestion);
+					user.setReminderQueryAnswer(reminderQueryAnswer);
+				}
+			}
+
+			if (enabledUserSections.contains("details")) {
+				if (user.getContactId() <= 0) {
+					user.setContactId(counterLocalService.increment());
+				}
+
+				if (!user.getScreenName().equalsIgnoreCase(screenName)) {
+					user.setScreenName(screenName);
+
+					user.setDigest(StringPool.BLANK);
+				}
+
+				if (!company.isStrangersVerify()) {
+					setEmailAddress(
+						user, password, firstName, middleName, lastName,
+						emailAddress);
+				}
+				else {
+					sendEmailAddressVerification = true;
+				}
+
+				user.setFirstName(firstName);
+				user.setMiddleName(middleName);
+				user.setLastName(lastName);
+				user.setJobTitle(jobTitle);
+			}
+
+			user.setModifiedDate(now);
+
+			if (serviceContext != null) {
+				String uuid = serviceContext.getUuid();
+
+				if (Validator.isNotNull(uuid)) {
+					user.setUuid(uuid);
+				}
+			}
+
+			if (enabledUserSections.contains("open-id")) {
+				user.setOpenId(openId);
+			}
+
+			if (enabledUserSections.contains("social-network")) {
+				user.setFacebookId(facebookId);
+			}
+
+			if (enabledUserSections.contains("display-settings")) {
+				user.setLanguageId(languageId);
+				user.setTimeZoneId(timeZoneId);
+				user.setGreeting(greeting);
+			}
+
+			if (enabledUserSections.contains("comments")) {
+				user.setComments(comments);
+			}
 
 		userPersistence.update(user, false, serviceContext);
 
@@ -4694,24 +4722,36 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 		}
 
 		contact.setModifiedDate(now);
-		contact.setFirstName(firstName);
-		contact.setMiddleName(middleName);
-		contact.setLastName(lastName);
-		contact.setPrefixId(prefixId);
-		contact.setSuffixId(suffixId);
-		contact.setMale(male);
-		contact.setBirthday(birthday);
-		contact.setSmsSn(smsSn);
-		contact.setAimSn(aimSn);
-		contact.setFacebookSn(facebookSn);
-		contact.setIcqSn(icqSn);
-		contact.setJabberSn(jabberSn);
-		contact.setMsnSn(msnSn);
-		contact.setMySpaceSn(mySpaceSn);
-		contact.setSkypeSn(skypeSn);
-		contact.setTwitterSn(twitterSn);
-		contact.setYmSn(ymSn);
-		contact.setJobTitle(jobTitle);
+
+		if (enabledUserSections.contains("details")) {
+			contact.setFirstName(firstName);
+			contact.setMiddleName(middleName);
+			contact.setLastName(lastName);
+			contact.setPrefixId(prefixId);
+			contact.setSuffixId(suffixId);
+			contact.setMale(male);
+			contact.setBirthday(birthday);
+			contact.setJobTitle(jobTitle);
+		}
+
+		if (enabledUserSections.contains("sms")) {
+			contact.setSmsSn(smsSn);
+		}
+
+		if (enabledUserSections.contains("social-network")) {
+			contact.setFacebookSn(facebookSn);
+			contact.setMySpaceSn(mySpaceSn);
+			contact.setTwitterSn(twitterSn);
+		}
+
+		if (enabledUserSections.contains("instant-messenger")) {
+			contact.setAimSn(aimSn);
+			contact.setIcqSn(icqSn);
+			contact.setJabberSn(jabberSn);
+			contact.setMsnSn(msnSn);
+			contact.setSkypeSn(skypeSn);
+			contact.setYmSn(ymSn);
+		}
 
 		contactPersistence.update(contact, false, serviceContext);
 
@@ -4732,7 +4772,10 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		try {
 			updateGroups(userId, groupIds, serviceContext);
-			updateOrganizations(userId, organizationIds, serviceContext);
+
+			if (enabledUserSections.contains("organizations")) {
+				updateOrganizations(userId, organizationIds, serviceContext);
+			}
 		}
 		finally {
 			serviceContext.setIndexingEnabled(indexingEnabled);
@@ -4740,7 +4783,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		// Roles
 
-		if (roleIds != null) {
+		if (enabledUserSections.contains("roles") && (roleIds != null)) {
 			roleIds = UsersAdminUtil.addRequiredRoles(user, roleIds);
 
 			userPersistence.setRoles(userId, roleIds);
@@ -4752,7 +4795,9 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		// User groups
 
-		if (userGroupIds != null) {
+		if (enabledUserSections.contains("user-groups") &&
+			(userGroupIds != null)) {
+
 			if (PropsValues.USER_GROUPS_COPY_LAYOUTS_TO_USER_PERSONAL_SITE) {
 				userGroupLocalService.copyUserGroupLayouts(
 					userGroupIds, userId);
@@ -4763,7 +4808,10 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		// Announcements
 
-		announcementsDeliveryLocalService.getUserDeliveries(user.getUserId());
+		if (enabledUserSections.contains("announcements")) {
+			announcementsDeliveryLocalService.getUserDeliveries(
+				user.getUserId());
+		}
 
 		// Asset
 
@@ -4775,7 +4823,9 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		// Expando
 
-		user.setExpandoBridgeAttributes(serviceContext);
+		if (enabledUserSections.contains("custom-fields")) {
+			user.setExpandoBridgeAttributes(serviceContext);
+		}
 
 		// Message boards
 

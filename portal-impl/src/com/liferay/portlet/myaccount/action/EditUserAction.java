@@ -79,6 +79,8 @@ public class EditUserAction
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
+		myAccount = Boolean.TRUE;
+
 		String currentPassword = actionRequest.getParameter("password0");
 		String newPassword = actionRequest.getParameter("password1");
 
