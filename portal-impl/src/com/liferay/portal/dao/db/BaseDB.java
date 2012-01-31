@@ -159,6 +159,10 @@ public abstract class BaseDB implements DB {
 		return CounterLocalServiceUtil.increment(name);
 	}
 
+	public boolean isPortalIndex(Index index) {
+		return false;
+	}
+
 	public boolean isSupportsAlterColumnName() {
 		return _SUPPORTS_ALTER_COLUMN_NAME;
 	}
