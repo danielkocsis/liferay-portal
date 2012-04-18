@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.portlet.PortletContainerUtil;
+import com.liferay.portal.kernel.portlet.PortletModeFactory;
 import com.liferay.portal.kernel.servlet.BrowserSnifferUtil;
 import com.liferay.portal.kernel.servlet.HeaderCacheServletResponse;
 import com.liferay.portal.kernel.servlet.PipingServletResponse;
@@ -36,7 +37,10 @@ import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.User;
 import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portal.security.permission.PermissionChecker;
+import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.service.PortletLocalServiceUtil;
+import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.struts.ActionConstants;
 import com.liferay.portal.struts.StrutsUtil;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -49,6 +53,7 @@ import com.liferay.portlet.RenderParametersPool;
 import com.liferay.portlet.login.util.LoginUtil;
 import com.liferay.util.servlet.filters.CacheResponseUtil;
 
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 
@@ -376,6 +381,23 @@ public class LayoutAction extends Action {
 
 			if (layout != null) {
 				if (themeDisplay.isStateExclusive()) {
+
+					PermissionChecker permissionChecker =PermissionThreadLocal.
+						getPermissionChecker();
+
+					PortletMode portletMode = PortletModeFactory.getPortletMode(
+							ParamUtil.getString(request, "p_p_mode"));
+
+					boolean access = PortletPermissionUtil.hasAccessPermission(
+						permissionChecker, themeDisplay.getScopeGroupId(),
+						themeDisplay.getLayout(), portlet, portletMode);
+
+					if (!access) {
+						request.setAttribute(
+							WebKeys.RENDER_PATH,
+							"/html/portal/portlet_access_denied.jsp");
+					}
+
 					PortletContainerUtil.render(request, response, portlet);
 
 					return null;
