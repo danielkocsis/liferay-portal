@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema
+	elementFormDefault="qualified"
+	targetNamespace="urn:liferay.com:liferay-lar-digest_6.2.0"
+	xmlns="urn:liferay.com:liferay-lar-digest_6.2.0"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+	<xsd:annotation>
+		<xsd:documentation>
+			This is the XML Schema for .lar digest
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:element name="root" type="rootType" />
+	<xsd:complexType name="rootType">
+		<xsd:sequence>
+			<xsd:element name="header" type="headerType" />
+			<xsd:element name="item" type="itemType" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="itemType">
+		<xsd:sequence>
+			<xsd:element name="path" type="xsd:string" />
+			<xsd:element name="item" type="xsd:int" />
+			<xsd:element name="type" type="xsd:string" />
+			<xsd:element name="classPK" type="xsd:string" />
+			<xsd:element name="items" type="itemsType" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="itemsType">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="unbounded" name="item" type="itemType" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="headerType">
+		<xsd:attribute name="build-number" type="xsd:int" />
+		<xsd:attribute name="export-date" type="xsd:dateTime" />
+	</xsd:complexType>
+</xsd:schema>
