@@ -39,8 +39,10 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webdav.WebDAVStorage;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
+import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.QName;
 import com.liferay.portal.kernel.xmlrpc.Method;
+import com.liferay.portal.model.LarSerializable;
 import com.liferay.portal.model.Plugin;
 import com.liferay.portal.model.PluginSetting;
 import com.liferay.portal.model.Portlet;
@@ -87,7 +89,7 @@ import javax.servlet.ServletContext;
 /**
  * @author Brian Wing Shun Chan
  */
-public class PortletImpl extends PortletBaseImpl {
+public class PortletImpl extends PortletBaseImpl implements LarSerializable {
 
 	/**
 	 * Constructs a portlet with no parameters.
@@ -3291,6 +3293,14 @@ public class PortletImpl extends PortletBaseImpl {
 	 */
 	public void setXmlRpcMethodClass(String xmlRpcMethodClass) {
 		_xmlRpcMethodClass = xmlRpcMethodClass;
+	}
+
+	public Document larSerialize() throws Exception {
+		return null;
+	}
+
+	public void larDeserialize(Document document) {
+		return;
 	}
 
 	/**
