@@ -28,8 +28,12 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.model.ColorScheme;
 import com.liferay.portal.model.Group;
+import com.liferay.portal.model.LarSerializable;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutSet;
@@ -70,7 +74,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Brian Wing Shun Chan
  */
-public class LayoutImpl extends LayoutBaseImpl {
+public class LayoutImpl extends LayoutBaseImpl implements LarSerializable {
 
 	public static int validateFriendlyURL(String friendlyURL) {
 		if (friendlyURL.length() < 2) {
@@ -661,6 +665,33 @@ public class LayoutImpl extends LayoutBaseImpl {
 		_typeSettingsProperties = typeSettingsProperties;
 
 		super.setTypeSettings(_typeSettingsProperties.toString());
+	}
+
+	public Document larSerialize() throws Exception {
+		Document document = SAXReaderUtil.createDocument();
+
+		Element layoutElement = document.addElement("layout");
+
+		layoutElement.addAttribute("layout-uuid", getUuid());
+		layoutElement.addAttribute("layout-id", String.valueOf(getLayoutId()));
+
+		long parentLayoutId = getParentLayoutId();
+
+		if (parentLayoutId != LayoutConstants.DEFAULT_PARENT_LAYOUT_ID) {
+			Layout parentLayout = LayoutLocalServiceUtil.getLayout(
+				getGroupId(), isPrivateLayout(), parentLayoutId);
+
+			if (parentLayout != null) {
+				layoutElement.addAttribute(
+					"parent-layout-uuid", parentLayout.getUuid());
+			}
+		}
+
+		return document;
+	}
+
+	public void larDeserialize(Document document) {
+
 	}
 
 	private LayoutTypePortlet _getLayoutTypePortletClone(
