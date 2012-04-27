@@ -450,4 +450,11 @@
 	<bean id="com.liferay.portlet.wiki.service.persistence.WikiPageFinder" class="com.liferay.portlet.wiki.service.persistence.WikiPageFinderImpl" parent="basePersistence" />
 	<bean id="com.liferay.portlet.wiki.service.WikiPageResourceLocalService" class="com.liferay.portlet.wiki.service.impl.WikiPageResourceLocalServiceImpl" />
 	<bean id="com.liferay.portlet.wiki.service.persistence.WikiPageResourcePersistence" class="com.liferay.portlet.wiki.service.persistence.WikiPageResourcePersistenceImpl" parent="basePersistence" />
+
+	<bean id="com.liferay.portlet.journal.service.persistence.lar.JournalArticleLarPersistence" class="com.liferay.portlet.journal.service.persistence.lar.JournalArticlePersistenceImpl" />
+	<bean id="com.liferay.portal.service.persistence.lar.LayoutLarPersistence" class="com.liferay.portal.service.persistence.lar.LayoutLarPersistenceImpl" />
+	<bean id="com.liferay.portal.service.persistence.lar.PortletLarPersistence" class="com.liferay.portal.service.persistence.lar.PortletLarPersistenceImpl" />
+	<bean id="com.liferay.portal.service.persistence.lar.ImageLarPersistence" class="com.liferay.portal.service.persistence.lar.ImageLarPersistenceImpl" />
+	<bean id="com.liferay.portal.service.persistence.lar.RoleLarPersistence" class="com.liferay.portal.service.persistence.lar.RoleLarPersistenceImpl" />
+	<bean id="com.liferay.portal.service.persistence.lar.ResourcePermissionLarPersistence" class="com.liferay.portal.service.persistence.lar.ResourcePermissionLarPersistenceImpl" />
 </beans>

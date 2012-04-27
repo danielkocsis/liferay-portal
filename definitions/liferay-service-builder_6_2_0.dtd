@@ -124,6 +124,7 @@ the json-enabled value is true.
 	tx-manager CDATA #IMPLIED
 	cache-enabled CDATA #IMPLIED
 	json-enabled CDATA #IMPLIED
+	stageable CDATA #IMPLIED
 >
 
 <!--

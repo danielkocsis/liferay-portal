@@ -67,7 +67,8 @@ public class LarDigest {
 			createElement(LarDigesterConstants.NODE_PATH_LABEL, path));
 
 		newElement.add(
-			createElement(LarDigesterConstants.NODE_ACTION_LABEL,
+			createElement(
+				LarDigesterConstants.NODE_ACTION_LABEL,
 				String.valueOf(action)));
 
 		newElement.add(
@@ -128,4 +129,5 @@ public class LarDigest {
 	private static Log _log = LogFactoryUtil.getLog(LarDigest.class);
 
 	private Document _digestXML;
+
 }

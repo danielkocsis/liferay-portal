@@ -25,7 +25,7 @@ import com.liferay.portal.kernel.util.Accessor;
  * @see com.liferay.portal.model.impl.LayoutModelImpl
  * @generated
  */
-public interface Layout extends LayoutModel, PersistedModel, LarSerializable {
+public interface Layout extends LayoutModel, PersistedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *

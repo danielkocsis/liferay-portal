@@ -14,7 +14,6 @@
 
 package com.liferay.portlet.journal.model;
 
-import com.liferay.portal.model.LarSerializable;
 import com.liferay.portal.model.PersistedModel;
 
 /**
@@ -26,7 +25,7 @@ import com.liferay.portal.model.PersistedModel;
  * @see com.liferay.portlet.journal.model.impl.JournalArticleModelImpl
  * @generated
  */
-public interface JournalArticle extends JournalArticleModel, PersistedModel, LarSerializable {
+public interface JournalArticle extends JournalArticleModel, PersistedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *

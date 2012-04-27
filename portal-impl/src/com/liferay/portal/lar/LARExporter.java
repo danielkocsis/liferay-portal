@@ -40,9 +40,8 @@ import java.util.*;
 public class LARExporter {
 
 	public void export(
-		long groupId, boolean privateLayout,
-		long[] layoutIds,Map<String, String[]> parameterMap, Date startDate,
-		Date endDate) {
+		long groupId, boolean privateLayout, long[] layoutIds,
+		Map<String, String[]> parameterMap, Date startDate, Date endDate) {
 
 		try {
 			ImportExportThreadLocal.setLayoutExportInProcess(true);
@@ -227,10 +226,10 @@ public class LARExporter {
 					companyId, portletId, portletDataContext, parameterMap);
 
 			_portletExporter.createPortletDigest(
-				portletDataContext, layoutCache, portletId, layout,
-				_larDigest, defaultUserId, exportPermissions,
-				exportPortletArchivedSetups, exportPortletControls[0],
-				exportPortletControls[1], exportPortletUserPreferences);
+				portletDataContext, layoutCache, portletId, layout, _larDigest,
+				defaultUserId, exportPermissions, exportPortletArchivedSetups,
+				exportPortletControls[0], exportPortletControls[1],
+				exportPortletUserPreferences);
 		}
 
 		portletDataContext.setScopeGroupId(previousScopeGroupId);
@@ -274,4 +273,5 @@ public class LARExporter {
 	private LayoutExporter _layoutExporter = new LayoutExporter();
 	private PermissionExporter _permissionExporter = new PermissionExporter();
 	private PortletExporter _portletExporter = new PortletExporter();
+
 }
