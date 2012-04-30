@@ -14,10 +14,25 @@
 
 package com.liferay.portal.lar;
 
+import com.liferay.portal.lar.digest.LarDigest;
+
 /**
  * @author Mate Thurzo
  */
 public class LARExporter {
 
+	public void export() {
+		doCreateDigest();
+		doExport();
+	}
 
+	protected void doCreateDigest() {
+		return;
+	}
+
+	protected void doExport() {
+		return;
+	}
+
+	private static LarDigest _larDigest = new LarDigest();
 }

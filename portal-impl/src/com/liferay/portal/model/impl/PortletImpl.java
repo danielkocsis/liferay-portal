@@ -40,7 +40,9 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webdav.WebDAVStorage;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
 import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.QName;
+import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.xmlrpc.Method;
 import com.liferay.portal.model.LarSerializable;
 import com.liferay.portal.model.Plugin;
@@ -3296,7 +3298,16 @@ public class PortletImpl extends PortletBaseImpl implements LarSerializable {
 	}
 
 	public Document larSerialize() throws Exception {
-		return null;
+		Document document = SAXReaderUtil.createDocument();
+
+		Element portletElement = document.addElement("portlet");
+
+		portletElement.addAttribute("portlet-id", getPortletId());
+		portletElement.addAttribute(
+			"root-portlet-id",
+			PortletConstants.getRootPortletId(getPortletId()));
+
+		return document;
 	}
 
 	public void larDeserialize(Document document) {
