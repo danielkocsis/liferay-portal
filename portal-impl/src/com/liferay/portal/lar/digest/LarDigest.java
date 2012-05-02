@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
-import com.sun.xml.internal.ws.util.DOMUtil;
 
 import java.util.List;
 
@@ -48,8 +47,8 @@ public class LarDigest {
 	public void addChildEntry(LarDigest digest, Element parent, Element child) {
 
 		try {
-			Element itemsEl =
-					parent.element(LarDigesterConstants.NODE_ITEMS_LABEL);
+			Element itemsEl = parent.element(
+					LarDigesterConstants.NODE_ITEMS_LABEL);
 
 			itemsEl.add(child);
 		}
@@ -125,4 +124,5 @@ public class LarDigest {
 	private static Log _log = LogFactoryUtil.getLog(LarDigest.class);
 
 	private Document _digestXML;
+
 }

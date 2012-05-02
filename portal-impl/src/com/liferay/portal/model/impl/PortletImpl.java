@@ -15,6 +15,7 @@
 package com.liferay.portal.model.impl;
 
 import com.liferay.portal.kernel.atom.AtomCollectionAdapter;
+import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -40,11 +41,8 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webdav.WebDAVStorage;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
 import com.liferay.portal.kernel.xml.Document;
-import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.QName;
-import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.xmlrpc.Method;
-import com.liferay.portal.model.LarSerializable;
 import com.liferay.portal.model.Plugin;
 import com.liferay.portal.model.PluginSetting;
 import com.liferay.portal.model.Portlet;
@@ -91,7 +89,7 @@ import javax.servlet.ServletContext;
 /**
  * @author Brian Wing Shun Chan
  */
-public class PortletImpl extends PortletBaseImpl implements LarSerializable {
+public class PortletImpl extends PortletBaseImpl {
 
 	/**
 	 * Constructs a portlet with no parameters.
@@ -2250,6 +2248,14 @@ public class PortletImpl extends PortletBaseImpl implements LarSerializable {
 		return _useDefaultTemplate;
 	}
 
+	public void larDeserialize(Document document) {
+
+	}
+
+	public void larSerialize(PortletDataContext portletDataContext) {
+
+	}
+
 	/**
 	 * Link the role names set in portlet.xml with the Liferay roles set in
 	 * liferay-portlet.xml.
@@ -3295,23 +3301,6 @@ public class PortletImpl extends PortletBaseImpl implements LarSerializable {
 	 */
 	public void setXmlRpcMethodClass(String xmlRpcMethodClass) {
 		_xmlRpcMethodClass = xmlRpcMethodClass;
-	}
-
-	public Document larSerialize() throws Exception {
-		Document document = SAXReaderUtil.createDocument();
-
-		Element portletElement = document.addElement("portlet");
-
-		portletElement.addAttribute("portlet-id", getPortletId());
-		portletElement.addAttribute(
-			"root-portlet-id",
-			PortletConstants.getRootPortletId(getPortletId()));
-
-		return document;
-	}
-
-	public void larDeserialize(Document document) {
-		return;
 	}
 
 	/**

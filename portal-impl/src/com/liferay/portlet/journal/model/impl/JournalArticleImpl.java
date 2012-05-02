@@ -16,12 +16,14 @@ package com.liferay.portlet.journal.model.impl;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.model.Image;
 import com.liferay.portal.service.ImageLocalServiceUtil;
 import com.liferay.portlet.journal.model.JournalArticleResource;
@@ -170,6 +172,15 @@ public class JournalArticleImpl extends JournalArticleBaseImpl {
 		else {
 			return true;
 		}
+	}
+
+	public void larDeserialize(Document document) {
+
+	}
+
+	public void larSerialize(PortletDataContext portletDataContext)
+		throws Exception {
+
 	}
 
 	public void setSmallImageType(String smallImageType) {

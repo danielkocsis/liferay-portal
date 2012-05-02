@@ -12,30 +12,19 @@
  * details.
  */
 
-package com.liferay.portal.lar.digest;
+package com.liferay.portal.model;
+
+import com.liferay.portal.kernel.lar.PortletDataContext;
+import com.liferay.portal.kernel.xml.Document;
 
 /**
- *
- * @author Daniel Kocsis
+ * @author Mate Thurzo
  */
-public class LarDigesterConstants {
+public interface LarSerializable {
 
-	public static final int ACTION_ADD = 1;
+	public void larDeserialize(Document document);
 
-	public static final int ACTION_DELETE = 2;
-
-	public static final int ACTION_UPDATE = 3;
-
-	public static final String NODE_ACTION_LABEL = "item";
-
-	public static final String NODE_CLASS_PK_LABEL = "classPK";
-
-	public static final String NODE_ITEMS_LABEL = "items";
-
-	public static final String NODE_DIGEST_ENTRY_LABEL = "item";
-
-	public static final String NODE_PATH_LABEL = "path";
-
-	public static final String NODE_TYPE_LABEL = "type";
+	public void larSerialize(PortletDataContext portletDataContext)
+		throws Exception;
 
 }

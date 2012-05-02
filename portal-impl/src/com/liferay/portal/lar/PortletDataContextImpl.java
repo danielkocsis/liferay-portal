@@ -656,6 +656,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 		return _assetTagNamesMap;
 	}
 
+	public Object getAttribute(String key) {
+		return _attributes.get(key);
+	}
+
 	public boolean getBooleanParameter(String namespace, String name) {
 		boolean defaultValue = MapUtil.getBoolean(
 			getParameterMap(),
@@ -1176,6 +1180,18 @@ public class PortletDataContextImpl implements PortletDataContext {
 		_notUniquePerLayout.add(dataKey);
 	}
 
+	public void removeAttribute(String key) {
+		_attributes.remove(key);
+	}
+
+	public void setAttribute(String key, Object value) {
+		if (key == null) {
+			return;
+		}
+
+		_attributes.put(key, value);
+	}
+
 	public void setClassLoader(ClassLoader classLoader) {
 		_xStream.setClassLoader(classLoader);
 	}
@@ -1439,6 +1455,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 		new HashMap<String, String[]>();
 	private Map<String, String[]> _assetTagNamesMap =
 		new HashMap<String, String[]>();
+	private Map<String, Object> _attributes = new HashMap<String, Object>();
 	private Map<String, List<MBMessage>> _commentsMap =
 		new HashMap<String, List<MBMessage>>();
 	private long _companyId;

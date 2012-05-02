@@ -14,20 +14,15 @@
 
 package com.liferay.portal.model.impl;
 
-import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.lar.PortletDataContextImpl;
 import com.liferay.portal.test.EnvironmentExecutionTestListener;
 import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import org.powermock.api.mockito.PowerMockito;
 
 /**
  * @author Mate Thurzo
@@ -45,9 +40,8 @@ public class LayoutImplTest extends PowerMockito {
 		layoutImpl.setParentLayoutId(1);
 		layoutImpl.setPrivateLayout(true);
 
-
-		Document document = layoutImpl.larSerialize();
-
-		System.out.println(document.formattedString());
+		layoutImpl.larSerialize(
+			new PortletDataContextImpl(1, 1, null, null, null, null, null));
 	}
+
 }
