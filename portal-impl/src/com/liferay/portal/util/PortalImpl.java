@@ -4070,6 +4070,14 @@ public class PortalImpl implements Portal {
 		}
 		else {
 			userIdObj = (Long)session.getAttribute(WebKeys.USER_ID);
+
+			if (userIdObj == null) {
+				User user = (User)session.getAttribute(WebKeys.USER);
+
+				if (user != null) {
+					userIdObj = user.getUserId();
+				}
+			}
 		}
 
 		if (userIdObj != null) {
