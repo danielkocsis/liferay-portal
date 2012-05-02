@@ -44,6 +44,12 @@ public class LarDigest {
 		headerElement.addAttribute("export-date", Time.getRFC822());
 	}
 
+	public void setHeaderAttribute(String name, String value) {
+		Element root = _digestXML.getRootElement();
+
+		root.elementByID("header").addAttribute(name, value);
+	}
+
 	public void addChildEntry(LarDigest digest, Element parent, Element child) {
 
 		try {
