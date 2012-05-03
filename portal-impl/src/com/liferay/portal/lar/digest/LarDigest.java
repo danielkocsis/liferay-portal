@@ -44,17 +44,11 @@ public class LarDigest {
 		headerElement.addAttribute("export-date", Time.getRFC822());
 	}
 
-	public void setHeaderAttribute(String name, String value) {
-		Element root = _digestXML.getRootElement();
-
-		root.elementByID("header").addAttribute(name, value);
-	}
-
-	public void addChildEntry(LarDigest digest, Element parent, Element child) {
+	public void addChildEntry(Element child, Element parent) {
 
 		try {
 			Element itemsEl = parent.element(
-					LarDigesterConstants.NODE_ITEMS_LABEL);
+				LarDigesterConstants.NODE_ITEMS_LABEL);
 
 			itemsEl.add(child);
 		}
@@ -87,6 +81,10 @@ public class LarDigest {
 		return newElement;
 	}
 
+	public List<Node> getAllNodes() {
+		return _digestXML.content();
+	}
+
 	public List<Node> getEntriesByAction(int action) {
 		String xPath = "//item/action='" + action + "'";
 		return SAXReaderUtil.selectNodes(xPath, getAllNodes());
@@ -97,12 +95,12 @@ public class LarDigest {
 		return SAXReaderUtil.selectNodes(xPath, getAllNodes());
 	}
 
-	public List<Node> getAllNodes() {
-		return _digestXML.content();
-	}
-
 	public Element getRootEntry() {
 		return _digestXML.getRootElement();
+	}
+
+	public void setAttribute(Element element, String name, String value) {
+		element.addAttribute(name, value);
 	}
 
 	@Override
@@ -130,5 +128,4 @@ public class LarDigest {
 	private static Log _log = LogFactoryUtil.getLog(LarDigest.class);
 
 	private Document _digestXML;
-
 }

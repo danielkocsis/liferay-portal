@@ -15,8 +15,6 @@
 package com.liferay.portal.lar;
 
 import com.liferay.portal.NoSuchLayoutException;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.ImportExportThreadLocal;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataHandler;
@@ -115,6 +113,55 @@ public class LayoutExporter {
 	public static final String SAME_GROUP_FRIENDLY_URL =
 		"/[$SAME_GROUP_FRIENDLY_URL$]";
 
+	public static List<Portlet> getAlwaysExportablePortlets(long companyId)
+		throws Exception {
+
+		List<Portlet> portlets = PortletLocalServiceUtil.getPortlets(companyId);
+
+		Iterator<Portlet> itr = portlets.iterator();
+
+		while (itr.hasNext()) {
+			Portlet portlet = itr.next();
+
+			if (!portlet.isActive()) {
+				itr.remove();
+
+				continue;
+			}
+
+			PortletDataHandler portletDataHandler =
+				portlet.getPortletDataHandlerInstance();
+
+			if ((portletDataHandler == null) ||
+				!portletDataHandler.isAlwaysExportable()) {
+
+				itr.remove();
+			}
+		}
+
+		return portlets;
+	}
+
+	public static void updateLastPublishDate(
+			LayoutSet layoutSet, long lastPublishDate)
+		throws Exception {
+
+		UnicodeProperties settingsProperties =
+			layoutSet.getSettingsProperties();
+
+		if (lastPublishDate <= 0) {
+			settingsProperties.remove("last-publish-date");
+		}
+		else {
+			settingsProperties.setProperty(
+				"last-publish-date", String.valueOf(lastPublishDate));
+		}
+
+		LayoutSetLocalServiceUtil.updateSettings(
+			layoutSet.getGroupId(), layoutSet.isPrivateLayout(),
+			settingsProperties.toString());
+	}
+
 	public void createLayoutDigest(
 			LarDigest larDigest, PortletDataContext portletDataContext,
 			Portlet layoutConfigurationPortlet, LayoutCache layoutCache,
@@ -123,48 +170,50 @@ public class LayoutExporter {
 		throws Exception {
 
 		String path = portletDataContext.getLayoutPath(
-				layout.getLayoutId()) + "/layout.xml";
+			layout.getLayoutId()) + "/layout.xml";
 
 		if (!portletDataContext.isPathNotProcessed(path)) {
 			return;
 		}
 
-		larDigest.addEntry(LarDigesterConstants.ACTION_ADD,
-			path,
-			layout.getClass().getName(),
+		boolean deleteLayout = MapUtil.getBoolean(
+			portletDataContext.getParameterMap(), "delete_" + layout.getPlid());
+
+		if (deleteLayout) {
+			larDigest.addEntry(
+				LarDigesterConstants.ACTION_DELETE, path,
+				layout.getClass().getName(),
+				StringUtil.valueOf(layout.getLayoutId()));
+
+			return;
+		}
+
+		portletDataContext.setPlid(layout.getPlid());
+
+		larDigest.addEntry(
+			LarDigesterConstants.ACTION_ADD, path, layout.getClass().getName(),
 			StringUtil.valueOf(layout.getLayoutId()));
 
-		/*_portletExporter.exportPortletData(
+		_portletExporter.createPortletDataDigest(
 			portletDataContext, layoutConfigurationPortlet, layout, null,
-			layoutElement);     */
-
-		// Layout permissions
-
-		/*if (exportPermissions) {
-			_permissionExporter.exportLayoutPermissions(
-				portletDataContext, layoutCache,
-				portletDataContext.getCompanyId(),
-				portletDataContext.getScopeGroupId(), layout, layoutElement);
-		}        */
+			larDigest);
 
 		if (layout.isTypeArticle()) {
-
-			//todo: JournalArticleExporter
-			//exportJournalArticle(portletDataContext, layout, layoutElement);
+			return;
 		}
 		else if (layout.isTypeLinkToLayout()) {
 			UnicodeProperties typeSettingsProperties =
-					layout.getTypeSettingsProperties();
+				layout.getTypeSettingsProperties();
 
 			long linkToLayoutId = GetterUtil.getLong(
-					typeSettingsProperties.getProperty(
-							"linkToLayoutId", StringPool.BLANK));
+				typeSettingsProperties.getProperty(
+					"linkToLayoutId", StringPool.BLANK));
 
 			if (linkToLayoutId > 0) {
 				try {
 					Layout linkedToLayout = LayoutLocalServiceUtil.getLayout(
-							portletDataContext.getScopeGroupId(),
-							layout.isPrivateLayout(), linkToLayoutId);
+						portletDataContext.getScopeGroupId(),
+						layout.isPrivateLayout(), linkToLayoutId);
 
 					createLayoutDigest(
 						larDigest, portletDataContext,
@@ -176,6 +225,9 @@ public class LayoutExporter {
 			}
 		}
 		else if (layout.isTypePortlet()) {
+
+			// Always exportable portlets
+
 			for (Portlet portlet : portlets) {
 				if (portlet.isScopeable() && layout.hasScopeGroup()) {
 					String key = PortletPermissionUtil.getPrimaryKey(
@@ -191,8 +243,10 @@ public class LayoutExporter {
 				}
 			}
 
+			// Layout portlets
+
 			LayoutTypePortlet layoutTypePortlet =
-				(LayoutTypePortlet)layout.getLayoutType();
+					(LayoutTypePortlet)layout.getLayoutType();
 
 			for (String portletId : layoutTypePortlet.getPortletIds()) {
 				javax.portlet.PortletPreferences jxPreferences =
@@ -249,59 +303,6 @@ public class LayoutExporter {
 				);
 			}
 		}
-
-		fixTypeSettings(layout);
-
-		//portletDataContext.addExpando(layoutElement, path, layout);
-	}
-
-	public static List<Portlet> getAlwaysExportablePortlets(long companyId)
-		throws Exception {
-
-		List<Portlet> portlets = PortletLocalServiceUtil.getPortlets(companyId);
-
-		Iterator<Portlet> itr = portlets.iterator();
-
-		while (itr.hasNext()) {
-			Portlet portlet = itr.next();
-
-			if (!portlet.isActive()) {
-				itr.remove();
-
-				continue;
-			}
-
-			PortletDataHandler portletDataHandler =
-				portlet.getPortletDataHandlerInstance();
-
-			if ((portletDataHandler == null) ||
-				!portletDataHandler.isAlwaysExportable()) {
-
-				itr.remove();
-			}
-		}
-
-		return portlets;
-	}
-
-	public static void updateLastPublishDate(
-			LayoutSet layoutSet, long lastPublishDate)
-		throws Exception {
-
-		UnicodeProperties settingsProperties =
-			layoutSet.getSettingsProperties();
-
-		if (lastPublishDate <= 0) {
-			settingsProperties.remove("last-publish-date");
-		}
-		else {
-			settingsProperties.setProperty(
-				"last-publish-date", String.valueOf(lastPublishDate));
-		}
-
-		LayoutSetLocalServiceUtil.updateSettings(
-			layoutSet.getGroupId(), layoutSet.isPrivateLayout(),
-			settingsProperties.toString());
 	}
 
 	public byte[] exportLayouts(
