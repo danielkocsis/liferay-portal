@@ -52,6 +52,7 @@ import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
+import com.liferay.portal.service.persistence.impl.BaseLarPersistenceImpl;
 import com.liferay.portal.service.persistence.lar.ImageLarPersistence;
 import com.liferay.portal.service.persistence.lar.LayoutLarPersistence;
 import com.liferay.portal.util.PropsValues;
@@ -70,7 +71,8 @@ import java.util.Set;
 /**
  * @author Mate Thurzo
  */
-public class LayoutLarPersistenceImpl implements LayoutLarPersistence {
+public class LayoutLarPersistenceImpl extends BaseLarPersistenceImpl<Layout>
+	implements LayoutLarPersistence {
 
 	public static final String SAME_GROUP_FRIENDLY_URL =
 		"/[$SAME_GROUP_FRIENDLY_URL$]";
@@ -154,9 +156,11 @@ public class LayoutLarPersistenceImpl implements LayoutLarPersistence {
 		fixTypeSettings(layout);
 
 		//TODO addExpando
+		addExpando(path, layout);
 		//portletDataContext.addExpando(layoutElement, path, layout);
 
-		portletDataContext.addZipEntry(path, this);
+		addZipEntry(path, layout);
+		//portletDataContext.addZipEntry(path, this);
 	}
 
 	private String getLayoutIconPath(
