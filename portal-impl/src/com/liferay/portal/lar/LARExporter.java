@@ -247,8 +247,7 @@ public class LARExporter {
 	}
 
 	protected void doExport() {
-
-		_larDigest
+		return;
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(LARExporter.class);
