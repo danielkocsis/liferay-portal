@@ -15,6 +15,7 @@
 package com.liferay.portal.model.impl;
 
 import com.liferay.portal.kernel.atom.AtomCollectionAdapter;
+import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -39,6 +40,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webdav.WebDAVStorage;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
+import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.QName;
 import com.liferay.portal.kernel.xmlrpc.Method;
 import com.liferay.portal.model.Plugin;
@@ -2244,6 +2246,14 @@ public class PortletImpl extends PortletBaseImpl {
 	 */
 	public boolean isUseDefaultTemplate() {
 		return _useDefaultTemplate;
+	}
+
+	public void larDeserialize(Document document) {
+
+	}
+
+	public void larSerialize(PortletDataContext portletDataContext) {
+
 	}
 
 	/**
