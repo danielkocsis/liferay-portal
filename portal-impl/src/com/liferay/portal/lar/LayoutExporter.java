@@ -182,7 +182,7 @@ public class LayoutExporter {
 			portletDataContext.getParameterMap(), "delete_" + layout.getPlid());
 
 		if (deleteLayout) {
-			larDigest.addRootEntry(
+			larDigest.write(
 				LarDigesterConstants.ACTION_DELETE, path,
 				layout.getClass().getName(),
 				StringUtil.valueOf(layout.getLayoutId()));
@@ -192,7 +192,7 @@ public class LayoutExporter {
 
 		portletDataContext.setPlid(layout.getPlid());
 
-		larDigest.addRootEntry(
+		larDigest.write(
 			LarDigesterConstants.ACTION_ADD, path, layout.getClass().getName(),
 			StringUtil.valueOf(layout.getLayoutId()));
 

@@ -14,36 +14,22 @@
 
 package com.liferay.portal.lar.digest;
 
-import com.liferay.portal.kernel.xml.Element;
-import com.liferay.portal.kernel.xml.Node;
+import com.liferay.portal.kernel.exception.PortalException;
 
 import java.io.File;
-
-import java.util.List;
 
 /**
  * @author Daniel Kocsis
  */
 public interface LarDigest {
 
-	public void addChildEntry(Element child, Element parent);
+	public void write(int action, String path, String type, String classPK)
+		throws PortalException;
 
-	public Element addEntry(
-		int action, String path, String type, String classPK);
+	public void close();
 
-	public Element addRootEntry(
-		int action, String path, String type, String classPK);
-
-	public List<Node> getAllNodes();
+	public void close(boolean format);
 
 	public File getDigestFile();
-
-	public List<Node> getEntriesByAction(int action);
-
-	public List<Node> getEntriesByClassPK(String classPK);
-
-	public Element getRootEntry();
-
-	public void setAttribute(Element element, String name, String value);
 
 }
