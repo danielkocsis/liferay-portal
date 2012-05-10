@@ -308,7 +308,7 @@ public class PortletExporter {
 
 		String path = sb.toString();
 
-		larDigest.addRootEntry(
+		larDigest.write(
 			LarDigesterConstants.ACTION_ADD, path, portlet.getClass().getName(),
 			portletId);
 
