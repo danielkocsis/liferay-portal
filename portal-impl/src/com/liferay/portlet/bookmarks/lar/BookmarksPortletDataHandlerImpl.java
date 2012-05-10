@@ -241,7 +241,7 @@ public class BookmarksPortletDataHandlerImpl extends BasePortletDataHandler {
 		String path = getEntryPath(portletDataContext, entry);
 
 		if (portletDataContext.isPathNotProcessed(path)) {
-			larDigest.addRootEntry(
+			larDigest.write(
 				LarDigesterConstants.ACTION_ADD, path,
 				entry.getClass().getName(),
 				StringUtil.valueOf(entry.getEntryId()));
@@ -284,7 +284,7 @@ public class BookmarksPortletDataHandlerImpl extends BasePortletDataHandler {
 			String path = getFolderPath(portletDataContext, folder);
 
 			if (portletDataContext.isPathNotProcessed(path)) {
-				larDigest.addRootEntry(
+				larDigest.write(
 					LarDigesterConstants.ACTION_ADD, path,
 					folder.getClass().getName(),
 					StringUtil.valueOf(folder.getFolderId()));
@@ -344,7 +344,7 @@ public class BookmarksPortletDataHandlerImpl extends BasePortletDataHandler {
 		String path = getFolderPath(portletDataContext, folder);
 
 		if (portletDataContext.isPathNotProcessed(path)) {
-			larDigest.addRootEntry(
+			larDigest.write(
 				LarDigesterConstants.ACTION_ADD, path,
 				folder.getClass().getName(),
 				StringUtil.valueOf(folder.getFolderId()));
