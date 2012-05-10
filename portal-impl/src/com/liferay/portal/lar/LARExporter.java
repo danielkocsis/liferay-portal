@@ -50,34 +50,37 @@ public class LARExporter {
 		long groupId, boolean privateLayout, long[] layoutIds,
 		Map<String, String[]> parameterMap, Date startDate, Date endDate) {
 
+		LarDigest larDigest = null;
+
 		try {
 			ImportExportThreadLocal.setLayoutExportInProcess(true);
 
+			larDigest = new LarDigestImpl();
+
 			doCreateDigest(
-				groupId, privateLayout, layoutIds, parameterMap, startDate,
-				endDate);
+				groupId, larDigest, privateLayout, layoutIds, parameterMap,
+				startDate, endDate);
 
-			if (_log.isInfoEnabled()) {
-				_log.info(_larDigest.toString());
-			}
-
-			doExport();
 		}
 		catch (Exception ex) {
 			_log.error(ex);
 		}
 		finally {
 			ImportExportThreadLocal.setLayoutExportInProcess(false);
+			larDigest.close(Boolean.TRUE);
 		}
+
+		_larDigest = larDigest.getDigestFile();
 	}
 
 	public File getDigestFile() {
-		return _larDigest.getDigestFile();
+		return _larDigest;
 	}
 
 	protected void doCreateDigest(
-			long groupId, boolean privateLayout, long[] layoutIds,
-			Map<String, String[]> parameterMap, Date startDate, Date endDate)
+			long groupId, LarDigest larDigest, boolean privateLayout,
+			long[] layoutIds, Map<String, String[]> parameterMap,
+			Date startDate, Date endDate)
 		throws Exception, PortalException {
 
 		boolean exportCategories = MapUtil.getBoolean(
@@ -178,17 +181,17 @@ public class LARExporter {
 					getLayoutSetPrototypeByUuidAndCompanyId(
 						layoutSetPrototypeUuid, companyId);
 
-			_larDigest.addRootEntry(
+			larDigest.write(
 				LarDigesterConstants.ACTION_ADD, "",
 				LayoutSetPrototype.class.getName(),
 				StringUtil.valueOf(
-					layoutSetPrototype.getLayoutSetPrototypeId()));
+						layoutSetPrototype.getLayoutSetPrototypeId()));
 		}
 
 		// Layouts
 		for (Layout layout : layouts) {
 			_layoutExporter.createLayoutDigest(
-				_larDigest, portletDataContext, layoutConfigurationPortlet,
+				larDigest, portletDataContext, layoutConfigurationPortlet,
 				layoutCache, portlets, portletIds, exportPermissions, layout);
 		}
 
@@ -233,7 +236,7 @@ public class LARExporter {
 					companyId, portletId, portletDataContext, parameterMap);
 
 			_portletExporter.createPortletDigest(
-				portletDataContext, layoutCache, portletId, layout, _larDigest,
+				portletDataContext, layoutCache, portletId, layout, larDigest,
 				defaultUserId, exportPermissions, exportPortletArchivedSetups,
 				exportPortletControls[0], exportPortletControls[1],
 				exportPortletUserPreferences);
@@ -251,8 +254,8 @@ public class LARExporter {
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(LARExporter.class);
-	private static LarDigest _larDigest = new LarDigestImpl();
 
+	private File _larDigest;
 	private LayoutExporter _layoutExporter = new LayoutExporter();
 	private PermissionExporter _permissionExporter = new PermissionExporter();
 	private PortletExporter _portletExporter = new PortletExporter();
