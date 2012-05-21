@@ -129,12 +129,18 @@ public class ActionUtil
 
 		String cmd = ParamUtil.getString(request, Constants.CMD);
 
+		long doAsGroupId = ParamUtil.getLong(request, "doAsGroupId");
 		long groupId = ParamUtil.getLong(request, "groupId");
 
 		Group group = null;
 
 		if (groupId > 0) {
-			group = GroupLocalServiceUtil.getGroup(groupId);
+			if ((doAsGroupId != 0) && (doAsGroupId != groupId)) {
+				group = GroupLocalServiceUtil.getGroup(doAsGroupId);
+			}
+			else {
+				group = GroupLocalServiceUtil.getGroup(groupId);
+			}
 		}
 		else if (!cmd.equals(Constants.ADD)) {
 			group = themeDisplay.getScopeGroup();
