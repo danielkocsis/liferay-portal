@@ -60,8 +60,6 @@ public class IndexAccessorImplTest extends PowerMockito {
 
 	@After
 	public void tearDown() throws Exception {
-		System.gc();
-
 		_indexAccessorImpl.delete();
 		_indexAccessorImpl.close();
 	}
