@@ -251,7 +251,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			getPrimaryKeyString(className, classPK), assetTagNames);
 	}
 
-	// TODO review this method
+	@Deprecated
 	public void addClassedModel(
 			Element element, String path, ClassedModel classedModel,
 			String namespace)
@@ -303,6 +303,53 @@ public class PortletDataContextImpl implements PortletDataContext {
 		addZipEntry(path, classedModel);
 	}
 
+	// TODO review this method
+	public void addClassedModel(
+			String path, ClassedModel classedModel, String namespace)
+		throws PortalException, SystemException {
+
+		if (classedModel instanceof AuditedModel) {
+			AuditedModel auditedModel = (AuditedModel)classedModel;
+
+			auditedModel.setUserUuid(auditedModel.getUserUuid());
+		}
+
+		if (isResourceMain(classedModel)) {
+			Class<?> clazz = classedModel.getModelClass();
+			long classPK = getClassPK(classedModel);
+
+			addAssetLinks(clazz, classPK);
+			addExpando(path, classedModel);
+			addLocks(clazz, String.valueOf(classPK));
+			addPermissions(clazz, classPK);
+
+			boolean portletMetadataAll = getBooleanParameter(
+					namespace, PortletDataHandlerKeys.PORTLET_METADATA_ALL);
+
+			if (portletMetadataAll ||
+					getBooleanParameter(namespace, "categories")) {
+
+				addAssetCategories(clazz, classPK);
+			}
+
+			if (portletMetadataAll ||
+					getBooleanParameter(namespace, "comments")) {
+
+				addComments(clazz, classPK);
+			}
+
+			if (portletMetadataAll ||
+					getBooleanParameter(namespace, "ratings")) {
+
+				addRatingsEntries(clazz, classPK);
+			}
+
+			if (portletMetadataAll || getBooleanParameter(namespace, "tags")) {
+				addAssetTags(clazz, classPK);
+			}
+		}
+	}
+
 	public void addComments(Class<?> clazz, long classPK)
 		throws SystemException {
 
@@ -337,6 +384,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 		_commentsMap.put(getPrimaryKeyString(className, classPK), messages);
 	}
 
+	@Deprecated
 	public void addExpando(
 			Element element, String path, ClassedModel classedModel)
 		throws PortalException, SystemException {
@@ -369,6 +417,27 @@ public class PortletDataContextImpl implements PortletDataContext {
 			element.addAttribute("expando-path", expandoPath);
 
 			addZipEntry(expandoPath, expandoBridgeAttributes);
+		}
+	}
+
+	public void addExpando(String path, ClassedModel classedModel)
+		throws PortalException, SystemException {
+
+		Class<?> clazz = classedModel.getModelClass();
+
+		String className = clazz.getName();
+
+		if (!_expandoColumnsMap.containsKey(className)) {
+			List<ExpandoColumn> expandoColumns =
+					ExpandoColumnLocalServiceUtil.getDefaultTableColumns(
+							_companyId, className);
+
+			for (ExpandoColumn expandoColumn : expandoColumns) {
+				addPermissions(
+						ExpandoColumn.class, expandoColumn.getColumnId());
+			}
+
+			_expandoColumnsMap.put(className, expandoColumns);
 		}
 	}
 

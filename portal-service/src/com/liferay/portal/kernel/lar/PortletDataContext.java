@@ -65,6 +65,11 @@ public interface PortletDataContext extends Serializable {
 		String className, long classPK, String[] assetTagNames);
 
 	public void addClassedModel(
+			String path, ClassedModel classedModel, String namespace)
+		throws PortalException, SystemException;
+
+	@Deprecated
+	public void addClassedModel(
 			Element element, String path, ClassedModel classedModel,
 			String namespace)
 		throws PortalException, SystemException;
