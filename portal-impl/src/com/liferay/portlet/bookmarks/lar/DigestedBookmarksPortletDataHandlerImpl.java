@@ -89,7 +89,7 @@ public class DigestedBookmarksPortletDataHandlerImpl
 
 	@Override
 	protected void doCreateDigest(
-			Object larDigest, PortletDataContext portletDataContext,
+			LarDigest larDigest, PortletDataContext portletDataContext,
 			String portletId, PortletPreferences portletPreferences)
 		throws Exception {
 
