@@ -66,14 +66,11 @@ public class LayoutLarPersistenceImpl extends BaseLarPersistenceImpl<Layout>
 		return;
 	}
 
-	public void serialize(Layout layout, PortletDataContext portletDataContext)
+	public void doSerialize(
+			Layout layout, PortletDataContext portletDataContext)
 		throws Exception {
 
 		String path = getEntityPath(layout);
-
-		if (!portletDataContext.isPathNotProcessed(path)) {
-			return;
-		}
 
 		LayoutRevision layoutRevision = null;
 
@@ -118,7 +115,6 @@ public class LayoutLarPersistenceImpl extends BaseLarPersistenceImpl<Layout>
 			layoutElement);*/
 
 		// Layout permissions
-
 		Object exportPermissionsObj =
 			portletDataContext.getAttribute("export-permissions");
 
@@ -136,22 +132,6 @@ public class LayoutLarPersistenceImpl extends BaseLarPersistenceImpl<Layout>
 		fixTypeSettings(layout);
 
 		addZipEntry(path, layout);
-
-		addExpando(layout);
-	}
-
-	private String getLayoutIconPath(
-		PortletDataContext portletDataContext, Layout layout, Image image) {
-
-		StringBundler sb = new StringBundler(5);
-
-		sb.append(portletDataContext.getLayoutPath(layout.getLayoutId()));
-		sb.append("/icons/");
-		sb.append(image.getImageId());
-		sb.append(StringPool.PERIOD);
-		sb.append(image.getType());
-
-		return sb.toString();
 	}
 
 	private void exportLayoutPermissions(

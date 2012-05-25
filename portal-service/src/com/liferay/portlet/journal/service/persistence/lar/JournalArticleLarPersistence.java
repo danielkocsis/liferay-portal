@@ -16,16 +16,18 @@ package com.liferay.portlet.journal.service.persistence.lar;
 
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.service.persistence.BaseLarPersistence;
 import com.liferay.portlet.journal.model.JournalArticle;
 
 /**
  * @author Mate Thurzo
  */
-public interface JournalArticleLarPersistence {
+public interface JournalArticleLarPersistence
+	extends BaseLarPersistence<JournalArticle> {
 
 	public void deserialize(Document document);
 
-	public void serialize(
+	public void doSerialize(
 			JournalArticle journalArticle,
 			PortletDataContext portletDataContext)
 		throws Exception;

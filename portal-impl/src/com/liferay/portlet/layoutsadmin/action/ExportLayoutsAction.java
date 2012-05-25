@@ -86,9 +86,9 @@ public class ExportLayoutsAction extends PortletAction {
 			long groupId = ParamUtil.getLong(actionRequest, "groupId");
 			boolean privateLayout = ParamUtil.getBoolean(
 				actionRequest, "privateLayout");
-			/*long[] layoutIds = getLayoutIds(
+			long[] layoutIds = getLayoutIds(
 				groupId, privateLayout,
-				ParamUtil.getString(actionRequest, "layoutIds")); */
+				ParamUtil.getString(actionRequest, "layoutIds"));
 			String fileName = ParamUtil.getString(
 				actionRequest, "exportFileName");
 			String range = ParamUtil.getString(actionRequest, "range");
@@ -173,8 +173,8 @@ public class ExportLayoutsAction extends PortletAction {
 			}
 
 			file = LayoutServiceUtil.exportLayoutsAsFile(
-				groupId, privateLayout, null, actionRequest.getParameterMap(),
-				startDate, endDate);
+				groupId, privateLayout, layoutIds,
+				actionRequest.getParameterMap(), startDate, endDate);
 
 			HttpServletRequest request = PortalUtil.getHttpServletRequest(
 				actionRequest);
@@ -182,8 +182,12 @@ public class ExportLayoutsAction extends PortletAction {
 				actionResponse);
 
 			ServletResponseUtil.sendFile(
+				request, response, fileName, new FileInputStream(file),
+				ContentTypes.APPLICATION_ZIP);
+
+			/*ServletResponseUtil.sendFile(
 				request, response, "digest.xml", new FileInputStream(file),
-				ContentTypes.TEXT_XML_UTF8);
+				ContentTypes.TEXT_XML_UTF8);*/
 
 			setForward(actionRequest, ActionConstants.COMMON_NULL);
 		}

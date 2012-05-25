@@ -28,9 +28,7 @@ import java.io.InputStream;
  */
 public interface BaseLarPersistence<T extends BaseModel<T>> {
 
-	public ZipWriter getZipWriter();
-
-	public ZipWriter getZipWriter(boolean newInstance);
+	public void addExpando(T object) throws SystemException;
 
 	public void addZipEntry(String path, T object) throws SystemException;
 
@@ -39,12 +37,18 @@ public interface BaseLarPersistence<T extends BaseModel<T>> {
 	public void addZipEntry(String path, InputStream is)
 		throws SystemException;
 
-	public void addExpando(T object) throws SystemException;
+	public String getEntityPath(T object);
 
-	public String toXML(Object object);
+	public XStreamWrapper getXStreamWrapper();
+
+	public ZipWriter getZipWriter();
+
+	public ZipWriter getZipWriter(boolean newInstance);
+
+	public void serialize(T object, PortletDataContext portletDataContext);
 
 	public void setXstreamWrapper(XStreamWrapper xstreamWrapper);
 
-	public XStreamWrapper getXStreamWrapper();
+	public String toXML(Object object);
 
 }

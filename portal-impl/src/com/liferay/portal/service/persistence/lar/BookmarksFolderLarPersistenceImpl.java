@@ -30,15 +30,13 @@ public class BookmarksFolderLarPersistenceImpl
 	public void deserialize(Document document) {
 	}
 
-	public void serialize(
+	public void doSerialize(
 			BookmarksFolder folder, PortletDataContext portletDataContext)
 		throws Exception {
 
 		String path = getEntityPath(folder);
 
 		addZipEntry(path, folder);
-
-		addExpando(folder);
 	}
 
 }
