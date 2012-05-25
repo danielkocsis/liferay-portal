@@ -30,7 +30,7 @@ public class PortletLarPersistenceImpl extends BaseLarPersistenceImpl<Portlet>
 	public void deserialize(Document document) {
 	}
 
-	public void serialize(
+	public void doSerialize(
 			Portlet portlet, PortletDataContext portletDataContext)
 		throws Exception {
 

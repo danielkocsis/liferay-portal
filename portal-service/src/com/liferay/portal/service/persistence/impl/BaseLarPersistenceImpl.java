@@ -17,10 +17,13 @@ package com.liferay.portal.service.persistence.impl;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataContextListener;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.zip.ZipReader;
+import com.liferay.portal.kernel.zip.ZipReaderFactoryUtil;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.lar.XStreamWrapper;
@@ -36,25 +39,15 @@ import com.liferay.portlet.journal.service.persistence.lar.JournalArticleLarPers
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Mate Thurzo
  */
 public class BaseLarPersistenceImpl<T extends BaseModel<T>>
 	implements BaseLarPersistence<T> {
-
-	public ZipWriter getZipWriter() {
-		return getZipWriter(false);
-	}
-
-	public ZipWriter getZipWriter(boolean newInstance) {
-		if (newInstance) {
-			return ZipWriterFactoryUtil.getZipWriter();
-		}
-
-		return _zipWriter;
-	}
 
 	public void addZipEntry(String path, T object) throws SystemException {
 		addZipEntry(path, toXML(object));
@@ -76,7 +69,7 @@ public class BaseLarPersistenceImpl<T extends BaseModel<T>>
 	}
 
 	public void addZipEntry(String path, InputStream is)
-			throws SystemException {
+		throws SystemException {
 
 		if (_portletDataContextListener != null) {
 			_portletDataContextListener.onAddZipEntry(path);
@@ -143,6 +136,15 @@ public class BaseLarPersistenceImpl<T extends BaseModel<T>>
 		addZipEntry(expandoPath, expandoBridge.getAttributes());
 	}
 
+	public void doSerialize(
+			T object, PortletDataContext portletDataContext)
+		throws Exception {
+
+		String path = getEntityPath(object);
+
+		addZipEntry(path, object);
+	}
+
 	public String getEntityPath(T object) {
 		if (object instanceof BaseModel) {
 			BaseModel<T> baseModel = (BaseModel<T>)object;
@@ -162,6 +164,25 @@ public class BaseLarPersistenceImpl<T extends BaseModel<T>>
 		}
 
 		return StringPool.BLANK;
+	}
+
+	public void serialize(T object, PortletDataContext portletDataContext) {
+		String path = getEntityPath(object);
+
+		if (isPathProcessed(path)) {
+			return;
+		}
+
+		try {
+			doSerialize(object, portletDataContext);
+
+			addExpando(object);
+
+			addProcessedPath(path);
+		}
+		catch (Exception e) {
+		}
+
 	}
 
 	public String toXML(Object object) {
@@ -189,9 +210,33 @@ public class BaseLarPersistenceImpl<T extends BaseModel<T>>
 		return _xStreamWrapper;
 	}
 
+	public ZipWriter getZipWriter() {
+		return getZipWriter(false);
+	}
+
+	public ZipWriter getZipWriter(boolean newInstance) {
+		if (newInstance) {
+			return ZipWriterFactoryUtil.getZipWriter();
+		}
+
+		return _zipWriter;
+	}
+
+	private boolean isPathProcessed(String path) {
+		if (_storedPaths.contains(path)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private void addProcessedPath(String path) {
+		_storedPaths.add(path);
+	}
+
+	private static Set<String> _storedPaths = new HashSet<String>();
 	private static ZipWriter _zipWriter = ZipWriterFactoryUtil.getZipWriter();
 	private XStreamWrapper _xStreamWrapper;
-
 	private PortletDataContextListener _portletDataContextListener;
 
 	@BeanReference(type = JournalArticleLarPersistence.class)

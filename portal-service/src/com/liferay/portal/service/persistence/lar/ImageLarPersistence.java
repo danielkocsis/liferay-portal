@@ -17,14 +17,15 @@ package com.liferay.portal.service.persistence.lar;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.model.Image;
+import com.liferay.portal.service.persistence.BaseLarPersistence;
 
 /**
  * @author Mate Thurzo
  */
-public interface ImageLarPersistence {
+public interface ImageLarPersistence extends BaseLarPersistence<Image> {
 
 	public void deserialize(Document document);
 
-	public void serialize(Image image, PortletDataContext portletDataContext)
+	public void doSerialize(Image image, PortletDataContext portletDataContext)
 		throws Exception;
 }

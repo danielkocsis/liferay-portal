@@ -18,15 +18,16 @@ import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Portlet;
+import com.liferay.portal.service.persistence.BaseLarPersistence;
 
 /**
  * @author Mate Thurzo
  */
-public interface PortletLarPersistence {
+public interface PortletLarPersistence extends BaseLarPersistence<Portlet> {
 
 	public void deserialize(Document document);
 
-	public void serialize(
+	public void doSerialize(
 			Portlet portlet, PortletDataContext portletDataContext)
 		throws Exception;
 

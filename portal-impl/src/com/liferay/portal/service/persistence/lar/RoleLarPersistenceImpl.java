@@ -29,8 +29,12 @@ public class RoleLarPersistenceImpl extends BaseLarPersistenceImpl<Role>
 	public void deserialize(Document document) {
 	}
 
-	public void serialize(Role role, PortletDataContext portletDataContext)
+	public void doSerialize(Role role, PortletDataContext portletDataContext)
 		throws Exception {
 
+		String path = getEntityPath(role);
+
+		addZipEntry(path, role);
 	}
+
 }

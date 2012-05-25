@@ -25,7 +25,8 @@ public interface LayoutLarPersistence {
 
 	public void deserialize(Document document);
 
-	public void serialize(Layout layout, PortletDataContext portletDataContext)
+	public void doSerialize(
+			Layout layout, PortletDataContext portletDataContext)
 		throws Exception;
 
 }

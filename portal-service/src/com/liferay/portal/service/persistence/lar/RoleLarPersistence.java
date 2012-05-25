@@ -17,14 +17,15 @@ package com.liferay.portal.service.persistence.lar;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.model.Role;
+import com.liferay.portal.service.persistence.BaseLarPersistence;
 
 /**
  * @author Mate Thurzo
  */
-public interface RoleLarPersistence {
+public interface RoleLarPersistence extends BaseLarPersistence<Role> {
 
 	public void deserialize(Document document);
 
-	public void serialize(Role role, PortletDataContext portletDataContext)
+	public void doSerialize(Role role, PortletDataContext portletDataContext)
 		throws Exception;
 }

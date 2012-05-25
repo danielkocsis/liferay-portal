@@ -46,7 +46,7 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.lar.LARExporter;
+import com.liferay.portal.lar.LayoutExporter;
 import com.liferay.portal.lar.LayoutImporter;
 import com.liferay.portal.lar.PortletExporter;
 import com.liferay.portal.lar.PortletImporter;
@@ -705,12 +705,13 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		throws PortalException, SystemException {
 
 		try {
-			LARExporter larExporter = new LARExporter();
+			//LARExporter larExporter = new LARExporter();
+			LayoutExporter layoutExporter = new LayoutExporter();
 
-			larExporter.export(
+			return layoutExporter.exportLayoutsAsFile(
 				groupId, privateLayout, null, parameterMap, startDate, endDate);
 
-			return larExporter.getDigestFile();
+			//return larExporter.getDigestFile();
 		}
 		catch (Exception e) {
 			throw new SystemException(e);

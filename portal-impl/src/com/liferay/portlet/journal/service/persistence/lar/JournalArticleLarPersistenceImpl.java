@@ -29,7 +29,7 @@ public class JournalArticleLarPersistenceImpl
 	public void deserialize(Document document) {
 	}
 
-	public void serialize(
+	public void doSerialize(
 			JournalArticle journalArticle,
 			PortletDataContext portletDataContext)
 		throws Exception {
