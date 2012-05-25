@@ -1515,7 +1515,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 	private long _sourceGroupId;
 	private Date _startDate;
 	private UserIdStrategy _userIdStrategy;
-	private XStream _xStream;
+	private XStream _xStream = new XStream();
 	private ZipReader _zipReader;
 	private ZipWriter _zipWriter;
 

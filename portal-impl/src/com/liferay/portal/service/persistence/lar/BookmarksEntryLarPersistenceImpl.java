@@ -29,15 +29,13 @@ public class BookmarksEntryLarPersistenceImpl
 	public void deserialize(Document document) {
 	}
 
-	public void serialize(
+	public void doSerialize(
 			BookmarksEntry entry, PortletDataContext portletDataContext)
 		throws Exception {
 
 		String path = getEntityPath(entry);
 
 		addZipEntry(path, entry);
-
-		addExpando(entry);
 	}
 
 }

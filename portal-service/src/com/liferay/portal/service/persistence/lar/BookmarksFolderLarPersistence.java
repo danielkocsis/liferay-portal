@@ -16,16 +16,18 @@ package com.liferay.portal.service.persistence.lar;
 
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.service.persistence.BaseLarPersistence;
 import com.liferay.portlet.bookmarks.model.BookmarksFolder;
 
 /**
  * @author Mate Thurzo
  */
-public interface BookmarksFolderLarPersistence {
+public interface BookmarksFolderLarPersistence
+	extends BaseLarPersistence<BookmarksFolder> {
 
 	public void deserialize(Document document);
 
-	public void serialize(
+	public void doSerialize(
 			BookmarksFolder folder, PortletDataContext portletDataContext)
 		throws Exception;
 

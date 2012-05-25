@@ -30,8 +30,12 @@ public class ImageLarPersistenceImpl extends BaseLarPersistenceImpl<Image>
 	public void deserialize(Document document) {
 	}
 
-	public void serialize(Image image, PortletDataContext portletDataContext)
+	public void doSerialize(Image image, PortletDataContext portletDataContext)
 		throws Exception {
 
+		String path = getEntityPath(image);
+
+		addZipEntry(path, image.getTextObj());
 	}
+
 }
