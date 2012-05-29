@@ -67,6 +67,7 @@ import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.service.persistence.LayoutRevisionUtil;
+import com.liferay.portal.service.persistence.LayoutUtil;
 import com.liferay.portal.theme.ThemeLoader;
 import com.liferay.portal.theme.ThemeLoaderFactory;
 import com.liferay.portal.util.PortletKeys;
@@ -386,30 +387,37 @@ public class LayoutExporter {
 
 		List<Portlet> portlets = getAlwaysExportablePortlets(companyId);
 
-		if (!layouts.isEmpty()) {
-			Layout firstLayout = layouts.get(0);
+		Layout firstLayout = LayoutUtil.create(PortletKeys.PREFS_PLID_SHARED);
 
-			if (group.isStagingGroup()) {
-				group = group.getLiveGroup();
+		if (!layouts.isEmpty()) {
+			firstLayout = layouts.get(0);
+		}
+		else {
+			firstLayout.setCompanyId(companyId);
+			firstLayout.setGroupId(groupId);
+			firstLayout.setPrivateLayout(privateLayout);
+		}
+
+		if (group.isStagingGroup()) {
+			group = group.getLiveGroup();
+		}
+
+		for (Portlet portlet : portlets) {
+			String portletId = portlet.getRootPortletId();
+
+			if (!group.isStagedPortlet(portletId)) {
+				continue;
 			}
 
-			for (Portlet portlet : portlets) {
-				String portletId = portlet.getRootPortletId();
+			String key = PortletPermissionUtil.getPrimaryKey(0, portletId);
 
-				if (!group.isStagedPortlet(portletId)) {
-					continue;
-				}
-
-				String key = PortletPermissionUtil.getPrimaryKey(0, portletId);
-
-				if (portletIds.get(key) == null) {
-					portletIds.put(
-						key,
-						new Object[] {
-							portletId, firstLayout.getPlid(), groupId,
-							StringPool.BLANK, StringPool.BLANK
-						});
-				}
+			if (portletIds.get(key) == null) {
+				portletIds.put(
+					key,
+					new Object[] {
+						portletId, firstLayout.getPlid(), groupId,
+						StringPool.BLANK, StringPool.BLANK
+					});
 			}
 		}
 
@@ -467,7 +475,11 @@ public class LayoutExporter {
 				scopeLayoutUuid = (String)portletIdsEntry.getValue()[4];
 			}
 
-			Layout layout = LayoutLocalServiceUtil.getLayout(plid);
+			Layout layout = firstLayout;
+
+			if (plid > PortletKeys.PREFS_PLID_SHARED) {
+				layout = LayoutLocalServiceUtil.getLayout(plid);
+			}
 
 			portletDataContext.setPlid(layout.getPlid());
 			portletDataContext.setOldPlid(layout.getPlid());

@@ -1139,7 +1139,9 @@ public class PortletExporter {
 
 		LayoutTypePortlet layoutTypePortlet = null;
 
-		if (layout != null) {
+		if ((layout != null) &&
+			(layout.getPlid() > PortletKeys.PREFS_PLID_SHARED)) {
+
 			layoutTypePortlet = (LayoutTypePortlet)layout.getLayoutType();
 		}
 
