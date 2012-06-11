@@ -266,7 +266,7 @@ boolean hasLayoutUpdatePermission = LayoutPermissionUtil.contains(permissionChec
 	</ul>
 
 	<ul class="aui-toolbar user-toolbar">
-		<c:if test="<%= user.hasMySites() || RoleLocalServiceUtil.hasUserRole(user.getUserId(), user.getCompanyId(), RoleConstants.ADMINISTRATOR, true) %>">
+		<c:if test="<%= user.hasMySites() %>">
 			<li class="my-sites has-submenu" id="<portlet:namespace />mySites">
 				<a class="menu-button" href="javascript:;">
 					<span>
