@@ -62,7 +62,6 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.PortletPreferencesImpl;
-import com.liferay.portlet.asset.NoSuchCategoryException;
 import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetCategoryConstants;
 import com.liferay.portlet.asset.model.AssetCategoryProperty;
@@ -76,7 +75,6 @@ import com.liferay.portlet.asset.service.AssetTagPropertyLocalServiceUtil;
 import com.liferay.portlet.asset.service.persistence.AssetCategoryUtil;
 import com.liferay.portlet.asset.service.persistence.AssetVocabularyUtil;
 import com.liferay.portlet.expando.model.ExpandoColumn;
-import com.liferay.portlet.journal.NoSuchStructureException;
 import com.liferay.portlet.journal.model.JournalStructure;
 import com.liferay.portlet.journal.service.JournalStructureLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
@@ -106,6 +104,7 @@ import org.apache.commons.lang.time.StopWatch;
  */
 public class PortletExporter {
 
+	@Deprecated
 	public byte[] exportPortletInfo(
 			long plid, long groupId, String portletId,
 			Map<String, String[]> parameterMap, Date startDate, Date endDate)
@@ -1428,8 +1427,40 @@ public class PortletExporter {
 		return sb.toString();
 	}
 
+	protected String getUUID(String className, long primaryKey)
+		throws SystemException {
+
+		if (AssetCategory.class.getName().equals(className)) {
+
+			AssetCategory category =
+				AssetCategoryLocalServiceUtil.fetchCategory(primaryKey);
+
+			if (category != null) {
+				return category.getUuid();
+			}
+		}
+		else if (JournalStructure.class.getName().equals(className)) {
+
+			JournalStructure structure =
+				JournalStructureLocalServiceUtil.fetchJournalStructure(
+					primaryKey);
+
+			if (structure != null) {
+				return structure.getUuid();
+			}
+		}
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				"Unable to retrieve UUID for entry: " + primaryKey +
+				" of " + className);
+		}
+
+		return null;
+	}
+
 	protected void replaceClassPKs(
-			String preferenceName, String clazz,
+			String preferenceName, String className,
 			PortletPreferencesImpl portletPreferences)
 		throws Exception {
 
@@ -1443,44 +1474,30 @@ public class PortletExporter {
 
 		int i = 0;
 
-		for (String value : oldValues) {
+		for (String oldValue : oldValues) {
 
-			String newValue = value;
+			String newValue = oldValue;
 
-			for (String oldPK : StringUtil.split(value)) {
-				String newPK = null;
+			String[] ids = StringUtil.split(oldValue);
+
+			for (String id : ids) {
+
+				long primaryKey = 0;
 
 				try {
-					if (AssetCategory.class.getName().equals(clazz)) {
-						AssetCategory category =
-							AssetCategoryLocalServiceUtil.getCategory(
-								Long.parseLong(oldPK));
+					primaryKey = Long.parseLong(id);
+				}
+				catch (NumberFormatException e) {
+					//break because if any of the ids are not longs, then
+					//none of the ids will be longs
 
-						newPK = category.getUuid();
-					}
-					else if (JournalStructure.class.getName().equals(clazz)) {
-						JournalStructure structure =
-							JournalStructureLocalServiceUtil.getStructure(
-								Long.parseLong(oldPK));
-
-						newPK = structure.getUuid();
-					}
-				}
-				catch (NoSuchStructureException nsse) {
-					if (_log.isWarnEnabled()) {
-						_log.warn(nsse.getMessage());
-					}
-				}
-				catch (NoSuchCategoryException nsce) {
-					if (_log.isWarnEnabled()) {
-						_log.warn(nsce.getMessage());
-					}
-				}
-				catch (NumberFormatException nfe) {
+					break;
 				}
 
-				if (Validator.isNotNull(newPK)) {
-					newValue = newValue.replaceAll(oldPK, newPK);
+				String uuid = getUUID(className, primaryKey);
+
+				if (Validator.isNotNull(uuid)) {
+					newValue = StringUtil.replace(newValue, id, uuid);
 				}
 			}
 

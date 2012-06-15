@@ -97,9 +97,8 @@ import com.liferay.portlet.expando.model.ExpandoTable;
 import com.liferay.portlet.expando.service.ExpandoColumnLocalServiceUtil;
 import com.liferay.portlet.expando.service.ExpandoTableLocalServiceUtil;
 import com.liferay.portlet.expando.util.ExpandoConverterUtil;
-import com.liferay.portlet.journal.NoSuchStructureException;
 import com.liferay.portlet.journal.model.JournalStructure;
-import com.liferay.portlet.journal.service.JournalStructureLocalServiceUtil;
+import com.liferay.portlet.journal.service.persistence.JournalStructureUtil;
 import com.liferay.portlet.journalcontent.util.JournalContentUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.ratings.model.RatingsEntry;
@@ -1653,86 +1652,30 @@ public class PortletImporter {
 
 		int i = 0;
 
-		for (String value : oldValues) {
+		for (String oldValue : oldValues) {
 
-			String newValue = value;
+			String newValue = oldValue;
 
-			for (String oldPK : StringUtil.split(value)) {
-				String newPK = null;
+			String[] oldIdStrings = StringUtil.split(oldValue);
+
+			for (String oldIdString : oldIdStrings) {
+
+				Long newId = null;
 
 				try {
-					newPK = StringUtil.valueOf(
-						primaryKeysMap.get(new Long(oldPK)));
+					long oldId = Long.parseLong(oldIdString);
+
+					newId = MapUtil.getLong(primaryKeysMap, oldId, oldId);
 				}
-				catch (NumberFormatException nfe) {
-				}
-
-				if (Validator.isNull(newPK)) {
-					String className = clazz.getName();
-
-					if (AssetCategory.class.getName().equals(className)) {
-						AssetCategory category = null;
-
-						try {
-							category =
-								AssetCategoryLocalServiceUtil.
-									getAssetCategoryByUuidAndGroupId(
-										oldPK, globalGroupId);
-						}
-						catch (NoSuchCategoryException nsce) {
-							try {
-								category =
-									AssetCategoryLocalServiceUtil.
-										getAssetCategoryByUuidAndGroupId(
-											oldPK,
-											portletDataContext.getGroupId());
-							}
-							catch (NoSuchCategoryException nsce2) {
-								if (_log.isWarnEnabled()) {
-									_log.warn(nsce2.getMessage());
-								}
-							}
-						}
-
-						if (category != null) {
-							newPK = StringUtil.valueOf(
-								category.getCategoryId());
-						}
-					}
-					else if (JournalStructure.class.getName().
-							equals(className)) {
-
-						JournalStructure structure = null;
-
-						try {
-							structure =
-								JournalStructureLocalServiceUtil.
-									getJournalStructureByUuidAndGroupId(
-										oldPK, globalGroupId);
-						}
-						catch (NoSuchStructureException nsse) {
-							try {
-								structure =
-									JournalStructureLocalServiceUtil.
-										getJournalStructureByUuidAndGroupId(
-											oldPK,
-											portletDataContext.getGroupId());
-							}
-							catch (NoSuchStructureException nsse2) {
-								if (_log.isWarnEnabled()) {
-									_log.warn(nsse2.getMessage());
-								}
-							}
-						}
-
-						if (structure != null) {
-							newPK = StringUtil.valueOf(structure.getId());
-						}
-					}
+				catch (NumberFormatException e) {
+					newId = replacePrimaryKeyByUUID(
+						oldIdString, clazz, globalGroupId,
+						portletDataContext.getScopeGroupId());
 				}
 
-				if (Validator.isNotNull(newPK)) {
-					newValue = newValue.replaceAll(oldPK, newPK);
+				if (newId != null) {
+					newValue = newValue.replaceAll(
+						oldIdString, newId.toString());
 				}
 			}
 
@@ -1765,6 +1708,50 @@ public class PortletImporter {
 		}
 
 		portletPreferences.setValues(preferenceName, newValues);
+	}
+
+	protected Long replacePrimaryKeyByUUID(
+			String uuid, Class<?> clazz, long globalGroupId, long scopeGroupId)
+		throws SystemException {
+
+		String className = clazz.getName();
+
+		if (AssetCategory.class.getName().equals(className)) {
+
+			AssetCategory category = AssetCategoryUtil.fetchByUUID_G(
+				uuid, globalGroupId);
+
+			if (category == null) {
+				category = AssetCategoryUtil.fetchByUUID_G(uuid, scopeGroupId);
+			}
+
+			if (category != null) {
+				return category.getCategoryId();
+			}
+		}
+		else if (JournalStructure.class.getName().equals(className)) {
+
+			JournalStructure structure = JournalStructureUtil.fetchByUUID_G(
+				uuid, globalGroupId);
+
+			if (structure == null) {
+				structure = JournalStructureUtil.fetchByUUID_G(
+					uuid, scopeGroupId);
+			}
+
+			if (structure != null) {
+				return structure.getId();
+			}
+		}
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				"Unable to find instance of " + className + " by uuid: " +
+				uuid + "in either global scope: " + globalGroupId +
+				" or site scope: " + scopeGroupId);
+		}
+
+		return null;
 	}
 
 	protected void resetPortletScope(
