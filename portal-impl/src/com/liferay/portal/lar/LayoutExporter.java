@@ -80,6 +80,7 @@ import com.liferay.portlet.asset.model.AssetVocabulary;
 import com.liferay.portlet.asset.service.AssetVocabularyLocalServiceUtil;
 import com.liferay.portlet.asset.service.persistence.AssetCategoryUtil;
 import com.liferay.portlet.journal.NoSuchArticleException;
+import com.liferay.portlet.journal.lar.DigestedJournalPortletDataHandlerImpl;
 import com.liferay.portlet.journal.lar.JournalPortletDataHandlerImpl;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
@@ -178,6 +179,36 @@ public class LayoutExporter {
 			return;
 		}
 
+		LayoutRevision layoutRevision = null;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		boolean exportLAR = ParamUtil.getBoolean(serviceContext, "exportLAR");
+
+		if (!exportLAR && LayoutStagingUtil.isBranchingLayout(layout) &&
+			!layout.isTypeURL()) {
+
+			long layoutSetBranchId = ParamUtil.getLong(
+				serviceContext, "layoutSetBranchId");
+
+			if (layoutSetBranchId <= 0) {
+				return;
+			}
+
+			layoutRevision = LayoutRevisionUtil.fetchByL_H_P(
+				layoutSetBranchId, true, layout.getPlid());
+
+			if (layoutRevision == null) {
+				return;
+			}
+
+			LayoutStagingHandler layoutStagingHandler =
+				LayoutStagingUtil.getLayoutStagingHandler(layout);
+
+			layoutStagingHandler.setLayoutRevision(layoutRevision);
+		}
+
 		boolean deleteLayout = MapUtil.getBoolean(
 			portletDataContext.getParameterMap(), "delete_" + layout.getPlid());
 
@@ -200,8 +231,18 @@ public class LayoutExporter {
 			portletDataContext, layoutConfigurationPortlet, layout, null,
 			larDigest);
 
+		// Layout permissions
+
+		if (exportPermissions) {
+			_permissionExporter.exportLayoutPermissions(
+				portletDataContext, layoutCache,
+				portletDataContext.getCompanyId(),
+				portletDataContext.getScopeGroupId(), layout, null);
+		}
+
 		if (layout.isTypeArticle()) {
-			return;
+			createJournalArticleDigest(
+				larDigest, portletDataContext, layout, null);
 		}
 		else if (layout.isTypeLinkToLayout()) {
 			UnicodeProperties typeSettingsProperties =
@@ -248,7 +289,7 @@ public class LayoutExporter {
 			// Layout portlets
 
 			LayoutTypePortlet layoutTypePortlet =
-					(LayoutTypePortlet)layout.getLayoutType();
+				(LayoutTypePortlet)layout.getLayoutType();
 
 			for (String portletId : layoutTypePortlet.getPortletIds()) {
 				javax.portlet.PortletPreferences jxPreferences =
@@ -305,6 +346,8 @@ public class LayoutExporter {
 				);
 			}
 		}
+
+		fixTypeSettings(layout);
 	}
 
 	public byte[] exportLayouts(
@@ -339,6 +382,56 @@ public class LayoutExporter {
 		finally {
 			ImportExportThreadLocal.setLayoutExportInProcess(false);
 		}
+	}
+
+	protected void createJournalArticleDigest(
+			LarDigest larDigest, PortletDataContext portletDataContext,
+			Layout layout, Element layoutElement)
+		throws Exception {
+
+		UnicodeProperties typeSettingsProperties =
+			layout.getTypeSettingsProperties();
+
+		String articleId = typeSettingsProperties.getProperty(
+			"article-id", StringPool.BLANK);
+
+		long articleGroupId = layout.getGroupId();
+
+		if (Validator.isNull(articleId)) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"No article id found in typeSettings of layout " +
+						layout.getPlid());
+			}
+		}
+
+		JournalArticle article = null;
+
+		try {
+			article = JournalArticleLocalServiceUtil.getLatestArticle(
+				articleGroupId, articleId, WorkflowConstants.STATUS_APPROVED);
+		}
+		catch (NoSuchArticleException nsae) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"No approved article found with group id " +
+						articleGroupId + " and article id " + articleId);
+			}
+		}
+
+		if (article == null) {
+			return;
+		}
+
+		String path = JournalPortletDataHandlerImpl.getArticlePath(
+			portletDataContext, article);
+
+		Element articleElement = layoutElement.addElement("article");
+
+		articleElement.addAttribute("path", path);
+
+		DigestedJournalPortletDataHandlerImpl.exportArticle(
+			larDigest, portletDataContext, article, null, false);
 	}
 
 	protected File doExportLayoutsAsFile(
