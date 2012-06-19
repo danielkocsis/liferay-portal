@@ -49,7 +49,7 @@ import javax.xml.transform.stream.StreamSource;
  *
  * @author Daniel Kocsis
  */
-public class LarDigestImpl implements LarDigest{
+public class LarDigestImpl implements LarDigest {
 
 	public LarDigestImpl() throws FileNotFoundException, XMLStreamException {
 

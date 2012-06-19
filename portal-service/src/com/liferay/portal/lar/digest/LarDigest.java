@@ -23,13 +23,13 @@ import java.io.File;
  */
 public interface LarDigest {
 
-	public void write(int action, String path, String type, String classPK)
-		throws PortalException;
-
 	public void close();
 
 	public void close(boolean format);
 
 	public File getDigestFile();
+
+	public void write(int action, String path, String type, String classPK)
+		throws PortalException;
 
 }
