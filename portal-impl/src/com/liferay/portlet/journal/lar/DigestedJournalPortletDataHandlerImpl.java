@@ -157,6 +157,10 @@ public class DigestedJournalPortletDataHandlerImpl
 			return;
 		}
 
+		larDigest.write(LarDigesterConstants.ACTION_ADD, path,
+			article.getClass().getName(),
+			StringUtil.valueOf(article.getArticleId()));
+
 		// Clone this article to make sure changes to its content are never
 		// persisted
 
@@ -1538,8 +1542,8 @@ public class DigestedJournalPortletDataHandlerImpl
 
 				// toDO: Refactor DLPortletDataHandlerImpl.java
 				DLPortletDataHandlerImpl.exportFileEntry(
-					portletDataContext, null, null, null, null, fileEntry,
-					checkDateRange);
+					portletDataContext, null, null, null, null, null, null,
+					fileEntry, checkDateRange);
 
 				String dlReference = "[$dl-reference=" + path + "$]";
 
