@@ -117,7 +117,9 @@ public class DDMImpl implements DDM {
 			String fieldValue = (String)serviceContext.getAttribute(
 				fieldNamespace + fieldName);
 
-			if (fieldDataType.equals(FieldConstants.FILE_UPLOAD)) {
+			if (fieldValue == null ||
+				fieldDataType.equals(FieldConstants.FILE_UPLOAD)) {
+
 				continue;
 			}
 
@@ -137,10 +139,6 @@ public class DDMImpl implements DDM {
 				}
 
 				fieldValue = JSONFactoryUtil.serialize(fieldValues);
-			}
-
-			if (fieldValue == null) {
-				continue;
 			}
 
 			Serializable fieldValueSerializable =
