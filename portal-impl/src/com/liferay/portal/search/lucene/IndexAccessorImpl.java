@@ -93,10 +93,6 @@ public class IndexAccessorImpl implements IndexAccessor {
 
 		close();
 
-		if (PropsValues.INDEX_FORCE_GC_BEFORE_DELETE) {
-			System.gc();
-		}
-
 		_deleteDirectory();
 
 		_initIndexWriter();
@@ -162,17 +158,20 @@ public class IndexAccessorImpl implements IndexAccessor {
 
 		close();
 
-		if (PropsValues.INDEX_FORCE_GC_BEFORE_DELETE) {
-			System.gc();
-		}
-
 		_deleteDirectory();
 
-		for (String file : tempDirectory.listAll()) {
-			tempDirectory.copy(getLuceneDir(), file, file);
+		_initIndexWriter();
+
+		IndexReader indexReader = IndexReader.open(tempDirectory, false);
+
+		for (int i = 0; i < indexReader.maxDoc(); i++) {
+			Document doc = indexReader.document(i);
+
+			addDocument(doc);
 		}
 
-		_initIndexWriter();
+		indexReader.flush();
+		indexReader.close();
 
 		tempDirectory.close();
 
@@ -247,15 +246,20 @@ public class IndexAccessorImpl implements IndexAccessor {
 		try {
 			Directory directory = _getDirectory(path);
 
-			directory.close();
+			IndexReader indexReader = IndexReader.open(directory, false);
+
+			for (int i = 0; i < indexReader.maxDoc(); i++) {
+				indexReader.deleteDocument(i);
+			}
+
+			indexReader.flush();
+			indexReader.close();
 		}
 		catch (Exception e) {
 			if (_log.isWarnEnabled()) {
 				_log.warn("Could not close directory " + path);
 			}
 		}
-
-		FileUtil.deltree(path);
 	}
 
 	private void _deleteRam() {
