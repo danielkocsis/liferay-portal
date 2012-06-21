@@ -19,20 +19,26 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.*;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
+import com.liferay.portal.xml.StAXReaderUtil;
 import com.liferay.portal.xml.StAXWriterUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
@@ -48,6 +54,7 @@ import javax.xml.transform.stream.StreamSource;
 /**
  *
  * @author Daniel Kocsis
+ * @author Mate Thurzo
  */
 public class LarDigestImpl implements LarDigest {
 
@@ -85,6 +92,21 @@ public class LarDigestImpl implements LarDigest {
 		}
 		catch (Exception ex) {
 			_log.error(ex, ex);
+		}
+	}
+
+	public Iterator<LarDigestItem> iterator() {
+		XMLInputFactory xmlInputFactory = StAXReaderUtil.getXMLInputFactory();
+
+		try {
+			InputStream inputStream = new FileInputStream(getDigestFile());
+
+			_xmlEventReader = xmlInputFactory.createXMLEventReader(inputStream);
+
+			return new LarDigestIterator(_xmlEventReader);
+		}
+		catch (Exception e) {
+			return null;
 		}
 	}
 
@@ -264,6 +286,7 @@ public class LarDigestImpl implements LarDigest {
 	private Map<String, EndElement> _endElements;
 	private Map<String, StartElement> _startElements;
 	private XMLEventFactory _xmlEventFactory;
+	private XMLEventReader _xmlEventReader;
 	private XMLEventWriter _xmlEventWriter;
 
 }
