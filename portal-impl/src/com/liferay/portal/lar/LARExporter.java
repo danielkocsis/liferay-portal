@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.lar.digest.LarDigest;
 import com.liferay.portal.lar.digest.LarDigestImpl;
+import com.liferay.portal.lar.digest.LarDigestItem;
 import com.liferay.portal.lar.digest.LarDigesterConstants;
 import com.liferay.portal.model.*;
 import com.liferay.portal.model.impl.LayoutImpl;
@@ -69,31 +70,37 @@ public class LARExporter {
 		long groupId, boolean privateLayout, long[] layoutIds,
 		Map<String, String[]> parameterMap, Date startDate, Date endDate) {
 
-		LarDigest larDigest = null;
-
 		try {
 			ImportExportThreadLocal.setLayoutExportInProcess(true);
 
-			larDigest = new LarDigestImpl();
+			_larDigest = new LarDigestImpl();
 
 			doCreateDigest(
-				groupId, larDigest, privateLayout, layoutIds, parameterMap,
+				groupId, _larDigest, privateLayout, layoutIds, parameterMap,
 				startDate, endDate);
-
 		}
-		catch (Exception ex) {
-			_log.error(ex);
+		catch (Exception e) {
+			_log.error(e);
+		}
+		finally {
+			_larDigest.close(Boolean.TRUE);
+		}
+
+		_larDigestFile = _larDigest.getDigestFile();
+
+		try {
+			doExport(groupId, privateLayout, parameterMap);
+		}
+		catch (Exception e) {
+			_log.error(e);
 		}
 		finally {
 			ImportExportThreadLocal.setLayoutExportInProcess(false);
-			larDigest.close(Boolean.TRUE);
 		}
-
-		_larDigest = larDigest.getDigestFile();
 	}
 
 	public File getDigestFile() {
-		return _larDigest;
+		return _larDigestFile;
 	}
 
 	protected void doCreateDigest(
@@ -139,18 +146,18 @@ public class LARExporter {
 
 		LayoutCache layoutCache = new LayoutCache();
 
-		PortletDataContext portletDataContext = new PortletDataContextImpl(
+		_portletDataContext = new PortletDataContextImpl(
 			companyId, groupId, parameterMap, new HashSet<String>(), startDate,
 			endDate, null);
 
-		portletDataContext.setPortetDataContextListener(
-			new PortletDataContextListenerImpl(portletDataContext));
+		_portletDataContext.setPortetDataContextListener(
+				new PortletDataContextListenerImpl(_portletDataContext));
 
 		Group group = layoutSet.getGroup();
 
 		Portlet layoutConfigurationPortlet =
 			PortletLocalServiceUtil.getPortletById(
-				portletDataContext.getCompanyId(),
+				_portletDataContext.getCompanyId(),
 				PortletKeys.LAYOUT_CONFIGURATION);
 
 		Map<String, Object[]> portletIds =
@@ -220,12 +227,12 @@ public class LARExporter {
 		// Layouts
 		for (Layout layout : layouts) {
 			_layoutExporter.createLayoutDigest(
-				larDigest, portletDataContext, layoutConfigurationPortlet,
+				larDigest, _portletDataContext, layoutConfigurationPortlet,
 				layoutCache, portlets, portletIds, exportPermissions, layout);
 		}
 
 		// Portlets
-		long previousScopeGroupId = portletDataContext.getScopeGroupId();
+		long previousScopeGroupId = _portletDataContext.getScopeGroupId();
 
 		for (Map.Entry<String, Object[]> portletIdsEntry :
 				portletIds.entrySet()) {
@@ -272,24 +279,24 @@ public class LARExporter {
 				layout.setCompanyId(companyId);
 			}
 
-			portletDataContext.setPlid(plid);
-			portletDataContext.setOldPlid(plid);
-			portletDataContext.setScopeGroupId(scopeGroupId);
-			portletDataContext.setScopeType(scopeType);
-			portletDataContext.setScopeLayoutUuid(scopeLayoutUuid);
+			_portletDataContext.setPlid(plid);
+			_portletDataContext.setOldPlid(plid);
+			_portletDataContext.setScopeGroupId(scopeGroupId);
+			_portletDataContext.setScopeType(scopeType);
+			_portletDataContext.setScopeLayoutUuid(scopeLayoutUuid);
 
 			boolean[] exportPortletControls =
 				_layoutExporter.getExportPortletControls(
-					companyId, portletId, portletDataContext, parameterMap);
+					companyId, portletId, _portletDataContext, parameterMap);
 
 			_portletExporter.createPortletDigest(
-				portletDataContext, layoutCache, portletId, layout, larDigest,
+				_portletDataContext, layoutCache, portletId, layout, larDigest,
 				defaultUserId, exportPermissions, exportPortletArchivedSetups,
 				exportPortletControls[0], exportPortletControls[1],
 				exportPortletUserPreferences);
 		}
 
-		portletDataContext.setScopeGroupId(previousScopeGroupId);
+		_portletDataContext.setScopeGroupId(previousScopeGroupId);
 
 		if (_log.isInfoEnabled()) {
 			if (stopWatch != null) {
@@ -307,41 +314,19 @@ public class LARExporter {
 	}
 
 	protected void doExport(
-			Group group, PortletDataContext portletDataContext,
-			boolean privateLayout, Map<String, String[]> parameterMap)
+			long groupId, boolean privateLayout,
+			Map<String, String[]> parameterMap)
 		throws Exception, PortalException {
 
-		boolean exportCategories = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.CATEGORIES);
-		boolean exportPermissions = MapUtil.getBoolean(
-		parameterMap, PortletDataHandlerKeys.PERMISSIONS);
-		boolean exportTheme = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.THEME);
+		for (LarDigestItem item : _larDigest) {
 
-		if (exportCategories || group.isCompany()) {
-			exportAssetCategories(portletDataContext);
-		}
+			if (item.getType().equals("")) {
 
-		_portletExporter.exportAssetLinks(portletDataContext);
-		_portletExporter.exportAssetTags(portletDataContext);
-		_portletExporter.exportComments(portletDataContext);
-		_portletExporter.exportExpandoTables(portletDataContext);
-		_portletExporter.exportLocks(portletDataContext);
+			}
 
-		if (exportPermissions) {
-			_permissionExporter.exportPortletDataPermissions(
-				portletDataContext);
-		}
-
-		_portletExporter.exportRatingsEntries(portletDataContext);
-
-		LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-			group.getGroupId(), privateLayout);
-
-		ZipWriter zipWriter = ZipWriterFactoryUtil.getZipWriter();
-
-		if (exportTheme && !portletDataContext.isPerformDirectBinaryImport()) {
-			exportTheme(layoutSet, zipWriter);
+			_log.warn("--------------------");
+			_log.warn(item.getClass().getName());
+			_log.warn("--------------------");
 		}
 	}
 
@@ -485,7 +470,9 @@ public class LARExporter {
 
 	private static Log _log = LogFactoryUtil.getLog(LARExporter.class);
 
-	private File _larDigest;
+	private File _larDigestFile;
+	private LarDigest _larDigest;
+	private PortletDataContext _portletDataContext;
 	private LayoutExporter _layoutExporter = new LayoutExporter();
 	private PermissionExporter _permissionExporter = new PermissionExporter();
 	private PortletExporter _portletExporter = new PortletExporter();
