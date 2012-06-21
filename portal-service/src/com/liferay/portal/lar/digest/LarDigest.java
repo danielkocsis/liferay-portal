@@ -21,7 +21,7 @@ import java.io.File;
 /**
  * @author Daniel Kocsis
  */
-public interface LarDigest extends Iterable {
+public interface LarDigest extends Iterable<LarDigestItem> {
 
 	public void close();
 

@@ -14,6 +14,7 @@
 
 package com.liferay.portal.lar.digest;
 
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.xml.StAXReaderUtil;
 
 import javax.xml.stream.XMLEventReader;
@@ -21,6 +22,7 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.util.Iterator;
+import static com.liferay.portal.lar.digest.LarDigesterConstants.*;
 
 /**
  * @author Mate Thurzo
@@ -32,68 +34,74 @@ public class LarDigestIterator implements Iterator<LarDigestItem> {
 	}
 
 	public boolean hasNext() {
-		return _xmlEventReader.hasNext();
+		try {
+			while (_xmlEventReader.hasNext()) {
+				XMLEvent nextEvent = _xmlEventReader.peek();
+
+				String nextStartElementName = _getElementName(nextEvent);
+
+				if (nextEvent.isStartElement()) {
+					if (nextStartElementName.equals(NODE_ITEMS_LABEL)) {
+						return true;
+					}
+
+					nextEvent = _xmlEventReader.nextEvent();
+				}
+			}
+
+			return false;
+		}
+		catch (Exception e) {
+			return false;
+		}
 	}
 
 	public LarDigestItem next() {
 		try {
-			LarDigestItem item = new LarDigestItem();
+			LarDigestItem item = new LarDigestItemImpl();
 
 			while (_xmlEventReader.hasNext()) {
 				XMLEvent event = _xmlEventReader.nextEvent();
 
+				String elementName = _getElementName(event);
+
 				if (event.isStartElement()) {
-					StartElement startElement = event.asStartElement();
-
-					String startElementName =
-						startElement.getName().getLocalPart();
-
-					if (startElementName.equals(
-							LarDigesterConstants.NODE_PATH_LABEL)) {
+					if (elementName.equals(NODE_PATH_LABEL)) {
 
 						String path = StAXReaderUtil.read(_xmlEventReader);
 
 						item.setPath(path);
 					}
-					else if (startElementName.equals(
-								LarDigesterConstants.NODE_ACTION_LABEL)) {
+					else if (elementName.equals(NODE_ACTION_LABEL)) {
 
 						String action = StAXReaderUtil.read(_xmlEventReader);
 						int actionCode = Integer.parseInt(action);
 
 						item.setAction(actionCode);
 					}
-					else if (startElementName.equals(
-								LarDigesterConstants.NODE_TYPE_LABEL)) {
+					else if (elementName.equals(NODE_TYPE_LABEL)) {
 
 						String type = StAXReaderUtil.read(_xmlEventReader);
 
 						item.setType(type);
 					}
-					else if (startElementName.equals(
-								LarDigesterConstants.NODE_CLASS_PK_LABEL)) {
+					else if (elementName.equals(NODE_CLASS_PK_LABEL)) {
 
-						String classPKString =
+						String classPK =
 							StAXReaderUtil.read(_xmlEventReader);
-						long classPK = Long.valueOf(classPKString);
 
 						item.setClassPK(classPK);
 					}
 				}
 				else if (event.isEndElement()) {
-					EndElement endElement = event.asEndElement();
+					if (elementName.equals(NODE_ITEMS_LABEL)) {
 
-					String endElementName = endElement.getName().getLocalPart();
-
-					if (endElementName.equals(
-							LarDigesterConstants.NODE_ITEMS_LABEL)) {
-
-						break;
+						return item;
 					}
 				}
 			}
 
-			return item;
+			return null;
 		}
 		catch (Exception e) {
 			return null;
@@ -104,5 +112,21 @@ public class LarDigestIterator implements Iterator<LarDigestItem> {
 		throw new UnsupportedOperationException();
 	}
 
+	private String _getElementName(XMLEvent event) {
+		if (event.isStartElement()) {
+			StartElement startElement = event.asStartElement();
+
+			return startElement.getName().getLocalPart();
+		}
+		else if (event.isEndElement()) {
+			EndElement endElement = event.asEndElement();
+
+			return endElement.getName().getLocalPart();
+		}
+
+		return StringPool.BLANK;
+	}
+
 	private XMLEventReader _xmlEventReader;
+	private LarDigestItem _nextItem;
 }
