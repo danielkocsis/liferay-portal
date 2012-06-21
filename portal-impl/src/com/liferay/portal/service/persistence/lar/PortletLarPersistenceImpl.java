@@ -15,11 +15,15 @@
 package com.liferay.portal.service.persistence.lar;
 
 import com.liferay.portal.kernel.lar.PortletDataContext;
+import com.liferay.portal.kernel.lar.PortletDataHandler;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Portlet;
+import com.liferay.portal.model.impl.LayoutImpl;
 import com.liferay.portal.service.persistence.impl.BaseLarPersistenceImpl;
 import com.liferay.portal.service.persistence.lar.PortletLarPersistence;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
 
 /**
  * @author Mate Thurzo
@@ -34,6 +38,21 @@ public class PortletLarPersistenceImpl extends BaseLarPersistenceImpl<Portlet>
 			Portlet portlet, PortletDataContext portletDataContext)
 		throws Exception {
 
+		PortletDataHandler portletDataHandler =
+			portlet.getPortletDataHandlerInstance();
+
+		if (portletDataHandler != null) {
+			Layout dummyLayout = new LayoutImpl();
+
+			javax.portlet.PortletPreferences jxPreferences =
+				PortletPreferencesFactoryUtil.getPortletSetup(
+					dummyLayout, portlet.getPortletId(), StringPool.BLANK);
+
+			String data = portletDataHandler.exportData(
+				portletDataContext, portlet.getPortletId(), jxPreferences);
+
+			System.out.println("PORTLET DATA: " + data);
+		}
 	}
 
 }
