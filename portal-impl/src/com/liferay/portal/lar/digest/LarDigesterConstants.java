@@ -17,6 +17,7 @@ package com.liferay.portal.lar.digest;
 /**
  *
  * @author Daniel Kocsis
+ * @author Mate Thurzo
  */
 public class LarDigesterConstants {
 
@@ -30,9 +31,7 @@ public class LarDigesterConstants {
 
 	public static final String NODE_CLASS_PK_LABEL = "classPK";
 
-	public static final String NODE_DIGEST_ENTRY_LABEL = "item";
-
-	public static final String NODE_ITEMS_LABEL = "items";
+	public static final String NODE_DIGEST_ITEM_LABEL = "item";
 
 	public static final String NODE_PATH_LABEL = "path";
 

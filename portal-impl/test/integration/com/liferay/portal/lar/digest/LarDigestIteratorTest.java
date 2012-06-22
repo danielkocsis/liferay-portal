@@ -16,16 +16,24 @@ package com.liferay.portal.lar.digest;
 
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Portlet;
+import com.liferay.portal.test.EnvironmentExecutionTestListener;
+import com.liferay.portal.test.ExecutionTestListeners;
+import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portlet.bookmarks.model.BookmarksEntry;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.powermock.api.mockito.PowerMockito;
 
 /**
  * @author Mate Thurzo
  */
-public class LarDigestIteratorTest {
+@ExecutionTestListeners(listeners = {EnvironmentExecutionTestListener.class})
+@RunWith(LiferayIntegrationJUnitTestRunner.class)
+public class LarDigestIteratorTest extends PowerMockito {
 
 	@Before
 	public void setUp() throws Exception {
@@ -80,7 +88,7 @@ public class LarDigestIteratorTest {
 			}
 		}
 
-		Assert.assertEquals(itemCount, 3);
+		Assert.assertEquals(3, itemCount);
 	}
 
 	@Test
@@ -93,7 +101,7 @@ public class LarDigestIteratorTest {
 			itemCount++;
 		}
 
-		Assert.assertEquals(itemCount, 0);
+		Assert.assertEquals(0, itemCount);
 	}
 
 	private void addTestData() throws Exception {

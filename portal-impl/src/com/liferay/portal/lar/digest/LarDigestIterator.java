@@ -43,12 +43,12 @@ public class LarDigestIterator implements Iterator<LarDigestItem> {
 				String nextStartElementName = _getElementName(nextEvent);
 
 				if (nextEvent.isStartElement()) {
-					if (nextStartElementName.equals(NODE_ITEMS_LABEL)) {
+					if (nextStartElementName.equals(NODE_DIGEST_ITEM_LABEL)) {
 						return true;
 					}
-
-					nextEvent = _xmlEventReader.nextEvent();
 				}
+
+				nextEvent = _xmlEventReader.nextEvent();
 			}
 
 			return false;
@@ -95,7 +95,7 @@ public class LarDigestIterator implements Iterator<LarDigestItem> {
 					}
 				}
 				else if (event.isEndElement()) {
-					if (elementName.equals(NODE_ITEMS_LABEL)) {
+					if (elementName.equals(NODE_DIGEST_ITEM_LABEL)) {
 
 						return item;
 					}

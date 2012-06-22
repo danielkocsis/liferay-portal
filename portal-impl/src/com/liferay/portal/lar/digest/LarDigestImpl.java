@@ -205,12 +205,12 @@ public class LarDigestImpl implements LarDigest {
 		_startElements = new HashMap<String, StartElement>();
 
 		_endElements.put(
-			LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL,
-			createEndElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
+			LarDigesterConstants.NODE_DIGEST_ITEM_LABEL,
+			createEndElement(LarDigesterConstants.NODE_DIGEST_ITEM_LABEL));
 
 		_startElements.put(
-			LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL,
-			createStartElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
+			LarDigesterConstants.NODE_DIGEST_ITEM_LABEL,
+			createStartElement(LarDigesterConstants.NODE_DIGEST_ITEM_LABEL));
 
 		_endElements.put(
 			LarDigesterConstants.NODE_ACTION_LABEL,
@@ -250,7 +250,7 @@ public class LarDigestImpl implements LarDigest {
 
 		try {
 			_xmlEventWriter.add(
-				getStartElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
+				getStartElement(LarDigesterConstants.NODE_DIGEST_ITEM_LABEL));
 
 			addXmlNode(LarDigesterConstants.NODE_PATH_LABEL, path);
 
@@ -263,7 +263,7 @@ public class LarDigestImpl implements LarDigest {
 			addXmlNode(LarDigesterConstants.NODE_CLASS_PK_LABEL, classPK);
 
 			_xmlEventWriter.add(
-				getEndElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
+				getEndElement(LarDigesterConstants.NODE_DIGEST_ITEM_LABEL));
 		}
 		finally {
 			try {
