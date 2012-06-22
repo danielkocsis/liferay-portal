@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -116,7 +115,7 @@ public class LarDigestImpl implements LarDigest {
 	}
 
 	public void write(LarDigestItem digestItem)
-		throws PortalException {
+		throws PortalException, XMLStreamException {
 
 		write(
 			digestItem.getAction(), digestItem.getPath(), digestItem.getType(),
@@ -249,7 +248,7 @@ public class LarDigestImpl implements LarDigest {
 	}
 
 	protected void write(int action, String path, String type, String classPK)
-		throws PortalException {
+		throws PortalException, XMLStreamException {
 
 		try {
 			_xmlEventWriter.add(
@@ -267,9 +266,6 @@ public class LarDigestImpl implements LarDigest {
 
 			_xmlEventWriter.add(
 				getEndElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
-		}
-		catch (XMLStreamException ex) {
-			_log.error(ex, ex);
 		}
 		finally {
 			try {

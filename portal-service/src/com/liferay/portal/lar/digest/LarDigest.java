@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 
 import java.io.File;
 
+import javax.xml.stream.XMLStreamException;
+
 /**
  * @author Daniel Kocsis
  */
@@ -27,6 +29,7 @@ public interface LarDigest extends Iterable<LarDigestItem> {
 
 	public File getDigestFile();
 
-	public void write(LarDigestItem digestItem) throws PortalException;
+	public void write(LarDigestItem digestItem)
+		throws PortalException, XMLStreamException;
 
 }

@@ -47,7 +47,6 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.lar.LARExporter;
-import com.liferay.portal.lar.LayoutExporter;
 import com.liferay.portal.lar.LayoutImporter;
 import com.liferay.portal.lar.PortletExporter;
 import com.liferay.portal.lar.PortletImporter;
