@@ -25,11 +25,8 @@ public interface LarDigest extends Iterable {
 
 	public void close();
 
-	public void close(boolean format);
-
 	public File getDigestFile();
 
-	public void write(int action, String path, String type, String classPK)
-		throws PortalException;
+	public void write(LarDigestItem digestItem) throws PortalException;
 
 }

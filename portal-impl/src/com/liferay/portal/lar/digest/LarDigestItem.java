@@ -23,7 +23,7 @@ public class LarDigestItem {
 		return _action;
 	}
 
-	public long getClassPK() {
+	public String getClassPK() {
 		return _classPK;
 	}
 
@@ -39,7 +39,7 @@ public class LarDigestItem {
 		_action = action;
 	}
 
-	public void setClassPK(long classPK) {
+	public void setClassPK(String classPK) {
 		_classPK = classPK;
 	}
 
@@ -52,7 +52,7 @@ public class LarDigestItem {
 	}
 
 	private int _action;
-	private long _classPK;
+	private String _classPK;
 	private String _path;
 	private String _type;
 

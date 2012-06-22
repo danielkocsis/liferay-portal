@@ -45,8 +45,6 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -78,17 +76,11 @@ public class LarDigestImpl implements LarDigest {
 	}
 
 	public void close() {
-		close(Boolean.FALSE);
-	}
-
-	public void close(boolean format) {
 		try {
 			_xmlEventWriter.flush();
 			_xmlEventWriter.close();
 
-			if (format) {
-				format(_digestFile);
-			}
+			format(_digestFile);
 		}
 		catch (Exception ex) {
 			_log.error(ex, ex);
@@ -123,37 +115,12 @@ public class LarDigestImpl implements LarDigest {
 		return _digestFile;
 	}
 
-	public void write(int action, String path, String type, String classPK)
+	public void write(LarDigestItem digestItem)
 		throws PortalException {
 
-		try {
-			_xmlEventWriter.add(
-				getStartElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
-
-			addXmlNode(LarDigesterConstants.NODE_PATH_LABEL, path);
-
-			addXmlNode(
-				LarDigesterConstants.NODE_ACTION_LABEL,
-				StringUtil.valueOf(action));
-
-			addXmlNode(LarDigesterConstants.NODE_TYPE_LABEL, type);
-
-			addXmlNode(LarDigesterConstants.NODE_CLASS_PK_LABEL, classPK);
-
-			_xmlEventWriter.add(
-				getEndElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
-		}
-		catch (XMLStreamException ex) {
-			_log.error(ex, ex);
-		}
-		finally {
-			try {
-				_xmlEventWriter.flush();
-			}
-			catch (Exception ex) {
-				throw new PortalException(ex.getMessage());
-			}
-		}
+		write(
+			digestItem.getAction(), digestItem.getPath(), digestItem.getType(),
+			digestItem.getClassPK());
 	}
 
 	protected void addXmlNode(String name, String value)
@@ -229,22 +196,24 @@ public class LarDigestImpl implements LarDigest {
 			createStartElement(LarDigesterConstants.NODE_TYPE_LABEL));
 	}
 
-	protected void format(File larDigest)
-		throws TransformerConfigurationException {
+	protected void format(File larDigest) {
 
-		TransformerFactory tf = TransformerFactory.newInstance();
+		File formattedLarDigest = null;
 
-		Transformer transformer = tf.newTransformer();
-
-		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-		transformer.setOutputProperty(
-			"{http://xml.apache.org/xslt}indent-amount", "2");
-
-		File formattedLarDigest = FileUtil.createTempFile();
+		TransformerFactory transformerFactory =
+			TransformerFactory.newInstance();
 
 		try {
+			Transformer transformer = transformerFactory.newTransformer();
+
+			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+			transformer.setOutputProperty(
+					"{http://xml.apache.org/xslt}indent-amount", "2");
+
+			formattedLarDigest = FileUtil.createTempFile();
+
 			transformer.transform(
 				new StreamSource(larDigest),
 				new StreamResult(formattedLarDigest));
@@ -253,11 +222,10 @@ public class LarDigestImpl implements LarDigest {
 				FileUtil.copyFile(formattedLarDigest, larDigest);
 			}
 		}
-		catch (TransformerException ex) {
-			_log.error(ex, ex);
-		}
-		catch (IOException ex) {
-			_log.error(ex, ex);
+		catch (Exception ex) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(ex, ex);
+			}
 		}
 		finally {
 			FileUtil.delete(formattedLarDigest);
@@ -280,9 +248,43 @@ public class LarDigestImpl implements LarDigest {
 		return _startElements.get(name);
 	}
 
+	protected void write(int action, String path, String type, String classPK)
+		throws PortalException {
+
+		try {
+			_xmlEventWriter.add(
+				getStartElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
+
+			addXmlNode(LarDigesterConstants.NODE_PATH_LABEL, path);
+
+			addXmlNode(
+				LarDigesterConstants.NODE_ACTION_LABEL,
+				StringUtil.valueOf(action));
+
+			addXmlNode(LarDigesterConstants.NODE_TYPE_LABEL, type);
+
+			addXmlNode(LarDigesterConstants.NODE_CLASS_PK_LABEL, classPK);
+
+			_xmlEventWriter.add(
+				getEndElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
+		}
+		catch (XMLStreamException ex) {
+			_log.error(ex, ex);
+		}
+		finally {
+			try {
+				_xmlEventWriter.flush();
+			}
+			catch (Exception ex) {
+				throw new PortalException(ex.getMessage());
+			}
+		}
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(LarDigest.class);
 
 	private File _digestFile;
+
 	private Map<String, EndElement> _endElements;
 	private Map<String, StartElement> _startElements;
 	private XMLEventFactory _xmlEventFactory;
