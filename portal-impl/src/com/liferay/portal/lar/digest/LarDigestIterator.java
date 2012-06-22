@@ -17,11 +17,13 @@ package com.liferay.portal.lar.digest;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.xml.StAXReaderUtil;
 
+import java.util.Iterator;
+
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import java.util.Iterator;
+
 import static com.liferay.portal.lar.digest.LarDigesterConstants.*;
 
 /**
@@ -87,8 +89,7 @@ public class LarDigestIterator implements Iterator<LarDigestItem> {
 					}
 					else if (elementName.equals(NODE_CLASS_PK_LABEL)) {
 
-						String classPK =
-							StAXReaderUtil.read(_xmlEventReader);
+						String classPK = StAXReaderUtil.read(_xmlEventReader);
 
 						item.setClassPK(classPK);
 					}

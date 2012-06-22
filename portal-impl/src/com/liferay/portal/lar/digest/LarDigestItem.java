@@ -14,22 +14,46 @@
 
 package com.liferay.portal.lar.digest;
 
-import com.liferay.portal.kernel.exception.PortalException;
-
-import java.io.File;
-
-import javax.xml.stream.XMLStreamException;
-
 /**
- * @author Daniel Kocsis
+ * @author Mate Thurzo
  */
-public interface LarDigest extends Iterable<LarDigestItem> {
+public class LarDigestItem {
 
-	public void close();
+	public int getAction() {
+		return _action;
+	}
 
-	public File getDigestFile();
+	public String getClassPK() {
+		return _classPK;
+	}
 
-	public void write(LarDigestItem digestItem)
-		throws PortalException, XMLStreamException;
+	public String getPath() {
+		return _path;
+	}
+
+	public String getType() {
+		return _type;
+	}
+
+	public void setAction(int action) {
+		_action = action;
+	}
+
+	public void setClassPK(String classPK) {
+		_classPK = classPK;
+	}
+
+	public void setPath(String path) {
+		_path = path;
+	}
+
+	public void setType(String type) {
+		_type = type;
+	}
+
+	private int _action;
+	private String _classPK;
+	private String _path;
+	private String _type;
 
 }
