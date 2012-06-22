@@ -136,7 +136,7 @@ public class LarDigestImpl implements LarDigest {
 		QName qName = new QName(name);
 
 		StartElement startElement = _xmlEventFactory.createStartElement(
-				qName, null, null);
+			qName, null, null);
 
 		return startElement;
 	}
