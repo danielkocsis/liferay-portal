@@ -25,7 +25,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public interface LarDigest extends Iterable<LarDigestItem> {
 
-	public void close();
+	public void close() throws XMLStreamException;
 
 	public File getDigestFile();
 

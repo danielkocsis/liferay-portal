@@ -20,12 +20,9 @@ import com.liferay.portal.kernel.lar.PortletDataHandlerBoolean;
 import com.liferay.portal.kernel.lar.PortletDataHandlerControl;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
-import com.liferay.portal.lar.digest.LarDigest;
-import com.liferay.portal.lar.digest.LarDigesterConstants;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.bookmarks.model.BookmarksEntry;
@@ -197,31 +194,6 @@ public class BookmarksPortletDataHandlerImpl extends BasePortletDataHandler {
 	}
 
 	protected void exportEntry(
-			BookmarksEntry entry, LarDigest larDigest,
-			PortletDataContext portletDataContext)
-		throws Exception {
-
-		if (!portletDataContext.isWithinDateRange(entry.getModifiedDate())) {
-			return;
-		}
-
-		long parentForlderId = entry.getFolderId();
-
-		if (parentForlderId > 0) {
-			exportParentFolder(larDigest, parentForlderId, portletDataContext);
-		}
-
-		String path = getEntryPath(portletDataContext, entry);
-
-		if (portletDataContext.isPathNotProcessed(path)) {
-			larDigest.write(
-				LarDigesterConstants.ACTION_ADD, path,
-				entry.getClass().getName(),
-				StringUtil.valueOf(entry.getEntryId()));
-		}
-	}
-
-	protected void exportEntry(
 			PortletDataContext portletDataContext, Element foldersElement,
 			Element entriesElement, BookmarksEntry entry)
 		throws Exception {
@@ -242,33 +214,6 @@ public class BookmarksPortletDataHandlerImpl extends BasePortletDataHandler {
 
 			portletDataContext.addClassedModel(
 				entryElement, path, entry, _NAMESPACE);
-		}
-	}
-
-	protected void exportFolder(
-			BookmarksFolder folder, LarDigest larDigest,
-			PortletDataContext portletDataContext)
-		throws Exception {
-
-		if (portletDataContext.isWithinDateRange(folder.getModifiedDate())) {
-			exportParentFolder(
-				larDigest, folder.getParentFolderId(), portletDataContext);
-
-			String path = getFolderPath(portletDataContext, folder);
-
-			if (portletDataContext.isPathNotProcessed(path)) {
-				larDigest.write(
-					LarDigesterConstants.ACTION_ADD, path,
-					folder.getClass().getName(),
-					StringUtil.valueOf(folder.getFolderId()));
-			}
-		}
-
-		List<BookmarksEntry> entries = BookmarksEntryUtil.findByG_F(
-				folder.getGroupId(), folder.getFolderId());
-
-		for (BookmarksEntry entry : entries) {
-			exportEntry(entry, larDigest, portletDataContext);
 		}
 	}
 
@@ -297,30 +242,6 @@ public class BookmarksPortletDataHandlerImpl extends BasePortletDataHandler {
 		for (BookmarksEntry entry : entries) {
 			exportEntry(
 				portletDataContext, foldersElement, entriesElement, entry);
-		}
-	}
-
-	protected void exportParentFolder(
-			LarDigest larDigest, long folderId,
-			PortletDataContext portletDataContext)
-		throws Exception {
-
-		if (folderId == BookmarksFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-			return;
-		}
-
-		BookmarksFolder folder = BookmarksFolderUtil.findByPrimaryKey(folderId);
-
-		exportParentFolder(
-			larDigest, folder.getParentFolderId(), portletDataContext);
-
-		String path = getFolderPath(portletDataContext, folder);
-
-		if (portletDataContext.isPathNotProcessed(path)) {
-			larDigest.write(
-				LarDigesterConstants.ACTION_ADD, path,
-				folder.getClass().getName(),
-				StringUtil.valueOf(folder.getFolderId()));
 		}
 	}
 

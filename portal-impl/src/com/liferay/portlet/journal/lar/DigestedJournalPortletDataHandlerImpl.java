@@ -41,6 +41,8 @@ import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.lar.digest.LarDigest;
 import com.liferay.portal.lar.digest.LarDigestImpl;
+import com.liferay.portal.lar.digest.LarDigestItem;
+import com.liferay.portal.lar.digest.LarDigestItemImpl;
 import com.liferay.portal.lar.digest.LarDigesterConstants;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Image;
@@ -157,9 +159,14 @@ public class DigestedJournalPortletDataHandlerImpl
 			return;
 		}
 
-		larDigest.write(LarDigesterConstants.ACTION_ADD, path,
-			article.getClass().getName(),
-			StringUtil.valueOf(article.getArticleId()));
+		LarDigestItem digestItem = new LarDigestItemImpl();
+
+		digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+		digestItem.setPath(path);
+		digestItem.setType(JournalArticle.class.getName());
+		digestItem.setClassPK(StringUtil.valueOf(article.getArticleId()));
+
+		larDigest.write(digestItem);
 
 		// Clone this article to make sure changes to its content are never
 		// persisted
@@ -197,9 +204,13 @@ public class DigestedJournalPortletDataHandlerImpl
 
 			article.setSmallImageType(smallImage.getType());
 
-			larDigest.write(LarDigesterConstants.ACTION_ADD, smallImagePath,
-				Image.class.getName(), StringUtil.valueOf(
-					smallImage.getImageId()));
+			digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+			digestItem.setPath(smallImagePath);
+			digestItem.setType(Image.class.getName());
+			digestItem.setClassPK(StringUtil.valueOf(smallImage.getImageId()));
+
+			larDigest.write(digestItem);
+
 		}
 
 		if (portletDataContext.getBooleanParameter(_NAMESPACE, "images")) {
@@ -226,9 +237,12 @@ public class DigestedJournalPortletDataHandlerImpl
 					continue;
 				}
 
-				larDigest.write(LarDigesterConstants.ACTION_ADD, path,
-					image.getClass().getName(), StringUtil.valueOf(
-						image.getImageId()));
+				digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+				digestItem.setPath(path);
+				digestItem.setType(Image.class.getName());
+				digestItem.setClassPK(StringUtil.valueOf(image.getImageId()));
+
+				larDigest.write(digestItem);
 			}
 		}
 
@@ -256,7 +270,8 @@ public class DigestedJournalPortletDataHandlerImpl
 			boolean checkDateRange)
 		throws Exception {
 
-		exportArticle(new LarDigestImpl(), portletDataContext, article,
+		exportArticle(
+			new LarDigestImpl(), portletDataContext, article,
 			preferenceTemplateId, checkDateRange);
 	}
 
@@ -633,8 +648,9 @@ public class DigestedJournalPortletDataHandlerImpl
 					fileName = fileName.substring(0, pos);
 				}
 
-				images.put(fileName, portletDataContext.getZipEntryAsByteArray(
-					imageFile));
+				images.put(
+					fileName,
+					portletDataContext.getZipEntryAsByteArray(imageFile));
 			}
 		}
 
@@ -1597,9 +1613,14 @@ public class DigestedJournalPortletDataHandlerImpl
 			feed.setTargetLayoutFriendlyUrl(targetLayoutFriendlyUrl);
 		}
 
-		larDigest.write(LarDigesterConstants.ACTION_ADD, path,
-			feed.getClass().getName(), StringUtil.valueOf(
-				feed.getPrimaryKey()));
+		LarDigestItem digestItem = new LarDigestItemImpl();
+
+		digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+		digestItem.setPath(path);
+		digestItem.setType(JournalFeed.class.getName());
+		digestItem.setClassPK(StringUtil.valueOf(feed.getPrimaryKey()));
+
+		larDigest.write(digestItem);
 
 		portletDataContext.addClassedModel(path, feed, _NAMESPACE);
 	}
@@ -1621,9 +1642,15 @@ public class DigestedJournalPortletDataHandlerImpl
 		String path = getFolderPath(portletDataContext, folder);
 
 		if (portletDataContext.isPathNotProcessed(path)) {
-			larDigest.write(LarDigesterConstants.ACTION_ADD, path,
-				folder.getClass().getName(), StringUtil.valueOf(
-					folder.getFolderId()));
+
+			LarDigestItem digestItem = new LarDigestItemImpl();
+
+			digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+			digestItem.setPath(path);
+			digestItem.setType(JournalFolder.class.getName());
+			digestItem.setClassPK(StringUtil.valueOf(folder.getFolderId()));
+
+			larDigest.write(digestItem);
 
 			portletDataContext.addClassedModel(path, folder, _NAMESPACE);
 		}
@@ -1849,9 +1876,14 @@ public class DigestedJournalPortletDataHandlerImpl
 		String path = getFolderPath(portletDataContext, folder);
 
 		if (portletDataContext.isPathNotProcessed(path)) {
-			larDigest.write(LarDigesterConstants.ACTION_ADD, path,
-				folder.getClass().getName(), StringUtil.valueOf(
-					folder.getFolderId()));
+			LarDigestItem digestItem = new LarDigestItemImpl();
+
+			digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+			digestItem.setPath(path);
+			digestItem.setType(JournalFolder.class.getName());
+			digestItem.setClassPK(StringUtil.valueOf(folder.getFolderId()));
+
+			larDigest.write(digestItem);
 
 			portletDataContext.addClassedModel(path, folder, _NAMESPACE);
 		}
@@ -1882,9 +1914,14 @@ public class DigestedJournalPortletDataHandlerImpl
 			}
 		}
 
-		larDigest.write(LarDigesterConstants.ACTION_ADD, path,
-			structure.getClass().getName(), StringUtil.valueOf(
-				structure.getId()));
+		LarDigestItem digestItem = new LarDigestItemImpl();
+
+		digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+		digestItem.setPath(path);
+		digestItem.setType(JournalStructure.class.getName());
+		digestItem.setClassPK(StringUtil.valueOf(structure.getId()));
+
+		larDigest.write(digestItem);
 
 		portletDataContext.addClassedModel(path, structure, _NAMESPACE);
 	}
@@ -1905,13 +1942,19 @@ public class DigestedJournalPortletDataHandlerImpl
 
 		template = (JournalTemplate)template.clone();
 
+		LarDigestItem digestItem = new LarDigestItemImpl();
+
 		if (template.isSmallImage()) {
 			String smallImagePath = getTemplateSmallImagePath(
 				portletDataContext, template);
 
-			larDigest.write(LarDigesterConstants.ACTION_ADD, smallImagePath,
-				Image.class.getName(), StringUtil.valueOf(
-					template.getSmallImageId()));
+			digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+			digestItem.setPath(smallImagePath);
+			digestItem.setType(Image.class.getName());
+			digestItem.setClassPK(
+				StringUtil.valueOf(template.getSmallImageId()));
+
+			larDigest.write(digestItem);
 		}
 
 		if (portletDataContext.getBooleanParameter(
@@ -1923,9 +1966,12 @@ public class DigestedJournalPortletDataHandlerImpl
 			template.setXsl(content);
 		}
 
-		larDigest.write(LarDigesterConstants.ACTION_ADD, path,
-			template.getClass().getName(), StringUtil.valueOf(
-				template.getId()));
+		digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+		digestItem.setPath(path);
+		digestItem.setType(JournalTemplate.class.getName());
+		digestItem.setClassPK(StringUtil.valueOf(template.getId()));
+
+		larDigest.write(digestItem);
 
 		portletDataContext.addClassedModel(path, template, _NAMESPACE);
 	}

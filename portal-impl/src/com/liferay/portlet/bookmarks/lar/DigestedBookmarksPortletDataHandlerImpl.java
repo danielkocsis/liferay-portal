@@ -25,6 +25,8 @@ import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.lar.digest.LarDigest;
+import com.liferay.portal.lar.digest.LarDigestItem;
+import com.liferay.portal.lar.digest.LarDigestItemImpl;
 import com.liferay.portal.lar.digest.LarDigesterConstants;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortletKeys;
@@ -200,10 +202,14 @@ public class DigestedBookmarksPortletDataHandlerImpl
 		String path = getEntryPath(portletDataContext, entry);
 
 		if (portletDataContext.isPathNotProcessed(path)) {
-			larDigest.write(
-				LarDigesterConstants.ACTION_ADD, path,
-				entry.getClass().getName(),
-				StringUtil.valueOf(entry.getEntryId()));
+			LarDigestItem digestItem = new LarDigestItemImpl();
+
+			digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+			digestItem.setPath(path);
+			digestItem.setType(BookmarksEntry.class.getName());
+			digestItem.setClassPK(StringUtil.valueOf(entry.getEntryId()));
+
+			larDigest.write(digestItem);
 		}
 	}
 
@@ -219,10 +225,14 @@ public class DigestedBookmarksPortletDataHandlerImpl
 			String path = getFolderPath(portletDataContext, folder);
 
 			if (portletDataContext.isPathNotProcessed(path)) {
-				larDigest.write(
-					LarDigesterConstants.ACTION_ADD, path,
-					folder.getClass().getName(),
-					StringUtil.valueOf(folder.getFolderId()));
+				LarDigestItem digestItem = new LarDigestItemImpl();
+
+				digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+				digestItem.setPath(path);
+				digestItem.setType(BookmarksFolder.class.getName());
+				digestItem.setClassPK(StringUtil.valueOf(folder.getFolderId()));
+
+				larDigest.write(digestItem);
 			}
 		}
 
@@ -251,10 +261,14 @@ public class DigestedBookmarksPortletDataHandlerImpl
 		String path = getFolderPath(portletDataContext, folder);
 
 		if (portletDataContext.isPathNotProcessed(path)) {
-			larDigest.write(
-				LarDigesterConstants.ACTION_ADD, path,
-				folder.getClass().getName(),
-				StringUtil.valueOf(folder.getFolderId()));
+			LarDigestItem digestItem = new LarDigestItemImpl();
+
+			digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+			digestItem.setPath(path);
+			digestItem.setType(BookmarksFolder.class.getName());
+			digestItem.setClassPK(StringUtil.valueOf(folder.getFolderId()));
+
+			larDigest.write(digestItem);
 		}
 	}
 
