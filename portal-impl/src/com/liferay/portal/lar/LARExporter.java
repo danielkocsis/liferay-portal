@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.lar.digest.LarDigest;
 import com.liferay.portal.lar.digest.LarDigestImpl;
 import com.liferay.portal.lar.digest.LarDigestItem;
-import com.liferay.portal.lar.digest.LarDigesterConstants;
 import com.liferay.portal.model.*;
 import com.liferay.portal.model.impl.LayoutImpl;
 import com.liferay.portal.service.*;
@@ -83,7 +82,7 @@ public class LARExporter {
 			_log.error(e);
 		}
 		finally {
-			_larDigest.close(Boolean.TRUE);
+			_larDigest.close();
 		}
 
 		_larDigestFile = _larDigest.getDigestFile();
@@ -217,11 +216,11 @@ public class LARExporter {
 					getLayoutSetPrototypeByUuidAndCompanyId(
 						layoutSetPrototypeUuid, companyId);
 
-			larDigest.write(
+			/*larDigest.write(
 				LarDigesterConstants.ACTION_ADD, "",
 				LayoutSetPrototype.class.getName(),
 				StringUtil.valueOf(
-					layoutSetPrototype.getLayoutSetPrototypeId()));
+					layoutSetPrototype.getLayoutSetPrototypeId()));*/
 		}
 
 		// Layouts

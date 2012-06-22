@@ -128,6 +128,7 @@ public class LarDigestIterator implements Iterator<LarDigestItem> {
 		return StringPool.BLANK;
 	}
 
-	private XMLEventReader _xmlEventReader;
 	private LarDigestItem _nextItem;
+	private XMLEventReader _xmlEventReader;
+
 }
