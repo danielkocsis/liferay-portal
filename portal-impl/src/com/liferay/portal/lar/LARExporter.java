@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.lar.digest.LarDigest;
 import com.liferay.portal.lar.digest.LarDigestImpl;
-import com.liferay.portal.lar.digest.LarDigestItem;
 import com.liferay.portal.model.*;
 import com.liferay.portal.model.impl.LayoutImpl;
 import com.liferay.portal.service.*;
