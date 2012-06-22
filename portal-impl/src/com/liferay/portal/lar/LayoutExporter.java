@@ -43,6 +43,8 @@ import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.lar.digest.LarDigest;
+import com.liferay.portal.lar.digest.LarDigestItem;
+import com.liferay.portal.lar.digest.LarDigestItemImpl;
 import com.liferay.portal.lar.digest.LarDigesterConstants;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Image;
@@ -212,20 +214,27 @@ public class LayoutExporter {
 		boolean deleteLayout = MapUtil.getBoolean(
 			portletDataContext.getParameterMap(), "delete_" + layout.getPlid());
 
+		LarDigestItem digestItem = new LarDigestItemImpl();
+
 		if (deleteLayout) {
-			larDigest.write(
-				LarDigesterConstants.ACTION_DELETE, path,
-				layout.getClass().getName(),
-				StringUtil.valueOf(layout.getLayoutId()));
+			digestItem.setAction(LarDigesterConstants.ACTION_DELETE);
+			digestItem.setPath(path);
+			digestItem.setType(Layout.class.getName());
+			digestItem.setClassPK(StringUtil.valueOf(layout.getLayoutId()));
+
+			larDigest.write(digestItem);
 
 			return;
 		}
 
 		portletDataContext.setPlid(layout.getPlid());
 
-		larDigest.write(
-			LarDigesterConstants.ACTION_ADD, path, layout.getClass().getName(),
-			StringUtil.valueOf(layout.getLayoutId()));
+		digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+		digestItem.setPath(path);
+		digestItem.setType(Layout.class.getName());
+		digestItem.setClassPK(StringUtil.valueOf(layout.getLayoutId()));
+
+		larDigest.write(digestItem);
 
 		_portletExporter.createPortletDataDigest(
 			portletDataContext, layoutConfigurationPortlet, layout, null,

@@ -42,6 +42,8 @@ import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.lar.digest.LarDigest;
+import com.liferay.portal.lar.digest.LarDigestItem;
+import com.liferay.portal.lar.digest.LarDigestItemImpl;
 import com.liferay.portal.lar.digest.LarDigesterConstants;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
@@ -315,9 +317,14 @@ public class PortletExporter {
 
 		String path = sb.toString();
 
-		larDigest.write(
-			LarDigesterConstants.ACTION_ADD, path, portlet.getClass().getName(),
-			portletId);
+		LarDigestItem digestItem = new LarDigestItemImpl();
+
+		digestItem.setAction(LarDigesterConstants.ACTION_DELETE);
+		digestItem.setPath(path);
+		digestItem.setType(Portlet.class.getName());
+		digestItem.setClassPK(portletId);
+
+		larDigest.write(digestItem);
 
 		if (portletDataContext.isPathNotProcessed(path)) {
 			portletDataContext.addPrimaryKey(String.class, path);

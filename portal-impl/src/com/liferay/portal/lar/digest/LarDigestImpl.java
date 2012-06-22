@@ -62,8 +62,7 @@ public class LarDigestImpl implements LarDigest {
 
 		_xmlEventFactory = XMLEventFactory.newInstance();
 
-		createEndElements();
-		createStartElements();
+		initElements();
 
 		OutputStream outputStream = new FileOutputStream(getDigestFile());
 
@@ -74,16 +73,24 @@ public class LarDigestImpl implements LarDigest {
 		_xmlEventWriter.add(createStartElement("root"));
 	}
 
-	public void close() {
-		try {
-			_xmlEventWriter.flush();
-			_xmlEventWriter.close();
+	public void close() throws XMLStreamException {
+		_xmlEventWriter.flush();
+		_xmlEventWriter.close();
 
-			format(_digestFile);
+		format(_digestFile);
+	}
+
+	public File getDigestFile() {
+		if (_digestFile == null) {
+			String path =
+				SystemProperties.get(SystemProperties.TMP_DIR) +
+					StringPool.SLASH + "digest_" + PortalUUIDUtil.generate() +
+					".xml";
+
+			_digestFile = new File(path);
 		}
-		catch (Exception ex) {
-			_log.error(ex, ex);
-		}
+
+		return _digestFile;
 	}
 
 	public Iterator<LarDigestItem> iterator() {
@@ -99,19 +106,6 @@ public class LarDigestImpl implements LarDigest {
 		catch (Exception e) {
 			return null;
 		}
-	}
-
-	public File getDigestFile() {
-		if (_digestFile == null) {
-			String path =
-				SystemProperties.get(SystemProperties.TMP_DIR) +
-					StringPool.SLASH + "digest_" + PortalUUIDUtil.generate() +
-						".xml";
-
-			_digestFile = new File(path);
-		}
-
-		return _digestFile;
 	}
 
 	public void write(LarDigestItem digestItem)
@@ -138,64 +132,20 @@ public class LarDigestImpl implements LarDigest {
 		return endElement;
 	}
 
-	protected void createEndElements() {
-		_endElements = new HashMap<String, EndElement>();
-
-		_endElements.put(
-			LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL,
-			createEndElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
-
-		_endElements.put(
-			LarDigesterConstants.NODE_ACTION_LABEL,
-			createEndElement(LarDigesterConstants.NODE_ACTION_LABEL));
-
-		_endElements.put(
-			LarDigesterConstants.NODE_CLASS_PK_LABEL,
-			createEndElement(LarDigesterConstants.NODE_CLASS_PK_LABEL));
-
-		_endElements.put(
-			LarDigesterConstants.NODE_PATH_LABEL,
-			createEndElement(LarDigesterConstants.NODE_PATH_LABEL));
-
-		_endElements.put(
-			LarDigesterConstants.NODE_TYPE_LABEL,
-			createEndElement(LarDigesterConstants.NODE_TYPE_LABEL));
-	}
-
 	protected StartElement createStartElement(String name) {
 		QName qName = new QName(name);
 
 		StartElement startElement = _xmlEventFactory.createStartElement(
-			qName, null, null);
+				qName, null, null);
 
 		return startElement;
 	}
 
-	protected void createStartElements() {
-		_startElements = new HashMap<String, StartElement>();
-
-		_startElements.put(
-			LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL,
-			createStartElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
-
-		_startElements.put(
-			LarDigesterConstants.NODE_ACTION_LABEL,
-			createStartElement(LarDigesterConstants.NODE_ACTION_LABEL));
-
-		_startElements.put(
-			LarDigesterConstants.NODE_CLASS_PK_LABEL,
-			createStartElement(LarDigesterConstants.NODE_CLASS_PK_LABEL));
-
-		_startElements.put(
-			LarDigesterConstants.NODE_PATH_LABEL,
-			createStartElement(LarDigesterConstants.NODE_PATH_LABEL));
-
-		_startElements.put(
-			LarDigesterConstants.NODE_TYPE_LABEL,
-			createStartElement(LarDigesterConstants.NODE_TYPE_LABEL));
-	}
-
 	protected void format(File larDigest) {
+
+		if (larDigest == null) {
+			return;
+		}
 
 		File formattedLarDigest = null;
 
@@ -209,7 +159,7 @@ public class LarDigestImpl implements LarDigest {
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 			transformer.setOutputProperty(
-					"{http://xml.apache.org/xslt}indent-amount", "2");
+				"{http://xml.apache.org/xsl0t}indent-amount", "2");
 
 			formattedLarDigest = FileUtil.createTempFile();
 
@@ -223,11 +173,14 @@ public class LarDigestImpl implements LarDigest {
 		}
 		catch (Exception ex) {
 			if (_log.isWarnEnabled()) {
-				_log.warn(ex, ex);
+				_log.warn(
+					"Can't format the " + larDigest.getName() + " file!", ex);
 			}
 		}
 		finally {
-			FileUtil.delete(formattedLarDigest);
+			if (formattedLarDigest != null) {
+				FileUtil.delete(formattedLarDigest);
+			}
 		}
 	}
 
@@ -245,6 +198,51 @@ public class LarDigestImpl implements LarDigest {
 		}
 
 		return _startElements.get(name);
+	}
+
+	protected void initElements() {
+		_endElements = new HashMap<String, EndElement>();
+		_startElements = new HashMap<String, StartElement>();
+
+		_endElements.put(
+			LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL,
+			createEndElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
+
+		_startElements.put(
+			LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL,
+			createStartElement(LarDigesterConstants.NODE_DIGEST_ENTRY_LABEL));
+
+		_endElements.put(
+			LarDigesterConstants.NODE_ACTION_LABEL,
+			createEndElement(LarDigesterConstants.NODE_ACTION_LABEL));
+
+		_startElements.put(
+			LarDigesterConstants.NODE_ACTION_LABEL,
+			createStartElement(LarDigesterConstants.NODE_ACTION_LABEL));
+
+		_endElements.put(
+			LarDigesterConstants.NODE_CLASS_PK_LABEL,
+			createEndElement(LarDigesterConstants.NODE_CLASS_PK_LABEL));
+
+		_startElements.put(
+			LarDigesterConstants.NODE_CLASS_PK_LABEL,
+			createStartElement(LarDigesterConstants.NODE_CLASS_PK_LABEL));
+
+		_endElements.put(
+			LarDigesterConstants.NODE_PATH_LABEL,
+			createEndElement(LarDigesterConstants.NODE_PATH_LABEL));
+
+		_startElements.put(
+			LarDigesterConstants.NODE_PATH_LABEL,
+			createStartElement(LarDigesterConstants.NODE_PATH_LABEL));
+
+		_endElements.put(
+			LarDigesterConstants.NODE_TYPE_LABEL,
+			createEndElement(LarDigesterConstants.NODE_TYPE_LABEL));
+
+		_startElements.put(
+			LarDigesterConstants.NODE_TYPE_LABEL,
+			createStartElement(LarDigesterConstants.NODE_TYPE_LABEL));
 	}
 
 	protected void write(int action, String path, String type, String classPK)

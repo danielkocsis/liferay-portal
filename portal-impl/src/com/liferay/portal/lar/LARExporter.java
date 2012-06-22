@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.lar.digest.LarDigest;
 import com.liferay.portal.lar.digest.LarDigestImpl;
 import com.liferay.portal.lar.digest.LarDigestItem;
+import com.liferay.portal.lar.digest.LarDigestItemImpl;
 import com.liferay.portal.lar.digest.LarDigesterConstants;
 import com.liferay.portal.model.*;
 import com.liferay.portal.model.impl.LayoutImpl;
@@ -57,6 +58,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
+
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.time.StopWatch;
 
@@ -83,7 +86,11 @@ public class LARExporter {
 			_log.error(e);
 		}
 		finally {
-			_larDigest.close(Boolean.TRUE);
+			try {
+				_larDigest.close();
+			} catch (XMLStreamException xse) {
+				_log.error(xse);
+			}
 		}
 
 		_larDigestFile = _larDigest.getDigestFile();
@@ -217,11 +224,15 @@ public class LARExporter {
 					getLayoutSetPrototypeByUuidAndCompanyId(
 						layoutSetPrototypeUuid, companyId);
 
-			larDigest.write(
-				LarDigesterConstants.ACTION_ADD, "",
-				LayoutSetPrototype.class.getName(),
-				StringUtil.valueOf(
-					layoutSetPrototype.getLayoutSetPrototypeId()));
+			LarDigestItem digestItem = new LarDigestItemImpl();
+
+			digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+			digestItem.setPath("");
+			digestItem.setType(LayoutSetPrototype.class.getName());
+			digestItem.setClassPK(StringUtil.valueOf(
+				layoutSetPrototype.getLayoutSetPrototypeId()));
+
+			larDigest.write(digestItem);
 		}
 
 		// Layouts
@@ -471,11 +482,11 @@ public class LARExporter {
 
 	private static Log _log = LogFactoryUtil.getLog(LARExporter.class);
 
-	private File _larDigestFile;
 	private LarDigest _larDigest;
-	private PortletDataContext _portletDataContext;
+	private File _larDigestFile;
 	private LayoutExporter _layoutExporter = new LayoutExporter();
 	private PermissionExporter _permissionExporter = new PermissionExporter();
+	private PortletDataContext _portletDataContext;
 	private PortletExporter _portletExporter = new PortletExporter();
 
 }
