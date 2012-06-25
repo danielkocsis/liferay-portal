@@ -159,7 +159,7 @@ public class LarDigestImpl implements LarDigest {
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 			transformer.setOutputProperty(
-				"{http://xml.apache.org/xsl0t}indent-amount", "2");
+				"{http://xml.apache.org/xslt}indent-amount", "4");
 
 			formattedLarDigest = FileUtil.createTempFile();
 
