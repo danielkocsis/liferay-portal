@@ -40,6 +40,8 @@ import com.liferay.portal.model.*;
 import com.liferay.portal.model.impl.LayoutImpl;
 import com.liferay.portal.service.*;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
+import com.liferay.portal.service.persistence.lar.PortletLarPersistence;
+import com.liferay.portal.service.persistence.lar.PortletLarPersistenceImpl;
 import com.liferay.portal.theme.ThemeLoader;
 import com.liferay.portal.theme.ThemeLoaderFactory;
 import com.liferay.portal.util.PortletKeys;
@@ -329,16 +331,13 @@ public class LARExporter {
 			Map<String, String[]> parameterMap)
 		throws Exception, PortalException {
 
-		for (Object itemObj : _larDigest) {
-			LarDigestItem item = (LarDigestItem)itemObj;
+		for (LarDigestItem item : _larDigest) {
+			if (item.getType().equals(Portlet.class.getName())) {
+				PortletLarPersistence portletPersistene =
+					new PortletLarPersistenceImpl();
 
-			if (item.getType().equals("")) {
-
+				portletPersistene.serialize(null, null);
 			}
-
-			_log.warn("--------------------");
-			_log.warn(itemObj.getClass().getName());
-			_log.warn("--------------------");
 		}
 	}
 
