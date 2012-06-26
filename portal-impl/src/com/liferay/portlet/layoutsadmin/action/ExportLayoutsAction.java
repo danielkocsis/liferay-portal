@@ -181,9 +181,13 @@ public class ExportLayoutsAction extends PortletAction {
 			HttpServletResponse response = PortalUtil.getHttpServletResponse(
 				actionResponse);
 
-			ServletResponseUtil.sendFile(
+			/*ServletResponseUtil.sendFile(
 				request, response, fileName, new FileInputStream(file),
-				ContentTypes.APPLICATION_ZIP);
+				ContentTypes.APPLICATION_ZIP);*/
+
+			ServletResponseUtil.sendFile(
+				request, response, "digest.xml", new FileInputStream(file),
+				ContentTypes.TEXT_XML_UTF8);
 
 			setForward(actionRequest, ActionConstants.COMMON_NULL);
 		}
