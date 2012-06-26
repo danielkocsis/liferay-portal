@@ -457,6 +457,7 @@
 	<bean id="com.liferay.portal.service.persistence.lar.BookmarksEntryLarPersistence" class="com.liferay.portal.service.persistence.lar.BookmarksEntryLarPersistenceImpl" parent="baseLarPersistence" />
 	<bean id="com.liferay.portal.service.persistence.lar.BookmarksFolderLarPersistence" class="com.liferay.portal.service.persistence.lar.BookmarksFolderLarPersistenceImpl" parent="baseLarPersistence" />
 	<bean id="com.liferay.portal.service.persistence.lar.PortletLarPersistence" class="com.liferay.portal.service.persistence.lar.PortletLarPersistenceImpl" parent="baseLarPersistence" />
+	<bean id="com.liferay.portal.service.persistence.lar.BookmarksPortletLarPersistence" class="com.liferay.portal.service.persistence.lar.BookmarksPortletLarPersistenceImpl" parent="com.liferay.portal.service.persistence.lar.PortletLarPersistence" />
 	<bean id="com.liferay.portal.service.persistence.lar.ImageLarPersistence" class="com.liferay.portal.service.persistence.lar.ImageLarPersistenceImpl" parent="baseLarPersistence" />
 	<bean id="com.liferay.portal.service.persistence.lar.RoleLarPersistence" class="com.liferay.portal.service.persistence.lar.RoleLarPersistenceImpl" parent="baseLarPersistence" />
 </beans>

@@ -19,13 +19,15 @@ import com.liferay.portal.model.Portlet;
 import com.liferay.portal.test.EnvironmentExecutionTestListener;
 import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
 
 import java.io.File;
 import java.io.InputStream;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.powermock.api.mockito.PowerMockito;
 
 /**
  * @author Daniel Kocsis
@@ -77,4 +79,5 @@ public class LarDigestTest extends PowerMockito {
 
 		return xml;
 	}
+
 }

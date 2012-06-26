@@ -16,12 +16,15 @@ package com.liferay.portal.service.persistence.lar;
 
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.lar.digest.LarDigest;
 import com.liferay.portal.model.Layout;
 
 /**
  * @author Mate Thurzo
  */
 public interface LayoutLarPersistence {
+
+	public void doDigest(long layoutId, LarDigest digest);
 
 	public void deserialize(Document document);
 

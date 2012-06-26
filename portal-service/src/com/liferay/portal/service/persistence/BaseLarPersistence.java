@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.lar.XStreamWrapper;
+import com.liferay.portal.lar.digest.LarDigest;
 import com.liferay.portal.model.BaseModel;
 
 import java.io.InputStream;
@@ -36,6 +37,9 @@ public interface BaseLarPersistence<T extends BaseModel<T>> {
 
 	public void addZipEntry(String path, InputStream is)
 		throws SystemException;
+
+	public void digest(
+		T object, LarDigest digest, PortletDataContext portletDataContext);
 
 	public String getEntityPath(T object);
 

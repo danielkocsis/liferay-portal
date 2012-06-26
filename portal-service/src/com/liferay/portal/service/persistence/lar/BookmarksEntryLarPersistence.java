@@ -27,8 +27,4 @@ public interface BookmarksEntryLarPersistence
 
 	public void deserialize(Document document);
 
-	public void doSerialize(
-			BookmarksEntry entry, PortletDataContext portletDataContext)
-		throws Exception;
-
 }

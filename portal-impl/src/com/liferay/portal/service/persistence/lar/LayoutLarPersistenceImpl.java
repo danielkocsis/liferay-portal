@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.lar.LayoutCache;
+import com.liferay.portal.lar.digest.LarDigest;
 import com.liferay.portal.model.Image;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutRevision;
@@ -61,6 +62,11 @@ public class LayoutLarPersistenceImpl extends BaseLarPersistenceImpl<Layout>
 
 	public static final String SAME_GROUP_FRIENDLY_URL =
 		"/[$SAME_GROUP_FRIENDLY_URL$]";
+
+	public void doDigest(long layoutId, LarDigest digest) {
+		// processing
+		return;
+	}
 
 	public void deserialize(Document document) {
 		return;

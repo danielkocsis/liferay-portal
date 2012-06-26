@@ -27,8 +27,4 @@ public interface PortletLarPersistence extends BaseLarPersistence<Portlet> {
 
 	public void deserialize(Document document);
 
-	public void doSerialize(
-			Portlet portlet, PortletDataContext portletDataContext)
-		throws Exception;
-
 }
