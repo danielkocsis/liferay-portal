@@ -35,8 +35,6 @@ int totalVotes = question.getVotesCount();
 for (int i = 0; i < choices.size(); i++) {
 	PollsChoice choice = (PollsChoice)choices.get(i);
 
-	choice = choice.toEscapedModel();
-
 	int choiceVotes = choice.getVotesCount();
 
 	String className = "portlet-section-body results-row";
@@ -87,7 +85,7 @@ for (int i = 0; i < choices.size(); i++) {
 		<strong><%= choice.getName() %>.</strong>
 	</td>
 	<td width="99%">
-		<%= choice.getDescription(locale) %>
+		<%= HtmlUtil.escape(choice.getDescription(locale)) %>
 	</td>
 </tr>
 
@@ -183,7 +181,7 @@ for (int i = 0; i < choices.size(); i++) {
 
 			PollsChoice choice = vote.getChoice();
 
-			row.addText(choice.getName() + ". " + choice.getDescription(locale));
+			row.addText(choice.getName() + ". " + HtmlUtil.escape(choice.getDescription(locale)));
 
 			// Vote date
 
