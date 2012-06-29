@@ -12,32 +12,27 @@
  * details.
  */
 
-package com.liferay.portal.kernel.zip;
-
-import java.io.File;
-import java.io.InputStream;
-
-import java.util.List;
+package com.liferay.portal.lar.digest;
 
 /**
- * @author Alexander Chow
- * @author Brian Wing Shun Chan
- * @author Raymond Augé
+ * @author Mate Thurzo
  */
-public interface ZipReader {
+public interface LarDigestItem {
 
-	public void close();
+	public int getAction();
 
-	public List<String> getEntries();
+	public String getClassPK();
 
-	public byte[] getEntryAsByteArray(String name);
+	public String getPath();
 
-	public File getEntryAsFile(String name);
+	public String getType();
 
-	public InputStream getEntryAsInputStream(String name);
+	public void setAction(int action);
 
-	public String getEntryAsString(String name);
+	public void setClassPK(String classPK);
 
-	public List<String> getFolderEntries(String path);
+	public void setPath(String path);
+
+	public void setType(String type);
 
 }
