@@ -12,32 +12,21 @@
  * details.
  */
 
-package com.liferay.portal.kernel.zip;
-
-import java.io.File;
-import java.io.InputStream;
-
-import java.util.List;
+package com.liferay.portal.lar;
 
 /**
- * @author Alexander Chow
- * @author Brian Wing Shun Chan
- * @author Raymond Augé
+ * @author Mate Thurzo
  */
-public interface ZipReader {
+public interface XStreamWrapper {
 
-	public void close();
+	public void alias(String name, Class type);
 
-	public List<String> getEntries();
+	public Object fromXML(String xml);
 
-	public byte[] getEntryAsByteArray(String name);
+	public ClassLoader getClassLoader();
 
-	public File getEntryAsFile(String name);
+	public void setClassLoader(ClassLoader classLoader);
 
-	public InputStream getEntryAsInputStream(String name);
-
-	public String getEntryAsString(String name);
-
-	public List<String> getFolderEntries(String path);
+	public String toXML(Object obj);
 
 }

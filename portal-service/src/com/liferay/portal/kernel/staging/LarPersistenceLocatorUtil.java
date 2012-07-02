@@ -12,32 +12,28 @@
  * details.
  */
 
-package com.liferay.portal.kernel.zip;
+package com.liferay.portal.kernel.staging;
 
-import java.io.File;
-import java.io.InputStream;
-
-import java.util.List;
+import com.liferay.portal.service.persistence.BaseLarPersistence;
+import com.liferay.portal.staging.LarPersistenceLocator;
 
 /**
- * @author Alexander Chow
- * @author Brian Wing Shun Chan
- * @author Raymond Augé
+ * @author Mate Thurzo
  */
-public interface ZipReader {
+public class LarPersistenceLocatorUtil {
 
-	public void close();
+	public static LarPersistenceLocator getLocator() {
+		return _locator;
+	}
 
-	public List<String> getEntries();
+	public static BaseLarPersistence locate(String key) {
+		return getLocator().locate(key);
+	}
 
-	public byte[] getEntryAsByteArray(String name);
+	public void setLocator(LarPersistenceLocator locator) {
+		_locator = locator;
+	}
 
-	public File getEntryAsFile(String name);
-
-	public InputStream getEntryAsInputStream(String name);
-
-	public String getEntryAsString(String name);
-
-	public List<String> getFolderEntries(String path);
+	private static LarPersistenceLocator _locator;
 
 }

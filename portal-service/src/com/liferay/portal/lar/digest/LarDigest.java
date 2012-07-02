@@ -12,32 +12,33 @@
  * details.
  */
 
-package com.liferay.portal.kernel.zip;
+package com.liferay.portal.lar.digest;
+
+import com.liferay.portal.kernel.exception.PortalException;
 
 import java.io.File;
-import java.io.InputStream;
 
-import java.util.List;
+import java.util.HashMap;
+
+import javax.xml.stream.XMLStreamException;
 
 /**
- * @author Alexander Chow
- * @author Brian Wing Shun Chan
- * @author Raymond Augé
+ * @author Daniel Kocsis
  */
-public interface ZipReader {
+public interface LarDigest extends Iterable<LarDigestItem> {
 
-	public void close();
+	public void addMetaData(HashMap<String, String> metadata)
+		throws Exception;
 
-	public List<String> getEntries();
+	public void close() throws Exception;
 
-	public byte[] getEntryAsByteArray(String name);
+	public File getDigestFile();
 
-	public File getEntryAsFile(String name);
+	public String getDigestString();
 
-	public InputStream getEntryAsInputStream(String name);
+	public HashMap<String, String> getMetaData() throws Exception;
 
-	public String getEntryAsString(String name);
-
-	public List<String> getFolderEntries(String path);
+	public void write(LarDigestItem digestItem)
+		throws PortalException, XMLStreamException;
 
 }
