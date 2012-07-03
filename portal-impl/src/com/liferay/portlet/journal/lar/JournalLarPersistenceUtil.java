@@ -39,7 +39,7 @@ public class JournalLarPersistenceUtil extends BaseLarPersistenceUtil {
 	private static final String _NAMESPACE = "journal";
 
 	private static Log _log = LogFactoryUtil.getLog(
-		JournalPortletDataHandlerImpl.class);
+		JournalLegacyPortletDataHandlerImpl.class);
 
 	private static PortletDataHandlerBoolean _articles =
 		new PortletDataHandlerBoolean(_NAMESPACE, "web-content", true, false);

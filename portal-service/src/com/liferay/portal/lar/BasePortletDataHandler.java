@@ -14,11 +14,13 @@
 
 package com.liferay.portal.lar;
 
+import com.liferay.portal.kernel.lar.BaseLegacyPortletDataHandler;
+
 /**
  * @author     Brian Wing Shun Chan
  * @deprecated Moved to {@link
- *             com.liferay.portal.kernel.lar.BasePortletDataHandler}
+ *             com.liferay.portal.kernel.lar.BaseLegacyPortletDataHandler}
  */
 public abstract class BasePortletDataHandler
-	extends com.liferay.portal.kernel.lar.BasePortletDataHandler {
+	extends BaseLegacyPortletDataHandler {
 }

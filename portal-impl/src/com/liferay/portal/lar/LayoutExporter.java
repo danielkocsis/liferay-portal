@@ -17,7 +17,7 @@ package com.liferay.portal.lar;
 import com.liferay.portal.NoSuchLayoutException;
 import com.liferay.portal.kernel.lar.ImportExportThreadLocal;
 import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.PortletDataHandler;
+import com.liferay.portal.kernel.lar.LegacyPortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -82,7 +82,7 @@ import com.liferay.portlet.asset.model.AssetVocabulary;
 import com.liferay.portlet.asset.service.AssetVocabularyLocalServiceUtil;
 import com.liferay.portlet.asset.service.persistence.AssetCategoryUtil;
 import com.liferay.portlet.journal.NoSuchArticleException;
-import com.liferay.portlet.journal.lar.JournalPortletDataHandlerImpl;
+import com.liferay.portlet.journal.lar.JournalLegacyPortletDataHandlerImpl;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.util.ContentUtil;
@@ -133,7 +133,7 @@ public class LayoutExporter {
 				continue;
 			}
 
-			PortletDataHandler portletDataHandler =
+			LegacyPortletDataHandler portletDataHandler =
 				portlet.getPortletDataHandlerInstance();
 
 			if ((portletDataHandler == null) ||
@@ -431,8 +431,8 @@ public class LayoutExporter {
 			return;
 		}
 
-		String path = JournalPortletDataHandlerImpl.getArticlePath(
-			portletDataContext, article);
+		String path = JournalLegacyPortletDataHandlerImpl.getArticlePath(
+				portletDataContext, article);
 
 		Element articleElement = layoutElement.addElement("article");
 
@@ -877,8 +877,8 @@ public class LayoutExporter {
 			return;
 		}
 
-		String path = JournalPortletDataHandlerImpl.getArticlePath(
-			portletDataContext, article);
+		String path = JournalLegacyPortletDataHandlerImpl.getArticlePath(
+				portletDataContext, article);
 
 		Element articleElement = layoutElement.addElement("article");
 
@@ -894,11 +894,11 @@ public class LayoutExporter {
 		Element dlRepositoryEntriesElement = layoutElement.addElement(
 			"dl-repository-entries");
 
-		JournalPortletDataHandlerImpl.exportArticle(
-			portletDataContext, layoutElement, layoutElement, layoutElement,
-			dlFileEntryTypesElement, dlFoldersElement, dlFilesElement,
-			dlFileRanksElement, dlRepositoriesElement,
-			dlRepositoryEntriesElement, article, null, false);
+		JournalLegacyPortletDataHandlerImpl.exportArticle(
+				portletDataContext, layoutElement, layoutElement, layoutElement,
+				dlFileEntryTypesElement, dlFoldersElement, dlFilesElement,
+				dlFileRanksElement, dlRepositoriesElement,
+				dlRepositoryEntriesElement, article, null, false);
 	}
 
 	protected void exportLayout(

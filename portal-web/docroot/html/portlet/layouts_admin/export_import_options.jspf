@@ -206,7 +206,7 @@
 													continue;
 												}
 
-												PortletDataHandler portletDataHandler = portlet.getPortletDataHandlerInstance();
+												LegacyPortletDataHandler portletDataHandler = portlet.getPortletDataHandlerInstance();
 
 												try {
 													PortletDataHandlerControl[] controls = null;
@@ -294,7 +294,7 @@
 													continue;
 												}
 
-												PortletDataHandler portletDataHandler = portlet.getPortletDataHandlerInstance();
+												LegacyPortletDataHandler portletDataHandler = portlet.getPortletDataHandlerInstance();
 
 												try {
 													PortletDataHandlerControl[] metadataControls = null;

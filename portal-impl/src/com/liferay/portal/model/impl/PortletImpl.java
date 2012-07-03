@@ -15,7 +15,7 @@
 package com.liferay.portal.model.impl;
 
 import com.liferay.portal.kernel.atom.AtomCollectionAdapter;
-import com.liferay.portal.kernel.lar.PortletDataHandler;
+import com.liferay.portal.kernel.lar.LegacyPortletDataHandler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
@@ -1168,7 +1168,7 @@ public class PortletImpl extends PortletBaseImpl {
 	 *
 	 * @return the portlet data handler instance of the portlet
 	 */
-	public PortletDataHandler getPortletDataHandlerInstance() {
+	public LegacyPortletDataHandler getPortletDataHandlerInstance() {
 		if (Validator.isNull(getPortletDataHandlerClass())) {
 			return null;
 		}

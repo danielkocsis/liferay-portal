@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.ImportExportThreadLocal;
 import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.PortletDataHandler;
+import com.liferay.portal.kernel.lar.LegacyPortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -152,7 +152,7 @@ public class PortletExporter {
 
 		// ToDo: develop other portlets data handlers...
 
-		PortletDataHandler portletDataHandler =
+		LegacyPortletDataHandler portletDataHandler =
 			portlet.getPortletDataHandlerInstance();
 
 		if (portletDataHandler == null) {
@@ -1147,7 +1147,7 @@ public class PortletExporter {
 			return;
 		}
 
-		PortletDataHandler portletDataHandler =
+		LegacyPortletDataHandler portletDataHandler =
 			portlet.getPortletDataHandlerInstance();
 
 		if (portletDataHandler == null) {

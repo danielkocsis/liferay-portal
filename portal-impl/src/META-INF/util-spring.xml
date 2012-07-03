@@ -737,7 +737,7 @@
 	</bean>
 	<bean id="com.liferay.portlet.dynamicdatalists.lar.DDLPortletDataHandlerUtil" class="com.liferay.portlet.dynamicdatalists.lar.DDLPortletDataHandlerUtil">
 		<property name="DDLPortletDataHandler">
-			<bean class="com.liferay.portlet.dynamicdatalists.lar.DDLPortletDataHandlerImpl" />
+			<bean class="com.liferay.portlet.dynamicdatalists.lar.DDLLegacyPortletDataHandlerImpl" />
 		</property>
 	</bean>
 	<bean id="com.liferay.portlet.dynamicdatalists.util.DDLUtil" class="com.liferay.portlet.dynamicdatalists.util.DDLUtil">
