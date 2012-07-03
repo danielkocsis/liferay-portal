@@ -170,7 +170,7 @@ LayoutSet publicLayoutSet = LayoutSetLocalServiceUtil.getLayoutSet(liveGroup.get
 						continue;
 					}
 
-					PortletDataHandler portletDataHandler = curPortlet.getPortletDataHandlerInstance();
+					LegacyPortletDataHandler portletDataHandler = curPortlet.getPortletDataHandlerInstance();
 
 					if (portletDataHandler == null) {
 						continue;

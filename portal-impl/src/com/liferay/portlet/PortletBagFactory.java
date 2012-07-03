@@ -17,7 +17,7 @@ package com.liferay.portlet;
 import com.liferay.portal.dao.shard.ShardPollerProcessorWrapper;
 import com.liferay.portal.kernel.atom.AtomCollectionAdapter;
 import com.liferay.portal.kernel.atom.AtomCollectionAdapterRegistryUtil;
-import com.liferay.portal.kernel.lar.PortletDataHandler;
+import com.liferay.portal.kernel.lar.LegacyPortletDataHandler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.poller.PollerProcessor;
@@ -146,7 +146,7 @@ public class PortletBagFactory {
 
 		URLEncoder urlEncoderInstance = newURLEncoder(portlet);
 
-		PortletDataHandler portletDataHandlerInstance = newPortletDataHandler(
+		LegacyPortletDataHandler portletDataHandlerInstance = newPortletDataHandler(
 			portlet);
 
 		PortletDisplayTemplateHandler portletDisplayTemplateHandlerInstance =
@@ -821,15 +821,15 @@ public class PortletBagFactory {
 		return popMessageListenerInstance;
 	}
 
-	protected PortletDataHandler newPortletDataHandler(Portlet portlet)
+	protected LegacyPortletDataHandler newPortletDataHandler(Portlet portlet)
 		throws Exception {
 
 		if (Validator.isNull(portlet.getPortletDataHandlerClass())) {
 			return null;
 		}
 
-		return (PortletDataHandler)newInstance(
-			PortletDataHandler.class, portlet.getPortletDataHandlerClass());
+		return (LegacyPortletDataHandler)newInstance(
+			LegacyPortletDataHandler.class, portlet.getPortletDataHandlerClass());
 	}
 
 	protected PortletDisplayTemplateHandler newPortletDisplayTemplateHandler(

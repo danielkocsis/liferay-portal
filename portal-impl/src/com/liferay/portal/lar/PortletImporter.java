@@ -23,7 +23,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.ImportExportThreadLocal;
 import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.PortletDataHandler;
+import com.liferay.portal.kernel.lar.LegacyPortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.lar.UserIdStrategy;
 import com.liferay.portal.kernel.log.Log;
@@ -191,7 +191,7 @@ public class PortletImporter {
 			return null;
 		}
 
-		PortletDataHandler portletDataHandler =
+		LegacyPortletDataHandler portletDataHandler =
 			portlet.getPortletDataHandlerInstance();
 
 		if (portletDataHandler == null) {
@@ -199,7 +199,7 @@ public class PortletImporter {
 				_log.debug(
 					"Do not delete portlet data for " + portletId +
 						" because the portlet does not have a " +
-							"PortletDataHandler");
+							"LegacyPortletDataHandler");
 			}
 
 			return null;
@@ -985,7 +985,7 @@ public class PortletImporter {
 			return null;
 		}
 
-		PortletDataHandler portletDataHandler =
+		LegacyPortletDataHandler portletDataHandler =
 			portlet.getPortletDataHandlerInstance();
 
 		if (portletDataHandler == null) {
@@ -993,7 +993,7 @@ public class PortletImporter {
 				_log.debug(
 					"Do not import portlet data for " + portletId +
 						" because the portlet does not have a " +
-							"PortletDataHandler");
+							"LegacyPortletDataHandler");
 			}
 
 			return null;

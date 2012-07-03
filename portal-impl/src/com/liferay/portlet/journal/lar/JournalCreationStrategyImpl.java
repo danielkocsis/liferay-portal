@@ -27,8 +27,8 @@ import com.liferay.portlet.journal.model.JournalArticle;
  * </p>
  *
  * @author Joel Kozikowski
- * @see    com.liferay.portlet.journal.lar.JournalContentPortletDataHandlerImpl
- * @see    com.liferay.portlet.journal.lar.JournalPortletDataHandlerImpl
+ * @see    JournalContentLegacyPortletDataHandlerImpl
+ * @see    JournalLegacyPortletDataHandlerImpl
  */
 public class JournalCreationStrategyImpl implements JournalCreationStrategy {
 

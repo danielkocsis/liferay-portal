@@ -14,6 +14,8 @@
 
 package com.liferay.portal.model;
 
+import com.liferay.portal.kernel.lar.LegacyPortletDataHandler;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -962,7 +964,7 @@ public class PortletWrapper implements Portlet, ModelWrapper<Portlet> {
 	*
 	* @return the portlet data handler instance of the portlet
 	*/
-	public com.liferay.portal.kernel.lar.PortletDataHandler getPortletDataHandlerInstance() {
+	public LegacyPortletDataHandler getPortletDataHandlerInstance() {
 		return _portlet.getPortletDataHandlerInstance();
 	}
 

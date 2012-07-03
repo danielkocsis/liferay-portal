@@ -97,7 +97,7 @@ import com.liferay.portal.theme.ThemeLoaderFactory;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portlet.journal.lar.JournalPortletDataHandlerImpl;
+import com.liferay.portlet.journal.lar.JournalLegacyPortletDataHandlerImpl;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalContentSearchLocalServiceUtil;
 import com.liferay.portlet.journalcontent.util.JournalContentUtil;
@@ -857,28 +857,28 @@ public class LayoutImporter {
 			return;
 		}
 
-		JournalPortletDataHandlerImpl.importReferencedData(
-			portletDataContext, layoutElement);
+		JournalLegacyPortletDataHandlerImpl.importReferencedData(
+				portletDataContext, layoutElement);
 
 		Element structureElement = layoutElement.element("structure");
 
 		if (structureElement != null) {
-			JournalPortletDataHandlerImpl.importStructure(
-				portletDataContext, structureElement);
+			JournalLegacyPortletDataHandlerImpl.importStructure(
+					portletDataContext, structureElement);
 		}
 
 		Element templateElement = layoutElement.element("template");
 
 		if (templateElement != null) {
-			JournalPortletDataHandlerImpl.importTemplate(
-				portletDataContext, templateElement);
+			JournalLegacyPortletDataHandlerImpl.importTemplate(
+					portletDataContext, templateElement);
 		}
 
 		Element articleElement = layoutElement.element("article");
 
 		if (articleElement != null) {
-			JournalPortletDataHandlerImpl.importArticle(
-				portletDataContext, articleElement);
+			JournalLegacyPortletDataHandlerImpl.importArticle(
+					portletDataContext, articleElement);
 		}
 
 		Map<String, String> articleIds =
