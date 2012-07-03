@@ -15,7 +15,7 @@
 package com.liferay.portlet;
 
 import com.liferay.portal.kernel.atom.AtomCollectionAdapter;
-import com.liferay.portal.kernel.lar.PortletDataHandler;
+import com.liferay.portal.kernel.lar.LegacyPortletDataHandler;
 import com.liferay.portal.kernel.poller.PollerProcessor;
 import com.liferay.portal.kernel.pop.MessageListener;
 import com.liferay.portal.kernel.portlet.ConfigurationAction;
@@ -60,7 +60,7 @@ public class PortletBagImpl implements PortletBag {
 		List<Indexer> indexerInstances, OpenSearch openSearchInstance,
 		FriendlyURLMapper friendlyURLMapperInstance,
 		URLEncoder urlEncoderInstance,
-		PortletDataHandler portletDataHandlerInstance,
+		LegacyPortletDataHandler portletDataHandlerInstance,
 		PortletDisplayTemplateHandler portletDisplayTemplateHandlerInstance,
 		PortletLayoutListener portletLayoutListenerInstance,
 		PollerProcessor pollerProcessorInstance,
@@ -172,7 +172,7 @@ public class PortletBagImpl implements PortletBag {
 		return _popMessageListenerInstance;
 	}
 
-	public PortletDataHandler getPortletDataHandlerInstance() {
+	public LegacyPortletDataHandler getPortletDataHandlerInstance() {
 		return _portletDataHandlerInstance;
 	}
 
@@ -269,7 +269,7 @@ public class PortletBagImpl implements PortletBag {
 	private PermissionPropagator _permissionPropagatorInstance;
 	private PollerProcessor _pollerProcessorInstance;
 	private MessageListener _popMessageListenerInstance;
-	private PortletDataHandler _portletDataHandlerInstance;
+	private LegacyPortletDataHandler _portletDataHandlerInstance;
 	private PortletDisplayTemplateHandler
 		_portletDisplayTemplateHandlerInstance;
 	private Portlet _portletInstance;

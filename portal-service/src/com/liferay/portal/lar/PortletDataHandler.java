@@ -14,10 +14,12 @@
 
 package com.liferay.portal.lar;
 
+import com.liferay.portal.kernel.lar.LegacyPortletDataHandler;
+
 /**
  * @author     Raymond Augé
- * @deprecated Moved to {@link com.liferay.portal.kernel.lar.PortletDataHandler}
+ * @deprecated Moved to {@link com.liferay.portal.kernel.lar.LegacyPortletDataHandler}
  */
 public interface PortletDataHandler
-	extends com.liferay.portal.kernel.lar.PortletDataHandler {
+	extends LegacyPortletDataHandler {
 }

@@ -1,3 +1,4 @@
+<%@ page import="com.liferay.portal.kernel.lar.LegacyPortletDataHandler" %>
 <%--
 /**
  * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
@@ -45,7 +46,7 @@
 			<aui:input name="<%= PortletDataHandlerKeys.PORTLET_DATA_CONTROL_DEFAULT %>" type="hidden" value="<%= false %>" />
 
 			<%
-			PortletDataHandler portletDataHandler = selPortlet.getPortletDataHandlerInstance();
+			LegacyPortletDataHandler portletDataHandler = selPortlet.getPortletDataHandlerInstance();
 			%>
 
 			<c:choose>

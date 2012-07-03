@@ -14,6 +14,7 @@
 
 package com.liferay.portal.model;
 
+import com.liferay.portal.kernel.lar.LegacyPortletDataHandler;
 import com.liferay.portal.kernel.util.Accessor;
 
 /**
@@ -604,7 +605,7 @@ public interface Portlet extends PortletModel, PersistedModel {
 	*
 	* @return the portlet data handler instance of the portlet
 	*/
-	public com.liferay.portal.kernel.lar.PortletDataHandler getPortletDataHandlerInstance();
+	public LegacyPortletDataHandler getPortletDataHandlerInstance();
 
 	/**
 	* Returns the name of the portlet display style class of the portlet.
