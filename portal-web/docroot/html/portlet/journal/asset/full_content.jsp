@@ -40,7 +40,7 @@ else {
 %>
 
 <div class="journal-content-article">
-	<liferay-ui:journal-article articleId="<%= article.getArticleId() %>" articleResourcePrimKey="<%= article.getResourcePrimKey() %>" articlePage="<%= articlePage %>" groupId="<%= article.getGroupId() %>" templateId="<%= templateId %>" />
+	<liferay-ui:journal-article articleId="<%= article.getArticleId() %>" articlePage="<%= articlePage %>" articleResourcePrimKey="<%= article.getResourcePrimKey() %>" groupId="<%= article.getGroupId() %>" templateId="<%= templateId %>" />
 </div>
 
 <c:if test="<%= articleDisplay.isPaginate() %>">

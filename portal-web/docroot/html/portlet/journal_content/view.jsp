@@ -84,7 +84,9 @@ boolean expired = true;
 
 				if (themeDisplay.isStateExclusive()) {
 				%>
-					<liferay-ui:journal-article articleId="<%= articleDisplay.getArticleId() %>" articleResourcePrimKey="<%= articleDisplay.getResourcePrimKey() %>" articlePage="<%= articleDisplay.getCurrentPage() %>" groupId="<%= articleDisplay.getGroupId() %>" templateId="<%= articleDisplay.getTemplateId() %>" />
+
+					<liferay-ui:journal-article articleId="<%= articleDisplay.getArticleId() %>" articlePage="<%= articleDisplay.getCurrentPage() %>" articleResourcePrimKey="<%= articleDisplay.getResourcePrimKey() %>" groupId="<%= articleDisplay.getGroupId() %>" templateId="<%= articleDisplay.getTemplateId() %>" />
+
 				<%
 					return;
 				}
@@ -197,7 +199,7 @@ boolean expired = true;
 				</c:if>
 
 				<div class="journal-content-article" id="article_<%= articleDisplay.getCompanyId() %>_<%= articleDisplay.getGroupId() %>_<%= articleDisplay.getArticleId() %>_<%= articleDisplay.getVersion() %>">
-					<liferay-ui:journal-article articleId="<%= articleDisplay.getArticleId() %>" articleResourcePrimKey="<%= articleDisplay.getResourcePrimKey() %>" articlePage="<%= articleDisplay.getCurrentPage() %>" groupId="<%= articleDisplay.getGroupId() %>" templateId="<%= articleDisplay.getTemplateId() %>" />
+					<liferay-ui:journal-article articleId="<%= articleDisplay.getArticleId() %>" articlePage="<%= articleDisplay.getCurrentPage() %>" articleResourcePrimKey="<%= articleDisplay.getResourcePrimKey() %>" groupId="<%= articleDisplay.getGroupId() %>" templateId="<%= articleDisplay.getTemplateId() %>" />
 				</div>
 
 				<c:if test="<%= articleDisplay.isPaginate() %>">

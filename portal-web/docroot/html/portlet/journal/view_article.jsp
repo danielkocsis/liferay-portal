@@ -43,7 +43,7 @@ try {
 		<c:when test="<%= (article != null) && !expired %>">
 
 			<div class="journal-content-article">
-				<liferay-ui:journal-article articleId="<%= articleId %>" articleResourcePrimKey="<%= article.getResourcePrimKey() %>" articlePage="<%= articlePage %>" groupId="<%= groupId %>" languageId="<%= languageId %> />
+				<liferay-ui:journal-article articleId="<%= articleId %>" articlePage="<%= articlePage %>" articleResourcePrimKey="<%= article.getResourcePrimKey() %>" groupId="<%= groupId %>" languageId="<%= languageId %> />
 			</div>
 
 		</c:when>

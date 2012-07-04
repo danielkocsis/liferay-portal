@@ -62,8 +62,8 @@ JournalArticleDisplay articleDisplay = JournalContentUtil.getDisplay(groupId, ar
 			</div>
 		</c:if>
 	</c:if>
-	<%
 
+	<%
 		RuntimeLogic portletLogic = new PortletLogic(request, response);
 		RuntimeLogic actionURLLogic = new ActionURLLogic(renderResponse);
 		RuntimeLogic renderURLLogic = new RenderURLLogic(renderResponse);
@@ -75,6 +75,6 @@ JournalArticleDisplay articleDisplay = JournalContentUtil.getDisplay(groupId, ar
 		content = RuntimePageUtil.processXML(request, content, renderURLLogic);
 
 		out.print(content);
-
 	%>
+
 </c:if>
