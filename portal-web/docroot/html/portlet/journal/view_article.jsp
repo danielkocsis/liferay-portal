@@ -25,8 +25,6 @@ String languageId = LanguageUtil.getLanguageId(request);
 int articlePage = ParamUtil.getInteger(renderRequest, "page", 1);
 String xmlRequest = PortletRequestUtil.toXML(renderRequest, renderResponse);
 
-JournalArticleDisplay articleDisplay = JournalContentUtil.getDisplay(groupId, articleId, null, null, languageId, themeDisplay, articlePage, xmlRequest);
-
 try {
 	article = JournalArticleLocalServiceUtil.getLatestArticle(groupId, articleId, WorkflowConstants.STATUS_ANY);
 
@@ -42,10 +40,10 @@ try {
 %>
 
 	<c:choose>
-		<c:when test="<%= (articleDisplay != null) && !expired %>">
+		<c:when test="<%= (article != null) && !expired %>">
 
 			<div class="journal-content-article">
-				<%= articleDisplay.getContent() %>
+				<liferay-ui:journal-article articleId="<%= articleId %>" articleResourcePrimKey="<%= article.getResourcePrimKey() %>" articlePage="<%= articlePage %>" groupId="<%= groupId %>" languageId="<%= languageId %> />
 			</div>
 
 		</c:when>

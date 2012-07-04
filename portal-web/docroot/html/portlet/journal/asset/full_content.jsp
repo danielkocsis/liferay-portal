@@ -40,20 +40,7 @@ else {
 %>
 
 <div class="journal-content-article">
-
-	<%
-		RuntimeLogic portletLogic = new PortletLogic(request, response);
-		RuntimeLogic actionURLLogic = new ActionURLLogic(renderResponse);
-		RuntimeLogic renderURLLogic = new RenderURLLogic(renderResponse);
-
-		String content = articleDisplay.getContent();
-
-		content = RuntimePageUtil.processXML(request, content, portletLogic);
-		content = RuntimePageUtil.processXML(request, content, actionURLLogic);
-		content = RuntimePageUtil.processXML(request, content, renderURLLogic);
-	%>
-
-	<%= content %>
+	<liferay-ui:journal-article articleId="<%= article.getArticleId() %>" articleResourcePrimKey="<%= article.getResourcePrimKey() %>" articlePage="<%= articlePage %>" groupId="<%= article.getGroupId() %>" templateId="<%= templateId %>" />
 </div>
 
 <c:if test="<%= articleDisplay.isPaginate() %>">

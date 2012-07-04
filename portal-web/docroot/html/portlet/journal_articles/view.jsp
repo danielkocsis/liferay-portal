@@ -245,7 +245,7 @@ double version = ParamUtil.getDouble(request, "version");
 					%>
 
 					<div class="journal-content-article">
-						<%= articleDisplay.getContent() %>
+						<liferay-ui:journal-article articleId="<%= article.getArticleId() %>" articleResourcePrimKey="<%= article.getResourcePrimKey() %>" articlePage="<%= articlePage %>" groupId="<%= groupId %>" />
 					</div>
 
 					<c:if test="<%= articleDisplay.isPaginate() %>">
