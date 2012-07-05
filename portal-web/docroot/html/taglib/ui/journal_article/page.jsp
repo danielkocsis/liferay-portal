@@ -14,12 +14,7 @@
  */
 --%>
 
-<%@ include file="/html/taglib/init.jsp" %>
-
-<%@ page import="com.liferay.portlet.journal.model.JournalArticleDisplay" %>
-<%@ page import="com.liferay.portlet.journal.model.JournalArticleResource" %>
-<%@ page import="com.liferay.portlet.journal.service.JournalArticleResourceLocalServiceUtil" %>
-<%@ page import="com.liferay.portlet.journalcontent.util.JournalContentUtil" %>
+<%@ include file="/html/taglib/ui/journal_article/init.jsp" %>
 
 <%
 long articleResourcePrimKey = GetterUtil.getLong((String)request.getAttribute("liferay-ui:journal-article:articleResourcePrimKey"));
@@ -68,5 +63,18 @@ JournalArticleDisplay articleDisplay = JournalContentUtil.getDisplay(groupId, ar
 		</c:if>
 	</c:if>
 
-	<%= articleDisplay.getContent() %>
+	<%
+		RuntimeLogic portletLogic = new PortletLogic(request, response);
+		RuntimeLogic actionURLLogic = new ActionURLLogic(renderResponse);
+		RuntimeLogic renderURLLogic = new RenderURLLogic(renderResponse);
+
+		String content = articleDisplay.getContent();
+
+		content = RuntimePageUtil.processXML(request, content, portletLogic);
+		content = RuntimePageUtil.processXML(request, content, actionURLLogic);
+		content = RuntimePageUtil.processXML(request, content, renderURLLogic);
+
+		out.print(content);
+	%>
+
 </c:if>
