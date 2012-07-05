@@ -145,9 +145,15 @@ public class ExportUsersAction extends PortletAction {
 			new LinkedHashMap<String, Object>();
 
 		long organizationId = searchTerms.getOrganizationId();
+		long organizationIds[] = ParamUtil.getLongValues(
+									actionRequest,
+									"organizationsSearchContainerPrimaryKeys");
 
 		if (organizationId > 0) {
 			params.put("usersOrgs", new Long(organizationId));
+		}
+		else if ((organizationIds != null) && (organizationIds.length > 0)) {
+			params.put("usersOrgs", organizationIds);
 		}
 
 		long roleId = searchTerms.getRoleId();
