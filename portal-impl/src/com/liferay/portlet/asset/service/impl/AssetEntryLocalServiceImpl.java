@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.search.facet.ScopeFacet;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.InstancePool;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -408,7 +409,7 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 
 	public Hits search(
 			long companyId, long[] groupIds, long userId, String className,
-			String keywords, int start, int end)
+			String keywords, String languageId, int start, int end)
 		throws SystemException {
 
 		try {
@@ -432,6 +433,7 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			searchContext.setEntryClassNames(getClassNames(className));
 			searchContext.setGroupIds(groupIds);
 			searchContext.setKeywords(keywords);
+			searchContext.setLocale(LocaleUtil.fromLanguageId(languageId));
 
 			QueryConfig queryConfig = new QueryConfig();
 
@@ -455,8 +457,8 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	public Hits search(
 			long companyId, long[] groupIds, long userId, String className,
 			String userName, String title, String description,
-			String assetCategoryIds, String assetTagNames, boolean andSearch,
-			int start, int end)
+			String languageId, String assetCategoryIds, String assetTagNames,
+			boolean andSearch, int start, int end)
 		throws SystemException {
 
 		try {
@@ -491,6 +493,7 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			searchContext.setEnd(end);
 			searchContext.setEntryClassNames(getClassNames(className));
 			searchContext.setGroupIds(groupIds);
+			searchContext.setLocale(LocaleUtil.fromLanguageId(languageId));
 
 			QueryConfig queryConfig = new QueryConfig();
 
@@ -513,10 +516,12 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 
 	public Hits search(
 			long companyId, long[] groupIds, String className, String keywords,
-			int start, int end)
+			String languageId, int start, int end)
 		throws SystemException {
 
-		return search(companyId, groupIds, 0, className, keywords, start, end);
+		return search(
+			companyId, groupIds, 0, className, keywords, languageId, start,
+			end);
 	}
 
 	public AssetEntryDisplay[] searchEntryDisplays(
@@ -527,7 +532,7 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		List<AssetEntry> entries = new ArrayList<AssetEntry>();
 
 		Hits hits = search(
-			companyId, groupIds, className, keywords, start, end);
+			companyId, groupIds, className, keywords, languageId, start, end);
 
 		List<Document> hitsList = hits.toList();
 
@@ -555,8 +560,8 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		throws SystemException {
 
 		Hits hits = search(
-			companyId, groupIds, className, keywords, QueryUtil.ALL_POS,
-			QueryUtil.ALL_POS);
+			companyId, groupIds, className, keywords, languageId,
+			QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
 		return hits.getLength();
 	}
