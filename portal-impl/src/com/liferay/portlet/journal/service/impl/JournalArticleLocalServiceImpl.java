@@ -1712,7 +1712,8 @@ public class JournalArticleLocalServiceImpl
 	public Hits search(
 			long companyId, long groupId, long folderId, long classNameId,
 			String structureId, String templateId, String keywords,
-			LinkedHashMap<String, Object> params, int start, int end, Sort sort)
+			String languageId, LinkedHashMap<String, Object> params, int start,
+			int end, Sort sort)
 		throws SystemException {
 
 		String articleId = null;
@@ -1739,16 +1740,16 @@ public class JournalArticleLocalServiceImpl
 
 		return search(
 			companyId, groupId, folderId, classNameId, articleId, title,
-			description, content, null, status, structureId, templateId, params,
-			andOperator, start, end, sort);
+			description, content, languageId, null, status, structureId,
+			templateId, params, andOperator, start, end, sort);
 	}
 
 	public Hits search(
 			long companyId, long groupId, long folderId, long classNameId,
 			String articleId, String title, String description, String content,
-			String type, String status, String structureId, String templateId,
-			LinkedHashMap<String, Object> params, boolean andSearch, int start,
-			int end, Sort sort)
+			String languageId, String type, String status, String structureId,
+			String templateId, LinkedHashMap<String, Object> params,
+			boolean andSearch, int start, int end, Sort sort)
 		throws SystemException {
 
 		try {
@@ -1776,6 +1777,7 @@ public class JournalArticleLocalServiceImpl
 			searchContext.setCompanyId(companyId);
 			searchContext.setEnd(end);
 			searchContext.setGroupIds(new long[] {groupId});
+			searchContext.setLocale(LocaleUtil.fromLanguageId(languageId));
 
 			if (params != null) {
 				String keywords = (String)params.remove("keywords");

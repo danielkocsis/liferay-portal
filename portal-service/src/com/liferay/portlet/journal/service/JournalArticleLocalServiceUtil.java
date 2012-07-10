@@ -926,29 +926,31 @@ public class JournalArticleLocalServiceUtil {
 	public static com.liferay.portal.kernel.search.Hits search(long companyId,
 		long groupId, long folderId, long classNameId,
 		java.lang.String structureId, java.lang.String templateId,
-		java.lang.String keywords,
+		java.lang.String keywords, java.lang.String languageId,
 		java.util.LinkedHashMap<java.lang.String, java.lang.Object> params,
 		int start, int end, com.liferay.portal.kernel.search.Sort sort)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService()
 				   .search(companyId, groupId, folderId, classNameId,
-			structureId, templateId, keywords, params, start, end, sort);
+			structureId, templateId, keywords, languageId, params, start, end,
+			sort);
 	}
 
 	public static com.liferay.portal.kernel.search.Hits search(long companyId,
 		long groupId, long folderId, long classNameId,
 		java.lang.String articleId, java.lang.String title,
 		java.lang.String description, java.lang.String content,
-		java.lang.String type, java.lang.String status,
-		java.lang.String structureId, java.lang.String templateId,
+		java.lang.String languageId, java.lang.String type,
+		java.lang.String status, java.lang.String structureId,
+		java.lang.String templateId,
 		java.util.LinkedHashMap<java.lang.String, java.lang.Object> params,
 		boolean andSearch, int start, int end,
 		com.liferay.portal.kernel.search.Sort sort)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService()
 				   .search(companyId, groupId, folderId, classNameId,
-			articleId, title, description, content, type, status, structureId,
-			templateId, params, andSearch, start, end, sort);
+			articleId, title, description, content, languageId, type, status,
+			structureId, templateId, params, andSearch, start, end, sort);
 	}
 
 	public static int searchCount(long companyId, long groupId, long folderId,
