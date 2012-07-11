@@ -16,6 +16,20 @@
 
 <%@ taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
+<style>
+td.cke_dialog_ui_hbox_first {
+	display:none !important;
+}
+
+a.cke_dialog_tab {
+	display: none !important;
+}
+
+a.cke_dialog_tab_selected {
+	display:block !important;
+}
+</style>
+
 <liferay-util:include page="/html/js/editor/ckeditor.jsp">
 	<liferay-util:param name="ckEditorConfigFileName" value="ckconfig_creole.jsp" />
 </liferay-util:include>
