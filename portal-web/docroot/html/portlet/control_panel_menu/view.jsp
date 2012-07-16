@@ -266,8 +266,11 @@
 
 					<%
 					for (Portlet portlet : portlets) {
-						if (portlet.isActive() && !portlet.isInstanceable()) {
-							String portletId = portlet.getPortletId();
+						if (portlet.isActive() && !portlet.isInstanceable() &&
+							!(portlet.getPortletName().equals(PortletKeys.MY_PAGES) &&
+							!(PropsValues.LAYOUT_USER_PUBLIC_LAYOUTS_ENABLED && PropsValues.LAYOUT_USER_PUBLIC_LAYOUTS_MODIFIABLE) &&
+							!(PropsValues.LAYOUT_USER_PRIVATE_LAYOUTS_ENABLED && PropsValues.LAYOUT_USER_PRIVATE_LAYOUTS_MODIFIABLE))) {
+								String portletId = portlet.getPortletId();
 					%>
 
 							<li class="<%= ppid.equals(portletId) ? "selected-portlet" : "" %>">
