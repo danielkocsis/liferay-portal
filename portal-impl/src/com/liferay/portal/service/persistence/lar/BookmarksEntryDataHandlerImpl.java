@@ -71,7 +71,13 @@ public class BookmarksEntryDataHandlerImpl
 			digestItem.setPermissions(permissionsMap);
 		}
 
-		digestItem.setAction(LarDigesterConstants.ACTION_ADD);
+		int action = LarDigesterConstants.ACTION_ADD;
+
+		if (entry.getCreateDate().before(entry.getModifiedDate())) {
+			action = LarDigesterConstants.ACTION_UPDATE;
+		}
+
+		digestItem.setAction(action);
 		digestItem.setPath(path);
 		digestItem.setType(BookmarksEntry.class.getName());
 		digestItem.setClassPK(StringUtil.valueOf(entry.getEntryId()));

@@ -24,6 +24,10 @@ import com.liferay.portal.kernel.lar.PortletDataContextListener;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.messaging.DestinationNames;
+import com.liferay.portal.kernel.messaging.Message;
+import com.liferay.portal.kernel.messaging.MessageBusUtil;
+import com.liferay.portal.kernel.portlet.ProtectedActionRequest;
 import com.liferay.portal.kernel.staging.DataHandlerLocatorUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -103,6 +107,7 @@ import java.util.Set;
 
 /**
  * @author Mate Thurzo
+ * @author Daniel Kocsis
  */
 public abstract class BaseDataHandlerImpl<T extends BaseModel<T>>
 	implements BaseDataHandler<T> {
@@ -207,6 +212,8 @@ public abstract class BaseDataHandlerImpl<T extends BaseModel<T>>
 	}
 
 	public void digest(T object) throws Exception {
+		sendUpdateMessage(MESSAGE_COMMAND_DIGEST, object);
+
 		doDigest(object);
 
 		if (isResourceMain(object)) {
@@ -345,6 +352,8 @@ public abstract class BaseDataHandlerImpl<T extends BaseModel<T>>
 
 	public void importData(LarDigestItem item) {
 		try {
+			sendUpdateMessage(MESSAGE_COMMAND_IMPORT, item);
+
 			doImport(item);
 		}
 		catch (Exception e) {
@@ -352,8 +361,9 @@ public abstract class BaseDataHandlerImpl<T extends BaseModel<T>>
 	}
 
 	public void serialize(String classPK) {
-
 		T object = getEntity(classPK);
+
+		sendUpdateMessage(MESSAGE_COMMAND_SERIALIZE, object);
 
 		if (object == null) {
 			return;
@@ -921,6 +931,15 @@ public abstract class BaseDataHandlerImpl<T extends BaseModel<T>>
 		}
 
 		return true;
+	}
+
+	protected void sendUpdateMessage(String messageCommand, Object payload) {
+		Message message = new Message();
+
+		message.put("command", messageCommand);
+		message.put("payload", payload);
+
+		MessageBusUtil.sendMessage(DestinationNames.LAR_EXPORT_IMPORT, message);
 	}
 
 	private Log _log = LogFactoryUtil.getLog(BaseDataHandlerImpl.class);

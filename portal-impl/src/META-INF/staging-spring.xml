@@ -17,10 +17,16 @@
 		<aop:advisor advice-ref="com.liferay.portal.service.impl.PortletPreferencesLocalServiceStagingAdvice" pointcut="bean(com.liferay.portal.service.PortletPreferencesLocalService)" />
 	</aop:config>
 
+	<bean id="baseDataHandler" abstract="true">
+		<property name="xstreamWrapper" ref="xStreamWrapper" />
+	</bean>
+	<bean id="xStreamWrapper" class="com.liferay.portal.lar.XStreamWrapperImpl" init-method="initWrapper" />
+
 	<bean id="com.liferay.portal.service.persistence.lar.DigestErrorRegistryAdvice" class="com.liferay.portal.service.persistence.lar.DigestErrorRegistryAdvice" />
 	<aop:config proxy-target-class="false">
 		<aop:advisor advice-ref="com.liferay.portal.service.persistence.lar.DigestErrorRegistryAdvice" pointcut="bean(com.liferay.portal.service.persistence.lar*)" />
 	</aop:config>
+
 	<bean id="com.liferay.portal.kernel.staging.LayoutStagingUtil" class="com.liferay.portal.kernel.staging.LayoutStagingUtil">
 		<property name="layoutStaging">
 			<bean class="com.liferay.portal.staging.LayoutStagingImpl" />

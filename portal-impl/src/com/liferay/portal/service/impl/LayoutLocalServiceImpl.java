@@ -713,7 +713,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 				groupId, privateLayout, layoutIds, parameterMap, startDate,
 				endDate);
 
-			return larExporter.export(
+			return larExporter.serialize(
 				groupId, privateLayout, null, parameterMap, startDate, endDate);
 		}
 		catch (Exception e) {

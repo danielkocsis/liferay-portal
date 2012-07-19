@@ -1895,8 +1895,8 @@ public class PortletImporter {
 				return;
 			}
 
-			PortletDataHandler portletDataHandler =
-				portlet.getPortletDataHandlerInstance();
+			PortletDataHandler portletDataHandler = null;
+				//portlet.getPortletDataHandlerInstance();
 
 			if (portletDataHandler == null) {
 				PortletPreferencesLocalServiceUtil.updatePreferences(

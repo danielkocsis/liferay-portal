@@ -19,6 +19,9 @@ import com.liferay.portal.kernel.lar.*;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.messaging.DestinationNames;
+import com.liferay.portal.kernel.messaging.Message;
+import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.staging.DataHandlerLocatorUtil;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -74,6 +77,14 @@ public class LARExporter {
 		try {
 			ImportExportThreadLocal.setLayoutExportInProcess(true);
 
+			//Broadcasting message about starting of process
+
+			Message message = new Message();
+			message.put("command", "larExporterDigest");
+
+			MessageBusUtil.sendMessage(
+				DestinationNames.LAR_EXPORT_IMPORT, message);
+
 			DataHandlerContext context = _initDataHandlerContext(
 				groupId, privateLayout, parameterMap, startDate, endDate);
 
@@ -88,15 +99,25 @@ public class LARExporter {
 		}
 	}
 
-	public File export(
+	public File serialize(
 		long groupId, boolean privateLayout, long[] layoutIds,
 		Map<String, String[]> parameterMap, Date startDate, Date endDate) {
 
 		try {
+			//Broadcasting message about starting of process
+
+			Message message = new Message();
+			message.put("command", "larExporterSerialize");
+
+			MessageBusUtil.sendMessage(
+				DestinationNames.LAR_EXPORT_IMPORT, message);
+
+			// Serializing
+
 			DataHandlerContext context =
 				DataHandlerContextThreadLocal.getDataHandlerContext();
 
-			doExport(context);
+			doSerialize(context);
 
 			context.getZipWriter().addEntry(
 				"/digest.xml", context.getLarDigest().getDigestString());
@@ -117,6 +138,8 @@ public class LARExporter {
 		throws Exception, PortalException {
 
 		long lastPublishDate = System.currentTimeMillis();
+
+		// Parameters
 
 		Map parameterMap = context.getParameters();
 
@@ -163,6 +186,7 @@ public class LARExporter {
 			stopWatch.start();
 		}
 
+		// Assembly metadata for LAR
 		HashMap<String, String> metadata = new HashMap<String, String>();
 
 		metadata.put(
@@ -270,7 +294,7 @@ public class LARExporter {
 		context.getLarDigest().close();
 	}
 
-	protected void doExport(DataHandlerContext context)
+	protected void doSerialize(DataHandlerContext context)
 		throws Exception, PortalException {
 
 		for (LarDigestItem item : context.getLarDigest()) {

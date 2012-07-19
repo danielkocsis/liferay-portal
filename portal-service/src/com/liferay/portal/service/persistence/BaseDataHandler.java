@@ -35,6 +35,12 @@ import java.util.List;
  */
 public interface BaseDataHandler<T extends BaseModel<T>> {
 
+	public static final String MESSAGE_COMMAND_DIGEST = "digest";
+
+	public static final String MESSAGE_COMMAND_SERIALIZE = "serialize";
+
+	public static final String MESSAGE_COMMAND_IMPORT = "import";
+
 	public static final String ROOT_PATH_GROUPS = "/groups/";
 
 	public static final String ROOT_PATH_LAYOUTS = "/layouts/";
