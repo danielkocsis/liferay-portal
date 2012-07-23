@@ -601,19 +601,31 @@ public class Validator {
 			return false;
 		}
 
+		if (isIPv4Address(name)) {
+			return true;
+		}
+
+		boolean isIPv6Address = isIPv6Address(name);
 		char[] nameCharArray = name.toCharArray();
 
 		if ((nameCharArray[0] == CharPool.DASH) ||
 			(nameCharArray[0] == CharPool.PERIOD) ||
-			(nameCharArray[nameCharArray.length - 1] == CharPool.DASH)) {
+			(nameCharArray[nameCharArray.length - 1] == CharPool.DASH) ||
+			(isIPv6Address &&
+				((nameCharArray[0] != CharPool.OPEN_BRACKET) ||
+				(nameCharArray[nameCharArray.length -1] !=
+					CharPool.CLOSE_BRACKET)))) {
 
 			return false;
 		}
 
+		if (isIPv6Address) {
+			return true;
+		}
+
 		for (char c : nameCharArray) {
-			if (!isChar(c) && !isDigit(c) && (c != CharPool.CLOSE_BRACKET) &&
-				(c != CharPool.COLON) && (c != CharPool.DASH) &&
-				(c != CharPool.OPEN_BRACKET) && (c != CharPool.PERIOD)) {
+			if (!isChar(c) && !isDigit(c) && (c != CharPool.COLON) &&
+				(c != CharPool.DASH) && (c != CharPool.PERIOD)) {
 
 				return false;
 			}
@@ -645,14 +657,66 @@ public class Validator {
 	}
 
 	/**
+	 * Returns <code>true</code> if the string is a valid IPv4 or IPv6
+	 * IP address.
+	 *
+	 * @param  ipAddress the string to check
+	 * @return <code>true</code> if the string is an IPv4 or IPv6 IP address;
+	 *         <code>false</code> otherwise
+	 */
+	public static boolean isIPAddress(String ipAddress) {
+		if (isIPv4Address(ipAddress) || isIPv6Address(ipAddress)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Returns <code>true</code> if the string is a valid IPv4 IP address.
 	 *
 	 * @param  ipAddress the string to check
 	 * @return <code>true</code> if the string is an IPv4 IP address;
 	 *         <code>false</code> otherwise
 	 */
-	public static boolean isIPAddress(String ipAddress) {
-		Matcher matcher = _ipAddressPattern.matcher(ipAddress);
+	public static boolean isIPv4Address(String ipAddress) {
+		Matcher matcher = _ipv4AddressPattern.matcher(ipAddress);
+
+		return matcher.matches();
+	}
+
+	/**
+	 * Returns <code>true</code> if the string is a valid IPv6 IP address.
+	 *
+	 * @param  ipAddress the string to check
+	 * @return <code>true</code> if the string is an IPv6 IP address;
+	 *         <code>false</code> otherwise
+	 */
+	public static boolean isIPv6Address(String ipAddress) {
+
+		// Pre-process address string
+
+		if (isNull(ipAddress)) {
+			return false;
+		}
+
+		if (StringUtil.startsWith(ipAddress, CharPool.OPEN_BRACKET) &&
+			StringUtil.endsWith(ipAddress, CharPool.CLOSE_BRACKET)) {
+
+			ipAddress = ipAddress.substring(1, ipAddress.length() - 1);
+		}
+
+		if (ipAddress.length() < 2) {
+			return false;
+		}
+
+		if (StringUtil.count(ipAddress, "::") > 1) {
+			return false;
+		}
+
+		// Validate the processed address string
+
+		Matcher matcher = _ipv6AddressPattern.matcher(ipAddress);
 
 		return matcher.matches();
 	}
@@ -1117,13 +1181,21 @@ public class Validator {
 	private static Pattern _emailAddressPattern = Pattern.compile(
 		"[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@" +
 		"(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?");
-	private static Pattern _ipAddressPattern = Pattern.compile(
-		"\\b" +
-		"((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\." +
-		"((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\." +
-		"((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\." +
-		"((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])" +
-		"\\b");
+	private static Pattern _ipv4AddressPattern = Pattern.compile(
+		"^" +
+		"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+		"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+		"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+		"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" +
+		"$");
+	private static Pattern _ipv6AddressPattern = Pattern.compile(
+		"^" +
+		"((([a-fA-F0-9]{0,4}:)|(::)){1,6}" +
+		"((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]|[0-9]?)(\\.)){3}" +
+		"(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]|[0-9]?))|" +
+		"((((([a-fA-F0-9]{0,4}:)|(::)){0,7})([a-fA-F0-9]{0,4}:?)))" +
+		"$");
+
 	private static Pattern _variableNamePattern = Pattern.compile(
 		"[_a-zA-Z]+[_a-zA-Z0-9]*");
 
