@@ -75,8 +75,9 @@ public class ValidatorTest extends TestCase {
 	public void testIsValidHostName() throws Exception {
 		String[] validHostNames = {
 			"localhost", "127.0.0.1", "10.10.10.1", "abc.com", "9to5.net",
-			"liferay.com", "www.liferay.com", "www.liferay.co.uk", "::1",
-			"[abcd:1234:ef01:2345:6789:0123:4567]"
+			"liferay.com", "www.liferay.com", "www.liferay.co.uk", "[::1]",
+			"[abcd:1234:ef01:2345:6789:0123:4567]",
+			"[ffff:0000:3333::1222:192.168.2.102]"
 		};
 
 		for (String validHostName : validHostNames) {
@@ -87,7 +88,8 @@ public class ValidatorTest extends TestCase {
 
 		String[] invalidHostNames = {
 			"(999.999.999)", "123_456_789_012", "www.$dollar$.com",
-			"{abcd:1234:ef01:2345:6789:0123:4567}"
+			"{abcd:1234:ef01:2345:6789:0123:4567}","[0xee:ff02:4455:2344::1]",
+			"[abcd::ef01:2345::6789]"
 		};
 
 		for (String invalidHostName : invalidHostNames) {
