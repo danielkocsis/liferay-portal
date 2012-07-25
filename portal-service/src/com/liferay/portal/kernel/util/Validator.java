@@ -642,6 +642,10 @@ public class Validator {
 			addressToCheck = ipAddress.substring(posOpen + 1, posClose - 1);
 		}
 
+		if (addressToCheck.length() < 2) {
+			return false;
+		}
+
 		int doubleColonCounts = 0;
 		boolean colonFound = false;
 
