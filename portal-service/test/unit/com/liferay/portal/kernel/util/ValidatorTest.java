@@ -191,7 +191,7 @@ public class ValidatorTest extends TestCase {
 			"fe80::204:61ff:254.157.241.86", "::ffff:12.34.56.78",
 			"::ffff:192.0.2.128", "fe80:0000:0000:0000:0204:61ff:fe9d:f156",
 			"fe80:0:0:0:204:61ff:fe9d:f156", "fe80::204:61ff:fe9d:f156", "::1",
-			"fe80::", "fe80::1", ":", "::ffff:c000:280"
+			"fe80::", "fe80::1", "::ffff:c000:280"
 		};
 
 		for (String validIPv6Address : validIPv6Addresses) {
@@ -201,7 +201,7 @@ public class ValidatorTest extends TestCase {
 		}
 
 		String[] invalidIPv6Addresses = {
-				"fe80:0000:0000:0000:0204:61ff:254.157.241.086",
+				"fe80:0000:0000:0000:0204:61ff:254.157.241.086", ":",
 				"2001:0000:1234:0000:0000:C1C0:ABCD:0876  0",
 				"2001:0000:1234: 0000:0000:C1C0:ABCD:0876", "",
 				"2001:DB8:0:0:8:800:200C:417A:221", "FF01::101::2",
