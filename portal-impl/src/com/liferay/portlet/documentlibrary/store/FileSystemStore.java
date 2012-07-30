@@ -307,7 +307,11 @@ public class FileSystemStore extends BaseStore {
 			throw new DuplicateFileException(fileName);
 		}
 
+		File newParentFile = newFileNameDir.getParentFile();
+
 		File parentFile = fileNameDir.getParentFile();
+
+		newParentFile.mkdirs();
 
 		fileNameDir.renameTo(newFileNameDir);
 
@@ -327,7 +331,11 @@ public class FileSystemStore extends BaseStore {
 			throw new DuplicateFileException(newFileName);
 		}
 
+		File newParentFile = newFileNameDir.getParentFile();
+
 		File parentFile = fileNameDir.getParentFile();
+
+		newParentFile.mkdirs();
 
 		fileNameDir.renameTo(newFileNameDir);
 
