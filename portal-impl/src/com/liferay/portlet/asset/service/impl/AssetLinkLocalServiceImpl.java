@@ -332,4 +332,54 @@ public class AssetLinkLocalServiceImpl extends AssetLinkLocalServiceBaseImpl {
 		}
 	}
 
+	/**
+	 * Returns all the IDs of the the asset links of the given link type whose
+	 * first or second entry ID is the given entry ID.
+	 *
+	 * @param entryId the primary key of the asset entry
+	 * @param typeId typeId the link type. Acceptable values include {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_RELATED}
+	 *         which is a bidirectional relationship and {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_CHILD}
+	 *         which is a unidirectional relationship. For more information see
+	 *         {@link com.liferay.portlet.asset.model.AssetLinkConstants}
+	 * @return the IDs of the asset links of the given link type whose first or
+	 *         second entry ID is the given entry ID
+	 * @throws SystemException if a system exception occurred
+	 */
+	public long[] getLinkIds(long entryId, int typeId) throws SystemException
+	{
+		List<AssetLink> link = getLinks(entryId, typeId);
+		long[] ids = new long[link.size()];
+
+		for (int i=0; i < link.size(); ++i)
+		{
+			ids[i] = link.get(i).getLinkId();
+		}
+
+		return ids;
+	}
+
+	/**
+	 * Returns all the IDs of the asset links whose first or second entry ID is
+	 * the given entry ID.
+	 *
+	 * @param entryId entryId the primary key of the asset entry
+	 * @return the IDs of the asset links whose first or second entry ID is the
+	 *         given entry ID
+	 * @throws SystemException if a system exception occurred
+	 */
+	public long[] getLinkIds(long entryId) throws SystemException
+	{
+		List<AssetLink> link = getLinks(entryId);
+		long[] ids = new long[link.size()];
+
+		for (int i=0; i < link.size(); ++i)
+		{
+			ids[i] = link.get(i).getLinkId();
+		}
+
+		return ids;
+	}
+
 }
