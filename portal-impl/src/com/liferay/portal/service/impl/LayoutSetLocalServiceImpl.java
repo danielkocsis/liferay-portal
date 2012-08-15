@@ -153,13 +153,12 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 
 		// Layout set
 
-		if (group.isOrganization() && group.isSite()) {
-			layoutSet.setPageCount(0);
+		layoutSetPersistence.removeByG_P(groupId, privateLayout);
 
-			layoutSetPersistence.update(layoutSet, false);
-		}
-		else {
-			layoutSetPersistence.removeByG_P(groupId, privateLayout);
+		if (group.isOrganization() && group.isSite()) {
+			addLayoutSet(group.getGroupId(), true);
+
+			addLayoutSet(group.getGroupId(), false);
 		}
 
 		// Counter
