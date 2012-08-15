@@ -462,6 +462,40 @@ public class AssetLinkLocalServiceUtil {
 		getService().updateLinks(userId, entryId, linkEntryIds, typeId);
 	}
 
+	/**
+	* Returns all the IDs of the the asset links of the given link type whose
+	* first or second entry ID is the given entry ID.
+	*
+	* @param entryId the primary key of the asset entry
+	* @param typeId typeId the link type. Acceptable values include {@link
+	com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_RELATED}
+	which is a bidirectional relationship and {@link
+	com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_CHILD}
+	which is a unidirectional relationship. For more information see
+	{@link com.liferay.portlet.asset.model.AssetLinkConstants}
+	* @return the IDs of the asset links of the given link type whose first or
+	second entry ID is the given entry ID
+	* @throws SystemException if a system exception occurred
+	*/
+	public static long[] getLinkIds(long entryId, int typeId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getLinkIds(entryId, typeId);
+	}
+
+	/**
+	* Returns all the IDs of the asset links whose first or second entry ID is
+	* the given entry ID.
+	*
+	* @param entryId entryId the primary key of the asset entry
+	* @return the IDs of the asset links whose first or second entry ID is the
+	given entry ID
+	* @throws SystemException if a system exception occurred
+	*/
+	public static long[] getLinkIds(long entryId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getLinkIds(entryId);
+	}
+
 	public static AssetLinkLocalService getService() {
 		if (_service == null) {
 			_service = (AssetLinkLocalService)PortalBeanLocatorUtil.locate(AssetLinkLocalService.class.getName());
