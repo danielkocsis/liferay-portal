@@ -40,6 +40,7 @@ import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageDisplay;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
+import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.base.MBMessageServiceBaseImpl;
 import com.liferay.portlet.messageboards.service.permission.MBCategoryPermission;
 import com.liferay.portlet.messageboards.service.permission.MBDiscussionPermission;
@@ -649,15 +650,15 @@ public class MBMessageServiceImpl extends MBMessageServiceBaseImpl {
 		throws PortalException, SystemException {
 
 		if (parentMessageId > 0) {
+			MBMessage parentMessage = MBMessageServiceUtil.getMessage(
+				parentMessageId);
+
 			if (MBCategoryPermission.contains(
 					getPermissionChecker(), groupId, categoryId,
 					ActionKeys.ADD_MESSAGE)) {
 
 				return;
 			}
-
-			MBMessage parentMessage = mbMessagePersistence.fetchByPrimaryKey(
-				parentMessageId);
 
 			if ((parentMessage == null) ||
 				!MBCategoryPermission.contains(
