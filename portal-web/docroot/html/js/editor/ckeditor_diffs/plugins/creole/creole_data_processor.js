@@ -434,7 +434,9 @@
 			if (instance._allowNewLine(element)) {
 				var listCharacter = NEW_LINE;
 
-				if (instance._isParentNode(element, TAG_LIST_ITEM) && element.nextSibling) {
+				if ((instance._isParentNode(element, TAG_LIST_ITEM) && element.nextSibling) ||
+					instance._isParentNode(element, TAG_PARAGRAPH)) {
+
 					listCharacter = STR_LIST_ITEM_ESCAPE_CHARACTERS;
 				}
 
