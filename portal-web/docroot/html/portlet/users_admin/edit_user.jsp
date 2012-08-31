@@ -20,6 +20,10 @@
 String redirect = ParamUtil.getString(request, "redirect");
 String backURL = ParamUtil.getString(request, "backURL", redirect);
 
+if (Validator.isNull(backURL)) {
+	backURL = currentURL;
+}
+
 User selUser = PortalUtil.getSelectedUser(request);
 
 Contact selContact = null;
