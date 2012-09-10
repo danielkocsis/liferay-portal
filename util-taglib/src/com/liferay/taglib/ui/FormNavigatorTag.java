@@ -14,6 +14,8 @@
 
 package com.liferay.taglib.ui;
 
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,7 +81,15 @@ public class FormNavigatorTag extends IncludeTag {
 
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
-		request.setAttribute("liferay-ui:form-navigator:backURL", _backURL);
+		String redirect = ParamUtil.getString(request, "redirect");
+
+		if (Validator.isNull(_backURL) && Validator.isNotNull(redirect)) {
+			request.setAttribute("liferay-ui:form-navigator:backURL", redirect);
+		}
+		else {
+			request.setAttribute("liferay-ui:form-navigator:backURL", _backURL);
+		}
+
 		request.setAttribute(
 			"liferay-ui:form-navigator:categoryNames", _categoryNames);
 		request.setAttribute(
