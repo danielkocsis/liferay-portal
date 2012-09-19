@@ -23,13 +23,13 @@
 </#macro>
 
 <#macro js file_name>
-	<#assign file_id = "" />
 
 	<#if file_name == js_main_file>
-		<#assign file_id = "mainLiferayThemeJavaScript" />
+		<script id="mainLiferayThemeJavaScript" src="${file_name}" type="text/javascript"></script>
+	<#else>
+		<script src="${file_name}" type="text/javascript"></script>
 	</#if>
 
-	<script id="${file_id}" src="${file_name}" type="text/javascript"></script>
 </#macro>
 
 <#macro language key>

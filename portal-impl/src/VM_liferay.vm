@@ -9,13 +9,13 @@
 #end
 
 #macro (js $file_name)
-	#set ($file_id = "")
 
 	#if ($file_name == $js_main_file)
-		#set ($file_id = "mainLiferayThemeJavaScript")
+		<script id="mainLiferayThemeJavaScript" src="$file_name" type="text/javascript"></script>
+	#else
+		<script src="$file_name" type="text/javascript"></script>
 	#end
 
-	<script id="$file_id" src="$file_name" type="text/javascript"></script>
 #end
 
 #macro (language $lang_key)
