@@ -14,6 +14,12 @@
 
 package com.liferay.portal.service.http;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.service.ContactServiceUtil;
+
+import java.rmi.RemoteException;
+
 /**
  * <p>
  * This class provides a SOAP utility for the
@@ -57,4 +63,64 @@ package com.liferay.portal.service.http;
  * @generated
  */
 public class ContactServiceSoap {
+	public static com.liferay.portal.model.ContactSoap[] getContacts(
+		long classNameId, long classPK, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws RemoteException {
+		try {
+			java.util.List<com.liferay.portal.model.Contact> returnValue = ContactServiceUtil.getContacts(classNameId,
+					classPK, start, end, orderByComparator);
+
+			return com.liferay.portal.model.ContactSoap.toSoapModels(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static int getContactsCount(long classNameId, long classPK)
+		throws RemoteException {
+		try {
+			int returnValue = ContactServiceUtil.getContactsCount(classNameId,
+					classPK);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.portal.model.ContactSoap updateContact(
+		long contactId, java.lang.String emailAddress,
+		java.lang.String firstName, java.lang.String middleName,
+		java.lang.String lastName, int prefixId, int suffixId, boolean male,
+		int birthdayMonth, int birthdayDay, int birthdayYear,
+		java.lang.String smsSn, java.lang.String aimSn,
+		java.lang.String facebookSn, java.lang.String icqSn,
+		java.lang.String jabberSn, java.lang.String msnSn,
+		java.lang.String mySpaceSn, java.lang.String skypeSn,
+		java.lang.String twitterSn, java.lang.String ymSn,
+		java.lang.String jobTitle) throws RemoteException {
+		try {
+			com.liferay.portal.model.Contact returnValue = ContactServiceUtil.updateContact(contactId,
+					emailAddress, firstName, middleName, lastName, prefixId,
+					suffixId, male, birthdayMonth, birthdayDay, birthdayYear,
+					smsSn, aimSn, facebookSn, icqSn, jabberSn, msnSn,
+					mySpaceSn, skypeSn, twitterSn, ymSn, jobTitle);
+
+			return com.liferay.portal.model.ContactSoap.toSoapModel(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(ContactServiceSoap.class);
 }
