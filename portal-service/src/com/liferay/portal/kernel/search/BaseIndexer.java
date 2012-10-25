@@ -737,10 +737,10 @@ public abstract class BaseIndexer implements Indexer {
 			return;
 		}
 
-		String value = String.valueOf(searchContext.getAttribute(field));
+		String value = searchContext.getKeywords();
 
 		if (Validator.isNull(value)) {
-			value = searchContext.getKeywords();
+			value = String.valueOf(searchContext.getAttribute(field));
 		}
 
 		if (Validator.isNull(value)) {
