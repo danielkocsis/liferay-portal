@@ -16,8 +16,6 @@ package com.liferay.portal.security.auth;
 
 import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
@@ -41,10 +39,11 @@ import javax.servlet.http.HttpSession;
  * @author Wesley Gong
  * @author Daeyoung Song
  */
-public class CASAutoLogin implements AutoLogin {
+public class CASAutoLogin extends BaseAutoLogin {
 
 	public String[] login(
-		HttpServletRequest request, HttpServletResponse response) {
+			HttpServletRequest request, HttpServletResponse response)
+		throws AutoLoginException {
 
 		HttpSession session = request.getSession();
 
@@ -57,7 +56,7 @@ public class CASAutoLogin implements AutoLogin {
 					companyId, PropsKeys.CAS_AUTH_ENABLED,
 					PropsValues.CAS_AUTH_ENABLED)) {
 
-				return credentials;
+				return null;
 			}
 
 			String login = (String)session.getAttribute(WebKeys.CAS_LOGIN);
@@ -67,7 +66,7 @@ public class CASAutoLogin implements AutoLogin {
 					WebKeys.CAS_NO_SUCH_USER_EXCEPTION);
 
 				if (noSuchUserException == null) {
-					return credentials;
+					return null;
 				}
 
 				session.removeAttribute(WebKeys.CAS_NO_SUCH_USER_EXCEPTION);
@@ -80,7 +79,7 @@ public class CASAutoLogin implements AutoLogin {
 
 				request.setAttribute(AutoLogin.AUTO_LOGIN_REDIRECT, redirect);
 
-				return credentials;
+				return null;
 			}
 
 			String authType = PrefsPropsUtil.getString(
@@ -132,17 +131,9 @@ public class CASAutoLogin implements AutoLogin {
 
 			return credentials;
 		}
-		catch (NoSuchUserException nsue) {
-			session.removeAttribute(WebKeys.CAS_LOGIN);
-
-			session.setAttribute(
-				WebKeys.CAS_NO_SUCH_USER_EXCEPTION, Boolean.TRUE);
-		}
 		catch (Exception e) {
-			_log.error(e, e);
+			return handleException(request, response, e);
 		}
-
-		return credentials;
 	}
 
 	/**
@@ -153,6 +144,25 @@ public class CASAutoLogin implements AutoLogin {
 			companyId, StringPool.BLANK, screenName);
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(CASAutoLogin.class);
+	@Override
+	protected String[] doHandleException(
+			HttpServletRequest request, Exception e)
+		throws AutoLoginException {
+
+		HttpSession session = request.getSession();
+
+		if (e instanceof NoSuchUserException) {
+			session.removeAttribute(WebKeys.CAS_LOGIN);
+
+			session.setAttribute(
+				WebKeys.CAS_NO_SUCH_USER_EXCEPTION, Boolean.TRUE);
+		}
+
+		if (getLog().isErrorEnabled()) {
+			getLog().error(e, e);
+		}
+
+		return null;
+	}
 
 }
