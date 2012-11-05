@@ -14,6 +14,7 @@
 
 package com.liferay.portal.service;
 
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -25,13 +26,16 @@ import com.liferay.portal.test.TransactionalCallbackAwareExecutionTestListener;
 import com.liferay.portal.util.TestPropsValues;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
  * @author Brian Wing Shun Chan
+ * @author Vilmos Papp
  */
 @ExecutionTestListeners(
 	listeners = {
@@ -55,11 +59,95 @@ public class UserServiceTest {
 	}
 
 	@Test
+	public void testGetCompanyUsers() throws Exception {
+		User user = addUser();
+
+		Assert.assertNotNull(user);
+
+		List<User> users = UserServiceUtil.getCompanyUsers(
+			user.getCompanyId(), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+
+		Assert.assertTrue(users.size() > 0);
+	}
+
+	@Test
+	public void testGetCompanyUsersCount() throws Exception {
+		User user = addUser();
+
+		Assert.assertNotNull(user);
+
+		long usersCount = UserServiceUtil.getCompanyUsersCount(
+			user.getCompanyId());
+
+		Assert.assertTrue(usersCount > 0);
+	}
+
+	@Test
 	public void testGetUser() throws Exception {
 		User user = addUser();
 
 		UserServiceUtil.getUserByEmailAddress(
 			TestPropsValues.getCompanyId(), user.getEmailAddress());
+	}
+
+	@Test
+	public void testGetUserByEmailAddress() throws Exception {
+		User user = addUser();
+
+		Assert.assertNotNull(user);
+
+		User loadedUser = UserServiceUtil.getUserByEmailAddress(
+			user.getCompanyId(), user.getEmailAddress());
+
+		Assert.assertNotNull(loadedUser);
+	}
+
+	@Test
+	public void testGetUserByScreenName() throws Exception {
+		User user = addUser();
+
+		Assert.assertNotNull(user);
+
+		User loadedUser = UserServiceUtil.getUserByScreenName(
+			user.getCompanyId(), user.getScreenName());
+
+		Assert.assertNotNull(loadedUser);
+	}
+
+	@Test
+	public void testGetUserIdByEmailAddress() throws Exception {
+		User user = addUser();
+
+		Assert.assertNotNull(user);
+
+		long userId = UserServiceUtil.getUserIdByEmailAddress(
+			user.getCompanyId(), user.getEmailAddress());
+
+		Assert.assertEquals(user.getUserId(), userId);
+	}
+
+	@Test
+	public void testGetUserIdByScreenName() throws Exception {
+		User user = addUser();
+
+		Assert.assertNotNull(user);
+
+		long userId = UserServiceUtil.getUserIdByScreenName(
+			user.getCompanyId(), user.getScreenName());
+
+		Assert.assertEquals(user.getUserId(), userId);
+	}
+
+	@Test
+	public void testHasRoleUser() throws Exception {
+		User user = addUser();
+
+		Assert.assertNotNull(user);
+
+		boolean hasRole = UserServiceUtil.hasRoleUser(
+			user.getCompanyId(), "Power user", user.getUserId(), false);
+
+		Assert.assertTrue(hasRole);
 	}
 
 	protected User addUser() throws Exception {
