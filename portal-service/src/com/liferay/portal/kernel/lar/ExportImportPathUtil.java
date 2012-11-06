@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.util.PortletKeys;
@@ -51,6 +52,23 @@ public class ExportImportPathUtil {
 		}
 
 		return StringPool.BLANK;
+	}
+
+	public static String getExpandoPath(String path) {
+		if (!Validator.isFilePath(path, false)) {
+			throw new IllegalArgumentException(
+				path + " is located outside of the lar");
+		}
+
+		int pos = path.lastIndexOf(".xml");
+
+		if (pos == -1) {
+			throw new IllegalArgumentException(
+				path + " does not end with .xml");
+		}
+
+		return path.substring(0, pos).concat("-expando").concat(
+			path.substring(pos));
 	}
 
 	public static String getPermissionPath(Object entity) {
