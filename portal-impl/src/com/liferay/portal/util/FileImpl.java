@@ -59,6 +59,9 @@ import java.util.Properties;
 import java.util.concurrent.Future;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.poi.EncryptedDocumentException;
 import org.apache.tika.Tika;
 import org.apache.tools.ant.DirectoryScanner;
 
@@ -323,7 +326,16 @@ public class FileImpl implements com.liferay.portal.kernel.util.File {
 			}
 		}
 		catch (Exception e) {
-			_log.error(e, e);
+			Throwable rootCause = ExceptionUtils.getRootCause(e);
+
+			if ((rootCause instanceof CryptographyException) ||
+				(rootCause instanceof EncryptedDocumentException)) {
+				_log.error(
+					"Cannot extract text from encrypted document: " + fileName);
+			}
+			else {
+				_log.error(e, e);
+			}
 		}
 		finally {
 			if (contextClassLoader != portalClassLoader) {
@@ -902,6 +914,13 @@ public class FileImpl implements com.liferay.portal.kernel.util.File {
 					new UnsyncByteArrayInputStream(_data));
 			}
 			catch (Exception e) {
+				Throwable rootCause = ExceptionUtils.getRootCause(e);
+
+				if ((rootCause instanceof CryptographyException) ||
+					(rootCause instanceof EncryptedDocumentException)) {
+					_log.error("Cannot parse encrypted document.");
+				}
+
 				throw new ProcessException(e);
 			}
 		}

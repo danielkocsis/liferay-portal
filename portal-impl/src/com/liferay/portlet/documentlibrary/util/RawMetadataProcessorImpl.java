@@ -48,6 +48,10 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.poi.EncryptedDocumentException;
+
 /**
  * @author Alexander Chow
  * @author Mika Koivisto
@@ -124,6 +128,16 @@ public class RawMetadataProcessorImpl
 			}
 			catch (UnsupportedOperationException uoe) {
 			}
+			catch (SystemException se) {
+				Throwable rootCause = ExceptionUtils.getRootCause(se);
+
+				if ((rootCause instanceof CryptographyException) ||
+					(rootCause instanceof EncryptedDocumentException)) {
+					return;
+				}
+
+				throw se;
+			}
 		}
 
 		if (rawMetadataMap == null) {
@@ -135,6 +149,16 @@ public class RawMetadataProcessorImpl
 				rawMetadataMap = RawMetadataProcessorUtil.getRawMetadataMap(
 					fileVersion.getExtension(), fileVersion.getMimeType(),
 					inputStream);
+			}
+			catch (SystemException se) {
+				Throwable rootCause = ExceptionUtils.getRootCause(se);
+
+				if ((rootCause instanceof CryptographyException) ||
+					(rootCause instanceof EncryptedDocumentException)) {
+					return;
+				}
+
+				throw se;
 			}
 			finally {
 				StreamUtil.cleanUp(inputStream);
