@@ -812,6 +812,17 @@ public class PortletWrapper implements Portlet, ModelWrapper<Portlet> {
 	}
 
 	/**
+	* Returns the names of the classes of staged model data handlers associated
+	* with this portlet.
+	*
+	* @return the names of the classes of staged model data handlers associated
+	with this portlet
+	*/
+	public java.util.List<java.lang.String> getModelDataHandlerClasses() {
+		return _portlet.getModelDataHandlerClasses();
+	}
+
+	/**
 	* Returns the name of the open search class of the portlet.
 	*
 	* @return the name of the open search class of the portlet
@@ -2348,6 +2359,18 @@ public class PortletWrapper implements Portlet, ModelWrapper<Portlet> {
 	*/
 	public void setMaximizeHelp(boolean maximizeHelp) {
 		_portlet.setMaximizeHelp(maximizeHelp);
+	}
+
+	/**
+	* Sets the staged model data handler class names associated with this
+	* portlet.
+	*
+	* @param modelDataHandlerClasses staged model data handler names associated
+	with this portlet
+	*/
+	public void setModelDataHandlerClasses(
+		java.util.List<java.lang.String> modelDataHandlerClasses) {
+		_portlet.setModelDataHandlerClasses(modelDataHandlerClasses);
 	}
 
 	/**
