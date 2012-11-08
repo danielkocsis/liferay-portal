@@ -1093,6 +1093,7 @@ public class PortletImporter {
 
 		long defaultUserId = UserLocalServiceUtil.getDefaultUserId(companyId);
 		long plid = 0;
+		String portletIdToStore = null;
 		String scopeType = StringPool.BLANK;
 		String scopeLayoutUuid = StringPool.BLANK;
 
@@ -1141,6 +1142,12 @@ public class PortletImporter {
 				int ownerType = GetterUtil.getInteger(
 					element.attributeValue("owner-type"));
 
+				if (portletId == null) {
+					portletId = element.attributeValue("portlet-id");
+				}
+
+				portletIdToStore = portletId;
+
 				if (ownerType == PortletKeys.PREFS_OWNER_TYPE_COMPANY) {
 					continue;
 				}
@@ -1168,14 +1175,32 @@ public class PortletImporter {
 				if (ownerType == PortletKeys.PREFS_OWNER_TYPE_GROUP) {
 					plid = PortletKeys.PREFS_PLID_SHARED;
 					ownerId = portletDataContext.getScopeGroupId();
+
+					Portlet portlet = PortletLocalServiceUtil.getPortletById(
+						portletId);
+
+					if (portlet != null) {
+						if (!portlet.isPreferencesUniquePerLayout()) {
+							portletIdToStore = portlet.getRootPortletId();
+						}
+					}
+					else {
+						String rootPortletId =
+							PortletConstants.getRootPortletId(portletId);
+
+						portlet = PortletLocalServiceUtil.getPortletById(
+							portletDataContext.getCompanyId(), rootPortletId);
+
+						if ((portlet != null) &&
+							!portlet.isPreferencesUniquePerLayout()) {
+
+							portletIdToStore = portlet.getRootPortletId();
+						}
+					}
 				}
 
 				boolean defaultUser = GetterUtil.getBoolean(
 					element.attributeValue("default-user"));
-
-				if (portletId == null) {
-					portletId = element.attributeValue("portlet-id");
-				}
 
 				if (ownerType == PortletKeys.PREFS_OWNER_TYPE_ARCHIVED) {
 					portletId = PortletConstants.getRootPortletId(portletId);
@@ -1221,8 +1246,8 @@ public class PortletImporter {
 				}
 
 				updatePortletPreferences(
-					portletDataContext, ownerId, ownerType, plid, portletId,
-					xml, importPortletData);
+					portletDataContext, ownerId, ownerType, plid,
+					portletIdToStore, xml, importPortletData);
 			}
 		}
 
