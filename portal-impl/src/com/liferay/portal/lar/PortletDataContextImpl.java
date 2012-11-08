@@ -19,6 +19,7 @@ import com.liferay.portal.NoSuchTeamException;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataContextListener;
 import com.liferay.portal.kernel.lar.PortletDataException;
@@ -413,7 +414,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			expandoBridge.getAttributes();
 
 		if (!expandoBridgeAttributes.isEmpty()) {
-			String expandoPath = getExpandoPath(path);
+			String expandoPath = ExportImportPathUtil.getExpandoPath(path);
 
 			element.addAttribute("expando-path", expandoPath);
 
@@ -1361,7 +1362,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			expandoPath = element.attributeValue("expando-path");
 		}
 		else {
-			expandoPath = getExpandoPath(path);
+			expandoPath = ExportImportPathUtil.getExpandoPath(path);
 		}
 
 		if (Validator.isNotNull(expandoPath)) {
@@ -1409,23 +1410,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 		else {
 			return (Long)classedModel.getPrimaryKeyObj();
 		}
-	}
-
-	protected String getExpandoPath(String path) {
-		if (!Validator.isFilePath(path, false)) {
-			throw new IllegalArgumentException(
-				path + " is located outside of the lar");
-		}
-
-		int pos = path.lastIndexOf(".xml");
-
-		if (pos == -1) {
-			throw new IllegalArgumentException(
-				path + " does not end with .xml");
-		}
-
-		return path.substring(0, pos).concat("-expando").concat(
-			path.substring(pos));
 	}
 
 	protected String getPrimaryKeyString(Class<?> clazz, long classPK) {
