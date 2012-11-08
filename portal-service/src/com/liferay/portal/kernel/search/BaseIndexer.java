@@ -739,7 +739,8 @@ public abstract class BaseIndexer implements Indexer {
 
 		String value = String.valueOf(searchContext.getAttribute(field));
 
-		if (Validator.isNull(value)) {
+		if ((searchContext.getFacet(field) != null) ||
+			Validator.isNull(value)) {
 			value = searchContext.getKeywords();
 		}
 
