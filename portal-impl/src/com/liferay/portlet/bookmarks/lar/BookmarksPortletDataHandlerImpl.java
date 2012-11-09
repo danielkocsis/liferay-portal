@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.lar.BasePortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataHandlerBoolean;
 import com.liferay.portal.kernel.lar.PortletDataHandlerControl;
+import com.liferay.portal.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.xml.Document;
@@ -355,10 +356,10 @@ public class BookmarksPortletDataHandlerImpl extends BasePortletDataHandler {
 		};
 
 	private BookmarksEntryDataHandler _bookmarksEntryDataHandler =
-		(BookmarksEntryDataHandler)PortalBeanLocatorUtil.locate(
-			BookmarksEntryDataHandler.class.getName());
+		(BookmarksEntryDataHandler)StagedModelDataHandlerRegistryUtil.
+			getStagedModelDataHandler(BookmarksEntry.class.getName());
 	private BookmarksFolderDataHandler _bookmarksFolderDataHandler =
-		(BookmarksFolderDataHandler)PortalBeanLocatorUtil.locate(
-			BookmarksFolderDataHandler.class.getName());
+		(BookmarksFolderDataHandler)StagedModelDataHandlerRegistryUtil.
+			getStagedModelDataHandler(BookmarksFolder.class.getName());
 
 }

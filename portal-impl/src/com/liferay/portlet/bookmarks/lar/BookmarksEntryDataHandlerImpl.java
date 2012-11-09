@@ -17,6 +17,8 @@ package com.liferay.portlet.bookmarks.lar;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.StagedDataHandlerImpl;
+import com.liferay.portal.kernel.lar.StagedModelDataHandler;
+import com.liferay.portal.kernel.lar.StagedModelDataHandlerImpl;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.service.ServiceContext;
@@ -31,8 +33,8 @@ import java.util.Map;
  * @author Mate Thurzo
  */
 public class BookmarksEntryDataHandlerImpl
-	extends StagedDataHandlerImpl<BookmarksEntry>
-	implements BookmarksEntryDataHandler {
+	extends StagedModelDataHandlerImpl<BookmarksEntry>
+	implements StagedModelDataHandler<BookmarksEntry> {
 
 	@Override
 	public void export(
