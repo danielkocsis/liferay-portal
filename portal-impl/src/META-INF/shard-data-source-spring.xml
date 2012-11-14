@@ -100,6 +100,9 @@
 	<bean id="com.liferay.portal.dao.shard.advice.ShardPortletAdvice" class="com.liferay.portal.dao.shard.advice.ShardPortletAdvice">
 		<property name="shardAdvice" ref="com.liferay.portal.dao.shard.advice.ShardAdvice" />
 	</bean>
+	<bean id="com.liferay.portal.dao.shard.advice.ShardUserAdvice" class="com.liferay.portal.dao.shard.advice.ShardUserAdvice">
+		<property name="shardAdvice" ref="com.liferay.portal.dao.shard.advice.ShardAdvice" />
+	</bean>
 	<bean id="com.liferay.portal.dao.shard.advice.ShardPersistenceAdvice" class="com.liferay.portal.dao.shard.advice.ShardPersistenceAdvice">
 		<property name="shardAdvice" ref="com.liferay.portal.dao.shard.advice.ShardAdvice" />
 	</bean>
@@ -115,6 +118,7 @@
 	<aop:config proxy-target-class="false">
 		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardCompanyAdvice" pointcut="bean(com.liferay.portal.service.CompanyLocalService)" />
 		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardPortletAdvice" pointcut="bean(com.liferay.portal.service.PortletLocalService)" />
+		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardUserAdvice" pointcut="bean(com.liferay.portal.service.UserLocalService)" />
 		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardPersistenceAdvice" pointcut="bean(*Persistence) || bean(*Finder)" />
 		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardGloballyAdvice" pointcut="execution(void com.liferay.portal.convert.messaging.ConvertProcessMessageListener.receive(..))" />
 		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardGloballyAdvice" pointcut="execution(void com.liferay.portal.events.StartupHelper.updateIndexes())" />
@@ -124,6 +128,6 @@
 		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardGloballyAdvice" pointcut="execution(void com.liferay.portal.service.ServiceComponentLocalService.upgradeDB(..))" />
 		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardGloballyAdvice" pointcut="execution(void com.liferay.portlet.journal.service.JournalArticleLocalService.checkArticles())" />
 		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardParameterAdvice" pointcut="execution(* com.liferay.portal.service.AccountLocalService.getAccount(long, long))" />
-		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardParameterAdvice" pointcut="execution(* com.liferay.portal.service.UserLocalService.searchCount(..))" />
+		<aop:advisor advice-ref="com.liferay.portal.dao.shard.advice.ShardParameterAdvice" pointcut="execution(* com.liferay.portal.service.RoleLocalService.checkSystemRoles(long))" />
 	</aop:config>
 </beans>
