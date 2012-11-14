@@ -1001,6 +1001,17 @@ public class PortletImpl extends PortletBaseImpl {
 	}
 
 	/**
+	 * Returns the names of the classes of staged model data handlers associated
+	 * with this portlet.
+	 *
+	 * @return the names of the classes of staged model data handlers associated
+	 *         with this portlet
+	 */
+	public List<String> getModelDataHandlerClasses() {
+		return _modelDataHandlerClasses;
+	}
+
+	/**
 	 * Returns the name of the open search class of the portlet.
 	 *
 	 * @return the name of the open search class of the portlet
@@ -2736,6 +2747,19 @@ public class PortletImpl extends PortletBaseImpl {
 	}
 
 	/**
+	 * Sets the staged model data handler class names associated with this
+	 * portlet.
+	 *
+	 * @param modelDataHandlerClasses staged model data handler names associated
+	 *                                with this portlet
+	 */
+	public void setModelDataHandlerClasses(
+		List<String> modelDataHandlerClasses) {
+
+		_modelDataHandlerClasses = modelDataHandlerClasses;
+	}
+
+	/**
 	 * Sets the name of the open search class of the portlet.
 	 *
 	 * @param openSearchClass the name of the open search class of the portlet
@@ -3574,6 +3598,12 @@ public class PortletImpl extends PortletBaseImpl {
 	 * user goes into the help mode.
 	 */
 	private boolean _maximizeHelp;
+
+	/**
+	 * The names of the staged model data handler classes associated with the
+	 * portlet.
+	 */
+	private List<String> _modelDataHandlerClasses;
 
 	/**
 	 * The name of the open search class of the portlet.
