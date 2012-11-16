@@ -34,7 +34,11 @@ public class DB2Dialect extends org.hibernate.dialect.DB2Dialect {
 	@Override
 	public String getLimitString(String sql, int offset, int limit) {
 
-		boolean hasOffset = (offset > 0 || forceLimitUsage());
+		boolean hasOffset = false;
+
+		if ((offset > 0) || forceLimitUsage()) {
+			hasOffset = true;
+		}
 
 		StringBundler sb = null;
 
@@ -51,6 +55,7 @@ public class DB2Dialect extends org.hibernate.dialect.DB2Dialect {
 		if (!hasOffset) {
 			addQueryForLimitedRows(sb, sql, limit);
 			addOptimizeForLimitedRows(sb, limit);
+
 			return sb.toString();
 		}
 
@@ -67,9 +72,7 @@ public class DB2Dialect extends org.hibernate.dialect.DB2Dialect {
 
 		// Offset
 
-		sb.append(") AS outerQuery WHERE rownumber_ ");
-		sb.append(StringPool.GREATER_THAN);
-		sb.append(StringPool.SPACE);
+		sb.append(") AS outerQuery WHERE rownumber_ > ");
 		sb.append(offset);
 
 		addOptimizeForLimitedRows(sb, limit);
@@ -79,13 +82,12 @@ public class DB2Dialect extends org.hibernate.dialect.DB2Dialect {
 
 	@Override
 	public boolean supportsVariableLimit() {
-		return false;
+		return _SUPPORTS_VARIABLE_LIMIT;
 	}
 
 	private void addOptimizeForLimitedRows(StringBundler sb, int limit) {
 		String sqlFragment = StringUtil.replace(
-			_SQL_OPTIMIZE_FOR_LIMITED_ROWS, "[$LIMIT$]",
-			String.valueOf(limit));
+			_SQL_OPTIMIZE_FOR_LIMITED_ROWS, "[$LIMIT$]", String.valueOf(limit));
 
 		sb.append(StringPool.SPACE);
 		sb.append(sqlFragment);
@@ -109,5 +111,7 @@ public class DB2Dialect extends org.hibernate.dialect.DB2Dialect {
 
 	private static final String _SQL_OPTIMIZE_FOR_LIMITED_ROWS =
 		"OPTIMIZE FOR [$LIMIT$] ROWS";
+
+	private static final boolean _SUPPORTS_VARIABLE_LIMIT = false;
 
 }
