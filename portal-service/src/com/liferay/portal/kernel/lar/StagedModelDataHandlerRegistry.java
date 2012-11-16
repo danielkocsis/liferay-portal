@@ -22,14 +22,47 @@ import java.util.Map;
  */
 public interface StagedModelDataHandlerRegistry {
 
+	/**
+	 * Returns the staged model data handler for a given class name from the
+	 * registry.
+	 *
+	 * @param className the name of the staged model class
+	 * @return the staged model data handler for the staged model class if it
+	 *         has been registered, null otherwise
+	 */
 	public StagedModelDataHandler getStagedModelDataHandler(String className);
 
+	/**
+	 * Return every staged model data handler that have been registered in the
+	 * system as a list.
+	 *
+	 * @return a list of staged model data handlers registered in the system
+	 */
 	public List<StagedModelDataHandler> getStagedModelDataHandlerList();
 
+	/**
+	 * Return every staged model data handler that have been registered in the
+	 * system as a map.
+	 *
+	 * @return a map of staged model data handlers registered in the system
+	 */
 	public Map<String, StagedModelDataHandler> getStagedModelDataHandlers();
 
+	/**
+	 * Registers a staged model data handler.
+	 *
+	 * @param stagedModelDataHandler the staged model data handler to register,
+	 *                               a passed null value won't be registered
+	 */
 	public void register(StagedModelDataHandler stagedModelDataHandler);
 
+	/**
+	 * Unregister a staged model data handler.
+	 *
+	 * @param stagedModelDataHandler the staged model data handler to
+	 *                               unregister, a passed null value doesn't
+	 *                               affect the registry
+	 */
 	public void unregister(StagedModelDataHandler stagedModelDataHandler);
 
 }
