@@ -32,6 +32,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 /**
  * @author Vilmos Papp
+ * @author Máté Thurzó
  */
 public class ShardUserAdvice implements MethodInterceptor {
 
@@ -70,10 +71,21 @@ public class ShardUserAdvice implements MethodInterceptor {
 
 				companyId = (Long)argument2;
 			}
+			else if (methodName.equals("getContact") &&
+					 Arrays.equals(parameterTypes, _TYPES_L_L)) {
+
+				companyId = (Long)argument1;
+			}
+
+			else if (methodName.equals("getUserByContactId") &&
+					 Arrays.equals(parameterTypes, _TYPES_L_L)) {
+
+				companyId = (Long)argument1;
+			}
 			else if (methodName.equals("getUserById") &&
 					 Arrays.equals(parameterTypes, _TYPES_L_L)) {
 
-				companyId = (Long)argument2;
+				companyId = (Long)argument1;
 			}
 			else if (methodName.equals("hasRoleUser") &&
 					 !Arrays.equals(parameterTypes, _TYPES_L_L)) {
@@ -166,9 +178,12 @@ public class ShardUserAdvice implements MethodInterceptor {
 
 		// Initialize method names for companyId in the 2nd arg
 
-		_adviceMethodNamesArgument2.add("getUserByUuidAndCompanyId");
 		_adviceMethodNamesArgument2.add("addUserWithWorkflow");
+		_adviceMethodNamesArgument2.add("getContact");
+		_adviceMethodNamesArgument2.add("getUserByContactId");
+		_adviceMethodNamesArgument2.add("getUserByUuidAndCompanyId");
 		_adviceMethodNamesArgument2.add("updateIncompleteUser");
+
 	}
 
 	private ShardAdvice _shardAdvice;
