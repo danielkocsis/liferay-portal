@@ -538,7 +538,7 @@ public class PortletImporter {
 
 			importPortletPreferences(
 				portletDataContext, layout.getCompanyId(), groupId, layout,
-				portlet, portletElement, importPortletSetup,
+				portletId, portletElement, importPortletSetup,
 				importPortletArchivedSetups, importPortletUserPreferences, true,
 				importData);
 
@@ -1000,7 +1000,7 @@ public class PortletImporter {
 
 	protected void importPortletPreferences(
 			PortletDataContext portletDataContext, long companyId, long groupId,
-			Layout layout, Portlet portlet, Element parentElement,
+			Layout layout, String portletId, Element parentElement,
 			boolean importPortletSetup, boolean importPortletArchivedSetups,
 			boolean importPortletUserPreferences, boolean preserveScopeLayoutId,
 			boolean importPortletData)
@@ -1016,17 +1016,12 @@ public class PortletImporter {
 		String scopeType = StringPool.BLANK;
 		String scopeLayoutUuid = StringPool.BLANK;
 
-		String portletId = StringPool.BLANK;
-
-		if (portlet != null) {
-			portletId = portlet.getPortletId();
-		}
-		else {
+		if (portletId == null) {
 			portletId = parentElement.attributeValue("portlet-id");
-
-			portlet = PortletLocalServiceUtil.getPortletById(
-				portletDataContext.getCompanyId(), portletId);
 		}
+
+		Portlet portlet = PortletLocalServiceUtil.getPortletById(
+			portletDataContext.getCompanyId(), portletId);
 
 		if (layout != null) {
 			plid = layout.getPlid();
@@ -1116,12 +1111,8 @@ public class PortletImporter {
 				boolean defaultUser = GetterUtil.getBoolean(
 					element.attributeValue("default-user"));
 
-				if (portletId == null) {
-					portletId = element.attributeValue("portlet-id");
-				}
-
 				if (ownerType == PortletKeys.PREFS_OWNER_TYPE_ARCHIVED) {
-					portletId = PortletConstants.getRootPortletId(portletId);
+					portletId = portlet.getRootPortletId();
 
 					String userUuid = element.attributeValue(
 						"archive-user-uuid");

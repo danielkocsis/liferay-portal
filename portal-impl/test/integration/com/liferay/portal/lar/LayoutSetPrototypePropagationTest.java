@@ -160,7 +160,50 @@ public class LayoutSetPrototypePropagationTest
 	public void testPortletPreferencesPropagationWithNonUniquePreferences()
 		throws Exception {
 
-		doTestPortletPreferencesPropagationWithNonUniquePreferences();
+		Layout layout = LayoutTestUtil.addLayout(
+			_layoutSetPrototypeGroup.getGroupId(),
+			ServiceTestUtil.randomString(), false);
+
+		Map<String, String> preferences = new HashMap<String, String>();
+
+		preferences.put("bulletStyle", "Dots");
+
+		String navigationPortletOne = addPortletToLayout(
+			TestPropsValues.getUserId(), layout, "column-1", "71", preferences,
+			false);
+
+		preferences.put("bulletStyle", "Arrows");
+
+		String navigationPortletTwo = addPortletToLayout(
+			TestPropsValues.getUserId(), layout, "column-2", "71", preferences,
+			false);
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletOne =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				layout, navigationPortletOne, null);
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletTwo =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				layout, navigationPortletTwo, null);
+
+		javax.portlet.PortletPreferences jxGroupPreferencesNavigationPortlet =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				_layoutSetPrototypeGroup.getGroupId(), layout, "71", null);
+
+		Assert.assertEquals(
+			"Arrows",
+			jxPreferencesNavigationPortletOne.getValue(
+				"bulletStyle", StringPool.BLANK));
+
+		Assert.assertEquals(
+			"Arrows",
+			jxPreferencesNavigationPortletTwo.getValue(
+				"bulletStyle", StringPool.BLANK));
+
+		Assert.assertEquals(
+			"Arrows",
+			jxGroupPreferencesNavigationPortlet.getValue(
+				"bulletStyle", StringPool.BLANK));
 	}
 
 	@Test
@@ -192,8 +235,7 @@ public class LayoutSetPrototypePropagationTest
 
 	protected String addPortletToLayout(
 			long userId, Layout layout, String columnId, String portletId,
-			Map<String, String> preferences, boolean preferencesUniquePerLayout,
-			boolean preferencesOwnedByGroup)
+			Map<String, String> preferences, boolean preferencesUniquePerLayout)
 		throws Exception {
 
 		LayoutTypePortlet layoutTypePortlet =
@@ -206,27 +248,28 @@ public class LayoutSetPrototypePropagationTest
 			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
 			layout.getTypeSettings());
 
-		javax.portlet.PortletPreferences prefs = null;
+		javax.portlet.PortletPreferences jxPreferences = null;
 
 		if (!preferencesUniquePerLayout) {
-			prefs = PortletPreferencesFactoryUtil.getPortletSetup(
+			jxPreferences = PortletPreferencesFactoryUtil.getPortletSetup(
 				layout.getGroupId(), layout, portletId, StringPool.BLANK);
 		}
 		else {
-			prefs = getPortletPreferences(
-				layout.getCompanyId(), layout.getPlid(), layoutPortletId);
+			jxPreferences = PortletPreferencesFactoryUtil.getLayoutPortletSetup(
+				layout, portletId);
 		}
 
 		for (String key : preferences.keySet()) {
-			prefs.setValue(key, preferences.get(key));
+			jxPreferences.setValue(key, preferences.get(key));
 		}
 
 		if (!preferencesUniquePerLayout) {
 			updateGroupPortletPreferences(
-				layout.getGroupId(), layoutPortletId, prefs);
+				layout.getGroupId(), layoutPortletId, jxPreferences);
 		}
 		else {
-			updatePortletPreferences(layout.getPlid(), layoutPortletId, prefs);
+			updatePortletPreferences(
+				layout.getPlid(), layoutPortletId, jxPreferences);
 		}
 
 		return layoutPortletId;
@@ -420,67 +463,8 @@ public class LayoutSetPrototypePropagationTest
 		doTestPortletPreferencesPropagation(linkEnabled, false);
 	}
 
-	protected void doTestPortletPreferencesPropagationWithNonUniquePreferences()
-		throws Exception {
-
-		Layout layout = LayoutTestUtil.addLayout(
-			_layoutSetPrototypeGroup.getGroupId(),
-			ServiceTestUtil.randomString(), false);
-
-		Map<String, String> preferences = new HashMap<String, String>();
-
-		preferences.put("bulletStyle", "Dots");
-
-		String navigationPortletOne = addPortletToLayout(
-			TestPropsValues.getUserId(), layout, "column-1",
-			PortletKeys.NAVIGATION, preferences, false, true);
-
-		preferences.put("bulletStyle", "Arrows");
-
-		String navigationPortletTwo = addPortletToLayout(
-			TestPropsValues.getUserId(), layout, "column-2",
-			PortletKeys.NAVIGATION, preferences, false, true);
-
-		javax.portlet.PortletPreferences jxPreferencesNavigationPortletOne =
-			PortletPreferencesFactoryUtil.getPortletSetup(
-				layout, navigationPortletOne, null);
-
-		javax.portlet.PortletPreferences jxPreferencesNavigationPortletTwo =
-			PortletPreferencesFactoryUtil.getPortletSetup(
-				layout, navigationPortletTwo, null);
-
-		javax.portlet.PortletPreferences jxGroupPreferencesNavigationPortlet =
-			PortletPreferencesFactoryUtil.getPortletSetup(
-				_layoutSetPrototypeGroup.getGroupId(), layout,
-				PortletKeys.NAVIGATION, null);
-
-		Assert.assertEquals(
-			"Arrows",
-			jxPreferencesNavigationPortletOne.getValue(
-				"bulletStyle", StringPool.BLANK));
-
-		Assert.assertEquals(
-			"Arrows",
-			jxPreferencesNavigationPortletTwo.getValue(
-				"bulletStyle", StringPool.BLANK));
-
-		Assert.assertEquals(
-			"Arrows",
-			jxGroupPreferencesNavigationPortlet.getValue(
-				"bulletStyle", StringPool.BLANK));
-	}
-
 	protected int getGroupLayoutCount() throws Exception {
 		return LayoutLocalServiceUtil.getLayoutsCount(group, false);
-	}
-
-	protected javax.portlet.PortletPreferences getPortletPreferences(
-			long companyId, long plId, String portletId)
-		throws Exception {
-
-		return PortletPreferencesLocalServiceUtil.getPreferences(
-			companyId, PortletKeys.PREFS_OWNER_ID_DEFAULT,
-			PortletKeys.PREFS_OWNER_TYPE_LAYOUT, plId, portletId);
 	}
 
 	protected void propagateChanges(Group group) throws Exception {
