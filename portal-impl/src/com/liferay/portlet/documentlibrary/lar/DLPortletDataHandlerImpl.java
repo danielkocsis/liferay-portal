@@ -452,7 +452,7 @@ public class DLPortletDataHandlerImpl extends BasePortletDataHandler {
 						importedFileEntry =
 							DLAppLocalServiceUtil.updateFileEntry(
 								userId, existingFileEntry.getFileEntryId(),
-								fileEntry.getTitle(), fileEntry.getMimeType(),
+								null, fileEntry.getMimeType(),
 								fileEntry.getTitle(),
 								fileEntry.getDescription(), null, false, is,
 								fileEntry.getSize(), serviceContext);
