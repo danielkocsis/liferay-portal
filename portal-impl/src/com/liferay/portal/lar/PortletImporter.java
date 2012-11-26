@@ -1085,14 +1085,11 @@ public class PortletImporter {
 		Portlet portlet = PortletLocalServiceUtil.getPortletById(
 			portletDataContext.getCompanyId(), portletId);
 
-		boolean preferencesUniquePerLayout =
-			portlet.isPreferencesUniquePerLayout();
-
 		if (layout != null) {
 			plid = layout.getPlid();
 
 			if (preserveScopeLayoutId && (portletId != null) &&
-				preferencesUniquePerLayout) {
+					portlet.isPreferencesUniquePerLayout()) {
 
 				javax.portlet.PortletPreferences jxPreferences =
 					PortletPreferencesFactoryUtil.getLayoutPortletSetup(
@@ -1163,7 +1160,7 @@ public class PortletImporter {
 					plid = PortletKeys.PREFS_PLID_SHARED;
 					ownerId = portletDataContext.getScopeGroupId();
 
-					if (!preferencesUniquePerLayout) {
+					if (!portlet.isPreferencesUniquePerLayout()) {
 						portletId = portlet.getRootPortletId();
 					}
 				}
@@ -1198,9 +1195,8 @@ public class PortletImporter {
 					ownerId = defaultUserId;
 				}
 
-				String rootPotletId = portlet.getRootPortletId();
-
-				// Portlet specific preferences changes
+				String rootPotletId = PortletConstants.getRootPortletId(
+					portletId);
 
 				if (rootPotletId.equals(PortletKeys.ASSET_PUBLISHER)) {
 					xml = updateAssetPublisherPortletPreferences(
@@ -1222,7 +1218,7 @@ public class PortletImporter {
 		}
 
 		if (preserveScopeLayoutId && (layout != null) &&
-			preferencesUniquePerLayout) {
+				portlet.isPreferencesUniquePerLayout()) {
 
 			javax.portlet.PortletPreferences jxPreferences =
 				PortletPreferencesFactoryUtil.getLayoutPortletSetup(
