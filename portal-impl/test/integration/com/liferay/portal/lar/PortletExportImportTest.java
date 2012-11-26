@@ -337,12 +337,6 @@ public class PortletExportImportTest extends BaseExportImportTestCase {
 			boolean preferencesOwnedByGroup)
 		throws Exception {
 
-		Portlet portlet = PortletLocalServiceUtil.getPortletById(
-			layout.getCompanyId(), portletId);
-
-		portlet.setPreferencesUniquePerLayout(preferencesUniquePerLayout);
-		portlet.setPreferencesOwnedByGroup(preferencesOwnedByGroup);
-
 		LayoutTypePortlet layoutTypePortlet =
 			(LayoutTypePortlet) layout.getLayoutType();
 
