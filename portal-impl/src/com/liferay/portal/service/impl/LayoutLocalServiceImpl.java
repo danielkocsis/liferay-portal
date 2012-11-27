@@ -845,6 +845,35 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 	}
 
 	/**
+	 * Returns the default layout for the guest group of the given company.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @return The default layout for the guest group of the given company or
+	 *           null if no such layout exists
+	 * @throws PortalException if the guest group for the given company could
+	 *           not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public Layout getDefaultLayout(long companyId)
+		throws PortalException, SystemException {
+
+		Group guestGroup = groupLocalService.getGuestGroup(companyId);
+
+		List<Layout> layouts = getLayouts(
+			guestGroup.getGroupId(), false,
+			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
+
+		Layout defaultLayout = null;
+
+		if (layouts.size() > 0) {
+			defaultLayout = layouts.get(0);
+		}
+
+		return defaultLayout;
+
+	}
+
+	/**
 	 * Returns the primary key of the default layout for the group
 	 *
 	 * @param  groupId the primary key of the group
