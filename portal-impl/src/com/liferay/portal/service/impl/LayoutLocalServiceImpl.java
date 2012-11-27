@@ -844,6 +844,16 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		return layoutPersistence.fetchByUUID_G(uuid, groupId);
 	}
 
+	/**
+	 * Returns the default layout for the guest group of the given company.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @return The default layout for the guest group of the given company or
+	 *         <code>null</code> if no such layout exists
+	 * @throws PortalException if the guest group for the given company could
+	 *         not be found
+	 * @throws SystemException if a system exception occurred
+	 */
 	public Layout getDefaultLayout(long companyId)
 		throws PortalException, SystemException {
 
