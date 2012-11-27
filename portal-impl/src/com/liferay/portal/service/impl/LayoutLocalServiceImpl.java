@@ -844,6 +844,25 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		return layoutPersistence.fetchByUUID_G(uuid, groupId);
 	}
 
+	public Layout getDefaultLayout(long companyId)
+		throws PortalException, SystemException {
+
+		Group guestGroup = groupLocalService.getGuestGroup(companyId);
+
+		List<Layout> layouts = getLayouts(
+			guestGroup.getGroupId(), false,
+			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
+
+		Layout defaultLayout = null;
+
+		if (layouts.size() > 0) {
+			defaultLayout = layouts.get(0);
+		}
+
+		return defaultLayout;
+
+	}
+
 	/**
 	 * Returns the primary key of the default layout for the group
 	 *
