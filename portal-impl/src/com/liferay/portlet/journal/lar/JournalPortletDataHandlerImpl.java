@@ -1438,6 +1438,8 @@ public class JournalPortletDataHandlerImpl extends BasePortletDataHandler {
 
 		boolean legacyURL = true;
 
+		String contextPath = PortalUtil.getPathContext();
+
 		while (true) {
 			String contextPath = PortalUtil.getPathContext();
 
