@@ -167,8 +167,8 @@ public class ShardUserAdvice implements MethodInterceptor {
 
 		// Initialize method names for companyId in the 2nd arg
 
-		_adviceMethodNamesArgument2.add("getUserByUuidAndCompanyId");
 		_adviceMethodNamesArgument2.add("addUserWithWorkflow");
+		_adviceMethodNamesArgument2.add("getUserByUuidAndCompanyId");
 		_adviceMethodNamesArgument2.add("updateIncompleteUser");
 	}
 
