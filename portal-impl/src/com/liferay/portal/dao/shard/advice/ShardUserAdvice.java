@@ -31,6 +31,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang.ArrayUtils;
 
 /**
+ * @author Máté Thurzó
  * @author Vilmos Papp
  */
 public class ShardUserAdvice implements MethodInterceptor {
