@@ -17,7 +17,16 @@
 <%@ include file="/html/portlet/directory/init.jsp" %>
 
 <%
-User selUser = PortalUtil.getSelectedUser(request);
+long companyId = PortalUtil.getCompanyId(request);
+User selUser;
+try {
+	ShardUtil.pushCompanyService(companyId);
+
+	selUser = PortalUtil.getSelectedUser(request);
+}
+finally {
+	ShardUtil.popCompanyService();
+}
 
 selUser = selUser.toEscapedModel();
 

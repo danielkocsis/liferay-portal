@@ -43,6 +43,7 @@ import com.liferay.portal.UserScreenNameException;
 import com.liferay.portal.UserSmsException;
 import com.liferay.portal.WebsiteURLException;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
@@ -296,6 +297,10 @@ public class EditUserAction extends PortletAction {
 		throws Exception {
 
 		try {
+			long companyId = PortalUtil.getCompanyId(renderRequest);
+
+			ShardUtil.pushCompanyService(companyId);
+
 			PortalUtil.getSelectedUser(renderRequest);
 		}
 		catch (Exception e) {
@@ -307,6 +312,9 @@ public class EditUserAction extends PortletAction {
 			else {
 				throw e;
 			}
+		}
+		finally {
+			ShardUtil.popCompanyService();
 		}
 
 		return mapping.findForward(
@@ -370,96 +378,123 @@ public class EditUserAction extends PortletAction {
 			actionRequest, "organizationsSearchContainerPrimaryKeys");
 		long[] roleIds = getLongArray(
 			actionRequest, "rolesSearchContainerPrimaryKeys");
-		List<UserGroupRole> userGroupRoles = UsersAdminUtil.getUserGroupRoles(
-			actionRequest);
-		long[] userGroupIds = getLongArray(
-			actionRequest, "userGroupsSearchContainerPrimaryKeys");
-		List<Address> addresses = UsersAdminUtil.getAddresses(actionRequest);
-		List<EmailAddress> emailAddresses = UsersAdminUtil.getEmailAddresses(
-			actionRequest);
-		List<Phone> phones = UsersAdminUtil.getPhones(actionRequest);
-		List<Website> websites = UsersAdminUtil.getWebsites(actionRequest);
-		List<AnnouncementsDelivery> announcementsDeliveries =
-			getAnnouncementsDeliveries(actionRequest);
-		boolean sendEmail = true;
 
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			User.class.getName(), actionRequest);
+		try {
+			ShardUtil.pushCompanyService(themeDisplay.getCompanyId());
 
-		User user = UserServiceUtil.addUser(
-			themeDisplay.getCompanyId(), autoPassword, password1, password2,
-			autoScreenName, screenName, emailAddress, facebookId, openId,
-			LocaleUtil.getDefault(), firstName, middleName, lastName, prefixId,
-			suffixId, male, birthdayMonth, birthdayDay, birthdayYear, jobTitle,
-			groupIds, organizationIds, roleIds, userGroupIds, addresses,
-			emailAddresses, phones, websites, announcementsDeliveries,
-			sendEmail, serviceContext);
+			List<UserGroupRole> userGroupRoles =
+				UsersAdminUtil.getUserGroupRoles(actionRequest);
+			long[] userGroupIds = getLongArray(
+				actionRequest, "userGroupsSearchContainerPrimaryKeys");
+			List<Address> addresses = UsersAdminUtil.getAddresses(
+				actionRequest);
+			List<EmailAddress> emailAddresses =
+				UsersAdminUtil.getEmailAddresses(actionRequest);
+			List<Phone> phones = UsersAdminUtil.getPhones(actionRequest);
+			List<Website> websites = UsersAdminUtil.getWebsites(actionRequest);
+			List<AnnouncementsDelivery> announcementsDeliveries =
+				getAnnouncementsDeliveries(actionRequest);
+			boolean sendEmail = true;
 
-		if (!userGroupRoles.isEmpty()) {
-			for (UserGroupRole userGroupRole : userGroupRoles) {
-				userGroupRole.setUserId(user.getUserId());
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				User.class.getName(), actionRequest);
+
+			User user = UserServiceUtil.addUser(
+				themeDisplay.getCompanyId(), autoPassword, password1, password2,
+				autoScreenName, screenName, emailAddress, facebookId, openId,
+				LocaleUtil.getDefault(), firstName, middleName, lastName,
+				prefixId, suffixId, male, birthdayMonth, birthdayDay,
+				birthdayYear, jobTitle, groupIds, organizationIds, roleIds,
+				userGroupIds, addresses, emailAddresses, phones, websites,
+				announcementsDeliveries, sendEmail, serviceContext);
+
+			if (!userGroupRoles.isEmpty()) {
+				for (UserGroupRole userGroupRole : userGroupRoles) {
+					userGroupRole.setUserId(user.getUserId());
+				}
+
+				user = UserServiceUtil.updateUser(
+					user.getUserId(), StringPool.BLANK, StringPool.BLANK,
+					StringPool.BLANK, false, reminderQueryQuestion,
+					reminderQueryAnswer, user.getScreenName(),
+					user.getEmailAddress(), facebookId, openId, languageId,
+					timeZoneId, greeting, comments, firstName, middleName,
+					lastName, prefixId, suffixId, male, birthdayMonth,
+					birthdayDay, birthdayYear, smsSn, aimSn, facebookSn, icqSn,
+					jabberSn, msnSn, mySpaceSn, skypeSn, twitterSn, ymSn,
+					jobTitle, groupIds, organizationIds, roleIds,
+					userGroupRoles, userGroupIds, addresses, emailAddresses,
+					phones, websites, announcementsDeliveries, serviceContext);
 			}
 
-			user = UserServiceUtil.updateUser(
-				user.getUserId(), StringPool.BLANK, StringPool.BLANK,
-				StringPool.BLANK, false, reminderQueryQuestion,
-				reminderQueryAnswer, user.getScreenName(),
-				user.getEmailAddress(), facebookId, openId, languageId,
-				timeZoneId, greeting, comments, firstName, middleName, lastName,
-				prefixId, suffixId, male, birthdayMonth, birthdayDay,
-				birthdayYear, smsSn, aimSn, facebookSn, icqSn, jabberSn, msnSn,
-				mySpaceSn, skypeSn, twitterSn, ymSn, jobTitle, groupIds,
-				organizationIds, roleIds, userGroupRoles, userGroupIds,
-				addresses, emailAddresses, phones, websites,
-				announcementsDeliveries, serviceContext);
+			long publicLayoutSetPrototypeId = ParamUtil.getLong(
+				actionRequest, "publicLayoutSetPrototypeId");
+			long privateLayoutSetPrototypeId = ParamUtil.getLong(
+				actionRequest, "privateLayoutSetPrototypeId");
+			boolean publicLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
+				actionRequest, "publicLayoutSetPrototypeLinkEnabled");
+			boolean privateLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
+				actionRequest, "privateLayoutSetPrototypeLinkEnabled");
+
+			SitesUtil.updateLayoutSetPrototypesLinks(
+				user.getGroup(), publicLayoutSetPrototypeId,
+				privateLayoutSetPrototypeId,
+				publicLayoutSetPrototypeLinkEnabled,
+				privateLayoutSetPrototypeLinkEnabled);
+
+			return user;
 		}
-
-		long publicLayoutSetPrototypeId = ParamUtil.getLong(
-			actionRequest, "publicLayoutSetPrototypeId");
-		long privateLayoutSetPrototypeId = ParamUtil.getLong(
-			actionRequest, "privateLayoutSetPrototypeId");
-		boolean publicLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-			actionRequest, "publicLayoutSetPrototypeLinkEnabled");
-		boolean privateLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-			actionRequest, "privateLayoutSetPrototypeLinkEnabled");
-
-		SitesUtil.updateLayoutSetPrototypesLinks(
-			user.getGroup(), publicLayoutSetPrototypeId,
-			privateLayoutSetPrototypeId, publicLayoutSetPrototypeLinkEnabled,
-			privateLayoutSetPrototypeLinkEnabled);
-
-		return user;
+		finally {
+			ShardUtil.popCompanyService();
+		}
 	}
 
 	protected void deleteRole(ActionRequest actionRequest) throws Exception {
-		User user = PortalUtil.getSelectedUser(actionRequest);
+		long companyId = PortalUtil.getCompanyId(actionRequest);
 
-		long roleId = ParamUtil.getLong(actionRequest, "roleId");
+		try {
+			ShardUtil.pushCompanyService(companyId);
 
-		UserServiceUtil.deleteRoleUser(roleId, user.getUserId());
+			User user = PortalUtil.getSelectedUser(actionRequest);
+
+			long roleId = ParamUtil.getLong(actionRequest, "roleId");
+
+			UserServiceUtil.deleteRoleUser(roleId, user.getUserId());
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 	}
 
 	protected void deleteUsers(ActionRequest actionRequest) throws Exception {
+		long companyId = PortalUtil.getCompanyId(actionRequest);
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		long[] deleteUserIds = StringUtil.split(
 			ParamUtil.getString(actionRequest, "deleteUserIds"), 0L);
 
-		for (long deleteUserId : deleteUserIds) {
-			if (cmd.equals(Constants.DEACTIVATE) ||
-				cmd.equals(Constants.RESTORE)) {
+		try {
+			ShardUtil.pushCompanyService(companyId);
 
-				int status = WorkflowConstants.STATUS_APPROVED;
+			for (long deleteUserId : deleteUserIds) {
+				if (cmd.equals(Constants.DEACTIVATE) ||
+					cmd.equals(Constants.RESTORE)) {
 
-				if (cmd.equals(Constants.DEACTIVATE)) {
-					status = WorkflowConstants.STATUS_INACTIVE;
+					int status = WorkflowConstants.STATUS_APPROVED;
+
+					if (cmd.equals(Constants.DEACTIVATE)) {
+						status = WorkflowConstants.STATUS_INACTIVE;
+					}
+
+					UserServiceUtil.updateStatus(deleteUserId, status);
 				}
-
-				UserServiceUtil.updateStatus(deleteUserId, status);
+				else {
+					UserServiceUtil.deleteUser(deleteUserId);
+				}
 			}
-			else {
-				UserServiceUtil.deleteUser(deleteUserId);
-			}
+		}
+		finally {
+			ShardUtil.popCompanyService();
 		}
 	}
 
@@ -517,211 +552,241 @@ public class EditUserAction extends PortletAction {
 	}
 
 	protected User updateLockout(ActionRequest actionRequest) throws Exception {
-		User user = PortalUtil.getSelectedUser(actionRequest);
+		try {
+			long companyId = PortalUtil.getCompanyId(actionRequest);
 
-		UserServiceUtil.updateLockoutById(user.getUserId(), false);
+			ShardUtil.pushCompanyService(companyId);
 
-		return user;
+			User user = PortalUtil.getSelectedUser(actionRequest);
+
+			UserServiceUtil.updateLockoutById(user.getUserId(), false);
+
+			return user;
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 	}
 
 	protected Object[] updateUser(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
+		try {
+			Company company = PortalUtil.getCompany(actionRequest);
 
-		User user = PortalUtil.getSelectedUser(actionRequest);
+			ShardUtil.pushCompanyService(company.getCompanyId());
 
-		boolean deleteLogo = ParamUtil.getBoolean(actionRequest, "deleteLogo");
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-		if (deleteLogo) {
-			UserServiceUtil.deletePortrait(user.getUserId());
-		}
+			User user = PortalUtil.getSelectedUser(actionRequest);
 
-		Contact contact = user.getContact();
+			boolean deleteLogo = ParamUtil.getBoolean(
+				actionRequest, "deleteLogo");
 
-		String oldPassword = AdminUtil.getUpdateUserPassword(
-			actionRequest, user.getUserId());
-		String newPassword1 = actionRequest.getParameter("password1");
-		String newPassword2 = actionRequest.getParameter("password2");
-		boolean passwordReset = ParamUtil.getBoolean(
-			actionRequest, "passwordReset");
-
-		String reminderQueryQuestion = BeanParamUtil.getString(
-			user, actionRequest, "reminderQueryQuestion");
-
-		if (reminderQueryQuestion.equals(UsersAdminUtil.CUSTOM_QUESTION)) {
-			reminderQueryQuestion = BeanParamUtil.getStringSilent(
-				user, actionRequest, "reminderQueryCustomQuestion");
-		}
-
-		String reminderQueryAnswer = BeanParamUtil.getString(
-			user, actionRequest, "reminderQueryAnswer");
-		String oldScreenName = user.getScreenName();
-		String screenName = BeanParamUtil.getString(
-			user, actionRequest, "screenName");
-		String oldEmailAddress = user.getEmailAddress();
-		String emailAddress = BeanParamUtil.getString(
-			user, actionRequest, "emailAddress");
-		long facebookId = user.getFacebookId();
-		String openId = BeanParamUtil.getString(user, actionRequest, "openId");
-		String oldLanguageId = user.getLanguageId();
-		String languageId = BeanParamUtil.getString(
-			user, actionRequest, "languageId");
-		String timeZoneId = BeanParamUtil.getString(
-			user, actionRequest, "timeZoneId");
-		String greeting = BeanParamUtil.getString(
-			user, actionRequest, "greeting");
-		String firstName = BeanParamUtil.getString(
-			user, actionRequest, "firstName");
-		String middleName = BeanParamUtil.getString(
-			user, actionRequest, "middleName");
-		String lastName = BeanParamUtil.getString(
-			user, actionRequest, "lastName");
-		int prefixId = BeanParamUtil.getInteger(
-			contact, actionRequest, "prefixId");
-		int suffixId = BeanParamUtil.getInteger(
-			contact, actionRequest, "suffixId");
-		boolean male = BeanParamUtil.getBoolean(
-			user, actionRequest, "male", true);
-
-		Calendar birthdayCal = CalendarFactoryUtil.getCalendar();
-
-		birthdayCal.setTime(contact.getBirthday());
-
-		int birthdayMonth = ParamUtil.getInteger(
-			actionRequest, "birthdayMonth", birthdayCal.get(Calendar.MONTH));
-		int birthdayDay = ParamUtil.getInteger(
-			actionRequest, "birthdayDay", birthdayCal.get(Calendar.DATE));
-		int birthdayYear = ParamUtil.getInteger(
-			actionRequest, "birthdayYear", birthdayCal.get(Calendar.YEAR));
-		String comments = BeanParamUtil.getString(
-			user, actionRequest, "comments");
-		String smsSn = BeanParamUtil.getString(contact, actionRequest, "smsSn");
-		String aimSn = BeanParamUtil.getString(contact, actionRequest, "aimSn");
-		String facebookSn = BeanParamUtil.getString(
-			contact, actionRequest, "facebookSn");
-		String icqSn = BeanParamUtil.getString(contact, actionRequest, "icqSn");
-		String jabberSn = BeanParamUtil.getString(
-			contact, actionRequest, "jabberSn");
-		String msnSn = BeanParamUtil.getString(contact, actionRequest, "msnSn");
-		String mySpaceSn = BeanParamUtil.getString(
-			contact, actionRequest, "mySpaceSn");
-		String skypeSn = BeanParamUtil.getString(
-			contact, actionRequest, "skypeSn");
-		String twitterSn = BeanParamUtil.getString(
-			contact, actionRequest, "twitterSn");
-		String ymSn = BeanParamUtil.getString(contact, actionRequest, "ymSn");
-		String jobTitle = BeanParamUtil.getString(
-			user, actionRequest, "jobTitle");
-		long[] groupIds = getLongArray(
-			actionRequest, "groupsSearchContainerPrimaryKeys");
-		long[] organizationIds = getLongArray(
-			actionRequest, "organizationsSearchContainerPrimaryKeys");
-		long[] roleIds = getLongArray(
-			actionRequest, "rolesSearchContainerPrimaryKeys");
-
-		List<UserGroupRole> userGroupRoles = null;
-
-		if ((actionRequest.getParameter("groupRolesGroupIds") != null) ||
-			(actionRequest.getParameter("groupRolesRoleIds") != null)) {
-
-			userGroupRoles = UsersAdminUtil.getUserGroupRoles(actionRequest);
-		}
-
-		long[] userGroupIds = getLongArray(
-			actionRequest, "userGroupsSearchContainerPrimaryKeys");
-		List<Address> addresses = UsersAdminUtil.getAddresses(
-			actionRequest, user.getAddresses());
-		List<EmailAddress> emailAddresses = UsersAdminUtil.getEmailAddresses(
-			actionRequest, user.getEmailAddresses());
-		List<Phone> phones = UsersAdminUtil.getPhones(
-			actionRequest, user.getPhones());
-		List<Website> websites = UsersAdminUtil.getWebsites(
-			actionRequest, user.getWebsites());
-		List<AnnouncementsDelivery> announcementsDeliveries =
-			getAnnouncementsDeliveries(actionRequest, user);
-
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			User.class.getName(), actionRequest);
-
-		user = UserServiceUtil.updateUser(
-			user.getUserId(), oldPassword, newPassword1, newPassword2,
-			passwordReset, reminderQueryQuestion, reminderQueryAnswer,
-			screenName, emailAddress, facebookId, openId, languageId,
-			timeZoneId, greeting, comments, firstName, middleName, lastName,
-			prefixId, suffixId, male, birthdayMonth, birthdayDay, birthdayYear,
-			smsSn, aimSn, facebookSn, icqSn, jabberSn, msnSn, mySpaceSn,
-			skypeSn, twitterSn, ymSn, jobTitle, groupIds, organizationIds,
-			roleIds, userGroupRoles, userGroupIds, addresses, emailAddresses,
-			phones, websites, announcementsDeliveries, serviceContext);
-
-		if (oldScreenName.equals(user.getScreenName())) {
-			oldScreenName = StringPool.BLANK;
-		}
-
-		if (user.getUserId() == themeDisplay.getUserId()) {
-
-			// Reset the locale
-
-			HttpServletRequest request = PortalUtil.getHttpServletRequest(
-				actionRequest);
-			HttpServletResponse response= PortalUtil.getHttpServletResponse(
-				actionResponse);
-			HttpSession session = request.getSession();
-
-			session.removeAttribute(Globals.LOCALE_KEY);
-
-			Locale locale = LocaleUtil.fromLanguageId(languageId);
-
-			LanguageUtil.updateCookie(request, response, locale);
-
-			// Clear cached portlet responses
-
-			PortletSession portletSession = actionRequest.getPortletSession();
-
-			InvokerPortletImpl.clearResponses(portletSession);
-
-			// Password
-
-			if (PropsValues.SESSION_STORE_PASSWORD &&
-				Validator.isNotNull(newPassword1)) {
-
-				portletSession.setAttribute(
-					WebKeys.USER_PASSWORD, newPassword1,
-					PortletSession.APPLICATION_SCOPE);
+			if (deleteLogo) {
+				UserServiceUtil.deletePortrait(user.getUserId());
 			}
+
+			Contact contact = user.getContact();
+
+			String oldPassword = AdminUtil.getUpdateUserPassword(
+				actionRequest, user.getUserId());
+			String newPassword1 = actionRequest.getParameter("password1");
+			String newPassword2 = actionRequest.getParameter("password2");
+			boolean passwordReset = ParamUtil.getBoolean(
+				actionRequest, "passwordReset");
+
+			String reminderQueryQuestion = BeanParamUtil.getString(
+				user, actionRequest, "reminderQueryQuestion");
+
+			if (reminderQueryQuestion.equals(UsersAdminUtil.CUSTOM_QUESTION)) {
+				reminderQueryQuestion = BeanParamUtil.getStringSilent(
+					user, actionRequest, "reminderQueryCustomQuestion");
+			}
+
+			String reminderQueryAnswer = BeanParamUtil.getString(
+				user, actionRequest, "reminderQueryAnswer");
+			String oldScreenName = user.getScreenName();
+			String screenName = BeanParamUtil.getString(
+				user, actionRequest, "screenName");
+			String oldEmailAddress = user.getEmailAddress();
+			String emailAddress = BeanParamUtil.getString(
+				user, actionRequest, "emailAddress");
+			long facebookId = user.getFacebookId();
+			String openId = BeanParamUtil.getString(
+				user, actionRequest, "openId");
+			String oldLanguageId = user.getLanguageId();
+			String languageId = BeanParamUtil.getString(
+				user, actionRequest, "languageId");
+			String timeZoneId = BeanParamUtil.getString(
+				user, actionRequest, "timeZoneId");
+			String greeting = BeanParamUtil.getString(
+				user, actionRequest, "greeting");
+			String firstName = BeanParamUtil.getString(
+				user, actionRequest, "firstName");
+			String middleName = BeanParamUtil.getString(
+				user, actionRequest, "middleName");
+			String lastName = BeanParamUtil.getString(
+				user, actionRequest, "lastName");
+			int prefixId = BeanParamUtil.getInteger(
+				contact, actionRequest, "prefixId");
+			int suffixId = BeanParamUtil.getInteger(
+				contact, actionRequest, "suffixId");
+			boolean male = BeanParamUtil.getBoolean(
+				user, actionRequest, "male", true);
+
+			Calendar birthdayCal = CalendarFactoryUtil.getCalendar();
+
+			birthdayCal.setTime(contact.getBirthday());
+
+			int birthdayMonth = ParamUtil.getInteger(
+				actionRequest, "birthdayMonth",
+				birthdayCal.get(Calendar.MONTH));
+			int birthdayDay = ParamUtil.getInteger(
+				actionRequest, "birthdayDay", birthdayCal.get(Calendar.DATE));
+			int birthdayYear = ParamUtil.getInteger(
+				actionRequest, "birthdayYear", birthdayCal.get(Calendar.YEAR));
+			String comments = BeanParamUtil.getString(
+				user, actionRequest, "comments");
+			String smsSn = BeanParamUtil.getString(
+				contact, actionRequest, "smsSn");
+			String aimSn = BeanParamUtil.getString(
+				contact, actionRequest, "aimSn");
+			String facebookSn = BeanParamUtil.getString(
+				contact, actionRequest, "facebookSn");
+			String icqSn = BeanParamUtil.getString(
+				contact, actionRequest, "icqSn");
+			String jabberSn = BeanParamUtil.getString(
+				contact, actionRequest, "jabberSn");
+			String msnSn = BeanParamUtil.getString(
+				contact, actionRequest, "msnSn");
+			String mySpaceSn = BeanParamUtil.getString(
+				contact, actionRequest, "mySpaceSn");
+			String skypeSn = BeanParamUtil.getString(
+				contact, actionRequest, "skypeSn");
+			String twitterSn = BeanParamUtil.getString(
+				contact, actionRequest, "twitterSn");
+			String ymSn = BeanParamUtil.getString(
+				contact, actionRequest, "ymSn");
+			String jobTitle = BeanParamUtil.getString(
+				user, actionRequest, "jobTitle");
+			long[] groupIds = getLongArray(
+				actionRequest, "groupsSearchContainerPrimaryKeys");
+			long[] organizationIds = getLongArray(
+				actionRequest, "organizationsSearchContainerPrimaryKeys");
+			long[] roleIds = getLongArray(
+				actionRequest, "rolesSearchContainerPrimaryKeys");
+
+			List<UserGroupRole> userGroupRoles = null;
+
+			if ((actionRequest.getParameter("groupRolesGroupIds") != null) ||
+				(actionRequest.getParameter("groupRolesRoleIds") != null)) {
+
+				userGroupRoles = UsersAdminUtil.getUserGroupRoles(
+					actionRequest);
+			}
+
+			long[] userGroupIds = getLongArray(
+				actionRequest, "userGroupsSearchContainerPrimaryKeys");
+			List<Address> addresses = UsersAdminUtil.getAddresses(
+				actionRequest, user.getAddresses());
+			List<EmailAddress> emailAddresses =
+				UsersAdminUtil.getEmailAddresses(
+					actionRequest, user.getEmailAddresses());
+			List<Phone> phones = UsersAdminUtil.getPhones(
+				actionRequest, user.getPhones());
+			List<Website> websites = UsersAdminUtil.getWebsites(
+				actionRequest, user.getWebsites());
+			List<AnnouncementsDelivery> announcementsDeliveries =
+				getAnnouncementsDeliveries(actionRequest, user);
+
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				User.class.getName(), actionRequest);
+
+			user = UserServiceUtil.updateUser(
+				user.getUserId(), oldPassword, newPassword1, newPassword2,
+				passwordReset, reminderQueryQuestion, reminderQueryAnswer,
+				screenName, emailAddress, facebookId, openId, languageId,
+				timeZoneId, greeting, comments, firstName, middleName, lastName,
+				prefixId, suffixId, male, birthdayMonth, birthdayDay,
+				birthdayYear, smsSn, aimSn, facebookSn, icqSn, jabberSn, msnSn,
+				mySpaceSn, skypeSn, twitterSn, ymSn, jobTitle, groupIds,
+				organizationIds, roleIds, userGroupRoles, userGroupIds,
+				addresses, emailAddresses, phones, websites,
+				announcementsDeliveries, serviceContext);
+
+			if (oldScreenName.equals(user.getScreenName())) {
+				oldScreenName = StringPool.BLANK;
+			}
+
+			if (user.getUserId() == themeDisplay.getUserId()) {
+
+				// Reset the locale
+
+				HttpServletRequest request = PortalUtil.getHttpServletRequest(
+					actionRequest);
+				HttpServletResponse response= PortalUtil.getHttpServletResponse(
+					actionResponse);
+				HttpSession session = request.getSession();
+
+				session.removeAttribute(Globals.LOCALE_KEY);
+
+				Locale locale = LocaleUtil.fromLanguageId(languageId);
+
+				LanguageUtil.updateCookie(request, response, locale);
+
+				// Clear cached portlet responses
+
+				PortletSession portletSession =
+					actionRequest.getPortletSession();
+
+				InvokerPortletImpl.clearResponses(portletSession);
+
+				// Password
+
+				if (PropsValues.SESSION_STORE_PASSWORD &&
+					Validator.isNotNull(newPassword1)) {
+
+					portletSession.setAttribute(
+						WebKeys.USER_PASSWORD, newPassword1,
+						PortletSession.APPLICATION_SCOPE);
+				}
+			}
+
+			String portletId = serviceContext.getPortletId();
+
+			if (!portletId.equals(PortletKeys.MY_ACCOUNT)) {
+				long publicLayoutSetPrototypeId = ParamUtil.getLong(
+					actionRequest, "publicLayoutSetPrototypeId");
+				long privateLayoutSetPrototypeId = ParamUtil.getLong(
+					actionRequest, "privateLayoutSetPrototypeId");
+				boolean publicLayoutSetPrototypeLinkEnabled =
+					ParamUtil.getBoolean(
+						actionRequest, "publicLayoutSetPrototypeLinkEnabled");
+				boolean privateLayoutSetPrototypeLinkEnabled =
+					ParamUtil.getBoolean(
+						actionRequest, "privateLayoutSetPrototypeLinkEnabled");
+
+				SitesUtil.updateLayoutSetPrototypesLinks(
+					user.getGroup(), publicLayoutSetPrototypeId,
+					privateLayoutSetPrototypeId,
+					publicLayoutSetPrototypeLinkEnabled,
+					privateLayoutSetPrototypeLinkEnabled);
+			}
+
+			if (company.isStrangersVerify() &&
+				!oldEmailAddress.equalsIgnoreCase(emailAddress)) {
+
+				SessionMessages.add(actionRequest, "verificationEmailSent");
+			}
+
+			return new Object[] {user, oldScreenName, oldLanguageId};
 		}
-
-		String portletId = serviceContext.getPortletId();
-
-		if (!portletId.equals(PortletKeys.MY_ACCOUNT)) {
-			long publicLayoutSetPrototypeId = ParamUtil.getLong(
-				actionRequest, "publicLayoutSetPrototypeId");
-			long privateLayoutSetPrototypeId = ParamUtil.getLong(
-				actionRequest, "privateLayoutSetPrototypeId");
-			boolean publicLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-				actionRequest, "publicLayoutSetPrototypeLinkEnabled");
-			boolean privateLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-				actionRequest, "privateLayoutSetPrototypeLinkEnabled");
-
-			SitesUtil.updateLayoutSetPrototypesLinks(
-				user.getGroup(), publicLayoutSetPrototypeId,
-				privateLayoutSetPrototypeId,
-				publicLayoutSetPrototypeLinkEnabled,
-				privateLayoutSetPrototypeLinkEnabled);
+		finally {
+			ShardUtil.popCompanyService();
 		}
-
-		Company company = PortalUtil.getCompany(actionRequest);
-
-		if (company.isStrangersVerify() &&
-			!oldEmailAddress.equalsIgnoreCase(emailAddress)) {
-
-			SessionMessages.add(actionRequest, "verificationEmailSent");
-		}
-
-		return new Object[] {user, oldScreenName, oldLanguageId};
 	}
 
 }
