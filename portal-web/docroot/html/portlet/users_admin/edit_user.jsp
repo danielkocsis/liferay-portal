@@ -19,8 +19,16 @@
 <%
 String redirect = ParamUtil.getString(request, "redirect");
 String backURL = ParamUtil.getString(request, "backURL", redirect);
+long companyId = PortalUtil.getCompanyId(request);
+User selUser;
+try {
+	ShardUtil.pushCompanyService(companyId);
 
-User selUser = PortalUtil.getSelectedUser(request);
+	selUser = PortalUtil.getSelectedUser(request);
+}
+finally {
+	ShardUtil.popCompanyService();
+}
 
 Contact selContact = null;
 
