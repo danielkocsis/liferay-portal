@@ -422,13 +422,25 @@ public class LoginUtil {
 			userUUIDCookie.setMaxAge(-1);
 		}
 
+		int loginCookieMaxAge = loginMaxAge;
+
+		String currentLoginValue =
+			CookieKeys.getCookie(request, CookieKeys.LOGIN);
+
+		if (!rememberMe && (Validator.isNull(currentLoginValue) ||
+			currentLoginValue.equals(login))) {
+
+			login = StringPool.BLANK;
+			loginCookieMaxAge = 0;
+		}
+
 		Cookie loginCookie = new Cookie(CookieKeys.LOGIN, login);
 
 		if (Validator.isNotNull(domain)) {
 			loginCookie.setDomain(domain);
 		}
 
-		loginCookie.setMaxAge(loginMaxAge);
+		loginCookie.setMaxAge(loginCookieMaxAge);
 		loginCookie.setPath(StringPool.SLASH);
 
 		Cookie screenNameCookie = new Cookie(
@@ -456,9 +468,9 @@ public class LoginUtil {
 		CookieKeys.addCookie(request, response, companyIdCookie, secure);
 		CookieKeys.addCookie(request, response, idCookie, secure);
 		CookieKeys.addCookie(request, response, userUUIDCookie, secure);
+		CookieKeys.addCookie(request, response, loginCookie, secure);
 
 		if (rememberMe) {
-			CookieKeys.addCookie(request, response, loginCookie, secure);
 			CookieKeys.addCookie(request, response, passwordCookie, secure);
 			CookieKeys.addCookie(request, response, rememberMeCookie, secure);
 			CookieKeys.addCookie(request, response, screenNameCookie, secure);
