@@ -128,7 +128,7 @@ portletURL.setParameter("callback", callback);
 
 			// Scope
 
-			row.addText(group.getDescriptiveName(locale), rowHREF);
+			row.addText(HtmlUtil.escape(group.getDescriptiveName(locale)), rowHREF);
 
 			// Add result row
 
