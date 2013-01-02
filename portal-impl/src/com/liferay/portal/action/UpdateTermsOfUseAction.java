@@ -14,6 +14,7 @@
 
 package com.liferay.portal.action;
 
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.service.UserServiceUtil;
 import com.liferay.portal.struts.ActionConstants;
 import com.liferay.portal.util.PortalUtil;
@@ -37,9 +38,18 @@ public class UpdateTermsOfUseAction extends Action {
 			HttpServletResponse response)
 		throws Exception {
 
-		long userId = PortalUtil.getUserId(request);
+		long companyId = PortalUtil.getCompanyId(request);
 
-		UserServiceUtil.updateAgreedToTermsOfUse(userId, true);
+		try {
+			ShardUtil.pushCompanyService(companyId);
+
+			long userId = PortalUtil.getUserId(request);
+
+			UserServiceUtil.updateAgreedToTermsOfUse(userId, true);
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 
 		return mapping.findForward(ActionConstants.COMMON_REFERER_JSP);
 	}

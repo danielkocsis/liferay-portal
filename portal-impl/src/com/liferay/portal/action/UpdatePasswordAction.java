@@ -17,6 +17,7 @@ package com.liferay.portal.action;
 import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.UserLockoutException;
 import com.liferay.portal.UserPasswordException;
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -201,42 +202,47 @@ public class UpdatePasswordAction extends Action {
 
 			PwdToolkitUtilThreadLocal.setValidate(currentValidate);
 
+			ShardUtil.pushCompanyService(themeDisplay.getCompanyId());
+
 			UserLocalServiceUtil.updatePassword(
 				userId, password1, password2, passwordReset);
+
+			if (ticket != null) {
+				TicketLocalServiceUtil.deleteTicket(ticket);
+
+				User user = UserLocalServiceUtil.getUser(userId);
+
+				Company company = CompanyLocalServiceUtil.getCompanyById(
+					user.getCompanyId());
+
+				String login = null;
+
+				String authType = company.getAuthType();
+
+				if (authType.equals(CompanyConstants.AUTH_TYPE_EA)) {
+					login = user.getEmailAddress();
+				}
+				else if (authType.equals(CompanyConstants.AUTH_TYPE_SN)) {
+					login = user.getScreenName();
+				}
+				else if (authType.equals(CompanyConstants.AUTH_TYPE_ID)) {
+					login = String.valueOf(userId);
+				}
+
+				LoginUtil.login(
+					request, response, login, password1, false, null);
+			}
+			else if (PropsValues.SESSION_STORE_PASSWORD) {
+				HttpSession session = request.getSession();
+
+				session.setAttribute(WebKeys.USER_PASSWORD, password1);
+			}
 		}
 		finally {
 			PwdToolkitUtilThreadLocal.setValidate(previousValidate);
+			ShardUtil.popCompanyService();
 		}
 
-		if (ticket != null) {
-			TicketLocalServiceUtil.deleteTicket(ticket);
-
-			User user = UserLocalServiceUtil.getUser(userId);
-
-			Company company = CompanyLocalServiceUtil.getCompanyById(
-				user.getCompanyId());
-
-			String login = null;
-
-			String authType = company.getAuthType();
-
-			if (authType.equals(CompanyConstants.AUTH_TYPE_EA)) {
-				login = user.getEmailAddress();
-			}
-			else if (authType.equals(CompanyConstants.AUTH_TYPE_SN)) {
-				login = user.getScreenName();
-			}
-			else if (authType.equals(CompanyConstants.AUTH_TYPE_ID)) {
-				login = String.valueOf(userId);
-			}
-
-			LoginUtil.login(request, response, login, password1, false, null);
-		}
-		else if (PropsValues.SESSION_STORE_PASSWORD) {
-			HttpSession session = request.getSession();
-
-			session.setAttribute(WebKeys.USER_PASSWORD, password1);
-		}
 	}
 
 }
