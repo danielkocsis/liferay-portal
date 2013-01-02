@@ -40,6 +40,7 @@ Group group = (Group)request.getAttribute(WebKeys.GROUP);
 
 <liferay-ui:header
 	backURL="<%= redirect %>"
+	escapeXml="<%= true %>"
 	localizeTitle="<%= false %>"
 	title='<%= group.getDescriptiveName(locale) + StringPool.COLON + StringPool.SPACE + LanguageUtil.get(pageContext, "manage-memberships") %>'
 />

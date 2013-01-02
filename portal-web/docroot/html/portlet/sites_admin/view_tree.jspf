@@ -45,6 +45,7 @@ if ((group != null) && !group.isRoot()) {
 	<liferay-ui:header
 		backLabel="<%= parentGroupName %>"
 		backURL="<%= headerBackURL.toString() %>"
+		escapeXml="<%= true %>"
 		localizeTitle="<%= false %>"
 		title="<%= group.getDescriptiveName() %>"
 	/>
@@ -57,7 +58,7 @@ if ((group != null) && !group.isRoot()) {
 
 			<c:if test="<%= Validator.isNotNull(group.getDescription()) %>">
 				<div class="description">
-					<%= group.getDescription() %>
+					<%= HtmlUtil.escape(group.getDescription()) %>
 				</div>
 			</c:if>
 

@@ -121,6 +121,7 @@ else if (layoutSetPrototype != null) {
 
 <liferay-ui:header
 	backURL="<%= backURL %>"
+	escapeXml="<%= true %>"
 	localizeTitle="<%= localizeTitle %>"
 	title="<%= title %>"
 />
