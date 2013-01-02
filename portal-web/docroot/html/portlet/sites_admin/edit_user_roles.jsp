@@ -84,6 +84,7 @@ request.setAttribute("edit_user_roles.jsp-portletURL", portletURL);
 
 <liferay-ui:header
 	backURL="<%= backURL %>"
+	escapeXml="<%= true %>"
 	localizeTitle="<%= false %>"
 	title="<%= group.getDescriptiveName(locale) %>"
 />

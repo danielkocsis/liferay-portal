@@ -36,6 +36,7 @@ if (group.isOrganization()) {
 
 <liferay-ui:header
 	backURL="<%= redirect %>"
+	escapeXml="<%= true %>"
 	localizeTitle="<%= false %>"
 	title='<%= group.getDescriptiveName(locale) + ": " + ((team == null) ? LanguageUtil.get(pageContext, "new-team") : team.getName()) %>'
 />
