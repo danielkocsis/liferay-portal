@@ -4287,7 +4287,14 @@ public class PortalImpl implements Portal {
 			userId = GetterUtil.getLong(remoteUser);
 		}
 
-		user = UserLocalServiceUtil.getUserById(userId);
+		try {
+			ShardUtil.pushCompanyService(getCompanyId(request));
+
+			user = UserLocalServiceUtil.getUserById(userId);
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 
 		request.setAttribute(WebKeys.USER, user);
 
@@ -4344,7 +4351,7 @@ public class PortalImpl implements Portal {
 
 		if ((!PropsValues.PORTAL_JAAS_ENABLE &&
 			 PropsValues.PORTAL_IMPERSONATION_ENABLE) ||
-			alwaysAllowDoAsUser) {
+			 alwaysAllowDoAsUser) {
 
 			String doAsUserIdString = ParamUtil.getString(
 				request, "doAsUserId");
@@ -6016,15 +6023,25 @@ public class PortalImpl implements Portal {
 			return 0;
 		}
 
-		User doAsUser = UserLocalServiceUtil.getUserById(doAsUserId);
+		User doAsUser = null;
+		User realUser = null;
 
-		long[] organizationIds = doAsUser.getOrganizationIds();
+		try {
+			ShardUtil.pushCompanyService(getCompanyId(request));
 
-		User realUser = UserLocalServiceUtil.getUserById(
-			realUserIdObj.longValue());
+			doAsUser = UserLocalServiceUtil.getUserById(doAsUserId);
+
+			realUser = UserLocalServiceUtil.getUserById(
+				realUserIdObj.longValue());
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(realUser);
+
+		long[] organizationIds = doAsUser.getOrganizationIds();
 
 		if (doAsUser.isDefaultUser() ||
 			UserPermissionUtil.contains(
