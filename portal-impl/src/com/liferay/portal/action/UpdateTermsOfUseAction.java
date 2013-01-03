@@ -39,11 +39,10 @@ public class UpdateTermsOfUseAction extends Action {
 		throws Exception {
 
 		long companyId = PortalUtil.getCompanyId(request);
+		long userId = PortalUtil.getUserId(request);
 
 		try {
 			ShardUtil.pushCompanyService(companyId);
-
-			long userId = PortalUtil.getUserId(request);
 
 			UserServiceUtil.updateAgreedToTermsOfUse(userId, true);
 		}

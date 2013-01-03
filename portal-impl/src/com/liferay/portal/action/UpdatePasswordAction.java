@@ -240,6 +240,7 @@ public class UpdatePasswordAction extends Action {
 		}
 		finally {
 			PwdToolkitUtilThreadLocal.setValidate(previousValidate);
+
 			ShardUtil.popCompanyService();
 		}
 

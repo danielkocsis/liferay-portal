@@ -15,7 +15,6 @@
 package com.liferay.portal.service;
 
 import com.liferay.portal.NoSuchUserException;
-import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
@@ -94,17 +93,12 @@ public class ServiceContextFactory {
 			User user = null;
 
 			try {
-				ShardUtil.pushCompanyService(companyId);
-
 				user = PortalUtil.getUser(request);
 			}
 			catch (NoSuchUserException nsue) {
 
 				// LPS-24160
 
-			}
-			finally {
-				ShardUtil.popCompanyService();
 			}
 
 			if (user != null) {
