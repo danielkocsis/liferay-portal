@@ -21,6 +21,10 @@ String redirect = ParamUtil.getString(request, "redirect");
 
 Company company2 = (Company)request.getAttribute(WebKeys.SEL_COMPANY);
 
+if (company2 != null) {
+	company2 = company2.toEscapedModel();
+}
+
 long companyId = BeanParamUtil.getLong(company2, request, "companyId");
 
 VirtualHost virtualHost = null;
