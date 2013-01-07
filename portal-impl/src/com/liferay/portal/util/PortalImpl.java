@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.cluster.ClusterExecutorUtil;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -3825,6 +3826,8 @@ public class PortalImpl implements Portal {
 		User user = null;
 
 		try {
+			ShardUtil.pushCompanyService(getCompanyId(request));
+
 			if (checkPermission) {
 				user = UserServiceUtil.getUserById(userId);
 			}
@@ -3833,6 +3836,9 @@ public class PortalImpl implements Portal {
 			}
 		}
 		catch (NoSuchUserException nsue) {
+		}
+		finally {
+			ShardUtil.popCompanyService();
 		}
 
 		return user;
