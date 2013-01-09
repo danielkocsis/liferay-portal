@@ -182,7 +182,7 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		Company company = companyPersistence.fetchByWebId(webId);
 
 		if (company == null) {
-			String name = webId;
+			String name = PropsValues.COMPANY_DEFAULT_NAME;
 			String legalName = null;
 			String legalId = null;
 			String legalType = null;
