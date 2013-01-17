@@ -146,8 +146,12 @@ public class RSSAction extends com.liferay.portal.struts.RSSAction {
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
+		long[] groupIds = AssetPublisherUtil.getGroupIds(
+			preferences, themeDisplay.getScopeGroupId(),
+			themeDisplay.getLayout());
+
 		AssetEntryQuery assetEntryQuery = AssetPublisherUtil.getAssetEntryQuery(
-			preferences, new long[] {themeDisplay.getScopeGroupId()});
+			preferences, groupIds);
 
 		boolean anyAssetType = GetterUtil.getBoolean(
 			preferences.getValue("anyAssetType", null), true);
@@ -181,10 +185,6 @@ public class RSSAction extends com.liferay.portal.struts.RSSAction {
 			preferences.getValue("excludeZeroViewCount", null));
 
 		assetEntryQuery.setExcludeZeroViewCount(excludeZeroViewCount);
-
-		long[] groupIds = AssetPublisherUtil.getGroupIds(
-			preferences, themeDisplay.getScopeGroupId(),
-			themeDisplay.getLayout());
 
 		assetEntryQuery.setGroupIds(groupIds);
 

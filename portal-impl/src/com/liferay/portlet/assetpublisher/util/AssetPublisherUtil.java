@@ -451,7 +451,7 @@ public class AssetPublisherUtil {
 			return new long[] {groupId};
 		}
 		catch (Exception e) {
-			return new long[0];
+			return new long[] {scopeGroupId};
 		}
 	}
 
