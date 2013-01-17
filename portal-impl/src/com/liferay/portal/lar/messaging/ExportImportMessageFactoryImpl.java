@@ -14,54 +14,98 @@
 
 package com.liferay.portal.lar.messaging;
 
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.lar.messaging.ExportImportMessage;
 import com.liferay.portal.kernel.lar.messaging.ExportImportMessageFactory;
+import com.liferay.portal.model.ClassedModel;
+import com.liferay.portal.model.Portlet;
+import com.liferay.portal.model.StagedModel;
 
 import java.util.Date;
 
 /**
  * @author Daniel Kocsis
+ * @author Mate Thurzo
  */
 public class ExportImportMessageFactoryImpl
 	implements ExportImportMessageFactory {
 
 	public ExportImportMessage getErrorMessage(
-		String className, String classPk, String command, String message) {
+		StagedModel stagedModel, String message) {
 
-		return new ExportImportMessage(
-			className, classPk, command, message,
-			ExportImportMessage.MESSAGE_TYPE_ERROR);
+		ClassedModel classedModel = (ClassedModel)stagedModel;
+
+		String modelClassName = classedModel.getModelClassName();
+		String modelClassPk = String.valueOf(classedModel.getPrimaryKeyObj());
+
+		return getErrorMessage(modelClassName, modelClassPk, message);
 	}
 
 	public ExportImportMessage getErrorMessage(
-		String className, String classPk, String command, String message,
-		Date timestamp) {
+		String portletId, String message) {
 
-		return new ExportImportMessage(
-			className, classPk, command, message,
-			ExportImportMessage.MESSAGE_TYPE_ERROR, timestamp);
+		return getErrorMessage(
+			Portlet.class.getName(), portletId, message, new Date());
 	}
 
-	public ExportImportMessage getMessage(String message) throws JSONException {
-		return new ExportImportMessage(message);
+	public ExportImportMessage getErrorMessage(
+		String className, String classPk, String message) {
+
+		return getErrorMessage(className, classPk, message, new Date());
+	}
+
+	public ExportImportMessage getErrorMessage(
+		String className, String classPk, String message, Date timestamp) {
+
+		return doGetMessage(
+			className, classPk, message, ExportImportMessage.MESSAGE_TYPE_ERROR,
+			timestamp);
 	}
 
 	public ExportImportMessage getMessage(
-			String className, String classPk, String command, String message) {
+		StagedModel stagedModel, String message) {
 
-		return new ExportImportMessage(
-			className, classPk, command, message,
-			ExportImportMessage.MESSAGE_TYPE_SUCCESS);
+		ClassedModel classedModel = (ClassedModel)stagedModel;
+
+		String modelClassName = classedModel.getModelClassName();
+		String modelClassPk = String.valueOf(classedModel.getPrimaryKeyObj());
+
+		return getMessage(modelClassName, modelClassPk, message, new Date());
+	}
+
+	public ExportImportMessage getMessage(String message) {
+		ExportImportMessage exportImportmessage = new ExportImportMessage();
+
+		exportImportmessage.setMessage(message);
+		exportImportmessage.setTimestamp(new Date());
+
+		return exportImportmessage;
+	}
+
+	public ExportImportMessage getMessage(String portletId, String message) {
+		return getMessage(
+			Portlet.class.getName(), portletId, message, new Date());
 	}
 
 	public ExportImportMessage getMessage(
-		String className, String classPk, String command, String message,
-		Date timestamp) {
+		String className, String classPk, String message) {
 
-		return new ExportImportMessage(
-			className, classPk, command, message,
+		return getMessage(className, classPk, message, new Date());
+	}
+
+	public ExportImportMessage getMessage(
+		String className, String classPk, String message, Date timestamp) {
+
+		return doGetMessage(
+			className, classPk, message,
 			ExportImportMessage.MESSAGE_TYPE_SUCCESS, timestamp);
+	}
+
+	protected ExportImportMessage doGetMessage(
+		String className, String classPk, String message, int messageType,
+		Date timestamp) {
+
+		return new ExportImportMessage(
+			className, classPk, message, messageType, timestamp);
 	}
 
 }

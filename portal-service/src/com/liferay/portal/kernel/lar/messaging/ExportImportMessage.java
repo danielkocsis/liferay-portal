@@ -14,11 +14,10 @@
 
 package com.liferay.portal.kernel.lar.messaging;
 
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.model.Portlet;
 
 import java.io.Serializable;
 
@@ -28,6 +27,7 @@ import java.util.Date;
 
 /**
  * @author Daniel Kocsis
+ * @author Mate Thurzo
  */
 public class ExportImportMessage implements Serializable {
 
@@ -38,41 +38,15 @@ public class ExportImportMessage implements Serializable {
 	public ExportImportMessage() {
 	}
 
-	public ExportImportMessage(String message) throws JSONException {
-		JSONObject jsonObj = JSONFactoryUtil.createJSONObject(message);
-
-		_className = jsonObj.getString(_CLASS_NAME);
-		_classPK = jsonObj.getString(_CLASS_PK);
-		_command = jsonObj.getString(_COMMAND);
-		_message = jsonObj.getString(_MESSAGE);
-		_messageType = jsonObj.getInt(_MESSAGE_TYPE);
-
-		_timestamp = GetterUtil.getDate(
-			jsonObj.getString(_TIMESTAMP), _getDateFormat());
-	}
-
 	public ExportImportMessage(
-		String className, String classPK, String command, String message,
-		int messageType) {
-
-		this(className, classPK, command, message, messageType, null);
-	}
-
-	public ExportImportMessage(
-		String className, String classPK, String command, String message,
-		int messageType, Date timestamp) {
+		String className, String classPK, String message, int messageType,
+		Date timestamp) {
 
 		_className = className;
 		_classPK = classPK;
-		_command = command;
 		_message = message;
 		_messageType = messageType;
-
 		_timestamp = timestamp;
-
-		if (_timestamp == null) {
-			_timestamp = new Date();
-		}
 	}
 
 	public String getClassName() {
@@ -81,10 +55,6 @@ public class ExportImportMessage implements Serializable {
 
 	public String getClassPk() {
 		return _classPK;
-	}
-
-	public String getCommand() {
-		return _command;
 	}
 
 	public String getMessage() {
@@ -99,16 +69,28 @@ public class ExportImportMessage implements Serializable {
 		return _timestamp;
 	}
 
+	public boolean isModelLevel() {
+		if (!isPortletLevel()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isPortletLevel() {
+		if (_className.equals(Portlet.class.getName())) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public void setClassName(String className) {
 		_className = className;
 	}
 
 	public void setClassPK(String classPK) {
 		_classPK = classPK;
-	}
-
-	public void setCommand(String command) {
-		_command = command;
 	}
 
 	public void setMessage(String message) {
@@ -128,7 +110,6 @@ public class ExportImportMessage implements Serializable {
 
 		jsonObj.put(_CLASS_PK, _classPK);
 		jsonObj.put(_CLASS_NAME, _className);
-		jsonObj.put(_COMMAND, _command);
 		jsonObj.put(_MESSAGE, _message);
 		jsonObj.put(_MESSAGE_TYPE, _messageType);
 		jsonObj.put(_TIMESTAMP, _getDateFormat().format(new Date()));
@@ -144,8 +125,6 @@ public class ExportImportMessage implements Serializable {
 
 	private static final String _CLASS_PK = "classPK";
 
-	private static final String _COMMAND = "command";
-
 	private static final String _DATE_FORMAT = "yyyyMMddkkmmssSSS";
 
 	private static final String _MESSAGE = "message";
@@ -158,7 +137,6 @@ public class ExportImportMessage implements Serializable {
 
 	private String _className;
 	private String _classPK;
-	private String _command;
 	private String _message;
 	private int _messageType;
 	private Date _timestamp;

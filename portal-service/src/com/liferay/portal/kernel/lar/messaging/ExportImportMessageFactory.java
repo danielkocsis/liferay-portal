@@ -14,29 +14,39 @@
 
 package com.liferay.portal.kernel.lar.messaging;
 
-import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.model.StagedModel;
 
 import java.util.Date;
 
 /**
  * @author Daniel Kocsis
+ * @author Mate Thurzo
  */
 public interface ExportImportMessageFactory {
 
 	public ExportImportMessage getErrorMessage(
-		String className, String classPk, String command, String message);
+		StagedModel stagedModel, String message);
 
 	public ExportImportMessage getErrorMessage(
-		String className, String classPk, String command, String message,
-		Date timestamp);
+		String portletId, String message);
 
-	public ExportImportMessage getMessage(String message) throws JSONException;
+	public ExportImportMessage getErrorMessage(
+		String className, String classPk, String message);
+
+	public ExportImportMessage getErrorMessage(
+		String className, String classPk, String message, Date timestamp);
 
 	public ExportImportMessage getMessage(
-		String className, String classPk, String command, String message);
+		StagedModel stagedModel, String message);
+
+	public ExportImportMessage getMessage(String message);
+
+	public ExportImportMessage getMessage(String portletId, String message);
 
 	public ExportImportMessage getMessage(
-		String className, String classPk, String command, String message,
-		Date timestamp);
+		String className, String classPk, String message);
+
+	public ExportImportMessage getMessage(
+		String className, String classPk, String message, Date timestamp);
 
 }

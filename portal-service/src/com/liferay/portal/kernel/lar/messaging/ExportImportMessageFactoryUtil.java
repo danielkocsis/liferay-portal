@@ -14,8 +14,8 @@
 
 package com.liferay.portal.kernel.lar.messaging;
 
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
+import com.liferay.portal.model.StagedModel;
 
 import java.util.Date;
 
@@ -25,18 +25,31 @@ import java.util.Date;
 public class ExportImportMessageFactoryUtil {
 
 	public static ExportImportMessage getErrorMessage(
-		String className, String classPk, String command, String message) {
+		StagedModel stagedModel, String message) {
 
 		return getExportImportMessageFactory().getErrorMessage(
-			className, classPk, command, message);
+			stagedModel, message);
 	}
 
 	public static ExportImportMessage getErrorMessage(
-		String className, String classPk, String command, String message,
-		Date timestamp) {
+		String portletId, String message) {
 
 		return getExportImportMessageFactory().getErrorMessage(
-				className, classPk, command, message, timestamp);
+			portletId, message);
+	}
+
+	public static ExportImportMessage getErrorMessage(
+		String className, String classPk, String message) {
+
+		return getExportImportMessageFactory().getErrorMessage(
+			className, classPk, message);
+	}
+
+	public static ExportImportMessage getErrorMessage(
+		String className, String classPk, String message, Date timestamp) {
+
+		return getExportImportMessageFactory().getErrorMessage(
+			className, classPk, message, timestamp);
 	}
 
 	public static ExportImportMessageFactory getExportImportMessageFactory() {
@@ -46,25 +59,34 @@ public class ExportImportMessageFactoryUtil {
 		return _exportImportMessageFactory;
 	}
 
-	public static ExportImportMessage getMessage(String message)
-		throws JSONException {
+	public static ExportImportMessage getMessage(
+		StagedModel stagedModel, String message) {
 
-		return _exportImportMessageFactory.getMessage(message);
+		return getExportImportMessageFactory().getMessage(stagedModel, message);
+	}
+
+	public static ExportImportMessage getMessage(String message) {
+		return getExportImportMessageFactory().getMessage(message);
 	}
 
 	public static ExportImportMessage getMessage(
-		String className, String classPk, String command, String message) {
+		String portletId, String message) {
 
-		return getExportImportMessageFactory().getMessage(
-			className, classPk, command, message);
+		return getExportImportMessageFactory().getMessage(portletId, message);
 	}
 
 	public static ExportImportMessage getMessage(
-		String className, String classPk, String command, String message,
-		Date timestamp) {
+		String className, String classPk, String message) {
 
 		return getExportImportMessageFactory().getMessage(
-			className, classPk, command, message, timestamp);
+			className, classPk, message);
+	}
+
+	public static ExportImportMessage getMessage(
+		String className, String classPk, String message, Date timestamp) {
+
+		return getExportImportMessageFactory().getMessage(
+			className, classPk, message, timestamp);
 	}
 
 	public void setExportImportMessageFactory(
