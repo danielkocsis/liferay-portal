@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.lar;
 
+import com.liferay.portal.kernel.lar.messaging.ExportImportMessageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -64,27 +65,26 @@ public abstract class BasePortletDataHandler implements PortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws PortletDataException {
 
-		long startTime = 0;
+		long startTime = System.currentTimeMillis();
 
-		if (_log.isInfoEnabled()) {
-			_log.info("Exporting portlet " + portletId);
-
-			startTime = System.currentTimeMillis();
-		}
+		ExportImportMessageUtil.sendExportMessage(
+			portletId, "Exporting portlet started");
 
 		try {
 			return doExportData(
 				portletDataContext, portletId, portletPreferences);
 		}
 		catch (Exception e) {
+			ExportImportMessageUtil.sendExportErrorMessage(
+				portletId, e.getMessage());
+
 			throw new PortletDataException(e);
 		}
 		finally {
-			if (_log.isInfoEnabled()) {
-				long duration = System.currentTimeMillis() - startTime;
+			long duration = System.currentTimeMillis() - startTime;
 
-				_log.info("Exported portlet in " + Time.getDuration(duration));
-			}
+			ExportImportMessageUtil.sendExportMessage(
+				portletId, "Exported portlet in " + Time.getDuration(duration));
 		}
 	}
 
