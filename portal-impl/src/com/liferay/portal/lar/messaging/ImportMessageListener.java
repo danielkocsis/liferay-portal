@@ -17,22 +17,18 @@ package com.liferay.portal.lar.messaging;
 import com.liferay.portal.kernel.lar.messaging.ExportImportMessage;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.messaging.BaseMessageListener;
-import com.liferay.portal.kernel.messaging.Message;
 
 /**
  * @author Daniel Kocsis
+ * @author Mate Thurzo
  */
-public class ImportMessageListener extends BaseMessageListener {
+public class ImportMessageListener extends ExportImportMessageListener {
 
 	@Override
-	protected void doReceive(Message message) throws Exception {
-		ExportImportMessage exportImportMessage =
-			(ExportImportMessage) message.getPayload();
+	protected void doReceiveExportImport(
+		ExportImportMessage exportImportMessage) {
 
-		if (_log.isDebugEnabled()) {
-			_log.debug("Import message: " + exportImportMessage.toJSONObject());
-		}
+		return;
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(
