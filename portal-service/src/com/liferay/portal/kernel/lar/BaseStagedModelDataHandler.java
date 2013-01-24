@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.lar;
 
+import com.liferay.portal.kernel.lar.messaging.ExportImportMessageUtil;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.model.StagedModel;
 
@@ -29,10 +30,19 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			Element... elements)
 		throws PortletDataException {
 
+		ExportImportMessageUtil.sendExportMessage(
+			stagedModel, "Export started");
+
 		try {
 			doExportModelData(stagedModel, portletDataContext, elements);
+
+			ExportImportMessageUtil.sendExportMessage(
+				stagedModel, "Export finished");
 		}
 		catch (Exception e) {
+			ExportImportMessageUtil.sendExportErrorMessage(
+				stagedModel, e.getMessage());
+
 			throw new PortletDataException(e);
 		}
 	}
