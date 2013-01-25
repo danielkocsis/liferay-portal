@@ -21,6 +21,10 @@ import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.lar.UserIdStrategy;
 import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.kernel.xml.Node;
+import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.model.Group;
@@ -32,9 +36,12 @@ import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portlet.PortletPreferencesImpl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -46,6 +53,7 @@ import org.powermock.api.mockito.PowerMockito;
 
 /**
  * @author Daniel Kocsis
+ * @author Mate Thurzo
  */
 public abstract class BaseDataHandlerTestCase extends PowerMockito {
 
@@ -54,6 +62,8 @@ public abstract class BaseDataHandlerTestCase extends PowerMockito {
 		FinderCacheUtil.clearCache();
 
 		group = ServiceTestUtil.addGroup();
+
+		expectedResultMap = new HashMap<String, Set<Long>>();
 	}
 
 	@After
@@ -71,9 +81,6 @@ public abstract class BaseDataHandlerTestCase extends PowerMockito {
 			group.getCompanyId(), group.getGroupId(), getParameters(),
 			new HashSet<String>(), getStartDate(), getEndDate(), zipWriter);
 
-		portletDataContext.setPortetDataContextListener(
-			new PortletDataContextListenerImpl(portletDataContext));
-
 		portletDataContext.setPlid(LayoutConstants.DEFAULT_PLID);
 		portletDataContext.setOldPlid(LayoutConstants.DEFAULT_PLID);
 
@@ -81,13 +88,6 @@ public abstract class BaseDataHandlerTestCase extends PowerMockito {
 			portletDataContext.getCompanyId(), getPortletId());
 
 		if (portlet == null) {
-			Assert.fail();
-		}
-
-		if (!portlet.isInstanceable() &&
-			!portlet.isPreferencesUniquePerLayout() &&
-			portletDataContext.hasNotUniquePerLayout(getPortletId())) {
-
 			Assert.fail();
 		}
 
@@ -108,14 +108,24 @@ public abstract class BaseDataHandlerTestCase extends PowerMockito {
 				new PortletPreferencesImpl());
 		}
 		catch (Exception e) {
-			throw new SystemException(e);
+			Assert.fail(e.getMessage());
 		}
 
 		validatePortletExportData(data);
 	}
 
-	public abstract void validatePortletExportData(String data)
-		throws Exception;
+	protected void addExpectedResult(String elementName, long classPk) {
+		if (expectedResultMap.containsKey(elementName)) {
+			expectedResultMap.get(elementName).add(classPk);
+		}
+		else {
+			Set<Long> classPks = new HashSet<Long>();
+
+			classPks.add(classPk);
+
+			expectedResultMap.put(elementName, classPks);
+		}
+	}
 
 	protected Date getEndDate() {
 		return new Date();
@@ -157,6 +167,8 @@ public abstract class BaseDataHandlerTestCase extends PowerMockito {
 		return parameterMap;
 	}
 
+	protected abstract String getPortletDataElementName();
+
 	protected abstract String getPortletId();
 
 	protected Date getStartDate() {
@@ -165,6 +177,28 @@ public abstract class BaseDataHandlerTestCase extends PowerMockito {
 
 	protected abstract void initExportData() throws Exception;
 
+	protected void validatePortletExportData(String data) throws Exception {
+		Document document = SAXReaderUtil.read(data);
+
+		Element portletDataElement = document.getRootElement().element(
+			getPortletDataElementName());
+
+		for (Map.Entry<String, Set<Long>> expectedResults :
+				expectedResultMap.entrySet()) {
+
+			Element portletEntityElement = portletDataElement.element(
+				expectedResults.getKey());
+
+			List<Element> portletEntityElements = portletDataElement.elements();
+
+			for (Element exportedEntity : portletEntityElements) {
+
+			}
+		}
+	}
+
 	protected Group group;
+
+	protected Map<String, Set<Long>> expectedResultMap;
 
 }

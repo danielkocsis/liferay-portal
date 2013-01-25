@@ -24,6 +24,7 @@ import com.liferay.portal.test.MainServletExecutionTestListener;
 import com.liferay.portal.test.TransactionalCallbackAwareExecutionTestListener;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.TestPropsValues;
+import com.liferay.portlet.bookmarks.model.BookmarksEntry;
 import com.liferay.portlet.bookmarks.model.BookmarksFolder;
 import com.liferay.portlet.bookmarks.model.BookmarksFolderConstants;
 import com.liferay.portlet.bookmarks.service.BookmarksEntryLocalServiceUtil;
@@ -32,6 +33,9 @@ import com.liferay.portlet.bookmarks.service.BookmarksFolderLocalServiceUtil;
 import junit.framework.Assert;
 
 import org.junit.runner.RunWith;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Daniel Kocsis
@@ -46,10 +50,8 @@ import org.junit.runner.RunWith;
 public class BookmarksPortletDataHandlerTest extends BaseDataHandlerTestCase {
 
 	@Override
-	public void validatePortletExportData(String data) throws Exception {
-		Assert.assertNotNull(data);
-
-		System.out.println("\n" + data + "\n");
+	protected String getPortletDataElementName() {
+		return "bookmarks-data";
 	}
 
 	@Override
@@ -71,9 +73,19 @@ public class BookmarksPortletDataHandlerTest extends BaseDataHandlerTestCase {
 
 		String url = "http://www.liferay.com";
 
-		BookmarksEntryLocalServiceUtil.addEntry(
+		BookmarksEntry entry = BookmarksEntryLocalServiceUtil.addEntry(
 			folder.getUserId(), folder.getGroupId(), folder.getFolderId(),
 			"Test Entry", url, StringPool.BLANK, serviceContext);
+
+		addExpectedResult("folders", folder.getFolderId());
+		addExpectedResult("entries", entry.getEntryId());
+	}
+
+	@Override
+	protected void validatePortletExportData(String data) throws Exception {
+		Assert.assertNotNull(data);
+
+		System.out.println("\n" + data + "\n");
 	}
 
 }
