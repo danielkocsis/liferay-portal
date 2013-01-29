@@ -79,9 +79,12 @@ public class UpdatePasswordAction extends Action {
 
 		if (Validator.isNull(cmd)) {
 			if (ticket != null) {
-				User user = UserLocalServiceUtil.getUser(ticket.getClassPK());
-
 				try {
+					ShardUtil.pushCompanyService(themeDisplay.getCompanyId());
+
+					User user = UserLocalServiceUtil.getUser(
+						ticket.getClassPK());
+
 					UserLocalServiceUtil.checkLockout(user);
 
 					UserLocalServiceUtil.updatePasswordReset(
@@ -89,6 +92,9 @@ public class UpdatePasswordAction extends Action {
 				}
 				catch (UserLockoutException ule) {
 					SessionErrors.add(request, ule.getClass());
+				}
+				finally {
+					ShardUtil.popCompanyService();
 				}
 			}
 

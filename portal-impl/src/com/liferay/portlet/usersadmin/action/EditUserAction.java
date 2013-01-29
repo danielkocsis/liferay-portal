@@ -216,6 +216,8 @@ public class EditUserAction extends PortletAction {
 
 			if (scopeGroup.isUser()) {
 				try {
+					ShardUtil.pushCompanyService(scopeGroup.getCompanyId());
+
 					UserLocalServiceUtil.getUserById(scopeGroup.getClassPK());
 				}
 				catch (NoSuchUserException nsue) {
@@ -223,6 +225,9 @@ public class EditUserAction extends PortletAction {
 						redirect, "doAsGroupId" , 0);
 					redirect = HttpUtil.setParameter(
 						redirect, "refererPlid" , 0);
+				}
+				finally {
+					ShardUtil.popCompanyService();
 				}
 			}
 

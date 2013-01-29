@@ -15,6 +15,7 @@
 package com.liferay.portlet.login.action;
 
 import com.liferay.portal.NoSuchUserException;
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.facebook.FacebookConnectUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
@@ -147,12 +148,20 @@ public class FacebookConnectAction extends PortletAction {
 			birthdayMonth, birthdayDay, birthdayYear, jobTitle, groupIds,
 			organizationIds, roleIds, userGroupIds, sendEmail, serviceContext);
 
-		UserLocalServiceUtil.updateLastLogin(
-			user.getUserId(), user.getLoginIP());
+		try {
+			ShardUtil.pushCompanyService(companyId);
 
-		UserLocalServiceUtil.updatePasswordReset(user.getUserId(), false);
+			UserLocalServiceUtil.updateLastLogin(
+				user.getUserId(), user.getLoginIP());
 
-		UserLocalServiceUtil.updateEmailAddressVerified(user.getUserId(), true);
+			UserLocalServiceUtil.updatePasswordReset(user.getUserId(), false);
+
+			UserLocalServiceUtil.updateEmailAddressVerified(
+				user.getUserId(), true);
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 
 		session.setAttribute(WebKeys.FACEBOOK_USER_EMAIL_ADDRESS, emailAddress);
 	}

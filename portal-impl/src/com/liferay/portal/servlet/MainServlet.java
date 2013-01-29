@@ -20,6 +20,7 @@ import com.liferay.portal.events.EventsProcessorUtil;
 import com.liferay.portal.events.StartupAction;
 import com.liferay.portal.kernel.cache.Lifecycle;
 import com.liferay.portal.kernel.cache.ThreadLocalCacheManager;
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.deploy.hot.HotDeployUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -996,11 +997,20 @@ public class MainServlet extends ActionServlet {
 			PropsKeys.LOGIN_EVENTS_PRE, PropsValues.LOGIN_EVENTS_PRE, request,
 			response);
 
-		User user = UserLocalServiceUtil.getUserById(userId);
+		User user = null;
 
-		if (PropsValues.USERS_UPDATE_LAST_LOGIN) {
-			UserLocalServiceUtil.updateLastLogin(
-				userId, request.getRemoteAddr());
+		try {
+			ShardUtil.pushCompanyService(PortalUtil.getCompanyId(request));
+
+			user = UserLocalServiceUtil.getUserById(userId);
+
+			if (PropsValues.USERS_UPDATE_LAST_LOGIN) {
+				UserLocalServiceUtil.updateLastLogin(
+					userId, request.getRemoteAddr());
+			}
+		}
+		finally {
+			ShardUtil.popCompanyService();
 		}
 
 		HttpSession session = request.getSession();
