@@ -14,8 +14,12 @@
 
 package com.liferay.portal.kernel.lar;
 
+import com.liferay.portal.kernel.lar.messaging.ExportImportMessage;
+import com.liferay.portal.kernel.lar.messaging.ExportImportMessageFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.messaging.DestinationNames;
+import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
@@ -64,27 +68,26 @@ public abstract class BasePortletDataHandler implements PortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws PortletDataException {
 
-		long startTime = 0;
+		long startTime = System.currentTimeMillis();
 
-		if (_log.isInfoEnabled()) {
-			_log.info("Exporting portlet " + portletId);
-
-			startTime = System.currentTimeMillis();
-		}
+		sendStatusMessage(
+			DestinationNames.EXPORT, portletId, "Exporting portlet started");
 
 		try {
 			return doExportData(
 				portletDataContext, portletId, portletPreferences);
 		}
 		catch (Exception e) {
+			sendStatusMessage(DestinationNames.EXPORT, portletId, e);
+
 			throw new PortletDataException(e);
 		}
 		finally {
-			if (_log.isInfoEnabled()) {
-				long duration = System.currentTimeMillis() - startTime;
+			long duration = System.currentTimeMillis() - startTime;
 
-				_log.info("Exported portlet in " + Time.getDuration(duration));
-			}
+			sendStatusMessage(
+				DestinationNames.EXPORT, portletId,
+				"Exported portlet in " + Time.getDuration(duration));
 		}
 	}
 
@@ -113,13 +116,10 @@ public abstract class BasePortletDataHandler implements PortletDataHandler {
 			PortletPreferences portletPreferences, String data)
 		throws PortletDataException {
 
-		long startTime = 0;
+		long startTime = System.currentTimeMillis();
 
-		if (_log.isInfoEnabled()) {
-			_log.info("Importing portlet " + portletId);
-
-			startTime = System.currentTimeMillis();
-		}
+		sendStatusMessage(
+			DestinationNames.IMPORT, portletId, "Importing portlet started");
 
 		long sourceGroupId = portletDataContext.getSourceGroupId();
 
@@ -141,16 +141,18 @@ public abstract class BasePortletDataHandler implements PortletDataHandler {
 				portletDataContext, portletId, portletPreferences, data);
 		}
 		catch (Exception e) {
+			sendStatusMessage(DestinationNames.IMPORT, portletId, e);
+
 			throw new PortletDataException(e);
 		}
 		finally {
 			portletDataContext.setSourceGroupId(sourceGroupId);
 
-			if (_log.isInfoEnabled()) {
-				long duration = System.currentTimeMillis() - startTime;
+			long duration = System.currentTimeMillis() - startTime;
 
-				_log.info("Imported portlet in " + Time.getDuration(duration));
-			}
+			sendStatusMessage(
+				DestinationNames.IMPORT, portletId,
+				"Imported portlet in " + Time.getDuration(duration));
 		}
 	}
 
@@ -192,6 +194,28 @@ public abstract class BasePortletDataHandler implements PortletDataHandler {
 		throws Exception {
 
 		return null;
+	}
+
+	protected void sendStatusMessage(
+		String destinationName, String portletId, Object message) {
+
+		if (Validator.isNull(destinationName) || (message == null)) {
+			return;
+		}
+
+		ExportImportMessage exportImportMessage;
+
+		if (message instanceof Exception) {
+			exportImportMessage =
+				ExportImportMessageFactoryUtil.getErrorMessage(
+					portletId, (Exception)message);
+		}
+		else {
+			exportImportMessage = ExportImportMessageFactoryUtil.getMessage(
+				portletId, String.valueOf(message));
+		}
+
+		MessageBusUtil.sendMessage(destinationName, exportImportMessage);
 	}
 
 	private static final boolean _ALWAYS_EXPORTABLE = false;
