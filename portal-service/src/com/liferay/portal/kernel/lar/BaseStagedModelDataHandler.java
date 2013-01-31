@@ -14,6 +14,11 @@
 
 package com.liferay.portal.kernel.lar;
 
+import com.liferay.portal.kernel.lar.messaging.ExportImportMessage;
+import com.liferay.portal.kernel.lar.messaging.ExportImportMessageFactoryUtil;
+import com.liferay.portal.kernel.messaging.DestinationNames;
+import com.liferay.portal.kernel.messaging.MessageBusUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.model.StagedModel;
 
@@ -38,16 +43,18 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			T stagedModel)
 		throws PortletDataException {
 
-		String path = StagedModelPathUtil.getPath(stagedModel);
-
-		if (portletDataContext.isPathProcessed(path)) {
-			return;
-		}
+		sendStatusMessage(
+			DestinationNames.EXPORT, stagedModel, "Export started");
 
 		try {
 			doExportStagedModel(portletDataContext, elements, stagedModel);
+
+			sendStatusMessage(
+				DestinationNames.EXPORT, stagedModel, "Export finished");
 		}
 		catch (Exception e) {
+			sendStatusMessage(DestinationNames.EXPORT, stagedModel, e);
+
 			throw new PortletDataException(e);
 		}
 	}
@@ -58,14 +65,22 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			PortletDataContext portletDataContext, String path, T stagedModel)
 		throws PortletDataException {
 
-		if (portletDataContext.isPathProcessed(path)) {
+		if (!portletDataContext.isPathNotProcessed(path)) {
 			return;
 		}
 
+		sendStatusMessage(
+			DestinationNames.IMPORT, stagedModel, "Import started");
+
 		try {
 			doImportStagedModel(portletDataContext, path, stagedModel);
+
+			sendStatusMessage(
+				DestinationNames.IMPORT, stagedModel, "Import finished");
 		}
 		catch (Exception e) {
+			sendStatusMessage(DestinationNames.IMPORT, stagedModel, e);
+
 			throw new PortletDataException(e);
 		}
 	}
@@ -78,5 +93,27 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 	protected abstract void doImportStagedModel(
 			PortletDataContext portletDataContext, String path, T stagedModel)
 		throws Exception;
+
+	protected void sendStatusMessage(
+		String destinationName, StagedModel stagedModel, Object message) {
+
+		if (Validator.isNull(destinationName) || (message == null)) {
+			return;
+		}
+
+		ExportImportMessage exportImportMessage;
+
+		if (message instanceof Exception) {
+			exportImportMessage =
+				ExportImportMessageFactoryUtil.getErrorMessage(
+					stagedModel, (Exception)message);
+		}
+		else {
+			exportImportMessage = ExportImportMessageFactoryUtil.getMessage(
+				stagedModel, String.valueOf(message));
+		}
+
+		MessageBusUtil.sendMessage(destinationName, exportImportMessage);
+	}
 
 }
