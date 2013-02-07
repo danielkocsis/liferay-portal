@@ -16,6 +16,7 @@ package com.liferay.portal.action;
 
 import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.UserReminderQueryException;
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -84,16 +85,26 @@ public class UpdateReminderQueryAction extends Action {
 
 		AuthTokenUtil.check(request);
 
-		long userId = PortalUtil.getUserId(request);
-		String question = ParamUtil.getString(request, "reminderQueryQuestion");
-		String answer = ParamUtil.getString(request, "reminderQueryAnswer");
+		long companyId = PortalUtil.getCompanyId(request);
 
-		if (question.equals(UsersAdminUtil.CUSTOM_QUESTION)) {
-			question = ParamUtil.getString(
-				request, "reminderQueryCustomQuestion");
+		try {
+			ShardUtil.pushCompanyService(companyId);
+
+			long userId = PortalUtil.getUserId(request);
+			String question = ParamUtil.getString(
+				request, "reminderQueryQuestion");
+			String answer = ParamUtil.getString(request, "reminderQueryAnswer");
+
+			if (question.equals(UsersAdminUtil.CUSTOM_QUESTION)) {
+				question = ParamUtil.getString(
+					request, "reminderQueryCustomQuestion");
+			}
+
+			UserServiceUtil.updateReminderQuery(userId, question, answer);
 		}
-
-		UserServiceUtil.updateReminderQuery(userId, question, answer);
+		finally {
+			ShardUtil.popCompanyService();
+		}
 	}
 
 }

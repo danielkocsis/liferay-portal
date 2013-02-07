@@ -17,6 +17,7 @@ package com.liferay.portlet.usersadmin.util;
 import com.liferay.portal.NoSuchOrganizationException;
 import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.NoSuchUserGroupException;
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.Document;
@@ -922,8 +923,11 @@ public class UsersAdminImpl implements UsersAdmin {
 
 		for (Document document : documents) {
 			long userId = GetterUtil.getLong(document.get(Field.USER_ID));
+			long companyId = GetterUtil.getLong(document.get(Field.COMPANY_ID));
 
 			try {
+				ShardUtil.pushCompanyService(companyId);
+
 				User user = UserLocalServiceUtil.getUser(userId);
 
 				users.add(user);
@@ -933,10 +937,10 @@ public class UsersAdminImpl implements UsersAdmin {
 
 				Indexer indexer = IndexerRegistryUtil.getIndexer(User.class);
 
-				long companyId = GetterUtil.getLong(
-					document.get(Field.COMPANY_ID));
-
 				indexer.delete(companyId, document.getUID());
+			}
+			finally {
+				ShardUtil.popCompanyService();
 			}
 		}
 

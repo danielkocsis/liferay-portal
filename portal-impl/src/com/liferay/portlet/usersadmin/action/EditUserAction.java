@@ -43,6 +43,7 @@ import com.liferay.portal.UserScreenNameException;
 import com.liferay.portal.UserSmsException;
 import com.liferay.portal.WebsiteURLException;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
@@ -215,6 +216,8 @@ public class EditUserAction extends PortletAction {
 
 			if (scopeGroup.isUser()) {
 				try {
+					ShardUtil.pushCompanyService(scopeGroup.getCompanyId());
+
 					UserLocalServiceUtil.getUserById(scopeGroup.getClassPK());
 				}
 				catch (NoSuchUserException nsue) {
@@ -222,6 +225,9 @@ public class EditUserAction extends PortletAction {
 						redirect, "doAsGroupId" , 0);
 					redirect = HttpUtil.setParameter(
 						redirect, "refererPlid" , 0);
+				}
+				finally {
+					ShardUtil.popCompanyService();
 				}
 			}
 
@@ -395,71 +401,94 @@ public class EditUserAction extends PortletAction {
 			emailAddresses, phones, websites, announcementsDeliveries,
 			sendEmail, serviceContext);
 
-		if (!userGroupRoles.isEmpty()) {
-			for (UserGroupRole userGroupRole : userGroupRoles) {
-				userGroupRole.setUserId(user.getUserId());
+		try {
+			ShardUtil.pushCompanyService(user.getCompanyId());
+
+			if (!userGroupRoles.isEmpty()) {
+				for (UserGroupRole userGroupRole : userGroupRoles) {
+					userGroupRole.setUserId(user.getUserId());
+				}
+
+				user = UserServiceUtil.updateUser(
+					user.getUserId(), StringPool.BLANK, StringPool.BLANK,
+					StringPool.BLANK, false, reminderQueryQuestion,
+					reminderQueryAnswer, user.getScreenName(),
+					user.getEmailAddress(), facebookId, openId, languageId,
+					timeZoneId, greeting, comments, firstName, middleName,
+					lastName, prefixId, suffixId, male, birthdayMonth,
+					birthdayDay, birthdayYear, smsSn, aimSn, facebookSn, icqSn,
+					jabberSn, msnSn, mySpaceSn, skypeSn, twitterSn, ymSn,
+					jobTitle, groupIds, organizationIds, roleIds,
+					userGroupRoles, userGroupIds, addresses, emailAddresses,
+					phones, websites, announcementsDeliveries, serviceContext);
 			}
 
-			user = UserServiceUtil.updateUser(
-				user.getUserId(), StringPool.BLANK, StringPool.BLANK,
-				StringPool.BLANK, false, reminderQueryQuestion,
-				reminderQueryAnswer, user.getScreenName(),
-				user.getEmailAddress(), facebookId, openId, languageId,
-				timeZoneId, greeting, comments, firstName, middleName, lastName,
-				prefixId, suffixId, male, birthdayMonth, birthdayDay,
-				birthdayYear, smsSn, aimSn, facebookSn, icqSn, jabberSn, msnSn,
-				mySpaceSn, skypeSn, twitterSn, ymSn, jobTitle, groupIds,
-				organizationIds, roleIds, userGroupRoles, userGroupIds,
-				addresses, emailAddresses, phones, websites,
-				announcementsDeliveries, serviceContext);
+			long publicLayoutSetPrototypeId = ParamUtil.getLong(
+				actionRequest, "publicLayoutSetPrototypeId");
+			long privateLayoutSetPrototypeId = ParamUtil.getLong(
+				actionRequest, "privateLayoutSetPrototypeId");
+			boolean publicLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
+				actionRequest, "publicLayoutSetPrototypeLinkEnabled");
+			boolean privateLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
+				actionRequest, "privateLayoutSetPrototypeLinkEnabled");
+
+			SitesUtil.updateLayoutSetPrototypesLinks(
+				user.getGroup(), publicLayoutSetPrototypeId,
+				privateLayoutSetPrototypeId,
+				publicLayoutSetPrototypeLinkEnabled,
+				privateLayoutSetPrototypeLinkEnabled);
 		}
-
-		long publicLayoutSetPrototypeId = ParamUtil.getLong(
-			actionRequest, "publicLayoutSetPrototypeId");
-		long privateLayoutSetPrototypeId = ParamUtil.getLong(
-			actionRequest, "privateLayoutSetPrototypeId");
-		boolean publicLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-			actionRequest, "publicLayoutSetPrototypeLinkEnabled");
-		boolean privateLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-			actionRequest, "privateLayoutSetPrototypeLinkEnabled");
-
-		SitesUtil.updateLayoutSetPrototypesLinks(
-			user.getGroup(), publicLayoutSetPrototypeId,
-			privateLayoutSetPrototypeId, publicLayoutSetPrototypeLinkEnabled,
-			privateLayoutSetPrototypeLinkEnabled);
+		finally {
+			ShardUtil.popCompanyService();
+		}
 
 		return user;
 	}
 
 	protected void deleteRole(ActionRequest actionRequest) throws Exception {
-		User user = PortalUtil.getSelectedUser(actionRequest);
+		try {
+			User user = PortalUtil.getSelectedUser(actionRequest);
 
-		long roleId = ParamUtil.getLong(actionRequest, "roleId");
+			long roleId = ParamUtil.getLong(actionRequest, "roleId");
 
-		UserServiceUtil.deleteRoleUser(roleId, user.getUserId());
+			ShardUtil.pushCompanyService(user.getCompanyId());
+
+			UserServiceUtil.deleteRoleUser(roleId, user.getUserId());
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 	}
 
 	protected void deleteUsers(ActionRequest actionRequest) throws Exception {
+		long companyId = PortalUtil.getCompanyId(actionRequest);
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		long[] deleteUserIds = StringUtil.split(
 			ParamUtil.getString(actionRequest, "deleteUserIds"), 0L);
 
-		for (long deleteUserId : deleteUserIds) {
-			if (cmd.equals(Constants.DEACTIVATE) ||
-				cmd.equals(Constants.RESTORE)) {
+		try {
+			ShardUtil.pushCompanyService(companyId);
 
-				int status = WorkflowConstants.STATUS_APPROVED;
+			for (long deleteUserId : deleteUserIds) {
+				if (cmd.equals(Constants.DEACTIVATE) ||
+					cmd.equals(Constants.RESTORE)) {
 
-				if (cmd.equals(Constants.DEACTIVATE)) {
-					status = WorkflowConstants.STATUS_INACTIVE;
+					int status = WorkflowConstants.STATUS_APPROVED;
+
+					if (cmd.equals(Constants.DEACTIVATE)) {
+						status = WorkflowConstants.STATUS_INACTIVE;
+					}
+
+					UserServiceUtil.updateStatus(deleteUserId, status);
 				}
-
-				UserServiceUtil.updateStatus(deleteUserId, status);
+				else {
+					UserServiceUtil.deleteUser(deleteUserId);
+				}
 			}
-			else {
-				UserServiceUtil.deleteUser(deleteUserId);
-			}
+		}
+		finally {
+			ShardUtil.popCompanyService();
 		}
 	}
 
@@ -517,11 +546,18 @@ public class EditUserAction extends PortletAction {
 	}
 
 	protected User updateLockout(ActionRequest actionRequest) throws Exception {
-		User user = PortalUtil.getSelectedUser(actionRequest);
+		try {
+			User user = PortalUtil.getSelectedUser(actionRequest);
 
-		UserServiceUtil.updateLockoutById(user.getUserId(), false);
+			ShardUtil.pushCompanyService(user.getCompanyId());
 
-		return user;
+			UserServiceUtil.updateLockoutById(user.getUserId(), false);
+
+			return user;
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 	}
 
 	protected Object[] updateUser(
@@ -643,19 +679,29 @@ public class EditUserAction extends PortletAction {
 		List<AnnouncementsDelivery> announcementsDeliveries =
 			getAnnouncementsDeliveries(actionRequest, user);
 
+		Company company = PortalUtil.getCompany(actionRequest);
+
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			User.class.getName(), actionRequest);
 
-		user = UserServiceUtil.updateUser(
-			user.getUserId(), oldPassword, newPassword1, newPassword2,
-			passwordReset, reminderQueryQuestion, reminderQueryAnswer,
-			screenName, emailAddress, facebookId, openId, languageId,
-			timeZoneId, greeting, comments, firstName, middleName, lastName,
-			prefixId, suffixId, male, birthdayMonth, birthdayDay, birthdayYear,
-			smsSn, aimSn, facebookSn, icqSn, jabberSn, msnSn, mySpaceSn,
-			skypeSn, twitterSn, ymSn, jobTitle, groupIds, organizationIds,
-			roleIds, userGroupRoles, userGroupIds, addresses, emailAddresses,
-			phones, websites, announcementsDeliveries, serviceContext);
+		try {
+			ShardUtil.pushCompanyService(company.getCompanyId());
+
+			user = UserServiceUtil.updateUser(
+				user.getUserId(), oldPassword, newPassword1, newPassword2,
+				passwordReset, reminderQueryQuestion, reminderQueryAnswer,
+				screenName, emailAddress, facebookId, openId, languageId,
+				timeZoneId, greeting, comments, firstName, middleName, lastName,
+				prefixId, suffixId, male, birthdayMonth, birthdayDay,
+				birthdayYear, smsSn, aimSn, facebookSn, icqSn, jabberSn, msnSn,
+				mySpaceSn, skypeSn, twitterSn, ymSn, jobTitle, groupIds,
+				organizationIds, roleIds, userGroupRoles, userGroupIds,
+				addresses, emailAddresses, phones, websites,
+				announcementsDeliveries, serviceContext);
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 
 		if (oldScreenName.equals(user.getScreenName())) {
 			oldScreenName = StringPool.BLANK;
@@ -701,19 +747,26 @@ public class EditUserAction extends PortletAction {
 				actionRequest, "publicLayoutSetPrototypeId");
 			long privateLayoutSetPrototypeId = ParamUtil.getLong(
 				actionRequest, "privateLayoutSetPrototypeId");
-			boolean publicLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-				actionRequest, "publicLayoutSetPrototypeLinkEnabled");
-			boolean privateLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-				actionRequest, "privateLayoutSetPrototypeLinkEnabled");
+			boolean publicLayoutSetPrototypeLinkEnabled =
+				ParamUtil.getBoolean(
+					actionRequest, "publicLayoutSetPrototypeLinkEnabled");
+			boolean privateLayoutSetPrototypeLinkEnabled =
+				ParamUtil.getBoolean(
+					actionRequest, "privateLayoutSetPrototypeLinkEnabled");
 
-			SitesUtil.updateLayoutSetPrototypesLinks(
+			try {
+				ShardUtil.pushCompanyService(company.getCompanyId());
+
+				SitesUtil.updateLayoutSetPrototypesLinks(
 				user.getGroup(), publicLayoutSetPrototypeId,
 				privateLayoutSetPrototypeId,
 				publicLayoutSetPrototypeLinkEnabled,
 				privateLayoutSetPrototypeLinkEnabled);
+			}
+			finally {
+				ShardUtil.popCompanyService();
+			}
 		}
-
-		Company company = PortalUtil.getCompany(actionRequest);
 
 		if (company.isStrangersVerify() &&
 			!oldEmailAddress.equalsIgnoreCase(emailAddress)) {

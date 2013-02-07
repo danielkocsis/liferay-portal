@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.cluster.ClusterExecutorUtil;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -3834,6 +3835,8 @@ public class PortalImpl implements Portal {
 		User user = null;
 
 		try {
+			ShardUtil.pushCompanyService(getCompanyId(request));
+
 			if (checkPermission) {
 				user = UserServiceUtil.getUserById(userId);
 			}
@@ -3842,6 +3845,9 @@ public class PortalImpl implements Portal {
 			}
 		}
 		catch (NoSuchUserException nsue) {
+		}
+		finally {
+			ShardUtil.popCompanyService();
 		}
 
 		return user;
@@ -4303,7 +4309,14 @@ public class PortalImpl implements Portal {
 			userId = GetterUtil.getLong(remoteUser);
 		}
 
-		user = UserLocalServiceUtil.getUserById(userId);
+		try {
+			ShardUtil.pushCompanyService(getCompanyId(request));
+
+			user = UserLocalServiceUtil.getUserById(userId);
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 
 		request.setAttribute(WebKeys.USER, user);
 
@@ -4360,7 +4373,7 @@ public class PortalImpl implements Portal {
 
 		if ((!PropsValues.PORTAL_JAAS_ENABLE &&
 			 PropsValues.PORTAL_IMPERSONATION_ENABLE) ||
-			alwaysAllowDoAsUser) {
+			 alwaysAllowDoAsUser) {
 
 			String doAsUserIdString = ParamUtil.getString(
 				request, "doAsUserId");
@@ -6038,15 +6051,25 @@ public class PortalImpl implements Portal {
 			return 0;
 		}
 
-		User doAsUser = UserLocalServiceUtil.getUserById(doAsUserId);
+		User doAsUser = null;
+		User realUser = null;
 
-		long[] organizationIds = doAsUser.getOrganizationIds();
+		try {
+			ShardUtil.pushCompanyService(getCompanyId(request));
 
-		User realUser = UserLocalServiceUtil.getUserById(
-			realUserIdObj.longValue());
+			doAsUser = UserLocalServiceUtil.getUserById(doAsUserId);
+
+			realUser = UserLocalServiceUtil.getUserById(
+				realUserIdObj.longValue());
+		}
+		finally {
+			ShardUtil.popCompanyService();
+		}
 
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(realUser);
+
+		long[] organizationIds = doAsUser.getOrganizationIds();
 
 		if (doAsUser.isDefaultUser() ||
 			UserPermissionUtil.contains(
