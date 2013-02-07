@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.lar.ExportImportThreadLocal;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
+import com.liferay.portal.kernel.lar.StagedModelPathUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.CharPool;
@@ -324,6 +325,11 @@ public class PortletExporter {
 		}
 
 		try {
+			portletDataContext.addZipEntry(
+				StagedModelPathUtil.getManifestPath(
+						portletDataContext.getGroupId()),
+				portletDataContext.getManifestWriter().getManifestDocument().
+					formattedString());
 			portletDataContext.addZipEntry(
 				"/manifest.xml", document.formattedString());
 		}

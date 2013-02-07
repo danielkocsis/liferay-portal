@@ -250,8 +250,7 @@ public class BlogsPortletDataHandler extends BasePortletDataHandler {
 			}
 		}
 
-		portletDataContext.addClassedModel(
-			entryElement, path, entry, NAMESPACE);
+		portletDataContext.addClassedModel(path, entry, NAMESPACE);
 	}
 
 	protected String getEntryImagePath(
