@@ -904,7 +904,7 @@ public class LayoutExporter {
 
 		layoutElement.addAttribute("path", path);
 
-		portletDataContext.addExpando(layoutElement, path, layout);
+		//portletDataContext.addExpando(layoutElement, path, layout);
 
 		portletDataContext.addZipEntry(path, layout);
 	}

@@ -43,34 +43,23 @@ public class DDLRecordSetStagedModelDataHandler
 
 	@Override
 	protected void doExportStagedModel(
-			PortletDataContext portletDataContext, Element[] elements,
-			DDLRecordSet recordSet)
+			PortletDataContext portletDataContext, DDLRecordSet recordSet)
 		throws Exception {
 
-		Element recordSetsElement = elements[0];
-
-		Element recordSetElement = recordSetsElement.addElement("record-set");
-
 		portletDataContext.addClassedModel(
-			recordSetElement, StagedModelPathUtil.getPath(recordSet), recordSet,
+			StagedModelPathUtil.getPath(recordSet), recordSet,
 			DDLPortletDataHandler.NAMESPACE);
-
-		Element ddmStructuresElement = recordSetElement.addElement(
-			"ddm-structures");
 
 		DDMStructure ddmStructure = recordSet.getDDMStructure();
 
 		StagedModelDataHandlerUtil.exportStagedModel(
-			portletDataContext, ddmStructuresElement, ddmStructure);
-
-		Element ddmTemplatesElement = recordSetElement.addElement(
-			"ddm-templates");
+			portletDataContext, new Element[] {null}, ddmStructure);
 
 		List<DDMTemplate> ddmTemplates = ddmStructure.getTemplates();
 
 		for (DDMTemplate ddmTemplate : ddmTemplates) {
 			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext, ddmTemplatesElement, ddmTemplate);
+				portletDataContext, new Element[] {null}, ddmTemplate);
 		}
 	}
 

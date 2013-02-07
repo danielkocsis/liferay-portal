@@ -73,8 +73,7 @@ public class PollsPortletDataHandler extends BasePortletDataHandler {
 
 		Element choiceElement = questionsElement.addElement("choice");
 
-		portletDataContext.addClassedModel(
-			choiceElement, path, choice, NAMESPACE);
+		portletDataContext.addClassedModel(path, choice, NAMESPACE);
 	}
 
 	protected static void exportQuestion(
@@ -111,8 +110,7 @@ public class PollsPortletDataHandler extends BasePortletDataHandler {
 			}
 		}
 
-		portletDataContext.addClassedModel(
-			questionElement, path, question, NAMESPACE);
+		portletDataContext.addClassedModel(path, question, NAMESPACE);
 	}
 
 	protected static void exportVote(
@@ -128,7 +126,7 @@ public class PollsPortletDataHandler extends BasePortletDataHandler {
 
 		Element voteElement = questionsElement.addElement("vote");
 
-		portletDataContext.addClassedModel(voteElement, path, vote, NAMESPACE);
+		portletDataContext.addClassedModel(path, vote, NAMESPACE);
 	}
 
 	protected static String getChoicePath(

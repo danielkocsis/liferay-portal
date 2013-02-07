@@ -289,8 +289,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 			article.setContent(content);
 		}
 
-		portletDataContext.addClassedModel(
-			articleElement, path, article, NAMESPACE);
+		portletDataContext.addClassedModel(path, article, NAMESPACE);
 	}
 
 	public static String getArticlePath(
@@ -1102,7 +1101,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 			feed.setTargetLayoutFriendlyUrl(targetLayoutFriendlyUrl);
 		}
 
-		portletDataContext.addClassedModel(feedElement, path, feed, NAMESPACE);
+		portletDataContext.addClassedModel(path, feed, NAMESPACE);
 	}
 
 	protected static void exportFolder(
@@ -1129,8 +1128,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 		if (portletDataContext.isPathNotProcessed(path)) {
 			Element folderElement = foldersElement.addElement("folder");
 
-			portletDataContext.addClassedModel(
-				folderElement, path, folder, NAMESPACE);
+			portletDataContext.addClassedModel(path, folder, NAMESPACE);
 		}
 
 		List<JournalArticle> articles = JournalArticleUtil.findByG_F(
@@ -1164,8 +1162,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 		if (portletDataContext.isPathNotProcessed(path)) {
 			Element folderElement = foldersElement.addElement("folder");
 
-			portletDataContext.addClassedModel(
-				folderElement, path, folder, NAMESPACE);
+			portletDataContext.addClassedModel(path, folder, NAMESPACE);
 		}
 	}
 

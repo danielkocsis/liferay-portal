@@ -276,8 +276,7 @@ public class MBPortletDataHandler extends BasePortletDataHandler {
 
 		ban.setBanUserUuid(ban.getBanUserUuid());
 
-		portletDataContext.addClassedModel(
-			userBanElement, path, ban, NAMESPACE);
+		portletDataContext.addClassedModel(path, ban, NAMESPACE);
 	}
 
 	protected void exportCategory(
@@ -297,8 +296,7 @@ public class MBPortletDataHandler extends BasePortletDataHandler {
 				Element categoryElement = categoriesElement.addElement(
 					"category");
 
-				portletDataContext.addClassedModel(
-					categoryElement, path, category, NAMESPACE);
+				portletDataContext.addClassedModel(path, category, NAMESPACE);
 			}
 		}
 
@@ -382,8 +380,7 @@ public class MBPortletDataHandler extends BasePortletDataHandler {
 			}
 		}
 
-		portletDataContext.addClassedModel(
-			messageElement, path, message, NAMESPACE);
+		portletDataContext.addClassedModel(path, message, NAMESPACE);
 	}
 
 	protected void exportParentCategory(
@@ -409,8 +406,7 @@ public class MBPortletDataHandler extends BasePortletDataHandler {
 		if (portletDataContext.isPathNotProcessed(path)) {
 			Element categoryElement = categoriesElement.addElement("category");
 
-			portletDataContext.addClassedModel(
-				categoryElement, path, category, NAMESPACE);
+			portletDataContext.addClassedModel(path, category, NAMESPACE);
 		}
 	}
 
@@ -437,8 +433,7 @@ public class MBPortletDataHandler extends BasePortletDataHandler {
 		threadFlagElement.addAttribute(
 			"root-message-uuid", rootMessage.getUuid());
 
-		portletDataContext.addClassedModel(
-			threadFlagElement, path, threadFlag, NAMESPACE);
+		portletDataContext.addClassedModel(path, threadFlag, NAMESPACE);
 	}
 
 	protected List<ObjectValuePair<String, InputStream>> getAttachments(

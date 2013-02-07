@@ -14,24 +14,19 @@
 
 package com.liferay.portal.kernel.lar;
 
-import com.liferay.portal.kernel.xml.Element;
-import com.liferay.portal.model.StagedModel;
+import com.liferay.portal.kernel.xml.Document;
+
+import java.util.Map;
 
 /**
  * @author Mate Thurzo
- * @author Daniel Kocsis
  */
-public interface StagedModelDataHandler<T extends StagedModel> {
+public interface ManifestReader {
 
-	public void exportStagedModel(
-			PortletDataContext portletDataContext, T stagedModel)
-		throws PortletDataException;
+	public Map<String, String> getAttributes(String className, String classPK);
 
-	public String getClassName();
+	public String getPath(String className, String classPK);
 
-	public void importStagedModel(
-			PortletDataContext portletDataContext, Element element, String path,
-			T stagedModel)
-		throws PortletDataException;
+	public void setManifestDocument(Document document);
 
 }

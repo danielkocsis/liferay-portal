@@ -28,6 +28,7 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.service.persistence.DDMStructureUtil;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -45,23 +46,20 @@ public class DDMStructureStagedModelDataHandler
 
 	@Override
 	protected void doExportStagedModel(
-			PortletDataContext portletDataContext, Element[] elements,
-			DDMStructure structure)
+			PortletDataContext portletDataContext, DDMStructure structure)
 		throws Exception {
-
-		Element structuresElement = elements[0];
-
-		Element structureElement = structuresElement.addElement("structure");
 
 		long defaultUserId = UserLocalServiceUtil.getDefaultUserId(
 			structure.getCompanyId());
 
+		Map<String, String> attributes = new HashMap<String, String>();
+
 		if (defaultUserId == structure.getUserId()) {
-			structureElement.addAttribute("preloaded", "true");
+			attributes.put("preloaded", "true");
 		}
 
 		portletDataContext.addClassedModel(
-			structureElement, StagedModelPathUtil.getPath(structure), structure,
+			attributes, StagedModelPathUtil.getPath(structure), structure,
 			DDMPortletDataHandler.NAMESPACE);
 	}
 

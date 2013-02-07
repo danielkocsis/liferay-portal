@@ -32,7 +32,7 @@ public class StagedModelDataHandlerUtil {
 			_getStagedModelDataHandler(stagedModel);
 
 		stagedModelDataHandler.exportStagedModel(
-			portletDataContext, element, stagedModel);
+			portletDataContext, stagedModel);
 	}
 
 	public static <T extends StagedModel> void exportStagedModel(
@@ -44,7 +44,7 @@ public class StagedModelDataHandlerUtil {
 			_getStagedModelDataHandler(stagedModel);
 
 		stagedModelDataHandler.exportStagedModel(
-			portletDataContext, elements, stagedModel);
+			portletDataContext, stagedModel);
 	}
 
 	public static void importStagedModel(

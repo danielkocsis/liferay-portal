@@ -207,8 +207,7 @@ public class DLPortletDataHandler extends BasePortletDataHandler {
 			portletDataContext, fileEntryTypesElement, fileEntryElement,
 			fileEntry);
 
-		portletDataContext.addClassedModel(
-			fileEntryElement, path, fileEntry, NAMESPACE);
+		portletDataContext.addClassedModel(path, fileEntry, NAMESPACE);
 	}
 
 	public static String getFileEntryPath(
@@ -782,8 +781,7 @@ public class DLPortletDataHandler extends BasePortletDataHandler {
 		fileEntryTypeElement.addAttribute(
 			"structureUuids", StringUtil.merge(ddmStructureUuids));
 
-		portletDataContext.addClassedModel(
-			fileEntryTypeElement, path, dlFileEntryType, NAMESPACE);
+		portletDataContext.addClassedModel(path, dlFileEntryType, NAMESPACE);
 	}
 
 	protected static void exportFileRank(
@@ -806,8 +804,7 @@ public class DLPortletDataHandler extends BasePortletDataHandler {
 
 		fileRankElement.addAttribute("file-entry-uuid", fileEntryUuid);
 
-		portletDataContext.addClassedModel(
-			fileRankElement, path, fileRank, NAMESPACE);
+		portletDataContext.addClassedModel(path, fileRank, NAMESPACE);
 	}
 
 	protected static void exportFileShortcut(
@@ -841,8 +838,7 @@ public class DLPortletDataHandler extends BasePortletDataHandler {
 
 			fileShortcutElement.addAttribute("file-entry-uuid", fileEntryUuid);
 
-			portletDataContext.addClassedModel(
-				fileShortcutElement, path, fileShortcut, NAMESPACE);
+			portletDataContext.addClassedModel(path, fileShortcut, NAMESPACE);
 		}
 	}
 
@@ -892,8 +888,7 @@ public class DLPortletDataHandler extends BasePortletDataHandler {
 		exportFolderFileEntryTypes(
 			portletDataContext, folder, fileEntryTypesElement, folderElement);
 
-		portletDataContext.addClassedModel(
-			folderElement, path, folder, NAMESPACE);
+		portletDataContext.addClassedModel(path, folder, NAMESPACE);
 
 		if (recurse) {
 			List<Folder> folders = FolderUtil.findByR_P(
@@ -1084,8 +1079,7 @@ public class DLPortletDataHandler extends BasePortletDataHandler {
 				portletDataContext, folder, fileEntryTypesElement,
 				folderElement);
 
-			portletDataContext.addClassedModel(
-				folderElement, path, folder, NAMESPACE);
+			portletDataContext.addClassedModel(path, folder, NAMESPACE);
 		}
 	}
 
@@ -1109,8 +1103,7 @@ public class DLPortletDataHandler extends BasePortletDataHandler {
 		Element repositoryElement = repositoriesElement.addElement(
 			"repository");
 
-		portletDataContext.addClassedModel(
-			repositoryElement, path, repository, NAMESPACE);
+		portletDataContext.addClassedModel(path, repository, NAMESPACE);
 
 		List<RepositoryEntry> repositoryEntries =
 			RepositoryEntryUtil.findByRepositoryId(
@@ -1137,8 +1130,7 @@ public class DLPortletDataHandler extends BasePortletDataHandler {
 		Element repositoryEntryElement = repositoryEntriesElement.addElement(
 			"repository-entry");
 
-		portletDataContext.addClassedModel(
-			repositoryEntryElement, path, repositoryEntry, NAMESPACE);
+		portletDataContext.addClassedModel(path, repositoryEntry, NAMESPACE);
 	}
 
 	protected static String getFileEntryBinPath(
