@@ -357,6 +357,14 @@ public class PortletDataContextImpl implements PortletDataContext {
 	}
 
 	public void addClassedModel(
+			Element element, String path, ClassedModel classedModel,
+			String namespace)
+		throws PortalException, SystemException {
+
+		addClassedModel(path, classedModel, namespace);
+	}
+
+	public void addClassedModel(
 			String path, ClassedModel classedModel, String namespace)
 		throws PortalException, SystemException {
 
@@ -419,6 +427,13 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 		dynamicQuery.add(modifiedDateProperty.ge(_startDate));
 		dynamicQuery.add(modifiedDateProperty.lt(_endDate));
+	}
+
+	public void addExpando(
+			Element element, String path, ClassedModel classedModel)
+		throws PortalException, SystemException {
+
+		addExpando(new HashMap<String, String>(), path, classedModel);
 	}
 
 	public void addExpando(

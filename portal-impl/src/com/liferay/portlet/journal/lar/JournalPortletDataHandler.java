@@ -188,7 +188,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 				"ddm-structure-uuid", ddmStructure.getUuid());
 
 			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext, ddmStructuresElement, ddmStructure);
+				portletDataContext, ddmStructure);
 		}
 
 		if (Validator.isNotNull(article.getTemplateId())) {
@@ -201,13 +201,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 				"ddm-template-uuid", ddmTemplate.getUuid());
 
 			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext,
-				new Element[] {
-					ddmTemplatesElement, dlFileEntryTypesElement,
-					dlFoldersElement, dlFileEntriesElement, dlFileRanksElement,
-					dlRepositoriesElement, dlRepositoryEntriesElement
-				},
-				ddmTemplate);
+				portletDataContext, ddmTemplate);
 		}
 
 		if (article.isSmallImage()) {
@@ -1649,7 +1643,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 					ddmStructure.getModifiedDate())) {
 
 				StagedModelDataHandlerUtil.exportStagedModel(
-					portletDataContext, ddmStructuresElement, ddmStructure);
+					portletDataContext, ddmStructure);
 			}
 
 			ddmTemplates.addAll(ddmStructure.getTemplates());
@@ -1671,7 +1665,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 					ddmTemplate.getModifiedDate())) {
 
 				StagedModelDataHandlerUtil.exportStagedModel(
-					portletDataContext, ddmTemplatesElement, ddmTemplate);
+					portletDataContext, ddmTemplate);
 			}
 		}
 

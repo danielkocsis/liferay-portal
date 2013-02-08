@@ -74,6 +74,12 @@ public interface PortletDataContext extends Serializable {
 			String path, ClassedModel classedModel, String namespace)
 		throws PortalException, SystemException;
 
+	@Deprecated
+	public void addClassedModel(
+			Element element, String path, ClassedModel classedModel,
+			String namespace)
+		throws PortalException, SystemException;
+
 	public void addComments(Class<?> clazz, long classPK)
 		throws SystemException;
 
@@ -82,6 +88,11 @@ public interface PortletDataContext extends Serializable {
 
 	public void addDateRangeCriteria(
 		DynamicQuery dynamicQuery, String modifiedDatePropertyName);
+
+	@Deprecated
+	public void addExpando(
+			Element element, String path, ClassedModel classedModel)
+		throws PortalException, SystemException;
 
 	public void addExpando(
 			Map<String, String> attributes, String path,

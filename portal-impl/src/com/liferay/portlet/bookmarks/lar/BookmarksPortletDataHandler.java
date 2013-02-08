@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataHandlerBoolean;
 import com.liferay.portal.kernel.lar.PortletDataHandlerControl;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
+import com.liferay.portal.kernel.lar.StagedModelPathUtil;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
@@ -95,7 +96,7 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 			"com.liferay.portlet.bookmarks",
 			portletDataContext.getScopeGroupId());
 
-		Element rootElement = addExportRootElement();
+		final Element rootElement = addExportRootElement();
 
 		rootElement.addAttribute(
 			"group-id", String.valueOf(portletDataContext.getScopeGroupId()));
@@ -116,7 +117,13 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 				BookmarksFolder folder = (BookmarksFolder)object;
 
 				StagedModelDataHandlerUtil.exportStagedModel(
-					portletDataContext, foldersElement, folder);
+					portletDataContext, folder);
+
+				Element folderElement = foldersElement.addElement(
+					BookmarksFolder.class.getName());
+
+				folderElement.addAttribute(
+					"classPK", String.valueOf(folder.getFolderId()));
 			}
 
 		};
@@ -142,8 +149,12 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 				BookmarksEntry entry = (BookmarksEntry)object;
 
 				StagedModelDataHandlerUtil.exportStagedModel(
-					portletDataContext,
-					new Element[] {foldersElement, entriesElement}, entry);
+					portletDataContext, entry);
+
+				Element entryElement = entriesElement.addElement("entry");
+
+				entriesElement.addAttribute(
+					"path", StagedModelPathUtil.getPath(entry));
 			}
 
 		};

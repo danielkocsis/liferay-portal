@@ -53,13 +53,13 @@ public class DDLRecordSetStagedModelDataHandler
 		DDMStructure ddmStructure = recordSet.getDDMStructure();
 
 		StagedModelDataHandlerUtil.exportStagedModel(
-			portletDataContext, new Element[] {null}, ddmStructure);
+			portletDataContext, ddmStructure);
 
 		List<DDMTemplate> ddmTemplates = ddmStructure.getTemplates();
 
 		for (DDMTemplate ddmTemplate : ddmTemplates) {
 			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext, new Element[] {null}, ddmTemplate);
+				portletDataContext, ddmTemplate);
 		}
 	}
 

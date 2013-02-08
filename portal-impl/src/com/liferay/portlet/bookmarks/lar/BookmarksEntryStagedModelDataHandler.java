@@ -50,7 +50,7 @@ public class BookmarksEntryStagedModelDataHandler
 				BookmarksFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 
 			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext, new Element[] {null}, entry.getFolder());
+				portletDataContext, entry.getFolder());
 		}
 
 		portletDataContext.addClassedModel(

@@ -775,7 +775,7 @@ public class DLPortletDataHandler extends BasePortletDataHandler {
 			ddmStructureUuids[i] = ddmStructure.getUuid();
 
 			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext, fileEntryTypeElement, ddmStructure);
+				portletDataContext, ddmStructure);
 		}
 
 		fileEntryTypeElement.addAttribute(
