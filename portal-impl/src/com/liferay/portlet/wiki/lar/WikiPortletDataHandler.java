@@ -75,8 +75,7 @@ public class WikiPortletDataHandler extends BasePortletDataHandler {
 			if (portletDataContext.isPathNotProcessed(path)) {
 				Element nodeElement = nodesElement.addElement("node");
 
-				portletDataContext.addClassedModel(
-					nodeElement, path, node, NAMESPACE);
+				portletDataContext.addClassedModel(path, node, NAMESPACE);
 			}
 		}
 
@@ -321,7 +320,7 @@ public class WikiPortletDataHandler extends BasePortletDataHandler {
 
 		Element nodeElement = nodesElement.addElement("node");
 
-		portletDataContext.addClassedModel(nodeElement, path, node, NAMESPACE);
+		portletDataContext.addClassedModel(path, node, NAMESPACE);
 	}
 
 	protected static void exportPage(
@@ -388,8 +387,7 @@ public class WikiPortletDataHandler extends BasePortletDataHandler {
 				page.setAttachmentsFolderId(page.getAttachmentsFolderId());
 			}
 
-			portletDataContext.addClassedModel(
-				pageElement, path, page, NAMESPACE);
+			portletDataContext.addClassedModel(path, page, NAMESPACE);
 		}
 
 		exportNode(portletDataContext, nodesElement, page.getNodeId());

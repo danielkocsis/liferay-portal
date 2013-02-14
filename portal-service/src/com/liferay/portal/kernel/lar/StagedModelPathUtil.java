@@ -27,6 +27,23 @@ import java.io.Serializable;
  */
 public class StagedModelPathUtil {
 
+	public static final String PATH_PREFIX_GROUPS = "/groups/";
+
+	public static String getManifestPath(long groupId) {
+		StringBundler sb = new StringBundler(4);
+
+		sb.append(PATH_PREFIX_GROUPS);
+		sb.append(groupId);
+		sb.append(StringPool.FORWARD_SLASH);
+		sb.append("manifest.xml");
+
+		return sb.toString();
+	}
+
+	public static String getPath(long groupId, String className, long classPK) {
+		return getPath(groupId, className, classPK, null);
+	}
+
 	public static String getPath(
 		PortletDataContext portletDataContext, String className, long classPK) {
 
@@ -62,7 +79,7 @@ public class StagedModelPathUtil {
 
 		StringBundler sb = new StringBundler(7);
 
-		sb.append("/groups/");
+		sb.append(PATH_PREFIX_GROUPS);
 		sb.append(groupId);
 		sb.append(StringPool.FORWARD_SLASH);
 		sb.append(className);

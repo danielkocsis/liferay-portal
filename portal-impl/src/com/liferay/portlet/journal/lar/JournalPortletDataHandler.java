@@ -188,7 +188,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 				"ddm-structure-uuid", ddmStructure.getUuid());
 
 			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext, ddmStructuresElement, ddmStructure);
+				portletDataContext, ddmStructure);
 		}
 
 		if (Validator.isNotNull(article.getTemplateId())) {
@@ -201,13 +201,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 				"ddm-template-uuid", ddmTemplate.getUuid());
 
 			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext,
-				new Element[] {
-					ddmTemplatesElement, dlFileEntryTypesElement,
-					dlFoldersElement, dlFileEntriesElement, dlFileRanksElement,
-					dlRepositoriesElement, dlRepositoryEntriesElement
-				},
-				ddmTemplate);
+				portletDataContext, ddmTemplate);
 		}
 
 		if (article.isSmallImage()) {
@@ -289,8 +283,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 			article.setContent(content);
 		}
 
-		portletDataContext.addClassedModel(
-			articleElement, path, article, NAMESPACE);
+		portletDataContext.addClassedModel(path, article, NAMESPACE);
 	}
 
 	public static String getArticlePath(
@@ -1102,7 +1095,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 			feed.setTargetLayoutFriendlyUrl(targetLayoutFriendlyUrl);
 		}
 
-		portletDataContext.addClassedModel(feedElement, path, feed, NAMESPACE);
+		portletDataContext.addClassedModel(path, feed, NAMESPACE);
 	}
 
 	protected static void exportFolder(
@@ -1129,8 +1122,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 		if (portletDataContext.isPathNotProcessed(path)) {
 			Element folderElement = foldersElement.addElement("folder");
 
-			portletDataContext.addClassedModel(
-				folderElement, path, folder, NAMESPACE);
+			portletDataContext.addClassedModel(path, folder, NAMESPACE);
 		}
 
 		List<JournalArticle> articles = JournalArticleUtil.findByG_F(
@@ -1164,8 +1156,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 		if (portletDataContext.isPathNotProcessed(path)) {
 			Element folderElement = foldersElement.addElement("folder");
 
-			portletDataContext.addClassedModel(
-				folderElement, path, folder, NAMESPACE);
+			portletDataContext.addClassedModel(path, folder, NAMESPACE);
 		}
 	}
 
@@ -1652,7 +1643,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 					ddmStructure.getModifiedDate())) {
 
 				StagedModelDataHandlerUtil.exportStagedModel(
-					portletDataContext, ddmStructuresElement, ddmStructure);
+					portletDataContext, ddmStructure);
 			}
 
 			ddmTemplates.addAll(ddmStructure.getTemplates());
@@ -1674,7 +1665,7 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 					ddmTemplate.getModifiedDate())) {
 
 				StagedModelDataHandlerUtil.exportStagedModel(
-					portletDataContext, ddmTemplatesElement, ddmTemplate);
+					portletDataContext, ddmTemplate);
 			}
 		}
 

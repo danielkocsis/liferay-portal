@@ -89,9 +89,10 @@ public class DDMTemplateStagedModelDataHandler
 
 	@Override
 	protected void doExportStagedModel(
-			PortletDataContext portletDataContext, Element[] elements,
-			DDMTemplate template)
+			PortletDataContext portletDataContext, DDMTemplate template)
 		throws Exception {
+
+		Element[] elements = new Element[0];
 
 		Element templatesElement = elements[0];
 		Element dlFileEntryTypesElement = null;
@@ -156,7 +157,7 @@ public class DDMTemplateStagedModelDataHandler
 		}
 
 		portletDataContext.addClassedModel(
-			templateElement, StagedModelPathUtil.getPath(template), template,
+			StagedModelPathUtil.getPath(template), template,
 			DDMPortletDataHandler.NAMESPACE);
 	}
 

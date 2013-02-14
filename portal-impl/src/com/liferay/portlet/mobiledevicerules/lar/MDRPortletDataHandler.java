@@ -227,8 +227,7 @@ public class MDRPortletDataHandler extends BasePortletDataHandler {
 			}
 		}
 
-		portletDataContext.addClassedModel(
-			actionElement, path, action, NAMESPACE);
+		portletDataContext.addClassedModel(path, action, NAMESPACE);
 	}
 
 	protected void exportRule(
@@ -244,7 +243,7 @@ public class MDRPortletDataHandler extends BasePortletDataHandler {
 
 		Element ruleElement = rulesElement.addElement("rule");
 
-		portletDataContext.addClassedModel(ruleElement, path, rule, NAMESPACE);
+		portletDataContext.addClassedModel(path, rule, NAMESPACE);
 	}
 
 	protected void exportRuleGroup(
@@ -266,8 +265,7 @@ public class MDRPortletDataHandler extends BasePortletDataHandler {
 
 		Element ruleGroupElement = ruleGroupsElement.addElement("rule-group");
 
-		portletDataContext.addClassedModel(
-			ruleGroupElement, path, ruleGroup, NAMESPACE);
+		portletDataContext.addClassedModel(path, ruleGroup, NAMESPACE);
 
 		Element mdrRulesElement = ruleGroupElement.addElement("rules");
 
@@ -316,8 +314,7 @@ public class MDRPortletDataHandler extends BasePortletDataHandler {
 
 		ruleGroupInstanceElement.addAttribute("rule-group-uuid", ruleGroupUuid);
 
-		portletDataContext.addClassedModel(
-			ruleGroupInstanceElement, path, ruleGroupInstance, NAMESPACE);
+		portletDataContext.addClassedModel(path, ruleGroupInstance, NAMESPACE);
 
 		Element actionsElement = ruleGroupInstanceElement.addElement("actions");
 

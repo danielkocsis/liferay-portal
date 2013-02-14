@@ -41,23 +41,17 @@ public class BookmarksFolderStagedModelDataHandler
 
 	@Override
 	protected void doExportStagedModel(
-			PortletDataContext portletDataContext, Element[] elements,
-			BookmarksFolder folder)
+			PortletDataContext portletDataContext, BookmarksFolder folder)
 		throws Exception {
-
-		Element foldersElement = elements[0];
 
 		if (folder.getParentFolderId() !=
 				BookmarksFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 
-			exportStagedModel(
-				portletDataContext, foldersElement, folder.getParentFolder());
+			exportStagedModel(portletDataContext, folder.getParentFolder());
 		}
 
-		Element folderElement = foldersElement.addElement("folder");
-
 		portletDataContext.addClassedModel(
-			folderElement, StagedModelPathUtil.getPath(folder), folder,
+			StagedModelPathUtil.getPath(folder), folder,
 			BookmarksPortletDataHandler.NAMESPACE);
 	}
 

@@ -1,0 +1,9 @@
+<manifest>
+	<com.liferay.portlet.bookmarks.model.BookmarksFolder>
+		<staged-model classPK="12405" path="/groups/12401/com.liferay.portlet.bookmarks.model.BookmarksFolder/12405.xml"/>
+	</com.liferay.portlet.bookmarks.model.BookmarksFolder>
+	<com.liferay.portlet.bookmarks.model.BookmarksEntry>
+		<staged-model classPK="12415" path="/groups/12401/com.liferay.portlet.bookmarks.model.BookmarksEntry/12415.xml"/>
+		<staged-model classPK="12410" path="/groups/12401/com.liferay.portlet.bookmarks.model.BookmarksEntry/12410.xml" preloaded="true"/>
+	</com.liferay.portlet.bookmarks.model.BookmarksEntry>
+</manifest>
