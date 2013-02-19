@@ -61,7 +61,6 @@ import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.RoleConstants;
 import com.liferay.portal.model.Theme;
 import com.liferay.portal.model.User;
-import com.liferay.portal.model.impl.ColorSchemeImpl;
 import com.liferay.portal.model.impl.VirtualLayout;
 import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.security.permission.ActionKeys;
@@ -733,8 +732,7 @@ public class ServicePreAction extends Action {
 		if ((layout != null) && group.isControlPanel()) {
 			String themeId = PrefsPropsUtil.getString(
 				companyId, PropsKeys.CONTROL_PANEL_LAYOUT_REGULAR_THEME_ID);
-			String colorSchemeId =
-				ColorSchemeImpl.getDefaultRegularColorSchemeId();
+			String colorSchemeId = ColorScheme.DEFAULT_REGULAR_COLOR_SCHEME_ID;
 
 			theme = ThemeLocalServiceUtil.getTheme(
 				companyId, themeId, wapTheme);
