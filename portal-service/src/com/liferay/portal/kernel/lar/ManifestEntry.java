@@ -43,4 +43,10 @@ public interface ManifestEntry {
 
 	public List<ManifestEntry> getReferencedEntries();
 
+	// Other
+
+	public String getEntryKey();
+
+	public String getModelClassName();
+
 }

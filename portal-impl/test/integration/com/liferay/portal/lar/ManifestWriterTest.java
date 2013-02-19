@@ -14,6 +14,7 @@
 
 package com.liferay.portal.lar;
 
+import com.liferay.portal.kernel.lar.ManifestEntry;
 import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -21,6 +22,9 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.xml.Attribute;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.kernel.xml.Node;
+import com.liferay.portal.kernel.xml.SAXReaderUtil;
+import com.liferay.portal.kernel.xml.XPath;
 import com.liferay.portal.model.ClassedModel;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.StagedModel;
@@ -34,7 +38,6 @@ import com.liferay.portlet.bookmarks.model.BookmarksFolder;
 import com.liferay.portlet.bookmarks.util.BookmarksTestUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,17 +78,31 @@ public class ManifestWriterTest extends PowerMockito {
 		BookmarksFolder bookmarksFolder = BookmarksTestUtil.addFolder(
 			groupId, "Test");
 
-		_manifest.add(bookmarksFolder);
+		ManifestEntry folderManifestEntry = new ManifestEntryImpl();
+
+		folderManifestEntry.setModel(bookmarksFolder);
+
+		_manifest.add(folderManifestEntry);
 
 		BookmarksEntry bookmarksEntry = BookmarksTestUtil.addEntry(
 			groupId, true);
 		BookmarksEntry bookmarksFolderEntry = BookmarksTestUtil.addEntry(
 			groupId, bookmarksFolder.getFolderId(), true);
 
-		_manifest.add(bookmarksEntry);
-		_manifest.add(bookmarksFolderEntry);
+		ManifestEntry entryManifestEntry = new ManifestEntryImpl();
+
+		entryManifestEntry.setModel(bookmarksEntry);
+
+		ManifestEntry folderEntryManifestEntry = new ManifestEntryImpl();
+
+		folderEntryManifestEntry.setModel(bookmarksFolderEntry);
+
+		_manifest.add(entryManifestEntry);
+		_manifest.add(folderEntryManifestEntry);
 
 		Document manifestDocument = _manifest.getManifestDocument();
+
+		System.out.println(manifestDocument.formattedString());
 
 		// Validate root element
 
@@ -93,21 +110,29 @@ public class ManifestWriterTest extends PowerMockito {
 
 		validateRootElement(rootElement);
 
-		// Validate folder
+		// Validate folders and entries
 
-		Element bookmarksFolderElement = rootElement.element(
-			BookmarksFolder.class.getName());
+		List<Element> modelGroups = rootElement.elements("model-group");
 
-		validateStagedModelElement(
-			bookmarksFolderElement, null, bookmarksFolder);
+		XPath foldersXpath = SAXReaderUtil.createXPath(
+			"model[@class-name='" + BookmarksFolder.class.getName() + "']");
 
-		// Validate entries
+		Node node = foldersXpath.selectSingleNode(modelGroups);
 
-		Element bookmarksEntryElement = rootElement.element(
-			BookmarksEntry.class.getName());
+		validateModelElement((Element)node, folderManifestEntry);
 
-		validateStagedModelElement(
-			bookmarksEntryElement, null, bookmarksEntry, bookmarksFolderEntry);
+		XPath entriesXpath = SAXReaderUtil.createXPath(
+			"model[@class-name='" + BookmarksEntry.class.getName() + "']");
+
+		List<Node> selectedNodes = entriesXpath.selectNodes(modelGroups);
+
+		SAXReaderUtil.sort(selectedNodes, "number('@classpk')");
+
+		validateModelElement(
+			(Element)selectedNodes.get(0), entryManifestEntry);
+
+		validateModelElement(
+			(Element)selectedNodes.get(1), folderEntryManifestEntry);
 	}
 
 	@Test
@@ -115,9 +140,15 @@ public class ManifestWriterTest extends PowerMockito {
 		BookmarksEntry bookmarksEntry = BookmarksTestUtil.addEntry(
 			_group.getGroupId(), true);
 
-		_manifest.add(bookmarksEntry);
+		ManifestEntry manifestEntry = new ManifestEntryImpl();
+
+		manifestEntry.setModel(bookmarksEntry);
+
+		_manifest.add(manifestEntry);
 
 		Document manifestDocument = _manifest.getManifestDocument();
+
+		System.out.println(manifestDocument.formattedString());
 
 		Element rootElement = manifestDocument.getRootElement();
 
@@ -127,10 +158,14 @@ public class ManifestWriterTest extends PowerMockito {
 
 		// Validate entry
 
-		Element bookmarksEntryElement = rootElement.element(
-			BookmarksEntry.class.getName());
+		Element bookmarksEntryGroupElement = rootElement.element("model-group");
 
-		validateStagedModelElement(bookmarksEntryElement, null, bookmarksEntry);
+		if (bookmarksEntryGroupElement.elements().size() != 1) {
+			Assert.fail();
+		}
+
+		validateModelElement(
+			bookmarksEntryGroupElement.element("model"), manifestEntry);
 	}
 
 	@Test
@@ -138,17 +173,14 @@ public class ManifestWriterTest extends PowerMockito {
 		BookmarksEntry bookmarksEntry = BookmarksTestUtil.addEntry(
 			_group.getGroupId(), true);
 
-		Map<String, Map<String, String>> attributes =
-			new HashMap<String, Map<String, String>>();
+		ManifestEntry manifestEntry = new ManifestEntryImpl();
 
-		Map<String, String> entryAttributes = new HashMap<String, String>();
+		manifestEntry.setModel(bookmarksEntry);
 
-		entryAttributes.put("preloaded", "true");
-		entryAttributes.put("test", "true");
+		manifestEntry.addModelAttribute("preloaded", "true");
+		manifestEntry.addModelAttribute("test", "true");
 
-		attributes.put(getAttributeKey(bookmarksEntry), entryAttributes);
-
-		_manifest.add(bookmarksEntry, entryAttributes);
+		_manifest.add(manifestEntry);
 
 		Document manifestDocument = _manifest.getManifestDocument();
 
@@ -158,69 +190,14 @@ public class ManifestWriterTest extends PowerMockito {
 
 		validateRootElement(rootElement);
 
-		Element bookmarksEntryElement = rootElement.element(
-			BookmarksEntry.class.getName());
+		Element bookmarksEntryGroupElement = rootElement.element("model-group");
 
-		validateStagedModelElement(
-			bookmarksEntryElement, attributes, bookmarksEntry);
-	}
-
-	protected String getAttributeKey(ClassedModel classedModel) {
-		StringBundler sb = new StringBundler(3);
-
-		sb.append(classedModel.getModelClassName());
-		sb.append(StringPool.POUND);
-		sb.append(String.valueOf(classedModel.getPrimaryKeyObj()));
-
-		return sb.toString();
-	}
-
-	protected String getStagedModelClassPk(StagedModel stagedModel) {
-		ClassedModel classedModel = (ClassedModel)stagedModel;
-
-		Object primaryKeyObj = classedModel.getPrimaryKeyObj();
-
-		return String.valueOf(primaryKeyObj);
-	}
-
-	protected void validateAttributes(
-		Element element, Map<String, String> attributes) {
-
-		if (attributes == null) {
-			return;
-		}
-
-		List<Attribute> elementAttributes = element.attributes();
-
-		List<Attribute> checkedElementAttributes = new ArrayList<Attribute>();
-
-		for (Attribute attribute : elementAttributes) {
-			if (attribute.getName().equals(_ATTRIBUTE_CLASSPK) ||
-				attribute.getName().equals(_ATTRIBUTE_PATH)) {
-
-				continue;
-			}
-
-			checkedElementAttributes.add(attribute);
-		}
-
-		if (checkedElementAttributes.size() != attributes.size()) {
+		if (bookmarksEntryGroupElement.elements().size() != 1) {
 			Assert.fail();
 		}
 
-		for (Attribute elementAttribute : checkedElementAttributes) {
-			String attributeName = elementAttribute.getName();
-
-			if (!attributes.containsKey(attributeName)) {
-				Assert.fail();
-			}
-
-			String attributeValue = elementAttribute.getValue();
-
-			if (!attributeValue.equals(attributes.get(attributeName))) {
-				Assert.fail();
-			}
-		}
+		validateModelElement(
+			bookmarksEntryGroupElement.element("model"), manifestEntry);
 	}
 
 	protected void validateRootElement(Element rootElement) throws Exception {
@@ -229,43 +206,26 @@ public class ManifestWriterTest extends PowerMockito {
 		}
 	}
 
-	protected void validateStagedModelElement(
-			Element stagedModelElement,
-			Map<String, Map<String, String>> attributes,
-			StagedModel... stagedModels)
+	protected void validateModelElement(
+			Element modelElement, ManifestEntry manifestEntry)
 		throws Exception {
 
-		List<Element> stagedModelsElements = stagedModelElement.elements();
+		List<Attribute> modelAttributes = modelElement.attributes();
 
-		if (stagedModels.length != stagedModelsElements.size()) {
+		if (modelAttributes.size() !=
+				manifestEntry.getModelAttributes().size()) {
+
 			Assert.fail();
 		}
 
-		for (int i = 0; i < stagedModels.length; i++) {
-			StagedModel stagedModel = stagedModels[i];
+		for (Attribute attribute : modelAttributes) {
+			String attributeValue = attribute.getValue();
+			String manifestAttributeValue = manifestEntry.getModelAttribute(
+				attribute.getName());
 
-			String classPk = getStagedModelClassPk(stagedModel);
-
-			for (int j = 0; j < stagedModelsElements.size(); j++) {
-				Element element = stagedModelsElements.get(j);
-
-				if (classPk.equals(
-						element.attributeValue(_ATTRIBUTE_CLASSPK))) {
-
-					if (attributes != null) {
-						validateAttributes(
-							element,
-							attributes.get(
-								getAttributeKey((ClassedModel)stagedModel)));
-					}
-
-					stagedModelsElements.remove(j--);
-				}
+			if (!attributeValue.equals(manifestAttributeValue)) {
+				Assert.fail();
 			}
-		}
-
-		if (!stagedModelsElements.isEmpty()) {
-			Assert.fail();
 		}
 	}
 

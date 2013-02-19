@@ -24,9 +24,7 @@ import java.util.Map;
  */
 public interface ManifestWriter {
 
-	public void add(ClassedModel classedModel);
-
-	public void add(ClassedModel classedModel, Map<String, String> attributes);
+	public void add(ManifestEntry manifestEntry);
 
 	public Document getManifestDocument();
 

@@ -14,10 +14,9 @@
 
 package com.liferay.portal.lar;
 
+import com.liferay.portal.kernel.lar.ManifestEntry;
 import com.liferay.portal.kernel.lar.ManifestWriter;
 import com.liferay.portal.kernel.lar.StagedModelPathUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
@@ -34,29 +33,21 @@ import java.util.Set;
  */
 public class ManifestWriterImpl implements ManifestWriter {
 
-	public void add(ClassedModel classedModel) {
-		add(classedModel, null);
-	}
+	public void add(ManifestEntry entry) {
+		String modelClassName = entry.getModelClassName();
 
-	public void add(ClassedModel classedModel, Map<String, String> attributes) {
-		String modelClassName = classedModel.getModelClassName();
-
-		Set<ClassedModel> stagedModels = null;
+		Set<ManifestEntry> models = null;
 
 		if (_manifestMap.containsKey(modelClassName)) {
-			stagedModels = _manifestMap.get(modelClassName);
+			models = _manifestMap.get(modelClassName);
 		}
 		else {
-			stagedModels = new HashSet<ClassedModel>();
+			models = new HashSet<ManifestEntry>();
 		}
 
-		stagedModels.add(classedModel);
+		models.add(entry);
 
-		_manifestMap.put(modelClassName, stagedModels);
-
-		if ((attributes != null) && !attributes.isEmpty()) {
-			_attributeMap.put(getAttributeKey(classedModel), attributes);
-		}
+		_manifestMap.put(modelClassName, models);
 	}
 
 	public Document getManifestDocument() {
@@ -64,35 +55,24 @@ public class ManifestWriterImpl implements ManifestWriter {
 
 		Element rootElement = document.addElement("manifest");
 
-		for (Map.Entry<String, Set<ClassedModel>> manifestEntry :
+		for (Map.Entry<String, Set<ManifestEntry>> modelGroup :
 				_manifestMap.entrySet()) {
 
-			Element stagedModelsElement = rootElement.addElement(
-				manifestEntry.getKey());
+			Element modelGroupElement = rootElement.addElement("model-group");
 
-			for (ClassedModel stagedModel : manifestEntry.getValue()) {
-				Element stagedModelElement = stagedModelsElement.addElement(
-					"staged-model");
+			modelGroupElement.addAttribute("className", modelGroup.getKey());
 
-				long classPK = (Long)stagedModel.getPrimaryKeyObj();
+			for (ManifestEntry manifestEntry : modelGroup.getValue()) {
+				Element modelElement = modelGroupElement.addElement("model");
 
-				stagedModelElement.addAttribute(
-					"classPK", String.valueOf(classPK));
-				stagedModelElement.addAttribute(
-					"path",
-					StagedModelPathUtil.getPath(
-						getModelGroupId(stagedModel),
-						stagedModel.getModelClassName(), classPK)
-				);
+				Map<String, String> modelAttributes =
+					manifestEntry.getModelAttributes();
 
-				Map<String, String> stagedModelAttributes = _attributeMap.get(
-					getAttributeKey(stagedModel));
-
-				if (stagedModelAttributes != null) {
+				if (modelAttributes != null) {
 					for (Map.Entry<String, String> attribute :
-							stagedModelAttributes.entrySet()) {
+							modelAttributes.entrySet()) {
 
-						stagedModelElement.addAttribute(
+						modelElement.addAttribute(
 							attribute.getKey(), attribute.getValue());
 					}
 				}
@@ -102,25 +82,13 @@ public class ManifestWriterImpl implements ManifestWriter {
 		return document;
 	}
 
-	protected String getAttributeKey(ClassedModel classedModel) {
-		StringBundler sb = new StringBundler(3);
-
-		sb.append(classedModel.getModelClassName());
-		sb.append(StringPool.POUND);
-		sb.append(String.valueOf(classedModel.getPrimaryKeyObj()));
-
-		return sb.toString();
-	}
-
 	protected long getModelGroupId(ClassedModel classedModel) {
 		GroupedModel groupedModel = (GroupedModel)classedModel;
 
 		return groupedModel.getGroupId();
 	}
 
-	private Map<String, Map<String, String>> _attributeMap =
-		new HashMap<String, Map<String, String>>();
-	private Map<String, Set<ClassedModel>> _manifestMap =
-		new HashMap<String, Set<ClassedModel>>();
+	private Map<String, Set<ManifestEntry>> _manifestMap =
+		new HashMap<String, Set<ManifestEntry>>();
 
 }
