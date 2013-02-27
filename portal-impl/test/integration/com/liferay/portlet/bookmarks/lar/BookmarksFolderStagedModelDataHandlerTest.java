@@ -12,18 +12,17 @@
  * details.
  */
 
-package com.liferay.portal.lar;
+package com.liferay.portlet.bookmarks.lar;
 
 import com.liferay.portal.kernel.test.ExecutionTestListeners;
+import com.liferay.portal.lar.BaseStagedModelDataHandlerTestCase;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.test.MainServletExecutionTestListener;
 import com.liferay.portal.test.TransactionalExecutionTestListener;
-import com.liferay.portlet.bookmarks.model.BookmarksEntry;
 import com.liferay.portlet.bookmarks.model.BookmarksFolder;
-import com.liferay.portlet.bookmarks.service.BookmarksEntryLocalServiceUtil;
 import com.liferay.portlet.bookmarks.service.BookmarksFolderLocalServiceUtil;
 import com.liferay.portlet.bookmarks.util.BookmarksTestUtil;
 
@@ -37,7 +36,7 @@ import junit.framework.Assert;
 import org.junit.runner.RunWith;
 
 /**
- * @author Mate Thurzo
+ * @author Daniel Kocsis
  */
 @ExecutionTestListeners(
 	listeners = {
@@ -45,7 +44,7 @@ import org.junit.runner.RunWith;
 		TransactionalExecutionTestListener.class
 	})
 @RunWith(LiferayIntegrationJUnitTestRunner.class)
-public class BookmarksEntryStagedModelDataHandlerTest
+public class BookmarksFolderStagedModelDataHandlerTest
 	extends BaseStagedModelDataHandlerTestCase {
 
 	@Override
@@ -79,20 +78,21 @@ public class BookmarksEntryStagedModelDataHandlerTest
 
 		BookmarksFolder folder = (BookmarksFolder)dependentStagedModels.get(0);
 
-		return BookmarksTestUtil.addEntry(
-			group.getGroupId(), folder.getFolderId(), true);
+		return BookmarksTestUtil.addFolder(
+			group.getGroupId(), folder.getFolderId(),
+			ServiceTestUtil.randomString());
 	}
 
 	@Override
 	protected String getElementName() {
-		return "entry";
+		return "folder";
 	}
 
 	@Override
 	protected StagedModel getStagedModel(String uuid, Group group) {
 		try {
-			return BookmarksEntryLocalServiceUtil.
-				getBookmarksEntryByUuidAndGroupId(uuid, group.getGroupId());
+			return BookmarksFolderLocalServiceUtil.
+				getBookmarksFolderByUuidAndGroupId(uuid, group.getGroupId());
 		}
 		catch (Exception e) {
 			return null;
@@ -101,7 +101,7 @@ public class BookmarksEntryStagedModelDataHandlerTest
 
 	@Override
 	protected String getStagedModelClassName() {
-		return BookmarksEntry.class.getName();
+		return BookmarksFolder.class.getName();
 	}
 
 	@Override
