@@ -14,6 +14,7 @@
 
 package com.liferay.portal.upgrade;
 
+import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.model.Group;
@@ -78,6 +79,8 @@ public class UpgradePortletIdsTest extends UpgradePortletId {
 		layoutTypePortlet.addPortletId(
 			TestPropsValues.getUserId(), _OLD_PORTLET_ID);
 
+		LayoutLocalServiceUtil.updateLayout(layout);
+
 		addPortletPreferences(layout, _OLD_PORTLET_ID);
 
 		Map<Long, String[]> roleIdsToActionIds = new HashMap<Long, String[]>();
@@ -98,6 +101,8 @@ public class UpgradePortletIdsTest extends UpgradePortletId {
 		PortletLocalServiceUtil.destroyPortlet(portlet);
 
 		doUpgrade();
+
+		CacheRegistryUtil.clear();
 
 		portlet.setCompanyId(TestPropsValues.getCompanyId());
 		portlet.setPortletId(_NEW_ROOT_PORTLET_ID);
