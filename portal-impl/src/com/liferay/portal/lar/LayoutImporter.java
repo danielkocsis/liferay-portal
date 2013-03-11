@@ -452,7 +452,6 @@ public class LayoutImporter {
 
 					LayoutLocalServiceUtil.updateLayout(layout);
 				}
-
 			}
 		}
 		else if (group.isLayoutSetPrototype() &&
