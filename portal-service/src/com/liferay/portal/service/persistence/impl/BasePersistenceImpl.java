@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Dialect;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicUpdate;
 import com.liferay.portal.kernel.dao.orm.ORMException;
 import com.liferay.portal.kernel.dao.orm.OrderFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
@@ -355,6 +356,10 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 		finally {
 			ServiceContextThreadLocal.popServiceContext();
 		}
+	}
+
+	public int updateByDynamicUpdate(DynamicUpdate dynamicUpdate) {
+		return 0;
 	}
 
 	protected static String removeConjunction(String sql) {
