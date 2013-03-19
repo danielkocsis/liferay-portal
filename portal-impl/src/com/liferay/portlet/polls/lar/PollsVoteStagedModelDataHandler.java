@@ -33,7 +33,7 @@ import java.util.Map;
  * @author Shinn Lok
  */
 public class PollsVoteStagedModelDataHandler
-		extends BaseStagedModelDataHandler<PollsVote> {
+	extends BaseStagedModelDataHandler<PollsVote> {
 
 	@Override
 	public String getClassName() {

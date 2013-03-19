@@ -99,14 +99,14 @@ public class PollsQuestionStagedModelDataHandler
 
 		long userId = portletDataContext.getUserId(question.getUserUuid());
 
-		Date expirationDate = question.getExpirationDate();
-
 		int expirationMonth = 0;
 		int expirationDay = 0;
 		int expirationYear = 0;
 		int expirationHour = 0;
 		int expirationMinute = 0;
 		boolean neverExpire = true;
+
+		Date expirationDate = question.getExpirationDate();
 
 		if (expirationDate != null) {
 			Calendar expirationCal = CalendarFactoryUtil.getCalendar();

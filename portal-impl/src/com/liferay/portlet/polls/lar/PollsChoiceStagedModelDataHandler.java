@@ -31,7 +31,7 @@ import java.util.Map;
  * @author Shinn Lok
  */
 public class PollsChoiceStagedModelDataHandler
-		extends BaseStagedModelDataHandler<PollsChoice> {
+	extends BaseStagedModelDataHandler<PollsChoice> {
 
 	@Override
 	public String getClassName() {
