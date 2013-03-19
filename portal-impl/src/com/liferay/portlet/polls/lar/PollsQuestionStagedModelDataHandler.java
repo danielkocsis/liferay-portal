@@ -16,22 +16,16 @@ package com.liferay.portlet.polls.lar;
 
 import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.portal.kernel.lar.StagedModelPathUtil;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.polls.model.PollsChoice;
 import com.liferay.portlet.polls.model.PollsQuestion;
-import com.liferay.portlet.polls.model.PollsVote;
 import com.liferay.portlet.polls.service.PollsQuestionLocalServiceUtil;
-import com.liferay.portlet.polls.service.persistence.PollsChoiceUtil;
 import com.liferay.portlet.polls.service.persistence.PollsQuestionUtil;
-import com.liferay.portlet.polls.service.persistence.PollsVoteUtil;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Shinn Lok
@@ -49,30 +43,6 @@ public class PollsQuestionStagedModelDataHandler
 			PortletDataContext portletDataContext, Element[] elements,
 			PollsQuestion question)
 		throws Exception {
-
-		Element choicesElement = elements[1];
-
-		List<PollsChoice> choices = PollsChoiceUtil.findByQuestionId(
-			question.getQuestionId());
-
-		for (PollsChoice choice : choices) {
-			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext, choicesElement, choice);
-		}
-
-		if (portletDataContext.getBooleanParameter(
-				PollsPortletDataHandler.NAMESPACE, "votes")) {
-
-			Element votesElement = elements[2];
-
-			List<PollsVote> votes = PollsVoteUtil.findByQuestionId(
-				question.getQuestionId());
-
-			for (PollsVote vote : votes) {
-				StagedModelDataHandlerUtil.exportStagedModel(
-					portletDataContext, votesElement, vote);
-			}
-		}
 
 		Element questionsElement = elements[0];
 
