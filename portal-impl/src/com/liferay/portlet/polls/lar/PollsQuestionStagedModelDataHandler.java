@@ -50,35 +50,27 @@ public class PollsQuestionStagedModelDataHandler
 			PollsQuestion question)
 		throws Exception {
 
-		Element choicesElement = null;
+		Element choicesElement = elements[1];
 
-		if (elements.length > 1) {
-			choicesElement = elements[1];
+		List<PollsChoice> choices = PollsChoiceUtil.findByQuestionId(
+			question.getQuestionId());
 
-			List<PollsChoice> choices = PollsChoiceUtil.findByQuestionId(
+		for (PollsChoice choice : choices) {
+			StagedModelDataHandlerUtil.exportStagedModel(
+				portletDataContext, choicesElement, choice);
+		}
+
+		if (portletDataContext.getBooleanParameter(
+				PollsPortletDataHandler.NAMESPACE, "votes")) {
+
+			Element votesElement = elements[2];
+
+			List<PollsVote> votes = PollsVoteUtil.findByQuestionId(
 				question.getQuestionId());
 
-			for (PollsChoice choice : choices) {
+			for (PollsVote vote : votes) {
 				StagedModelDataHandlerUtil.exportStagedModel(
-					portletDataContext, choicesElement, choice);
-			}
-
-			Element votesElement = null;
-
-			if (elements.length > 2) {
-				votesElement = elements[2];
-
-				if (portletDataContext.getBooleanParameter(
-						PollsPortletDataHandler.NAMESPACE, "votes")) {
-
-					List<PollsVote> votes = PollsVoteUtil.findByQuestionId(
-						question.getQuestionId());
-
-					for (PollsVote vote : votes) {
-						StagedModelDataHandlerUtil.exportStagedModel(
-							portletDataContext, votesElement, vote);
-					}
-				}
+					portletDataContext, votesElement, vote);
 			}
 		}
 
