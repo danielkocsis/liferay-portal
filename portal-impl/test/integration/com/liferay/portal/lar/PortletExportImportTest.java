@@ -25,6 +25,8 @@ import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutSetPrototype;
 import com.liferay.portal.model.LayoutTypePortlet;
+import com.liferay.portal.model.Portlet;
+import com.liferay.portal.model.PortletConstants;
 import com.liferay.portal.model.PortletPreferences;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.PortletLocalServiceUtil;
@@ -91,10 +93,20 @@ public class PortletExportImportTest extends BaseExportImportTestCase {
 			_layoutSetPrototypeGroup.getGroupId(), 0, "Test Article",
 			"Test Content");
 
+		Map<String, String> preferences = new HashMap<String, String>();
+
+		preferences.put(
+			"articleId", _layoutSetPrototypeJournalArticle.getArticleId());
+		preferences.put(
+			"groupId",
+			String.valueOf(_layoutSetPrototypeJournalArticle.getGroupId()));
+		preferences.put("showAvailableLocales", Boolean.TRUE.toString());
+
 		_layoutSetPrototypeJournalContentPortletId =
-			addJournalContentPortletToLayout(
+			addPortletToLayout(
 				TestPropsValues.getUserId(), _layoutSetPrototypeLayout,
-				_layoutSetPrototypeJournalArticle, "column-1");
+				"column-1", PortletKeys.JOURNAL_CONTENT, preferences, true,
+				true);
 
 		// Create site from site template
 
@@ -244,6 +256,56 @@ public class PortletExportImportTest extends BaseExportImportTestCase {
 			jxPreferences.getValue("lfrScopeType", StringPool.BLANK));
 	}
 
+	@Test
+	public void testExportImportPreferencesNonUniquePerLayoutTypePortlet()
+		throws Exception {
+
+		Map<String, String> preferences = new HashMap<String, String>();
+
+		preferences.put("bulletStyle", "Dots");
+
+		String navigationPortletOne = addPortletToLayout(
+			TestPropsValues.getUserId(), _layoutSetPrototypeLayout,
+			"column-1", PortletKeys.NAVIGATION, preferences, false,	true);
+
+		preferences.put("bulletStyle", "Arrows");
+
+		String navigationPortletTwo = addPortletToLayout(
+			TestPropsValues.getUserId(), _layoutSetPrototypeLayout,
+			"column-1", PortletKeys.NAVIGATION, preferences, false, true);
+
+		Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(
+			_group.getGroupId(), false,
+			_layoutSetPrototypeLayout.getFriendlyURL());
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletOne =
+			getPortletPreferences(
+				_group.getCompanyId(), layout.getPlid(), navigationPortletOne);
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletTwo =
+			getPortletPreferences(
+				_group.getCompanyId(), layout.getPlid(), navigationPortletTwo);
+
+		javax.portlet.PortletPreferences jxGroupPreferencesNavigationPortlet =
+			getGroupPortletPreferences(
+				_group.getCompanyId(), _group.getGroupId(),
+				PortletKeys.NAVIGATION);
+
+		Map jxPreferencesNavigationPortletOneMap =
+			jxPreferencesNavigationPortletOne.getMap();
+
+		Map jxPreferencesNavigationPortletTwoMap =
+			jxPreferencesNavigationPortletTwo.getMap();
+
+		Assert.assertEquals(0, jxPreferencesNavigationPortletOneMap.size());
+		Assert.assertEquals(0, jxPreferencesNavigationPortletTwoMap.size());
+
+		Assert.assertEquals(
+			"Arrows",
+			jxGroupPreferencesNavigationPortlet.getValue(
+				"bulletStyle", StringPool.BLANK));
+	}
+
 	protected JournalArticle addJournalArticle(
 			long groupId, long folderId, String name, String content)
 		throws Exception {
@@ -270,31 +332,46 @@ public class PortletExportImportTest extends BaseExportImportTestCase {
 			serviceContext);
 	}
 
-	protected String addJournalContentPortletToLayout(
-			long userId, Layout layout, JournalArticle journalArticle,
-			String columnId)
+	protected String addPortletToLayout(
+			long userId, Layout layout, String columnId, String portletId,
+			Map<String, String> preferences, boolean preferencesUniquePerLayout,
+			boolean preferencesOwnedByGroup)
 		throws Exception {
 
 		LayoutTypePortlet layoutTypePortlet =
 			(LayoutTypePortlet)layout.getLayoutType();
 
-		String journalPortletId = layoutTypePortlet.addPortletId(
-			userId, PortletKeys.JOURNAL_CONTENT, columnId, -1);
+		String layoutPortletId = layoutTypePortlet.addPortletId(
+			userId, portletId, columnId, -1);
 
 		LayoutLocalServiceUtil.updateLayout(
 			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
 			layout.getTypeSettings());
 
-		javax.portlet.PortletPreferences prefs = getPortletPreferences(
-			layout.getCompanyId(), layout.getPlid(), journalPortletId);
+		javax.portlet.PortletPreferences prefs = null;
 
-		prefs.setValue("articleId", journalArticle.getArticleId());
-		prefs.setValue("groupId", String.valueOf(journalArticle.getGroupId()));
-		prefs.setValue("showAvailableLocales", Boolean.TRUE.toString());
+		if (!preferencesUniquePerLayout) {
+			prefs = getGroupPortletPreferences(
+				layout.getCompanyId(), layout.getGroupId(), layoutPortletId);
+		}
+		else {
+			prefs = getPortletPreferences(
+				layout.getCompanyId(), layout.getPlid(), layoutPortletId);
+		}
 
-		updatePortletPreferences(layout.getPlid(), journalPortletId, prefs);
+		for (String key : preferences.keySet()) {
+			prefs.setValue(key, preferences.get(key));
+		}
 
-		return journalPortletId;
+		if (!preferencesUniquePerLayout) {
+			updateGroupPortletPreferences(
+				layout.getGroupId(), layoutPortletId, prefs);
+		}
+		else {
+			updatePortletPreferences(layout.getPlid(), layoutPortletId, prefs);
+		}
+
+		return layoutPortletId;
 	}
 
 	protected String getArticleContent(String content, String localeId) {
@@ -310,6 +387,17 @@ public class PortletExportImportTest extends BaseExportImportTestCase {
 		sb.append("</static-content></root>");
 
 		return sb.toString();
+	}
+
+	protected javax.portlet.PortletPreferences getGroupPortletPreferences(
+			long companyId, long groupId, String portletId)
+		throws Exception {
+
+		String rootPortletId = PortletConstants.getRootPortletId(portletId);
+
+		return PortletPreferencesLocalServiceUtil.getPreferences(
+			companyId, groupId, PortletKeys.PREFS_OWNER_TYPE_GROUP,
+			PortletKeys.PREFS_PLID_SHARED, rootPortletId);
 	}
 
 	protected javax.portlet.PortletPreferences getPortletPreferences(
@@ -334,6 +422,21 @@ public class PortletExportImportTest extends BaseExportImportTestCase {
 		_layoutSetPrototypeJournalArticle.setContent(xmlContent);
 
 		return JournalArticleUtil.update(journalArticle);
+	}
+
+	protected PortletPreferences updateGroupPortletPreferences(
+			long groupId, String portletId,
+			javax.portlet.PortletPreferences jxPreferences)
+		throws Exception {
+
+		String rootPortletId = PortletConstants.getRootPortletId(portletId);
+
+		PortletPreferences portletPreferences =
+			PortletPreferencesLocalServiceUtil.updatePreferences(
+				groupId, PortletKeys.PREFS_OWNER_TYPE_GROUP,
+				PortletKeys.PREFS_PLID_SHARED, rootPortletId, jxPreferences);
+
+		return portletPreferences;
 	}
 
 	protected PortletPreferences updatePortletPreferences(
