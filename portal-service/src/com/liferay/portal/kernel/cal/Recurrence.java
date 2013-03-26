@@ -362,13 +362,13 @@ public class Recurrence implements Serializable {
 	 * @return boolean
 	 */
 	public boolean isInRecurrence(Calendar current, boolean debug) {
-		Calendar myCurrent = (Calendar)current.clone();
 
 		// Do all calculations in GMT.  Keep other parameters consistent.
 
-		myCurrent.clear(Calendar.ZONE_OFFSET);
-		myCurrent.clear(Calendar.DST_OFFSET);
-		myCurrent.setTimeZone(TimeZoneUtil.getTimeZone(StringPool.UTC));
+		Calendar myCurrent = CalendarFactoryUtil.getCalendar(
+			TimeZoneUtil.getTimeZone(StringPool.UTC));
+
+		myCurrent.setTime(current.getTime());
 		myCurrent.setMinimalDaysInFirstWeek(4);
 		myCurrent.setFirstDayOfWeek(dtStart.getFirstDayOfWeek());
 
@@ -503,11 +503,11 @@ public class Recurrence implements Serializable {
 	 * Method setDtEnd
 	 */
 	public void setDtEnd(Calendar end) {
-		Calendar tempEnd = (Calendar)end.clone();
+		Calendar tempEnd = CalendarFactoryUtil.getCalendar(
+			TimeZoneUtil.getTimeZone(StringPool.UTC));
 
-		tempEnd.clear(Calendar.ZONE_OFFSET);
-		tempEnd.clear(Calendar.DST_OFFSET);
-		tempEnd.setTimeZone(TimeZoneUtil.getTimeZone(StringPool.UTC));
+		tempEnd.setTime(end.getTime());
+
 		duration.setInterval(
 			tempEnd.getTime().getTime() - dtStart.getTime().getTime());
 	}
@@ -525,18 +525,14 @@ public class Recurrence implements Serializable {
 			oldStart = Calendar.MONDAY;
 		}
 
-		if (start == null) {
-			dtStart = CalendarFactoryUtil.getCalendar(
-				TimeZoneUtil.getTimeZone(StringPool.UTC));
+		dtStart = CalendarFactoryUtil.getCalendar(
+			TimeZoneUtil.getTimeZone(StringPool.UTC));
 
+		if (start == null) {
 			dtStart.setTime(new Date(0L));
 		}
 		else {
-			dtStart = (Calendar)start.clone();
-
-			dtStart.clear(Calendar.ZONE_OFFSET);
-			dtStart.clear(Calendar.DST_OFFSET);
-			dtStart.setTimeZone(TimeZoneUtil.getTimeZone(StringPool.UTC));
+			dtStart.setTime(start.getTime());
 		}
 
 		dtStart.setMinimalDaysInFirstWeek(4);
@@ -588,11 +584,10 @@ public class Recurrence implements Serializable {
 			return;
 		}
 
-		until = (Calendar)u.clone();
+		until = CalendarFactoryUtil.getCalendar(
+			TimeZoneUtil.getTimeZone(StringPool.UTC));
 
-		until.clear(Calendar.ZONE_OFFSET);
-		until.clear(Calendar.DST_OFFSET);
-		until.setTimeZone(TimeZoneUtil.getTimeZone(StringPool.UTC));
+		until.setTime(u.getTime());
 	}
 
 	/**
