@@ -1148,6 +1148,13 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 			new LayoutReference[layoutReferences.size()]);
 	}
 
+	public List<Layout> getLayoutsByLayoutPrototypeUuid(
+			String layoutPrototypeUuid)
+		throws SystemException {
+
+		return layoutPersistence.findByLayoutPrototypeUuid(layoutPrototypeUuid);
+	}
+
 	public int getLayoutsByLayoutPrototypeUuidCount(String layoutPrototypeUuid)
 		throws SystemException {
 
