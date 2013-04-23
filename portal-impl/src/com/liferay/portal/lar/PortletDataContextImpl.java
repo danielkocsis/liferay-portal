@@ -23,6 +23,8 @@ import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
+import com.liferay.portal.kernel.lar.ManifestReader;
+import com.liferay.portal.kernel.lar.ManifestWriter;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataContextListener;
 import com.liferay.portal.kernel.lar.PortletDataException;
@@ -176,6 +178,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 		_zipWriter = zipWriter;
 
 		initXStream();
+
+		_manifestWriter = new ManifestWriterImpl();
 	}
 
 	public PortletDataContextImpl(
@@ -319,20 +323,28 @@ public class PortletDataContextImpl implements PortletDataContext {
 			String namespace)
 		throws PortalException, SystemException {
 
-		element.addAttribute("path", path);
+		addClassedModel(path, classedModel, namespace);
+	}
+
+	public void addClassedModel(
+			Map<String, String> attributes, String path,
+			ClassedModel classedModel, String namespace)
+		throws PortalException, SystemException {
+
+		String className = null;
 
 		if (classedModel instanceof AttachedModel) {
 			AttachedModel attachedModel = (AttachedModel)classedModel;
 
-			element.addAttribute("class-name", attachedModel.getClassName());
+			className = attachedModel.getClassName();
 		}
 		else if (BeanUtil.hasProperty(classedModel, "className")) {
-			String className = BeanPropertiesUtil.getStringSilent(
+			className = BeanPropertiesUtil.getStringSilent(
 				classedModel, "className");
+		}
 
-			if (className != null) {
-				element.addAttribute("class-name", className);
-			}
+		if (className != null) {
+			attributes.put("class-name", className);
 		}
 
 		if (classedModel instanceof AuditedModel) {
@@ -346,7 +358,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			long classPK = getClassPK(classedModel);
 
 			addAssetLinks(clazz, classPK);
-			addExpando(element, path, classedModel);
+			addExpando(attributes, path, classedModel);
 			addLocks(clazz, String.valueOf(classPK));
 			addPermissions(clazz, classPK);
 
@@ -376,7 +388,17 @@ public class PortletDataContextImpl implements PortletDataContext {
 			}
 		}
 
+		getManifestWriter().add(classedModel, attributes);
+
 		addZipEntry(path, classedModel);
+	}
+
+	public void addClassedModel(
+			String path, ClassedModel classedModel, String namespace)
+		throws PortalException, SystemException {
+
+		addClassedModel(
+			new HashMap<String, String>(), path, classedModel, namespace);
 	}
 
 	public void addComments(Class<?> clazz, long classPK)
@@ -440,6 +462,14 @@ public class PortletDataContextImpl implements PortletDataContext {
 			Element element, String path, ClassedModel classedModel)
 		throws PortalException, SystemException {
 
+		addExpando(new HashMap<String, String>(), path, classedModel);
+	}
+
+	public void addExpando(
+			Map<String, String> attributes, String path,
+			ClassedModel classedModel)
+		throws PortalException, SystemException {
+
 		Class<?> clazz = classedModel.getModelClass();
 
 		String className = clazz.getName();
@@ -465,7 +495,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 		if (!expandoBridgeAttributes.isEmpty()) {
 			String expandoPath = ExportImportPathUtil.getExpandoPath(path);
 
-			element.addAttribute("expando-path", expandoPath);
+			attributes.put("expando-path", expandoPath);
 
 			addZipEntry(expandoPath, expandoBridgeAttributes);
 		}
@@ -868,6 +898,14 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 	public Map<String, Lock> getLocks() {
 		return _locksMap;
+	}
+
+	public ManifestReader getManifestReader() {
+		return _manifestReader;
+	}
+
+	public ManifestWriter getManifestWriter() {
+		return _manifestWriter;
 	}
 
 	public Map<?, ?> getNewPrimaryKeysMap(Class<?> clazz) {
@@ -1799,6 +1837,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 	private long _groupId;
 	private Element _importDataRootElement;
 	private Map<String, Lock> _locksMap = new HashMap<String, Lock>();
+	private ManifestReader _manifestReader;
+	private ManifestWriter _manifestWriter;
 	private Map<String, Map<?, ?>> _newPrimaryKeysMaps =
 		new HashMap<String, Map<?, ?>>();
 	private Set<String> _notUniquePerLayout = new HashSet<String>();
