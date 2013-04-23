@@ -25,4 +25,10 @@ public interface AssetLinkFinder {
 	public java.util.List<com.liferay.portlet.asset.model.AssetLink> findByE1_T_V(
 		long entryId1, int type, boolean visible)
 		throws com.liferay.portal.kernel.exception.SystemException;
+
+	public com.liferay.portlet.asset.model.AssetLink findByG_E1_E2_T(
+		long groupId, java.lang.String entry1Uuid, java.lang.String entry2Uuid,
+		int type)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.asset.NoSuchLinkException;
 }

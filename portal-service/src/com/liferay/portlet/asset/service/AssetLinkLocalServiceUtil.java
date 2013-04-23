@@ -358,6 +358,14 @@ public class AssetLinkLocalServiceUtil {
 		return getService().getDirectLinks(entryId, typeId);
 	}
 
+	public static com.liferay.portlet.asset.model.AssetLink getLink(
+		long groupId, java.lang.String entry1Uuid, java.lang.String entry2Uuid,
+		int typeId)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.asset.NoSuchLinkException {
+		return getService().getLink(groupId, entry1Uuid, entry2Uuid, typeId);
+	}
+
 	/**
 	* Returns all the asset links whose first or second entry ID is the given
 	* entry ID.
@@ -413,6 +421,14 @@ public class AssetLinkLocalServiceUtil {
 		long entryId, int typeId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getReverseLinks(entryId, typeId);
+	}
+
+	public static com.liferay.portlet.asset.model.AssetLink updateLink(
+		long userId, long entryId1, long entryId2, int typeId, int weight)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .updateLink(userId, entryId1, entryId2, typeId, weight);
 	}
 
 	/**
