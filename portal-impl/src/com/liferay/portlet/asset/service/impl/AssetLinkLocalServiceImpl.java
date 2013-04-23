@@ -204,6 +204,22 @@ public class AssetLinkLocalServiceImpl extends AssetLinkLocalServiceBaseImpl {
 		return assetLinkFinder.findByE1_T_V(entryId, typeId, true);
 	}
 
+	/**
+	 * Get AssetLink from groupId,Entry1 class UUID and entry 2 class UUID
+	 *
+	 * @param  groupId the primary key of the group
+	 * @param  entry1Uuid the class UUID of the first asset entry
+	 * @param  entry2Uuid the class UUID of the second asset entry
+	 * @param  typeId the link type. Acceptable values include {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_RELATED}
+	 *         which is a bidirectional relationship and {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_CHILD}
+	 *         which is a unidirectional relationship. For more information see
+	 *         {@link com.liferay.portlet.asset.model.AssetLinkConstants}
+	 * @return the asset link
+	 * @throws NoSuchLinkException if the link could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
 	public AssetLink getLink(
 			long groupId, String entry1Uuid, String entry2Uuid, int typeId)
 		throws NoSuchLinkException, SystemException {
@@ -287,6 +303,22 @@ public class AssetLinkLocalServiceImpl extends AssetLinkLocalServiceBaseImpl {
 		return assetLinkPersistence.findByE2_T(entryId, typeId);
 	}
 
+	/**
+	 * Updates link of the asset entry given by entryId
+	 * @param userId the primary key of the user updating the link
+	 * @param entryId1 the primary key of the source asset entry
+	 * @param entryId2 the primary key of the target asset entry
+	 * @param typeId the link type. Acceptable values include {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_RELATED}
+	 *         which is a bidirectional relationship and {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_CHILD}
+	 *         which is a unidirectional relationship. For more information see
+	 *         {@link com.liferay.portlet.asset.model.AssetLinkConstants}
+	 * @param weight the weight of the link
+	 * @return the updated link
+	 * @throws PortalException  if a portal exception occurred
+	 * @throws SystemException  if a system exception occurred
+	 */
 	public AssetLink updateLink(
 			long userId, long entryId1, long entryId2, int typeId, int weight)
 		throws PortalException, SystemException {
