@@ -80,20 +80,25 @@ public class AssetLinkLocalServiceImpl extends AssetLinkLocalServiceBaseImpl {
 		assetLinkPersistence.update(link);
 
 		if (AssetLinkConstants.isTypeBi(type)) {
-			long linkId2 = counterLocalService.increment();
 
-			AssetLink link2 = assetLinkPersistence.create(linkId2);
+			AssetLink inverseAssetLink = assetLinkPersistence.fetchByE_E_T(
+				entryId2, entryId1, type);
 
-			link2.setCompanyId(user.getCompanyId());
-			link2.setUserId(user.getUserId());
-			link2.setUserName(user.getFullName());
-			link2.setCreateDate(now);
-			link2.setEntryId1(entryId2);
-			link2.setEntryId2(entryId1);
-			link2.setType(type);
-			link2.setWeight(weight);
+			if (inverseAssetLink == null) {
+				long inverseLinkId = counterLocalService.increment();
 
-			assetLinkPersistence.update(link2);
+				inverseAssetLink = assetLinkPersistence.create(inverseLinkId);
+			}
+
+			inverseAssetLink.setCompanyId(user.getCompanyId());
+			inverseAssetLink.setUserId(user.getUserId());
+			inverseAssetLink.setUserName(user.getFullName());
+			inverseAssetLink.setCreateDate(now);
+			inverseAssetLink.setEntryId1(entryId2);
+			inverseAssetLink.setEntryId2(entryId1);
+			inverseAssetLink.setType(type);
+
+			assetLinkPersistence.update(inverseAssetLink);
 		}
 
 		return link;
@@ -200,6 +205,30 @@ public class AssetLinkLocalServiceImpl extends AssetLinkLocalServiceBaseImpl {
 	}
 
 	/**
+	 * Get AssetLink from groupId,Entry1 class UUID and entry 2 class UUID
+	 *
+	 * @param  groupId the primary key of the group
+	 * @param  entry1Uuid the class UUID of the first asset entry
+	 * @param  entry2Uuid the class UUID of the second asset entry
+	 * @param  typeId the link type. Acceptable values include {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_RELATED}
+	 *         which is a bidirectional relationship and {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_CHILD}
+	 *         which is a unidirectional relationship. For more information see
+	 *         {@link com.liferay.portlet.asset.model.AssetLinkConstants}
+	 * @return the asset link
+	 * @throws NoSuchLinkException if the link could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public AssetLink getLink(
+			long groupId, String entry1Uuid, String entry2Uuid, int typeId)
+		throws NoSuchLinkException, SystemException {
+
+		return assetLinkFinder.findByG_E1_E2_T(
+			groupId, entry1Uuid, entry2Uuid, typeId);
+	}
+
+	/**
 	 * Returns all the asset links whose first or second entry ID is the given
 	 * entry ID.
 	 *
@@ -272,6 +301,40 @@ public class AssetLinkLocalServiceImpl extends AssetLinkLocalServiceBaseImpl {
 		throws SystemException {
 
 		return assetLinkPersistence.findByE2_T(entryId, typeId);
+	}
+
+	/**
+	 * Updates link of the asset entry given by entryId
+	 * @param userId the primary key of the user updating the link
+	 * @param entryId1 the primary key of the source asset entry
+	 * @param entryId2 the primary key of the target asset entry
+	 * @param typeId the link type. Acceptable values include {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_RELATED}
+	 *         which is a bidirectional relationship and {@link
+	 *         com.liferay.portlet.asset.model.AssetLinkConstants#TYPE_CHILD}
+	 *         which is a unidirectional relationship. For more information see
+	 *         {@link com.liferay.portlet.asset.model.AssetLinkConstants}
+	 * @param weight the weight of the link
+	 * @return the updated link
+	 * @throws PortalException  if a portal exception occurred
+	 * @throws SystemException  if a system exception occurred
+	 */
+	public AssetLink updateLink(
+			long userId, long entryId1, long entryId2, int typeId, int weight)
+		throws PortalException, SystemException {
+
+		AssetLink assetLink = assetLinkPersistence.fetchByE_E_T(
+				entryId1, entryId2, typeId);
+
+		if (assetLink == null) {
+			assetLink = addLink(userId, entryId1, entryId2, typeId, weight);
+		}
+		else {
+			assetLink.setWeight(weight);
+			assetLinkPersistence.update(assetLink);
+		}
+
+		return assetLink;
 	}
 
 	/**

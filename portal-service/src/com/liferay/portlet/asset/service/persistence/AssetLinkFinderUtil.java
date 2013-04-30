@@ -33,6 +33,14 @@ public class AssetLinkFinderUtil {
 		return getFinder().findByE1_T_V(entryId1, type, visible);
 	}
 
+	public static com.liferay.portlet.asset.model.AssetLink findByG_E1_E2_T(
+		long groupId, java.lang.String entry1Uuid, java.lang.String entry2Uuid,
+		int type)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.asset.NoSuchLinkException {
+		return getFinder().findByG_E1_E2_T(groupId, entry1Uuid, entry2Uuid, type);
+	}
+
 	public static AssetLinkFinder getFinder() {
 		if (_finder == null) {
 			_finder = (AssetLinkFinder)PortalBeanLocatorUtil.locate(AssetLinkFinder.class.getName());
