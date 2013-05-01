@@ -16,25 +16,35 @@ package com.liferay.portal.lar;
 
 import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutSetPrototype;
+import com.liferay.portal.model.LayoutTypePortlet;
+import com.liferay.portal.model.PortletConstants;
+import com.liferay.portal.model.PortletPreferences;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetPrototypeLocalServiceUtil;
 import com.liferay.portal.service.PortletLocalServiceUtil;
+import com.liferay.portal.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.test.MainServletExecutionTestListener;
 import com.liferay.portal.test.TransactionalCallbackAwareExecutionTestListener;
 import com.liferay.portal.util.LayoutTestUtil;
+import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.TestPropsValues;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portlet.journal.util.JournalTestUtil;
 import com.liferay.portlet.sites.util.Sites;
 import com.liferay.portlet.sites.util.SitesUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -134,6 +144,13 @@ public class LayoutSetPrototypePropagationTest
 	}
 
 	@Test
+	public void testPortletPreferencesPropagationWithNonUniquePreferences()
+		throws Exception {
+
+		doTestPortletPreferencesPropagationWithNonUniquePreferences();
+	}
+
+	@Test
 	public void testReset() throws Exception {
 		SitesUtil.resetPrototype(layout);
 		SitesUtil.resetPrototype(_layout);
@@ -158,6 +175,48 @@ public class LayoutSetPrototypePropagationTest
 		Assert.assertTrue(SitesUtil.isLayoutModifiedSinceLastMerge(_layout));
 		Assert.assertEquals(
 			"1_column", LayoutTestUtil.getLayoutTemplateId(_layout));
+	}
+
+	protected String addPortletToLayout(
+			long userId, Layout layout, String columnId, String portletId,
+			Map<String, String> preferences, boolean preferencesUniquePerLayout,
+			boolean preferencesOwnedByGroup)
+		throws Exception {
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		String layoutPortletId = layoutTypePortlet.addPortletId(
+			userId, portletId, columnId, -1);
+
+		LayoutLocalServiceUtil.updateLayout(
+			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
+			layout.getTypeSettings());
+
+		javax.portlet.PortletPreferences prefs = null;
+
+		if (!preferencesUniquePerLayout) {
+			prefs = PortletPreferencesFactoryUtil.getPortletSetup(
+				layout.getGroupId(), layout, portletId, StringPool.BLANK);
+		}
+		else {
+			prefs = getPortletPreferences(
+				layout.getCompanyId(), layout.getPlid(), layoutPortletId);
+		}
+
+		for (String key : preferences.keySet()) {
+			prefs.setValue(key, preferences.get(key));
+		}
+
+		if (!preferencesUniquePerLayout) {
+			updateGroupPortletPreferences(
+				layout.getGroupId(), layoutPortletId, prefs);
+		}
+		else {
+			updatePortletPreferences(layout.getPlid(), layoutPortletId, prefs);
+		}
+
+		return layoutPortletId;
 	}
 
 	@Override
@@ -346,8 +405,67 @@ public class LayoutSetPrototypePropagationTest
 		doTestPortletPreferencesPropagation(linkEnabled, false);
 	}
 
+	protected void doTestPortletPreferencesPropagationWithNonUniquePreferences()
+		throws Exception {
+
+		Layout layout = LayoutTestUtil.addLayout(
+			_layoutSetPrototypeGroup.getGroupId(),
+			ServiceTestUtil.randomString(), false);
+
+		Map<String, String> preferences = new HashMap<String, String>();
+
+		preferences.put("bulletStyle", "Dots");
+
+		String navigationPortletOne = addPortletToLayout(
+			TestPropsValues.getUserId(), layout, "column-1",
+			PortletKeys.NAVIGATION, preferences, false, true);
+
+		preferences.put("bulletStyle", "Arrows");
+
+		String navigationPortletTwo = addPortletToLayout(
+			TestPropsValues.getUserId(), layout, "column-2",
+			PortletKeys.NAVIGATION, preferences, false, true);
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletOne =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				layout, navigationPortletOne, null);
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletTwo =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				layout, navigationPortletTwo, null);
+
+		javax.portlet.PortletPreferences jxGroupPreferencesNavigationPortlet =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				_layoutSetPrototypeGroup.getGroupId(), layout,
+				PortletKeys.NAVIGATION, null);
+
+		Assert.assertEquals(
+			"Arrows",
+			jxPreferencesNavigationPortletOne.getValue(
+				"bulletStyle", StringPool.BLANK));
+
+		Assert.assertEquals(
+			"Arrows",
+			jxPreferencesNavigationPortletTwo.getValue(
+				"bulletStyle", StringPool.BLANK));
+
+		Assert.assertEquals(
+			"Arrows",
+			jxGroupPreferencesNavigationPortlet.getValue(
+				"bulletStyle", StringPool.BLANK));
+	}
+
 	protected int getGroupLayoutCount() throws Exception {
 		return LayoutLocalServiceUtil.getLayoutsCount(group, false);
+	}
+
+	protected javax.portlet.PortletPreferences getPortletPreferences(
+			long companyId, long plId, String portletId)
+		throws Exception {
+
+		return PortletPreferencesLocalServiceUtil.getPreferences(
+			companyId, PortletKeys.PREFS_OWNER_ID_DEFAULT,
+			PortletKeys.PREFS_OWNER_TYPE_LAYOUT, plId, portletId);
 	}
 
 	protected void propagateChanges(Group group) throws Exception {
@@ -395,6 +513,35 @@ public class LayoutSetPrototypePropagationTest
 			layout = LayoutLocalServiceUtil.getLayout(layout.getPlid());
 			_layout = LayoutLocalServiceUtil.getLayout(_layout.getPlid());
 		}
+	}
+
+	protected PortletPreferences updateGroupPortletPreferences(
+			long groupId, String portletId,
+			javax.portlet.PortletPreferences jxPreferences)
+		throws Exception {
+
+		String rootPortletId = PortletConstants.getRootPortletId(portletId);
+
+		PortletPreferences portletPreferences =
+			PortletPreferencesLocalServiceUtil.updatePreferences(
+				groupId, PortletKeys.PREFS_OWNER_TYPE_GROUP,
+				PortletKeys.PREFS_PLID_SHARED, rootPortletId, jxPreferences);
+
+		return portletPreferences;
+	}
+
+	protected PortletPreferences updatePortletPreferences(
+			long plid, String portletId,
+			javax.portlet.PortletPreferences jxPreferences)
+		throws Exception {
+
+		PortletPreferences portletPreferences =
+			PortletPreferencesLocalServiceUtil.updatePreferences(
+				PortletKeys.PREFS_OWNER_ID_DEFAULT,
+				PortletKeys.PREFS_OWNER_TYPE_LAYOUT, plid, portletId,
+				jxPreferences);
+
+		return portletPreferences;
 	}
 
 	private int _initialLayoutCount;
