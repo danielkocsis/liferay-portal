@@ -351,36 +351,23 @@ public class ExportImportImpl implements ExportImport {
 
 		File file = DLFileEntryLocalServiceUtil.getFile(
 			userId, fileEntry.getFileEntryId(), fileEntry.getVersion(), false);
+
 		File newFile = null;
 		boolean rename = false;
 
 		ManifestSummary manifestSummary = null;
 
 		try {
-			String newFileName = StringUtil.replace(
-				file.getPath(), file.getName(), fileEntry.getTitle());
+			newFile = FileUtil.createTempFile(fileEntry.getExtension());
 
-			newFile = new File(newFileName);
-
-			rename = file.renameTo(newFile);
-
-			if (!rename) {
-				newFile = FileUtil.createTempFile(fileEntry.getExtension());
-
-				FileUtil.copyFile(file, newFile);
-			}
+			FileUtil.copyFile(file, newFile);
 
 			manifestSummary = getManifestSummary(
 				userId, groupId, parameterMap, newFile);
 
 		}
 		finally {
-			if (rename) {
-				newFile.renameTo(file);
-			}
-			else {
-				FileUtil.delete(newFile);
-			}
+			FileUtil.delete(newFile);
 		}
 
 		return manifestSummary;
