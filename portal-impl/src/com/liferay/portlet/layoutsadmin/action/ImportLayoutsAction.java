@@ -568,15 +568,9 @@ public class ImportLayoutsAction extends EditFileEntryAction {
 			String newFileName = StringUtil.replace(
 				file.getPath(), file.getName(), fileEntry.getTitle());
 
-			newFile = new File(newFileName);
+			newFile = FileUtil.createTempFile(fileEntry.getExtension());
 
-			successfulRename = file.renameTo(newFile);
-
-			if (!successfulRename) {
-				newFile = FileUtil.createTempFile(fileEntry.getExtension());
-
-				FileUtil.copyFile(file, newFile);
-			}
+			FileUtil.copyFile(file, newFile);
 
 			LayoutServiceUtil.importLayouts(
 				groupId, privateLayout, actionRequest.getParameterMap(),
@@ -587,12 +581,7 @@ public class ImportLayoutsAction extends EditFileEntryAction {
 			addSuccessMessage(actionRequest, actionResponse);
 		}
 		finally {
-			if (successfulRename) {
-				newFile.renameTo(file);
-			}
-			else {
-				FileUtil.delete(newFile);
-			}
+			FileUtil.delete(newFile);
 		}
 	}
 
@@ -624,30 +613,19 @@ public class ImportLayoutsAction extends EditFileEntryAction {
 			boolean privateLayout = ParamUtil.getBoolean(
 				actionRequest, "privateLayout");
 
-			String newFileName = StringUtil.replace(
-				file.getPath(), file.getName(), fileEntry.getTitle());
+			/*String newFileName = StringUtil.replace(
+				file.getPath(), file.getName(), fileEntry.getTitle());*/
 
-			newFile = new File(newFileName);
+			newFile = FileUtil.createTempFile(fileEntry.getExtension());
 
-			successfulRename = file.renameTo(newFile);
-
-			if (!successfulRename) {
-				newFile = FileUtil.createTempFile(fileEntry.getExtension());
-
-				FileUtil.copyFile(file, newFile);
-			}
+			FileUtil.copyFile(file, newFile);
 
 			LayoutServiceUtil.validateImportLayoutsFile(
 				groupId, privateLayout, actionRequest.getParameterMap(),
 				newFile);
 		}
 		finally {
-			if (successfulRename) {
-				newFile.renameTo(file);
-			}
-			else {
-				FileUtil.delete(newFile);
-			}
+			FileUtil.delete(newFile);
 		}
 	}
 
