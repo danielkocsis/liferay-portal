@@ -203,7 +203,9 @@ public abstract class BaseStagedModelDataHandlerTestCase extends PowerMockito {
 		throws Exception {
 	}
 
-	protected abstract String[] getDeletionSystemEventClassNames();
+	protected String[] getDeletionSystemEventClassNames() {
+		return new String[0];
+	}
 
 	protected Date getEndDate() {
 		return new Date();
