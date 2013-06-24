@@ -60,6 +60,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.lucene.search.IndexSearcher;
+
 /**
  * @author Brian Wing Shun Chan
  * @author Michael Young
@@ -120,6 +122,20 @@ public class ServiceTestUtil {
 	}
 
 	public static void destroyServices() {
+		try {
+			IndexSearcher indexSearcher = LuceneHelperUtil.getSearcher(
+				TestPropsValues.getCompanyId(), false);
+
+			LuceneHelperUtil.cleanUp(indexSearcher);
+
+			LuceneHelperUtil.delete(TestPropsValues.getCompanyId());
+
+			LuceneHelperUtil.shutdown(TestPropsValues.getCompanyId());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		_deleteDLDirectories();
 	}
 
@@ -414,14 +430,6 @@ public class ServiceTestUtil {
 
 		FileUtil.deltree(
 			PropsUtil.get(PropsKeys.JCR_JACKRABBIT_REPOSITORY_ROOT));
-
-		try {
-			FileUtil.deltree(
-				PropsValues.LUCENE_DIR + TestPropsValues.getCompanyId());
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private static Random _random = new Random();
