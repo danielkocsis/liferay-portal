@@ -73,7 +73,9 @@ public class BackgroundTaskLocalServiceImpl
 		BackgroundTask backgroundTask = backgroundTaskPersistence.create(
 			backgroundTaskId);
 
-		backgroundTask.setCompanyId(user.getCompanyId());
+		final long companyId = user.getCompanyId();
+
+		backgroundTask.setCompanyId(companyId);
 		backgroundTask.setCreateDate(serviceContext.getCreateDate(now));
 		backgroundTask.setGroupId(groupId);
 		backgroundTask.setModifiedDate(serviceContext.getModifiedDate(now));
@@ -102,6 +104,7 @@ public class BackgroundTaskLocalServiceImpl
 					Message message = new Message();
 
 					message.put("backgroundTaskId", backgroundTaskId);
+					message.put("companyId", companyId);
 
 					MessageBusUtil.sendMessage(
 						DestinationNames.BACKGROUND_TASK, message);
