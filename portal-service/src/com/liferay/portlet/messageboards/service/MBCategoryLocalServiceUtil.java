@@ -609,19 +609,14 @@ public class MBCategoryLocalServiceUtil {
 			mailingListActive, mergeWithParentCategory, serviceContext);
 	}
 
-	public static void updateDependentStatus(
-		com.liferay.portal.model.User user,
-		java.util.List<java.lang.Object> categoriesAndThreads, int status)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		getService().updateDependentStatus(user, categoriesAndThreads, status);
-	}
-
 	public static com.liferay.portlet.messageboards.model.MBCategory updateStatus(
-		long userId, long categoryId, int status)
+		long userId,
+		com.liferay.portlet.messageboards.model.MBCategory category,
+		int status, com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		return getService().updateStatus(userId, categoryId, status);
+		return getService()
+				   .updateStatus(userId, category, status, serviceContext);
 	}
 
 	public static MBCategoryLocalService getService() {
