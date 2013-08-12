@@ -103,7 +103,7 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 				stagingRequestFileEntry.getContentStream());
 		}
 		finally {
-			ExportImportThreadLocal.setLayoutImportInProcess(true);
+			ExportImportThreadLocal.setLayoutImportInProcess(false);
 		}
 	}
 
