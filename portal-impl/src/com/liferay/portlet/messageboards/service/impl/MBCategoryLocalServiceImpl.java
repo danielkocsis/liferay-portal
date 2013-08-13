@@ -587,6 +587,13 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 		moveDependentsToTrash(
 			category.getGroupId(), userId, categoryId, serviceContext);
 
+		Set<Long> userIds = serviceContext.getIdSet("userIds");
+
+		for (long curUserId : userIds) {
+			mbStatsUserLocalService.updateStatsUser(
+				category.getGroupId(), curUserId);
+		}
+
 		return category;
 	}
 
@@ -648,6 +655,13 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 
 		restoreDependentsFromTrash(
 			trashEntry.getGroupId(), userId, categoryId, serviceContext);
+
+		Set<Long> userIds = serviceContext.getIdSet("userIds");
+
+		for (long curUserId : userIds) {
+			mbStatsUserLocalService.updateStatsUser(
+				trashEntry.getGroupId(), curUserId);
+		}
 
 		trashEntryLocalService.deleteEntry(trashEntry.getEntryId());
 	}
