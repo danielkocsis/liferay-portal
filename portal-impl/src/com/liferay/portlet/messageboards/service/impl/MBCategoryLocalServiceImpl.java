@@ -558,8 +558,14 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 	public MBCategory moveCategoryToTrash(long userId, long categoryId)
 		throws PortalException, SystemException {
 
-		return updateStatus(
+		MBCategory category = updateStatus(
 			userId, categoryId, WorkflowConstants.STATUS_IN_TRASH);
+
+		TrashEntry trashEntry = trashEntryLocalService.addTrashEntry(
+			userId, category.getGroupId(), MBCategory.class.getName(),
+			categoryId, WorkflowConstants.STATUS_APPROVED, null, null);
+
+		return category;
 	}
 
 	@Override
@@ -742,14 +748,6 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 			category.getGroupId(), categoryId);
 
 		updateDependentStatus(user, categoriesAndThreads, status);
-
-		// Trash
-
-		if (status == WorkflowConstants.STATUS_IN_TRASH) {
-			trashEntryLocalService.addTrashEntry(
-				userId, category.getGroupId(), MBCategory.class.getName(),
-				categoryId, WorkflowConstants.STATUS_APPROVED, null, null);
-		}
 
 		return category;
 	}
