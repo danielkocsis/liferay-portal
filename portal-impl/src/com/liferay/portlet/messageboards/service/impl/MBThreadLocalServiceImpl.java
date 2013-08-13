@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.trash.TrashConstants;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -63,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -1169,11 +1171,137 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 	protected void moveDependentsToTrash(
 			long groupId, long threadId, ServiceContext serviceContext)
 		throws PortalException, SystemException {
+
+		long trashEntryId = GetterUtil.getLong(
+			serviceContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
+
+		TrashEntry trashEntry = trashEntryLocalService.getEntry(trashEntryId);
+
+		Set<Long> userIds = serviceContext.getIdSet("userIds");
+
+		List<MBMessage> messages = mbMessageLocalService.getThreadMessages(
+			threadId, WorkflowConstants.STATUS_ANY);
+
+		for (MBMessage message : messages) {
+			if (message.isDiscussion()) {
+				continue;
+			}
+
+			userIds.add(message.getUserId());
+
+			int oldStatus = message.getStatus();
+
+			// Message
+
+			message.setStatus(WorkflowConstants.STATUS_IN_TRASH);
+
+			mbMessagePersistence.update(message);
+
+			// Asset
+
+			if (oldStatus == WorkflowConstants.STATUS_APPROVED) {
+				assetEntryLocalService.updateVisible(
+					MBMessage.class.getName(), message.getMessageId(), false);
+			}
+			else {
+				oldStatus = WorkflowConstants.STATUS_DRAFT;
+			}
+
+			// Trash
+
+			if (oldStatus != WorkflowConstants.STATUS_APPROVED) {
+				trashVersionLocalService.addTrashVersion(
+					trashEntryId, MBMessage.class.getName(),
+					message.getMessageId(), oldStatus);
+			}
+
+			// Indexer
+
+			Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+				MBMessage.class);
+
+			indexer.reindex(message);
+
+			// Workflow
+
+			if (oldStatus == WorkflowConstants.STATUS_PENDING) {
+				workflowInstanceLinkLocalService.deleteWorkflowInstanceLink(
+					message.getCompanyId(), message.getGroupId(),
+					MBMessage.class.getName(), message.getMessageId());
+			}
+		}
+
+		// Statistics
+
+		if (trashEntry.getClassNameId() ==
+				PortalUtil.getClassNameId(MBThread.class)) {
+
+			for (long userId : userIds) {
+				mbStatsUserLocalService.updateStatsUser(groupId, userId);
+			}
+		}
 	}
 
 	protected void restoreDependentsFromTrash(
 			long groupId, long threadId, ServiceContext serviceContext)
 		throws PortalException, SystemException {
+
+		long trashEntryId = GetterUtil.getLong(
+			serviceContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
+
+		TrashEntry trashEntry = trashEntryLocalService.getEntry(trashEntryId);
+
+		Set<Long> userIds = serviceContext.getIdSet("userIds");
+
+		Map<Long, Integer> messageStatuses = serviceContext.getStatusMap(
+			TrashConstants.DEPENDENT_STATUSES, MBMessage.class.getName());
+
+		List<MBMessage> messages = mbMessageLocalService.getThreadMessages(
+			threadId, WorkflowConstants.STATUS_ANY);
+
+		for (MBMessage message : messages) {
+			if (message.isDiscussion()) {
+				continue;
+			}
+
+			userIds.add(message.getUserId());
+
+			Integer status = messageStatuses.get(message.getMessageId());
+
+			if (status == null) {
+				status = WorkflowConstants.STATUS_APPROVED;
+			}
+
+			// Message
+
+			message.setStatus(status);
+
+			mbMessagePersistence.update(message);
+
+			// Asset
+
+			if (status == WorkflowConstants.STATUS_APPROVED) {
+				assetEntryLocalService.updateVisible(
+					MBMessage.class.getName(), message.getMessageId(), true);
+			}
+
+			// Indexer
+
+			Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+				MBMessage.class);
+
+			indexer.reindex(message);
+		}
+
+		// Statistics
+
+		if (trashEntry.getClassNameId() ==
+				PortalUtil.getClassNameId(MBThread.class)) {
+
+			for (long userId : userIds) {
+				mbStatsUserLocalService.updateStatsUser(groupId, userId);
+			}
+		}
 	}
 
 }
