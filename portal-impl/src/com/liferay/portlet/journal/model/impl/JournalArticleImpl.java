@@ -36,6 +36,7 @@ import com.liferay.portlet.journal.service.JournalArticleImageLocalServiceUtil;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portlet.journal.service.JournalArticleResourceLocalServiceUtil;
 import com.liferay.portlet.journal.service.JournalFolderLocalServiceUtil;
+import com.liferay.portlet.journal.util.JournalUtil;
 import com.liferay.portlet.journal.util.LocaleTransformerListener;
 
 import java.util.Locale;
@@ -240,6 +241,33 @@ public class JournalArticleImpl extends JournalArticleBaseImpl {
 	@Override
 	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
 		throws LocaleException {
+
+		super.prepareLocalizedFieldsForImport(defaultImportLocale);
+
+		String content = getContent();
+
+		String defaultImportLanguageId = LocaleUtil.toLanguageId(
+			defaultImportLocale);
+
+		try {
+			if (Validator.isNull(getStructureId())) {
+				content = LocalizationUtil.updateLocalization(
+					getContent(), "static-content",
+					LocalizationUtil.getLocalization(
+						getContent(), defaultImportLanguageId),
+					defaultImportLanguageId, defaultImportLanguageId, true,
+					true);
+			}
+			else {
+				content = JournalUtil.prepareLanguageContentForImport(
+					content, defaultImportLocale);
+			}
+		}
+		catch (Exception e) {
+			throw new LocaleException(LocaleException.TYPE_DEFAULT, e);
+		}
+
+		setContent(content);
 	}
 
 	@Override
