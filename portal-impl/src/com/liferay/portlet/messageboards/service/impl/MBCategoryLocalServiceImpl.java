@@ -38,10 +38,14 @@ import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.impl.MBCategoryImpl;
 import com.liferay.portlet.messageboards.service.base.MBCategoryLocalServiceBaseImpl;
 import com.liferay.portlet.trash.model.TrashEntry;
+import com.liferay.portlet.trash.model.TrashVersion;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Brian Wing Shun Chan
@@ -602,6 +606,44 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 		updateStatus(userId, categoryId, WorkflowConstants.STATUS_APPROVED);
 
 		// Trash
+
+		List<TrashVersion> trashVersions = trashVersionLocalService.getVersions(
+			trashEntry.getEntryId());
+
+		for (TrashVersion trashVersion : trashVersions) {
+			Map<Long, Integer> statusMap = serviceContext.getStatusMap(
+				TrashConstants.DEPENDENT_STATUSES, trashVersion.getClassName());
+
+			statusMap.put(trashVersion.getClassPK(), trashVersion.getStatus());
+		}
+
+		HashSet<Long> trashedCategoryIds = new HashSet<Long>();
+
+		List<TrashEntry> categoryTrashEntries =
+			trashEntryLocalService.getEntries(
+				trashEntry.getGroupId(), MBCategory.class.getName());
+
+		for (TrashEntry categoryTrashEntry : categoryTrashEntries) {
+			trashedCategoryIds.add(categoryTrashEntry.getClassPK());
+		}
+
+		serviceContext.setIdSet(
+			TrashConstants.TRASHED_IDS, MBCategory.class.getName(),
+			trashedCategoryIds);
+
+		HashSet<Long> trashedThreadIds = new HashSet<Long>();
+
+		List<TrashEntry> threadTrashEntries =
+			trashEntryLocalService.getEntries(
+				trashEntry.getGroupId(), MBThread.class.getName());
+
+		for (TrashEntry threadTrashEntry : threadTrashEntries) {
+			trashedThreadIds.add(threadTrashEntry.getClassPK());
+		}
+
+		serviceContext.setIdSet(
+			TrashConstants.TRASHED_IDS, MBThread.class.getName(),
+			trashedThreadIds);
 
 		restoreDependentsFromTrash(
 			trashEntry.getGroupId(), userId, categoryId, serviceContext);
