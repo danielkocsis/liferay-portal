@@ -787,9 +787,6 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 		int oldStatus = thread.getStatus();
 
 		if (oldStatus == WorkflowConstants.STATUS_PENDING) {
-			thread.setStatus(WorkflowConstants.STATUS_DRAFT);
-
-			mbThreadPersistence.update(thread);
 			oldStatus = WorkflowConstants.STATUS_DRAFT;
 		}
 
@@ -1092,10 +1089,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 			Date now = new Date();
 
-			int oldStatus = thread.getStatus();
-
 			thread.setModifiedDate(now);
-			thread.setStatus(status);
 			thread.setStatusByUserId(user.getUserId());
 			thread.setStatusByUserName(user.getFullName());
 			thread.setStatusDate(now);
