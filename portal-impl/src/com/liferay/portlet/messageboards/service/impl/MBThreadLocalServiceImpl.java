@@ -39,6 +39,7 @@ import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
@@ -55,10 +56,12 @@ import com.liferay.portlet.messageboards.service.base.MBThreadLocalServiceBaseIm
 import com.liferay.portlet.messageboards.util.MBUtil;
 import com.liferay.portlet.social.model.SocialActivityConstants;
 import com.liferay.portlet.trash.model.TrashEntry;
+import com.liferay.portlet.trash.model.TrashVersion;
+import com.liferay.portlet.trash.util.TrashUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -844,6 +847,15 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 		serviceContext.setAttribute(
 			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
+
+		// Message
+
+		HashMap<Long, Integer> statusMap = TrashUtil.getStatusMap(
+			trashEntry.getEntryId(), MBMessage.class.getName());
+
+		serviceContext.setStatusMap(
+			TrashConstants.DEPENDENT_STATUSES, MBMessage.class.getName(),
+			statusMap);
 
 		updateStatus(userId, threadId, trashEntry.getStatus(), serviceContext);
 
