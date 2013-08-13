@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.trash.TrashConstants;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.ResourceConstants;
@@ -558,12 +559,28 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 	public MBCategory moveCategoryToTrash(long userId, long categoryId)
 		throws PortalException, SystemException {
 
-		MBCategory category = updateStatus(
-			userId, categoryId, WorkflowConstants.STATUS_IN_TRASH);
+		MBCategory category = mbCategoryPersistence.findByPrimaryKey(
+			categoryId);
+
+		// Trash
 
 		TrashEntry trashEntry = trashEntryLocalService.addTrashEntry(
 			userId, category.getGroupId(), MBCategory.class.getName(),
 			categoryId, WorkflowConstants.STATUS_APPROVED, null, null);
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setAttribute(
+			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
+
+		// Category
+
+		category = updateStatus(
+			userId, categoryId, WorkflowConstants.STATUS_IN_TRASH,
+			serviceContext);
+
+		moveDependentsToTrash(
+			category.getGroupId(), userId, categoryId, serviceContext);
 
 		return category;
 	}
@@ -572,14 +589,22 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 	public void restoreCategoryFromTrash(long userId, long categoryId)
 		throws PortalException, SystemException {
 
-		// Category
+		ServiceContext serviceContext = new ServiceContext();
 
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(
 			MBCategory.class.getName(), categoryId);
 
+		serviceContext.setAttribute(
+			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
+
+		// Category
+
 		updateStatus(userId, categoryId, WorkflowConstants.STATUS_APPROVED);
 
 		// Trash
+
+		restoreDependentsFromTrash(
+			trashEntry.getGroupId(), userId, categoryId, serviceContext);
 
 		trashEntryLocalService.deleteEntry(trashEntry.getEntryId());
 	}
@@ -691,15 +716,14 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 	}
 
 	@Override
-	public MBCategory updateStatus(long userId, long categoryId, int status)
+	public MBCategory updateStatus(
+			long userId, MBCategory category, int status,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		// Category
 
 		User user = userPersistence.findByPrimaryKey(userId);
-
-		MBCategory category = mbCategoryPersistence.findByPrimaryKey(
-			categoryId);
 
 		category.setStatus(status);
 		category.setStatusByUserId(user.getUserId());

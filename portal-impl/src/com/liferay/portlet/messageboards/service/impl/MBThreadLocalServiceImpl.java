@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.trash.TrashConstants;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -747,8 +748,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 		}
 		else {
 			updateStatus(
-				userId, threadId, thread.getStatus(),
-				WorkflowConstants.STATUS_ANY);
+				userId, threadId, thread.getStatus(), new ServiceContext());
 		}
 
 		return moveThread(thread.getGroupId(), categoryId, threadId);
@@ -799,9 +799,14 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			userId, thread.getGroupId(), MBThread.class.getName(),
 			thread.getThreadId(), oldStatus, null, null);
 
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setAttribute(
+			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
+
 		thread = updateStatus(
 			userId, thread.getThreadId(), WorkflowConstants.STATUS_IN_TRASH,
-			WorkflowConstants.STATUS_ANY);
+			serviceContext);
 
 		// Social
 
@@ -827,7 +832,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 		// Thread
 
-		MBThread thread = getThread(threadId);
+		MBThread thread = mbThreadPersistence.findByPrimaryKey(threadId);
 
 		if (thread.getCategoryId() ==
 				MBCategoryConstants.DISCUSSION_CATEGORY_ID) {
@@ -835,12 +840,15 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			return;
 		}
 
+		ServiceContext serviceContext = new ServiceContext();
+
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(
 			MBThread.class.getName(), threadId);
 
-		updateStatus(
-			userId, threadId, trashEntry.getStatus(),
-			WorkflowConstants.STATUS_ANY);
+		serviceContext.setAttribute(
+			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
+
+		updateStatus(userId, threadId, trashEntry.getStatus(), serviceContext);
 
 		// Social
 
@@ -1055,15 +1063,31 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 	@Override
 	public MBThread updateStatus(
-			long userId, long threadId, int status, int categoryStatus)
+			long userId, long threadId, int status,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		MBThread thread = mbThreadPersistence.findByPrimaryKey(threadId);
 
-		if (categoryStatus != WorkflowConstants.STATUS_IN_TRASH) {
+		return updateStatus(userId, thread, status, serviceContext);
+	}
 
-			// Thread
+	@Override
+	public MBThread updateStatus(
+			long userId, MBThread thread, int status,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
 
+		long trashEntryId = GetterUtil.getLong(
+			serviceContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
+
+		TrashEntry trashEntry = trashEntryLocalService.fetchEntry(trashEntryId);
+
+		// Thread
+
+		thread.setStatus(status);
+
+		if ((trashEntry == null) || trashEntry.isTrashEntry(thread)) {
 			User user = userPersistence.findByPrimaryKey(userId);
 
 			Date now = new Date();
@@ -1075,30 +1099,13 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			thread.setStatusByUserId(user.getUserId());
 			thread.setStatusByUserName(user.getFullName());
 			thread.setStatusDate(now);
-
-			mbThreadPersistence.update(thread);
-
-			// Messages
-
-			updateDependentStatus(thread.getGroupId(), threadId, status);
-
-			if (thread.getCategoryId() !=
-					MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) {
-
-				// Category
-
-				MBCategory category = mbCategoryPersistence.fetchByPrimaryKey(
-					thread.getCategoryId());
-
-				if (category != null) {
-					MBUtil.updateCategoryStatistics(
-						category.getCompanyId(), category.getCategoryId());
-				}
-			}
-
 		}
-		else {
-			updateDependentStatus(thread.getGroupId(), threadId, status);
+
+		mbThreadPersistence.update(thread);
+
+		if (trashEntry == null) {
+			MBUtil.updateCategoryStatistics(
+				thread.getCompanyId(), thread.getCategoryId());
 		}
 
 		// Indexer
