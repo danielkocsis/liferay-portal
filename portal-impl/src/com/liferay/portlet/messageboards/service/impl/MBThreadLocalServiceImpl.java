@@ -748,13 +748,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 		MBThread thread = mbThreadPersistence.findByPrimaryKey(threadId);
 
-		if (thread.isInTrash()) {
-			restoreThreadFromTrash(userId, threadId);
-		}
-		else {
-			updateStatus(
-				userId, threadId, thread.getStatus(), new ServiceContext());
-		}
+		restoreThreadFromTrash(userId, threadId);
 
 		return moveThread(thread.getGroupId(), categoryId, threadId);
 	}
@@ -842,10 +836,28 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			return;
 		}
 
-		ServiceContext serviceContext = new ServiceContext();
+		int status = WorkflowConstants.STATUS_APPROVED;
 
-		TrashEntry trashEntry = trashEntryLocalService.getEntry(
+		TrashEntry trashEntry = trashEntryLocalService.fetchEntry(
 			MBThread.class.getName(), threadId);
+
+		if (trashEntry == null) {
+			trashEntry = thread.getContainerTrashEntry();
+
+			TrashVersion trashVersion =
+				trashVersionLocalService.fetchVersion(
+					trashEntry.getEntryId(), MBThread.class.getName(),
+					threadId);
+
+			if (trashVersion != null) {
+				status = trashVersion.getStatus();
+			}
+		}
+		else {
+			status = trashEntry.getStatus();
+		}
+
+		ServiceContext serviceContext = new ServiceContext();
 
 		serviceContext.setAttribute(
 			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
@@ -859,23 +871,26 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			TrashConstants.DEPENDENT_STATUSES, MBMessage.class.getName(),
 			statusMap);
 
-		updateStatus(userId, threadId, trashEntry.getStatus(), serviceContext);
+		updateStatus(userId, threadId, status, serviceContext);
 
-		// Social
+		if (trashEntry.isTrashEntry(thread)) {
 
-		MBMessage message = mbMessageLocalService.getMBMessage(
-			thread.getRootMessageId());
+			// Social
 
-		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
+			MBMessage message = mbMessageLocalService.getMBMessage(
+				thread.getRootMessageId());
 
-		extraDataJSONObject.put("rootMessageId", thread.getRootMessageId());
-		extraDataJSONObject.put("title", message.getSubject());
+			JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
 
-		socialActivityLocalService.addActivity(
-			userId, thread.getGroupId(), MBThread.class.getName(),
-			thread.getThreadId(),
-			SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
-			extraDataJSONObject.toString(), 0);
+			extraDataJSONObject.put("rootMessageId", thread.getRootMessageId());
+			extraDataJSONObject.put("title", message.getSubject());
+
+			socialActivityLocalService.addActivity(
+				userId, thread.getGroupId(), MBThread.class.getName(),
+				thread.getThreadId(),
+				SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
+				extraDataJSONObject.toString(), 0);
+		}
 
 		// Trash
 
