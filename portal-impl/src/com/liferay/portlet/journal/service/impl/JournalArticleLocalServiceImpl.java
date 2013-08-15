@@ -456,7 +456,7 @@ public class JournalArticleLocalServiceImpl
 		else {
 			updateStatus(
 				userId, article, WorkflowConstants.STATUS_APPROVED, null,
-				new HashMap<String, Serializable>(), serviceContext);
+				serviceContext);
 		}
 
 		return journalArticlePersistence.findByPrimaryKey(article.getId());
@@ -1263,8 +1263,7 @@ public class JournalArticleLocalServiceImpl
 
 		return updateStatus(
 			userId, groupId, articleId, version,
-			WorkflowConstants.STATUS_EXPIRED, articleURL,
-			new HashMap<String, Serializable>(), serviceContext);
+			WorkflowConstants.STATUS_EXPIRED, articleURL, serviceContext);
 	}
 
 	/**
@@ -5040,7 +5039,6 @@ public class JournalArticleLocalServiceImpl
 	@Override
 	public JournalArticle updateStatus(
 			long userId, JournalArticle article, int status, String articleURL,
-			Map<String, Serializable> workflowContext,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
@@ -5329,14 +5327,12 @@ public class JournalArticleLocalServiceImpl
 	@Override
 	public JournalArticle updateStatus(
 			long userId, long classPK, int status,
-			Map<String, Serializable> workflowContext,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		JournalArticle article = getArticle(classPK);
 
-		return updateStatus(
-			userId, article, status, null, workflowContext, serviceContext);
+		return updateStatus(userId, article, status, null, serviceContext);
 	}
 
 	/**
@@ -5364,17 +5360,14 @@ public class JournalArticleLocalServiceImpl
 	@Override
 	public JournalArticle updateStatus(
 			long userId, long groupId, String articleId, double version,
-			int status, String articleURL,
-			Map<String, Serializable> workflowContext,
-			ServiceContext serviceContext)
+			int status, String articleURL, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		JournalArticle article = journalArticlePersistence.findByG_A_V(
 			groupId, articleId, version);
 
 		return updateStatus(
-			userId, article, status, articleURL, workflowContext,
-			serviceContext);
+			userId, article, status, articleURL, serviceContext);
 	}
 
 	/**
@@ -5433,7 +5426,7 @@ public class JournalArticleLocalServiceImpl
 
 			updateStatus(
 				article.getUserId(), article, WorkflowConstants.STATUS_APPROVED,
-				null, new HashMap<String, Serializable>(), serviceContext);
+				null, serviceContext);
 		}
 	}
 
