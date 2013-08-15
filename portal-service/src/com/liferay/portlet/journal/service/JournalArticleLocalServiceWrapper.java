@@ -3364,12 +3364,11 @@ public class JournalArticleLocalServiceWrapper
 	public com.liferay.portlet.journal.model.JournalArticle updateStatus(
 		long userId, com.liferay.portlet.journal.model.JournalArticle article,
 		int status, java.lang.String articleURL,
-		java.util.Map<java.lang.String, java.io.Serializable> workflowContext,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _journalArticleLocalService.updateStatus(userId, article,
-			status, articleURL, workflowContext, serviceContext);
+			status, articleURL, serviceContext);
 	}
 
 	/**
@@ -3396,12 +3395,11 @@ public class JournalArticleLocalServiceWrapper
 	@Override
 	public com.liferay.portlet.journal.model.JournalArticle updateStatus(
 		long userId, long classPK, int status,
-		java.util.Map<java.lang.String, java.io.Serializable> workflowContext,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _journalArticleLocalService.updateStatus(userId, classPK,
-			status, workflowContext, serviceContext);
+			status, serviceContext);
 	}
 
 	/**
@@ -3430,13 +3428,11 @@ public class JournalArticleLocalServiceWrapper
 	public com.liferay.portlet.journal.model.JournalArticle updateStatus(
 		long userId, long groupId, java.lang.String articleId, double version,
 		int status, java.lang.String articleURL,
-		java.util.Map<java.lang.String, java.io.Serializable> workflowContext,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _journalArticleLocalService.updateStatus(userId, groupId,
-			articleId, version, status, articleURL, workflowContext,
-			serviceContext);
+			articleId, version, status, articleURL, serviceContext);
 	}
 
 	/**
