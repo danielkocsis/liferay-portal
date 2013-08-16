@@ -87,9 +87,10 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 			{ "status", Types.INTEGER },
 			{ "statusByUserId", Types.BIGINT },
 			{ "statusByUserName", Types.VARCHAR },
-			{ "statusDate", Types.TIMESTAMP }
+			{ "statusDate", Types.TIMESTAMP },
+			{ "trashEntryId", Types.BIGINT }
 		};
-	public static final String TABLE_SQL_CREATE = "create table DLFolder (uuid_ VARCHAR(75) null,folderId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,repositoryId LONG,mountPoint BOOLEAN,parentFolderId LONG,name VARCHAR(100) null,description STRING null,lastPostDate DATE null,defaultFileEntryTypeId LONG,hidden_ BOOLEAN,overrideFileEntryTypes BOOLEAN,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
+	public static final String TABLE_SQL_CREATE = "create table DLFolder (uuid_ VARCHAR(75) null,folderId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,repositoryId LONG,mountPoint BOOLEAN,parentFolderId LONG,name VARCHAR(100) null,description STRING null,lastPostDate DATE null,defaultFileEntryTypeId LONG,hidden_ BOOLEAN,overrideFileEntryTypes BOOLEAN,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,trashEntryId LONG)";
 	public static final String TABLE_SQL_DROP = "drop table DLFolder";
 	public static final String ORDER_BY_JPQL = " ORDER BY dlFolder.parentFolderId ASC, dlFolder.name ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY DLFolder.parentFolderId ASC, DLFolder.name ASC";
@@ -149,6 +150,7 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 		model.setStatusByUserId(soapModel.getStatusByUserId());
 		model.setStatusByUserName(soapModel.getStatusByUserName());
 		model.setStatusDate(soapModel.getStatusDate());
+		model.setTrashEntryId(soapModel.getTrashEntryId());
 
 		return model;
 	}
@@ -245,6 +247,7 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 		attributes.put("statusByUserId", getStatusByUserId());
 		attributes.put("statusByUserName", getStatusByUserName());
 		attributes.put("statusDate", getStatusDate());
+		attributes.put("trashEntryId", getTrashEntryId());
 
 		return attributes;
 	}
@@ -377,6 +380,12 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 
 		if (statusDate != null) {
 			setStatusDate(statusDate);
+		}
+
+		Long trashEntryId = (Long)attributes.get("trashEntryId");
+
+		if (trashEntryId != null) {
+			setTrashEntryId(trashEntryId);
 		}
 	}
 
@@ -774,6 +783,17 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 		_statusDate = statusDate;
 	}
 
+	@JSON
+	@Override
+	public long getTrashEntryId() {
+		return _trashEntryId;
+	}
+
+	@Override
+	public void setTrashEntryId(long trashEntryId) {
+		_trashEntryId = trashEntryId;
+	}
+
 	@Override
 	public long getContainerModelId() {
 		return getFolderId();
@@ -803,6 +823,26 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 	public StagedModelType getStagedModelType() {
 		return new StagedModelType(PortalUtil.getClassNameId(
 				DLFolder.class.getName()));
+	}
+
+	@Override
+	public boolean isInTrash() {
+		if (getStatus() == WorkflowConstants.STATUS_IN_TRASH) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isInTrashContainer() {
+		if (isInTrash() && (getTrashEntryId() == 0)) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**
@@ -866,16 +906,6 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 	@Override
 	public boolean isIncomplete() {
 		if (getStatus() == WorkflowConstants.STATUS_INCOMPLETE) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean isInTrash() {
-		if (getStatus() == WorkflowConstants.STATUS_IN_TRASH) {
 			return true;
 		}
 		else {
@@ -955,6 +985,7 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 		dlFolderImpl.setStatusByUserId(getStatusByUserId());
 		dlFolderImpl.setStatusByUserName(getStatusByUserName());
 		dlFolderImpl.setStatusDate(getStatusDate());
+		dlFolderImpl.setTrashEntryId(getTrashEntryId());
 
 		dlFolderImpl.resetOriginalValues();
 
@@ -1158,12 +1189,14 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 			dlFolderCacheModel.statusDate = Long.MIN_VALUE;
 		}
 
+		dlFolderCacheModel.trashEntryId = getTrashEntryId();
+
 		return dlFolderCacheModel;
 	}
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(43);
+		StringBundler sb = new StringBundler(45);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -1207,6 +1240,8 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 		sb.append(getStatusByUserName());
 		sb.append(", statusDate=");
 		sb.append(getStatusDate());
+		sb.append(", trashEntryId=");
+		sb.append(getTrashEntryId());
 		sb.append("}");
 
 		return sb.toString();
@@ -1214,7 +1249,7 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(67);
+		StringBundler sb = new StringBundler(70);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.portlet.documentlibrary.model.DLFolder");
@@ -1304,6 +1339,10 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 			"<column><column-name>statusDate</column-name><column-value><![CDATA[");
 		sb.append(getStatusDate());
 		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>trashEntryId</column-name><column-value><![CDATA[");
+		sb.append(getTrashEntryId());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -1353,6 +1392,7 @@ public class DLFolderModelImpl extends BaseModelImpl<DLFolder>
 	private String _statusByUserUuid;
 	private String _statusByUserName;
 	private Date _statusDate;
+	private long _trashEntryId;
 	private long _columnBitmask;
 	private DLFolder _escapedModel;
 }
