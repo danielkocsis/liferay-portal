@@ -210,8 +210,6 @@ public class DDMStructureStagedModelDataHandler
 			PortletDataContext portletDataContext, DDMStructure structure)
 		throws Exception {
 
-		prepareLanguagesForImport(structure);
-
 		long userId = portletDataContext.getUserId(structure.getUserUuid());
 
 		if (structure.getParentStructureId() !=
