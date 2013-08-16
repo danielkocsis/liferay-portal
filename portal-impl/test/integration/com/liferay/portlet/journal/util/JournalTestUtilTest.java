@@ -40,6 +40,7 @@ import com.liferay.portlet.dynamicdatamapping.util.DDMTemplateTestUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalFolder;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -130,7 +131,8 @@ public class JournalTestUtilTest {
 	public void testAddDDMStructureWithNonexistingLocale() throws Exception {
 		try {
 			CompanyTestUtil.resetCompanyLocales(
-				PortalUtil.getDefaultCompanyId(), "en_US");
+				PortalUtil.getDefaultCompanyId(), LocaleUtil.US,
+				new Locale[] {LocaleUtil.US});
 
 			DDMStructureTestUtil.addStructure(
 				JournalArticle.class.getName(), LocaleUtil.CANADA);

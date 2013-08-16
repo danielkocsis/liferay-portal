@@ -64,6 +64,7 @@ public class PortalImplLocalizedFriendlyURLTest {
 
 		CompanyTestUtil.resetCompanyLocales(
 			PortalUtil.getDefaultCompanyId(),
+			LocaleUtil.US,
 			new Locale[] {
 				LocaleUtil.CANADA_FRENCH, LocaleUtil.SPAIN, LocaleUtil.US});
 
@@ -83,7 +84,7 @@ public class PortalImplLocalizedFriendlyURLTest {
 	@AfterClass
 	public static void tearDownClass() throws Exception {
 		CompanyTestUtil.resetCompanyLocales(
-			PortalUtil.getDefaultCompanyId(), _availableLocales);
+			PortalUtil.getDefaultCompanyId(), LocaleUtil.US, _availableLocales);
 	}
 
 	@Test
