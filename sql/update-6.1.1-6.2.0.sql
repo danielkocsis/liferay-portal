@@ -6,6 +6,7 @@ alter table BookmarksEntry add status INTEGER;
 alter table BookmarksEntry add statusByUserId LONG;
 alter table BookmarksEntry add statusByUserName VARCHAR(75) null;
 alter table BookmarksEntry add statusDate DATE null;
+alter table BookmarksEntry add trashEntryId LONG;
 
 COMMIT_TRANSACTION;
 
@@ -18,6 +19,7 @@ alter table BookmarksFolder add status INTEGER;
 alter table BookmarksFolder add statusByUserId LONG;
 alter table BookmarksFolder add statusByUserName VARCHAR(75) null;
 alter table BookmarksFolder add statusDate DATE null;
+alter table BookmarksFolder add trashEntryId LONG;
 
 COMMIT_TRANSACTION;
 
@@ -327,18 +329,21 @@ COMMIT_TRANSACTION;
 update DLFileRank set active_ = TRUE;
 
 alter table DLFileShortcut add active_ BOOLEAN;
+alter table DLFileShortcut add trashEntryId LONG;
 
 COMMIT_TRANSACTION;
 
 update DLFileShortcut set active_ = TRUE;
 
 alter table DLFileVersion add checksum VARCHAR(75) null;
+alter table DLFileVersion add trashEntryId LONG;
 
 alter table DLFolder add hidden_ BOOLEAN;
 alter table DLFolder add status INTEGER;
 alter table DLFolder add statusByUserId LONG;
 alter table DLFolder add statusByUserName VARCHAR(75) null;
 alter table DLFolder add statusDate DATE null;
+alter table DLFolder add trashEntryId LONG;
 
 COMMIT_TRANSACTION;
 
@@ -384,6 +389,7 @@ drop table Groups_Permissions;
 alter table Image drop column text_;
 
 alter table JournalArticle add folderId LONG;
+alter table JournalArticle add trashEntryId LONG;
 
 COMMIT_TRANSACTION;
 
@@ -404,7 +410,8 @@ create table JournalFolder (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 alter table Layout add userId LONG;
@@ -442,6 +449,7 @@ alter table MBCategory add status INTEGER;
 alter table MBCategory add statusByUserId LONG;
 alter table MBCategory add statusByUserName VARCHAR(75) null;
 alter table MBCategory add statusDate DATE null;
+alter table MBCategory add trashEntryId LONG;
 
 alter table MBDiscussion add uuid_ VARCHAR(75) null;
 alter table MBDiscussion add groupId LONG;
@@ -467,6 +475,7 @@ alter table MBThread add userId LONG;
 alter table MBThread add userName VARCHAR(75) null;
 alter table MBThread add createDate DATE null;
 alter table MBThread add modifiedDate DATE null;
+alter table MBThread add trashEntryId LONG;
 
 alter table MBThreadFlag add uuid_ VARCHAR(75) null;
 alter table MBThreadFlag add groupId LONG;
@@ -626,6 +635,7 @@ alter table WikiNode add status INTEGER;
 alter table WikiNode add statusByUserId LONG;
 alter table WikiNode add statusByUserName VARCHAR(75) null;
 alter table WikiNode add statusDate DATE null;
+alter table WikiNode add trashEntryId LONG;
 
 COMMIT_TRANSACTION;
 
@@ -633,3 +643,7 @@ update WikiNode set status = 0;
 update WikiNode set statusByUserId = userId;
 update WikiNode set statusByUserName = userName;
 update WikiNode set statusDate = modifiedDate;
+
+alter table WikiPage add trashEntryId LONG;
+
+COMMIT_TRANSACTION;
