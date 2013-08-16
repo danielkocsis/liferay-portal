@@ -53,6 +53,7 @@ import com.liferay.portal.model.Group;
 import com.liferay.portal.model.GroupedModel;
 import com.liferay.portal.model.Region;
 import com.liferay.portal.model.ResourcedModel;
+import com.liferay.portal.model.TrashedModel;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.WorkflowedModel;
 import com.liferay.portal.security.permission.ActionKeys;
@@ -1494,8 +1495,14 @@ public abstract class BaseIndexer implements Indexer {
 				(WorkflowedModel)workflowedBaseModel;
 
 			document.addKeyword(Field.STATUS, workflowedModel.getStatus());
+		}
 
-			if ((groupedModel != null) && workflowedModel.isInTrash()) {
+		if ((groupedModel != null) &&
+			(workflowedBaseModel instanceof TrashedModel)) {
+
+			TrashedModel trashedModel = (TrashedModel)workflowedBaseModel;
+
+			if (trashedModel.isInTrash()) {
 				addTrashFields(document, className, classPK, null, null, null);
 			}
 		}
