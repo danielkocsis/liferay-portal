@@ -910,11 +910,28 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 					fileEntryUUID, groupId);
 			}
 			catch (NoSuchFileEntryException nsfee) {
-				if (_log.isWarnEnabled()) {
-					_log.warn("Unable to reference " + path);
-				}
+				try {
+					FileEntry originalFileEntry =
+						(FileEntry)portletDataContext.getZipEntryAsObject(
+							referenceDataElement, path);
 
-				continue;
+					Map<Long, Long> fileEntryIds =
+						(Map<Long, Long>)portletDataContext.
+							getNewPrimaryKeysMap(DLFileEntry.class);
+
+					long originalFileEntryId = fileEntryIds.get(
+						originalFileEntry.getFileEntryId());
+
+					fileEntry = DLAppLocalServiceUtil.getFileEntry(
+						originalFileEntryId);
+				}
+				catch (NoSuchFileEntryException nsfee2) {
+					if (_log.isWarnEnabled()) {
+						_log.warn("Unable to reference " + path);
+					}
+
+					continue;
+				}
 			}
 
 			String url = DLUtil.getPreviewURL(
