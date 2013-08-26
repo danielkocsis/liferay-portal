@@ -789,8 +789,6 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			oldStatus = WorkflowConstants.STATUS_DRAFT;
 		}
 
-		// Trash
-
 		TrashEntry trashEntry = trashEntryLocalService.addTrashEntry(
 			userId, thread.getGroupId(), MBThread.class.getName(),
 			thread.getThreadId(), oldStatus, null, null);
@@ -800,9 +798,9 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 		serviceContext.setAttribute(
 			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
 
-		thread = updateStatus(
-			userId, thread.getThreadId(), WorkflowConstants.STATUS_IN_TRASH,
-			serviceContext);
+		thread.setTrashEntryId(trashEntry.getEntryId());
+
+		thread = moveThreadToTrash(userId, thread, serviceContext);
 
 		// Social
 
@@ -823,10 +821,29 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 	}
 
 	@Override
-	public void restoreThreadFromTrash(long userId, long threadId)
+	public MBThread moveThreadToTrash(
+			long userId, MBThread thread, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		// Thread
+
+		thread = updateStatus(
+			userId, thread, WorkflowConstants.STATUS_IN_TRASH, serviceContext);
+
+		// Messages
+
+		moveDependentsToTrash(
+			thread.getGroupId(), thread.getThreadId(), serviceContext);
+
+		MBUtil.updateCategoryStatistics(
+			thread.getCompanyId(), thread.getCategoryId());
+
+		return thread;
+	}
+
+	@Override
+	public void restoreThreadFromTrash(long userId, long threadId)
+		throws PortalException, SystemException {
 
 		MBThread thread = mbThreadPersistence.findByPrimaryKey(threadId);
 
@@ -836,42 +853,32 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			return;
 		}
 
-		int status = WorkflowConstants.STATUS_APPROVED;
-
-		TrashEntry trashEntry = trashEntryLocalService.fetchEntry(
-			MBThread.class.getName(), threadId);
-
-		if (trashEntry == null) {
-			trashEntry = thread.getContainerTrashEntry();
-
-			TrashVersion trashVersion =
-				trashVersionLocalService.fetchVersion(
-					trashEntry.getEntryId(), MBThread.class.getName(),
-					threadId);
-
-			if (trashVersion != null) {
-				status = trashVersion.getStatus();
-			}
-		}
-		else {
-			status = trashEntry.getStatus();
-		}
+		TrashEntry trashEntry = thread.getTrashEntry();
 
 		ServiceContext serviceContext = new ServiceContext();
 
 		serviceContext.setAttribute(
 			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
 
-		// Message
+		int status = WorkflowConstants.STATUS_APPROVED;
 
-		HashMap<Long, Integer> statusMap = TrashUtil.getStatusMap(
-			trashEntry.getEntryId(), MBMessage.class.getName());
+		if (trashEntry.isTrashEntry(thread)) {
+			status = trashEntry.getStatus();
+		}
+		else {
+			TrashVersion trashVersion =
+				trashVersionLocalService.fetchVersion(
+					trashEntry.getEntryId(), MBThread.class.getName(),
+					thread.getThreadId());
 
-		serviceContext.setStatusMap(
-			TrashConstants.DEPENDENT_STATUSES, MBMessage.class.getName(),
-			statusMap);
+			if (trashVersion != null) {
+				status = trashVersion.getStatus();
+			}
+		}
 
-		updateStatus(userId, threadId, status, serviceContext);
+		thread.setTrashEntryId(0);
+
+		restoreThreadFromTrash(userId, thread, status, serviceContext);
 
 		if (trashEntry.isTrashEntry(thread)) {
 
@@ -896,6 +903,37 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 		trashEntryLocalService.deleteEntry(
 			MBThread.class.getName(), thread.getThreadId());
+	}
+
+	@Override
+	public void restoreThreadFromTrash(
+			long userId, MBThread thread, int status,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		// Thread
+
+		updateStatus(userId, thread, status, serviceContext);
+
+		// Dependents
+
+		long trashEntryId = GetterUtil.getLong(
+			serviceContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
+
+		TrashEntry trashEntry = trashEntryLocalService.getEntry(trashEntryId);
+
+		HashMap<Long, Integer> statusMap = TrashUtil.getStatusMap(
+			trashEntry.getEntryId(), MBMessage.class.getName());
+
+		serviceContext.setStatusMap(
+			TrashConstants.DEPENDENT_STATUSES, MBMessage.class.getName(),
+			statusMap);
+
+		restoreDependentsFromTrash(
+			thread.getGroupId(), thread.getThreadId(), serviceContext);
+
+		MBUtil.updateCategoryStatistics(
+			thread.getCompanyId(), thread.getCategoryId());
 	}
 
 	@Override
