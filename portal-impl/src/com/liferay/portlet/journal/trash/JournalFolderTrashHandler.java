@@ -114,12 +114,12 @@ public class JournalFolderTrashHandler extends JournalBaseTrashHandler {
 	}
 
 	@Override
-	public ContainerModel getTrashContainer(long classPK)
+	public TrashEntry getTrashEntry(long classPK)
 		throws PortalException, SystemException {
 
 		JournalFolder folder = getJournalFolder(classPK);
 
-		return folder.getTrashContainer();
+		return folder.getTrashEntry();
 	}
 
 	@Override
