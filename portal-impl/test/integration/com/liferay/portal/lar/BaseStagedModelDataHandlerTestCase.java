@@ -280,8 +280,8 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 
 	protected void initImport() throws Exception {
 		CompanyTestUtil.resetCompanyLocales(
-			TestPropsValues.getCompanyId(), LocaleUtil.HUNGARY,
-			new Locale[] {LocaleUtil.HUNGARY});
+			TestPropsValues.getCompanyId(), LocaleUtil.SPAIN,
+			new Locale[] {LocaleUtil.SPAIN});
 
 		PortletExporter portletExporter = new PortletExporter();
 
