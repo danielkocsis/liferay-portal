@@ -341,11 +341,10 @@ public class TrashImpl implements Trash {
 			className);
 
 		if (trashHandler.isInTrashContainer(classPK)) {
-			ContainerModel containerModel = trashHandler.getTrashContainer(
-				classPK);
+			TrashEntry trashEntry = trashHandler.getTrashEntry(classPK);
 
-			className = containerModel.getModelClassName();
-			classPK = containerModel.getContainerModelId();
+			className = trashEntry.getClassName();
+			classPK = trashEntry.getClassPK();
 
 			trashHandler = TrashHandlerRegistryUtil.getTrashHandler(className);
 		}
