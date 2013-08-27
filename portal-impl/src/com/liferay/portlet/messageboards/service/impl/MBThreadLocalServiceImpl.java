@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.trash.TrashConstants;
+import com.liferay.portal.kernel.trash.TrashContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -855,9 +856,9 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 		TrashEntry trashEntry = thread.getTrashEntry();
 
-		ServiceContext serviceContext = new ServiceContext();
+		TrashContext trashContext = new TrashContext();
 
-		serviceContext.setAttribute(
+		trashContext.setAttribute(
 			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
 
 		int status = WorkflowConstants.STATUS_APPROVED;
@@ -878,7 +879,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 		thread.setTrashEntryId(0);
 
-		restoreThreadFromTrash(userId, thread, status, serviceContext);
+		restoreThreadFromTrash(userId, thread, status, trashContext);
 
 		if (trashEntry.isTrashEntry(thread)) {
 
@@ -907,30 +908,29 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 	@Override
 	public void restoreThreadFromTrash(
-			long userId, MBThread thread, int status,
-			ServiceContext serviceContext)
+			long userId, MBThread thread, int status, TrashContext trashContext)
 		throws PortalException, SystemException {
 
 		// Thread
 
-		updateStatus(userId, thread, status, serviceContext);
+		updateStatus(userId, thread, status, trashContext);
 
 		// Dependents
 
 		long trashEntryId = GetterUtil.getLong(
-			serviceContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
+			trashContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
 
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(trashEntryId);
 
-		HashMap<Long, Integer> statusMap = TrashUtil.getStatusMap(
-			trashEntry.getEntryId(), MBMessage.class.getName());
+		HashMap<Long, Integer> dependentStatuses =
+			TrashUtil.getDependentStatuses(
+				trashEntry.getEntryId(), MBMessage.class.getName());
 
-		serviceContext.setStatusMap(
-			TrashConstants.DEPENDENT_STATUSES, MBMessage.class.getName(),
-			statusMap);
+		trashContext.setDependentStatuses(
+			MBMessage.class.getName(), dependentStatuses);
 
 		restoreDependentsFromTrash(
-			thread.getGroupId(), thread.getThreadId(), serviceContext);
+			thread.getGroupId(), thread.getThreadId(), trashContext);
 
 		MBUtil.updateCategoryStatistics(
 			thread.getCompanyId(), thread.getCategoryId());
@@ -1230,7 +1230,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(trashEntryId);
 
-		Set<Long> userIds = serviceContext.getIdSet("userIds");
+		Set<Long> userIds = serviceContext.getUserIds();
 
 		List<MBMessage> messages = mbMessageLocalService.getThreadMessages(
 			threadId, WorkflowConstants.STATUS_ANY);
@@ -1296,18 +1296,18 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 	}
 
 	protected void restoreDependentsFromTrash(
-			long groupId, long threadId, ServiceContext serviceContext)
+			long groupId, long threadId, TrashContext trashContext)
 		throws PortalException, SystemException {
 
 		long trashEntryId = GetterUtil.getLong(
-			serviceContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
+			trashContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
 
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(trashEntryId);
 
-		Set<Long> userIds = serviceContext.getIdSet("userIds");
+		Set<Long> userIds = trashContext.getUserIds();
 
-		Map<Long, Integer> messageStatuses = serviceContext.getStatusMap(
-			TrashConstants.DEPENDENT_STATUSES, MBMessage.class.getName());
+		Map<Long, Integer> messageStatuses = trashContext.getDependentStatuses(
+			MBMessage.class.getName());
 
 		List<MBMessage> messages = mbMessageLocalService.getThreadMessages(
 			threadId, WorkflowConstants.STATUS_ANY);
