@@ -22,7 +22,7 @@ import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.trash.TrashConstants;
-import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.trash.TrashContext;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.ResourceConstants;
@@ -45,8 +45,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Brian Wing Shun Chan
@@ -565,28 +563,47 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 			userId, category.getGroupId(), MBCategory.class.getName(),
 			categoryId, WorkflowConstants.STATUS_APPROVED, null, null);
 
-		ServiceContext serviceContext = new ServiceContext();
+		TrashContext trashContext = new TrashContext();
 
-		serviceContext.setAttribute(
-			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
+		trashContext.setAttribute(TrashConstants.TRASH_ENTRY, trashEntry);
 
 		// Category
 
 		category.setTrashEntryId(trashEntry.getEntryId());
 
-		category = updateStatus(
-			userId, category, WorkflowConstants.STATUS_IN_TRASH,
-			serviceContext);
+		category = moveCategoryToTrash(userId, category, trashContext);
 
-		moveDependentsToTrash(
-			category.getGroupId(), userId, categoryId, serviceContext);
-
-		Set<Long> userIds = serviceContext.getIdSet("userIds");
+		HashSet<Long> userIds = (HashSet<Long>)trashContext.getAttribute(
+			"userIds", new HashSet<Long>());
 
 		for (long curUserId : userIds) {
 			mbStatsUserLocalService.updateStatsUser(
 				category.getGroupId(), curUserId);
 		}
+
+		return category;
+	}
+
+	@Override
+	public MBCategory moveCategoryToTrash(
+			long userId, MBCategory category, TrashContext trashContext)
+		throws PortalException, SystemException {
+
+		TrashEntry trashEntry = (TrashEntry)trashContext.getAttribute(
+			TrashConstants.TRASH_ENTRY);
+
+		if (!category.isApproved() && !category.isTrashEntry()) {
+			trashVersionLocalService.addTrashVersion(
+				trashEntry.getEntryId(), MBCategory.class.getName(),
+				category.getCategoryId(), category.getStatus());
+		}
+
+		category = updateStatus(
+			userId, category, WorkflowConstants.STATUS_IN_TRASH, trashContext);
+
+		moveDependentsToTrash(
+			category.getGroupId(), userId, category.getCategoryId(),
+			trashContext);
 
 		return category;
 	}
@@ -601,61 +618,42 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 
 		TrashEntry trashEntry = category.getTrashEntry();
 
-		ServiceContext serviceContext = new ServiceContext();
+		TrashContext trashContext = new TrashContext();
 
-		serviceContext.setAttribute(
-			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
+		trashContext.setAttribute(TrashConstants.TRASH_ENTRY, trashEntry);
+
+		int status = WorkflowConstants.STATUS_APPROVED;
+
+		if (category.isTrashEntry()) {
+			status = trashEntry.getStatus();
+		}
+		else {
+			TrashVersion trashVersion =
+				trashVersionLocalService.fetchVersion(
+					trashEntry.getEntryId(), MBCategory.class.getName(),
+					category.getCategoryId());
+
+			if (trashVersion != null) {
+				status = trashVersion.getStatus();
+			}
+		}
 
 		category.setTrashEntryId(0);
 
-		updateStatus(
-			userId, category, WorkflowConstants.STATUS_APPROVED,
-			serviceContext);
-
 		// Dependents
 
-		List<TrashVersion> trashVersions = trashVersionLocalService.getVersions(
-			trashEntry.getEntryId());
+		trashContext.setDependentStatuses(trashEntry.getEntryId());
 
-		for (TrashVersion trashVersion : trashVersions) {
-			Map<Long, Integer> statusMap = serviceContext.getStatusMap(
-				TrashConstants.DEPENDENT_STATUSES, trashVersion.getClassName());
+		trashContext.setEntityIds(
+			trashEntry.getGroupId(), MBCategory.class.getName());
 
-			statusMap.put(trashVersion.getClassPK(), trashVersion.getStatus());
-		}
+		trashContext.setEntityIds(
+			trashEntry.getGroupId(), MBThread.class.getName());
 
-		HashSet<Long> trashedCategoryIds = new HashSet<Long>();
+		restoreCategoryFromTrash(userId, category, status, trashContext);
 
-		List<TrashEntry> categoryTrashEntries =
-			trashEntryLocalService.getEntries(
-				trashEntry.getGroupId(), MBCategory.class.getName());
-
-		for (TrashEntry categoryTrashEntry : categoryTrashEntries) {
-			trashedCategoryIds.add(categoryTrashEntry.getClassPK());
-		}
-
-		serviceContext.setIdSet(
-			TrashConstants.TRASHED_IDS, MBCategory.class.getName(),
-			trashedCategoryIds);
-
-		HashSet<Long> trashedThreadIds = new HashSet<Long>();
-
-		List<TrashEntry> threadTrashEntries =
-			trashEntryLocalService.getEntries(
-				trashEntry.getGroupId(), MBThread.class.getName());
-
-		for (TrashEntry threadTrashEntry : threadTrashEntries) {
-			trashedThreadIds.add(threadTrashEntry.getClassPK());
-		}
-
-		serviceContext.setIdSet(
-			TrashConstants.TRASHED_IDS, MBThread.class.getName(),
-			trashedThreadIds);
-
-		restoreDependentsFromTrash(
-			trashEntry.getGroupId(), userId, categoryId, serviceContext);
-
-		Set<Long> userIds = serviceContext.getIdSet("userIds");
+		HashSet<Long> userIds = (HashSet<Long>)trashContext.getAttribute(
+			"userIds", new HashSet<Long>());
 
 		for (long curUserId : userIds) {
 			mbStatsUserLocalService.updateStatsUser(
@@ -666,6 +664,19 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 
 		trashEntryLocalService.deleteEntry(
 			MBCategory.class.getName(), categoryId);
+	}
+
+	@Override
+	public void restoreCategoryFromTrash(
+			long userId, MBCategory category, int status,
+			TrashContext trashContext)
+		throws PortalException, SystemException {
+
+		updateStatus(userId, category, status, trashContext);
+
+		restoreDependentsFromTrash(
+			category.getGroupId(), userId, category.getCategoryId(),
+			trashContext);
 	}
 
 	@Override
@@ -780,10 +791,8 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		long trashEntryId = GetterUtil.getLong(
-			serviceContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
-
-		TrashEntry trashEntry = trashEntryLocalService.fetchEntry(trashEntryId);
+		TrashEntry trashEntry = (TrashEntry)serviceContext.getAttribute(
+			TrashConstants.TRASH_ENTRY);
 
 		// Category
 
@@ -923,11 +932,8 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 
 	protected void moveDependentsToTrash(
 			long groupId, long userId, long parentCategoryId,
-			ServiceContext serviceContext)
+			TrashContext trashContext)
 		throws PortalException, SystemException {
-
-		long trashEntryId = GetterUtil.getLong(
-			serviceContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
 
 		List<MBCategory> categories = getCategories(
 			groupId, parentCategoryId, WorkflowConstants.STATUS_ANY,
@@ -938,18 +944,7 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 				continue;
 			}
 
-			if (category.getStatus() != WorkflowConstants.STATUS_APPROVED) {
-				trashVersionLocalService.addTrashVersion(
-					trashEntryId, MBCategory.class.getName(),
-					category.getCategoryId(), category.getStatus());
-			}
-
-			updateStatus(
-				userId, category, WorkflowConstants.STATUS_IN_TRASH,
-				serviceContext);
-
-			moveDependentsToTrash(
-				groupId, userId, category.getCategoryId(), serviceContext);
+			moveCategoryToTrash(userId, category, trashContext);
 		}
 
 		List<MBThread> threads = mbThreadLocalService.getThreads(
@@ -961,72 +956,49 @@ public class MBCategoryLocalServiceImpl extends MBCategoryLocalServiceBaseImpl {
 				continue;
 			}
 
-			if (thread.getStatus() != WorkflowConstants.STATUS_APPROVED) {
-				trashVersionLocalService.addTrashVersion(
-					trashEntryId, MBThread.class.getName(),
-					thread.getThreadId(), thread.getStatus());
-			}
-
 			mbThreadLocalService.moveThreadToTrash(
-				userId, thread, serviceContext);
+				userId, thread, trashContext);
 		}
 	}
 
 	protected void restoreDependentsFromTrash(
 			long groupId, long userId, long parentCategoryId,
-			ServiceContext serviceContext)
+			TrashContext trashContext)
 		throws PortalException, SystemException {
-
-		Set<Long> trashedCategoryIds = serviceContext.getIdSet(
-			TrashConstants.TRASHED_IDS, MBCategory.class.getName());
-
-		Map<Long, Integer> categoryStatusMap = serviceContext.getStatusMap(
-			TrashConstants.DEPENDENT_STATUSES, MBCategory.class.getName());
 
 		List<MBCategory> categories = getCategories(
 			groupId, parentCategoryId, WorkflowConstants.STATUS_ANY,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
 		for (MBCategory category : categories) {
-			if (trashedCategoryIds.contains(category.getCategoryId())) {
+			if (trashContext.containsEntityId(
+					MBCategory.class.getName(), category.getCategoryId())) {
+
 				continue;
 			}
 
-			Integer oldStatus = categoryStatusMap.get(category.getCategoryId());
+			Integer oldStatus = trashContext.getDependentStatus(
+				MBCategory.class.getName(), category.getCategoryId());
 
-			if (oldStatus == null) {
-				oldStatus = WorkflowConstants.STATUS_APPROVED;
-			}
-
-			updateStatus(userId, category, oldStatus, serviceContext);
-
-			restoreDependentsFromTrash(
-				groupId, userId, category.getCategoryId(), serviceContext);
+			restoreCategoryFromTrash(userId, category, oldStatus, trashContext);
 		}
-
-		Set<Long> trashedThreadIds = serviceContext.getIdSet(
-			TrashConstants.TRASHED_IDS, MBThread.class.getName());
-
-		Map<Long, Integer> threadStatusMap = serviceContext.getStatusMap(
-			TrashConstants.DEPENDENT_STATUSES, MBThread.class.getName());
 
 		List<MBThread> threads = mbThreadLocalService.getThreads(
 			groupId, parentCategoryId, WorkflowConstants.STATUS_ANY,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
 		for (MBThread thread : threads) {
-			if (trashedThreadIds.contains(thread.getThreadId())) {
+			if (trashContext.containsEntityId(
+					MBThread.class.getName(), thread.getThreadId())) {
+
 				continue;
 			}
 
-			Integer oldStatus = threadStatusMap.get(thread.getThreadId());
-
-			if (oldStatus == null) {
-				oldStatus = WorkflowConstants.STATUS_APPROVED;
-			}
+			Integer oldStatus = trashContext.getDependentStatus(
+				MBThread.class.getName(), thread.getThreadId());
 
 			mbThreadLocalService.restoreThreadFromTrash(
-				userId, thread, oldStatus, serviceContext);
+				userId, thread, oldStatus, trashContext);
 		}
 	}
 
