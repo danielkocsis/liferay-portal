@@ -24,8 +24,13 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.trash.TrashConstants;
+import com.liferay.portal.kernel.trash.TrashContext;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.ResourceConstants;
@@ -39,16 +44,21 @@ import com.liferay.portlet.asset.util.AssetUtil;
 import com.liferay.portlet.journal.DuplicateFolderNameException;
 import com.liferay.portlet.journal.FolderNameException;
 import com.liferay.portlet.journal.model.JournalArticle;
+import com.liferay.portlet.journal.model.JournalArticleResource;
 import com.liferay.portlet.journal.model.JournalFolder;
 import com.liferay.portlet.journal.model.JournalFolderConstants;
 import com.liferay.portlet.journal.service.base.JournalFolderLocalServiceBaseImpl;
 import com.liferay.portlet.social.model.SocialActivityConstants;
 import com.liferay.portlet.trash.model.TrashEntry;
+import com.liferay.portlet.trash.model.TrashVersion;
 import com.liferay.portlet.trash.util.TrashUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Juan Fernández
@@ -410,15 +420,7 @@ public class JournalFolderLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		JournalFolder folder = journalFolderPersistence.findByPrimaryKey(
-			folderId);
-
-		if (folder.isInTrash()) {
-			restoreFolderFromTrash(userId, folderId);
-		}
-		else {
-			updateStatus(userId, folder, WorkflowConstants.STATUS_APPROVED);
-		}
+		restoreFolderFromTrash(userId, folderId);
 
 		return journalFolderLocalService.moveFolder(
 			folderId, parentFolderId, serviceContext);
@@ -433,15 +435,27 @@ public class JournalFolderLocalServiceImpl
 
 		String title = folder.getName();
 
-		folder = updateStatus(
-			userId, folder, WorkflowConstants.STATUS_IN_TRASH);
+		UnicodeProperties typeSettingsProperties = new UnicodeProperties();
 
-		TrashEntry trashEntry = trashEntryLocalService.getEntry(
-			JournalFolder.class.getName(), folder.getFolderId());
+		typeSettingsProperties.put("title", title);
+
+		TrashEntry trashEntry = trashEntryLocalService.addTrashEntry(
+			userId, folder.getGroupId(), JournalFolder.class.getName(),
+			folder.getFolderId(), folder.getStatus(), null,
+			typeSettingsProperties);
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setAttribute(
+			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
 
 		folder.setName(TrashUtil.getTrashTitle(trashEntry.getEntryId()));
 
-		journalFolderPersistence.update(folder);
+		folder = updateStatus(
+			userId, folder, WorkflowConstants.STATUS_IN_TRASH);
+
+		moveDependentsToTrash(
+			userId, folder.getGroupId(), folderId, serviceContext);
 
 		// Social
 
@@ -461,29 +475,110 @@ public class JournalFolderLocalServiceImpl
 	public void restoreFolderFromTrash(long userId, long folderId)
 		throws PortalException, SystemException {
 
+		// Folder
+
 		JournalFolder folder = journalFolderPersistence.findByPrimaryKey(
 			folderId);
 
-		folder.setName(TrashUtil.getOriginalTitle(folder.getName()));
+		int status = WorkflowConstants.STATUS_APPROVED;
 
-		journalFolderPersistence.update(folder);
-
-		TrashEntry trashEntry = trashEntryLocalService.getEntry(
+		TrashEntry trashEntry = trashEntryLocalService.fetchEntry(
 			JournalFolder.class.getName(), folderId);
 
-		updateStatus(userId, folder, trashEntry.getStatus());
+		if (trashEntry == null) {
+			JournalFolder parentFolder = folder.getTrashContainer();
 
-		// Social
+			trashEntry = trashEntryLocalService.getEntry(
+				JournalFolder.class.getName(), parentFolder.getFolderId());
 
-		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
+			TrashVersion trashVersion =
+				trashVersionLocalService.fetchVersion(
+					trashEntry.getEntryId(), JournalFolder.class.getName(),
+					folderId);
 
-		extraDataJSONObject.put("title", folder.getName());
+			if (trashVersion != null) {
+				status = trashVersion.getStatus();
+			}
 
-		socialActivityLocalService.addActivity(
-			userId, folder.getGroupId(), JournalFolder.class.getName(),
-			folder.getFolderId(),
-			SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
-			extraDataJSONObject.toString(), 0);
+			String name = folder.getName();
+
+			folder.setName(
+				name.substring(name.indexOf(CharPool.UNDERLINE) + 1));
+		}
+		else {
+			status = trashEntry.getStatus();
+
+			folder.setName(TrashUtil.getOriginalTitle(folder.getName()));
+		}
+
+		TrashContext trashContext = new TrashContext();
+
+		trashContext.setAttribute(
+			TrashConstants.TRASH_ENTRY_ID, trashEntry.getEntryId());
+
+		updateStatus(userId, folder, status);
+
+		// Dependents
+
+		List<TrashVersion> trashVersions = trashVersionLocalService.getVersions(
+			trashEntry.getEntryId());
+
+		for (TrashVersion trashVersion : trashVersions) {
+			Map<Long, Integer> dependentStatuses =
+				trashContext.getDependentStatuses(trashVersion.getClassName());
+
+			dependentStatuses.put(
+				trashVersion.getClassPK(), trashVersion.getStatus());
+		}
+
+		HashSet<Long> trashedFolderIds = new HashSet<Long>();
+
+		List<TrashEntry> folderTrashEntries =
+			trashEntryLocalService.getEntries(
+				trashEntry.getGroupId(), JournalFolder.class.getName());
+
+		for (TrashEntry folderTrashEntry : folderTrashEntries) {
+			trashedFolderIds.add(folderTrashEntry.getClassPK());
+		}
+
+		trashContext.setEntityIds(
+			JournalFolder.class.getName(), trashedFolderIds);
+
+		HashSet<Long> trashedArticleIds = new HashSet<Long>();
+
+		List<TrashEntry> articleTrashEntries =
+			trashEntryLocalService.getEntries(
+				trashEntry.getGroupId(), JournalArticle.class.getName());
+
+		for (TrashEntry articleTrashEntry : articleTrashEntries) {
+			trashedArticleIds.add(articleTrashEntry.getClassPK());
+		}
+
+		trashContext.setEntityIds(
+			JournalArticle.class.getName(), trashedArticleIds);
+
+		restoreDependentsFromTrash(
+			trashEntry.getGroupId(), userId, folderId, trashContext);
+
+		if (trashEntry.isTrashEntry(folder)) {
+
+			// Social
+
+			JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
+
+			extraDataJSONObject.put("title", folder.getName());
+
+			socialActivityLocalService.addActivity(
+				userId, folder.getGroupId(), JournalFolder.class.getName(),
+				folder.getFolderId(),
+				SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
+				extraDataJSONObject.toString(), 0);
+		}
+
+		// Trash
+
+		trashEntryLocalService.deleteEntry(
+			JournalFolder.class.getName(), folder.getFolderId());
 	}
 
 	@Override
@@ -555,8 +650,6 @@ public class JournalFolderLocalServiceImpl
 
 		User user = userPersistence.findByPrimaryKey(userId);
 
-		int oldStatus = folder.getStatus();
-
 		folder.setStatus(status);
 		folder.setStatusByUserId(userId);
 		folder.setStatusByUserName(user.getFullName());
@@ -564,44 +657,16 @@ public class JournalFolderLocalServiceImpl
 
 		journalFolderPersistence.update(folder);
 
-		// Folders and entries
-
-		List<Object> foldersAndEntries =
-			journalFolderLocalService.getFoldersAndArticles(
-				folder.getGroupId(), folder.getFolderId());
-
-		updateDependentStatus(foldersAndEntries, status);
+		boolean visible = false;
 
 		if (status == WorkflowConstants.STATUS_APPROVED) {
-
-			// Asset
-
-			assetEntryLocalService.updateVisible(
-				JournalFolder.class.getName(), folder.getFolderId(), true);
-		}
-		else if (status == WorkflowConstants.STATUS_IN_TRASH) {
-
-			// Asset
-
-			assetEntryLocalService.updateVisible(
-				JournalFolder.class.getName(), folder.getFolderId(), false);
+			visible = true;
 		}
 
-		// Trash
+		// Asset
 
-		if (oldStatus == WorkflowConstants.STATUS_IN_TRASH) {
-			trashEntryLocalService.deleteEntry(
-				JournalFolder.class.getName(), folder.getFolderId());
-		}
-		else if (status == WorkflowConstants.STATUS_IN_TRASH) {
-			UnicodeProperties typeSettingsProperties = new UnicodeProperties();
-
-			typeSettingsProperties.put("title", folder.getName());
-
-			trashEntryLocalService.addTrashEntry(
-				userId, folder.getGroupId(), JournalFolder.class.getName(),
-				folder.getFolderId(), oldStatus, null, typeSettingsProperties);
-		}
+		assetEntryLocalService.updateVisible(
+			JournalFolder.class.getName(), folder.getFolderId(), visible);
 
 		// Index
 
@@ -691,117 +756,163 @@ public class JournalFolderLocalServiceImpl
 		journalFolderLocalService.deleteFolder(fromFolder);
 	}
 
-	protected void updateDependentStatus(
-			List<Object> foldersAndEntries, int status)
+	protected void moveDependentsToTrash(
+			long groupId, long userId, long parentFolderId,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		for (Object object : foldersAndEntries) {
-			if (object instanceof JournalArticle) {
-				JournalArticle article = (JournalArticle)object;
+		long trashEntryId = GetterUtil.getLong(
+			serviceContext.getAttribute(TrashConstants.TRASH_ENTRY_ID));
 
-				if (status == WorkflowConstants.STATUS_IN_TRASH) {
+		List<JournalFolder> folders = getFolders(groupId, parentFolderId);
 
-					// Asset
-
-					if (article.getStatus() ==
-							WorkflowConstants.STATUS_APPROVED) {
-
-						assetEntryLocalService.updateVisible(
-							JournalArticle.class.getName(),
-							article.getResourcePrimKey(), false);
-					}
-
-					if (article.getStatus() ==
-							WorkflowConstants.STATUS_PENDING) {
-
-						article.setStatus(WorkflowConstants.STATUS_DRAFT);
-
-						journalArticlePersistence.update(article);
-					}
-				}
-				else {
-
-					// Asset
-
-					if (article.getStatus() ==
-							WorkflowConstants.STATUS_APPROVED) {
-
-						assetEntryLocalService.updateVisible(
-							JournalArticle.class.getName(),
-							article.getResourcePrimKey(), true);
-					}
-				}
-
-				// Workflow
-
-				if (status != WorkflowConstants.STATUS_APPROVED) {
-					List<JournalArticle> articleVersions =
-						journalArticlePersistence.findByG_A(
-							article.getGroupId(), article.getArticleId());
-
-					for (JournalArticle curArticle : articleVersions) {
-						if (!curArticle.isPending()) {
-							continue;
-						}
-
-						curArticle.setStatus(WorkflowConstants.STATUS_DRAFT);
-
-						journalArticlePersistence.update(curArticle);
-
-						workflowInstanceLinkLocalService.
-							deleteWorkflowInstanceLink(
-								curArticle.getCompanyId(),
-								curArticle.getGroupId(),
-								JournalArticle.class.getName(),
-								curArticle.getId());
-					}
-				}
-
-				// Indexer
-
-				Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-					JournalArticle.class);
-
-				indexer.reindex(article);
+		for (JournalFolder folder : folders) {
+			if (folder.isInTrash()) {
+				continue;
 			}
-			else if (object instanceof JournalFolder) {
-				JournalFolder folder = (JournalFolder)object;
 
-				if (folder.isInTrash()) {
-					continue;
-				}
-
-				// Folders and articles
-
-				List<Object> curFoldersAndEntries = getFoldersAndArticles(
-					folder.getGroupId(), folder.getFolderId());
-
-				updateDependentStatus(curFoldersAndEntries, status);
-
-				if (status == WorkflowConstants.STATUS_IN_TRASH) {
-
-					// Asset
-
-					assetEntryLocalService.updateVisible(
-						JournalFolder.class.getName(), folder.getFolderId(),
-						false);
-				}
-				else {
-
-					// Asset
-
-					assetEntryLocalService.updateVisible(
-						JournalFolder.class.getName(), folder.getFolderId(),
-						true);
-				}
-
-				// Index
-
-				Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-					JournalFolder.class);
-
-				indexer.reindex(folder);
+			if (folder.getStatus() != WorkflowConstants.STATUS_APPROVED) {
+				trashVersionLocalService.addTrashVersion(
+					trashEntryId, JournalFolder.class.getName(),
+					folder.getFolderId(), folder.getStatus());
 			}
+
+			folder.setName(
+				String.valueOf(folder.getFolderId()) + StringPool.UNDERLINE +
+					folder.getName());
+
+			updateStatus(userId, folder, WorkflowConstants.STATUS_IN_TRASH);
+
+			moveDependentsToTrash(
+				groupId, userId, folder.getFolderId(), serviceContext);
+		}
+
+		JournalArticleResource articleResource = null;
+
+		List<JournalArticle> articles = journalArticleLocalService.getArticles(
+			groupId, parentFolderId);
+
+		for (JournalArticle article : articles) {
+			if (article.isInTrash()) {
+				continue;
+			}
+
+			if (article.getStatus() != WorkflowConstants.STATUS_APPROVED) {
+				if (article.getStatus() == WorkflowConstants.STATUS_PENDING) {
+					article.setStatus(WorkflowConstants.STATUS_DRAFT);
+
+					workflowInstanceLinkLocalService.deleteWorkflowInstanceLink(
+						article.getCompanyId(), article.getGroupId(),
+						JournalArticle.class.getName(), article.getId());
+				}
+
+				trashVersionLocalService.addTrashVersion(
+					trashEntryId, JournalArticle.class.getName(),
+					article.getId(), article.getStatus());
+			}
+
+			article.setArticleId(
+				String.valueOf(article.getId()) + StringPool.UNDERLINE +
+					article.getArticleId());
+
+			if ((articleResource == null) ||
+				(articleResource.getPrimaryKey() !=
+					article.getResourcePrimKey())) {
+
+				articleResource =
+					journalArticleResourceLocalService.getArticleResource(
+						article.getResourcePrimKey());
+
+				articleResource.setArticleId(article.getArticleId());
+
+				journalArticleResourceLocalService.updateJournalArticleResource(
+					articleResource);
+			}
+
+			journalArticleLocalService.updateStatus(
+				userId, article, WorkflowConstants.STATUS_IN_TRASH, null,
+				serviceContext);
+		}
+	}
+
+	protected void restoreDependentsFromTrash(
+			long groupId, long userId, long parentFolderId,
+			TrashContext trashContext)
+		throws PortalException, SystemException {
+
+		Set<Long> trashedFolderIds = trashContext.getEntityIds(
+			JournalFolder.class.getName());
+
+		Map<Long, Integer> folderStatusMap = trashContext.getDependentStatuses(
+			JournalFolder.class.getName());
+
+		List<JournalFolder> folders = getFolders(groupId, parentFolderId);
+
+		for (JournalFolder folder : folders) {
+			if (trashedFolderIds.contains(folder.getFolderId())) {
+				continue;
+			}
+
+			Integer oldStatus = folderStatusMap.get(folder.getFolderId());
+
+			if (oldStatus == null) {
+				oldStatus = WorkflowConstants.STATUS_APPROVED;
+			}
+
+			String name = folder.getName();
+
+			folder.setName(
+				name.substring(name.indexOf(CharPool.UNDERLINE) + 1));
+
+			updateStatus(userId, folder, oldStatus);
+
+			restoreDependentsFromTrash(
+				groupId, userId, folder.getFolderId(), trashContext);
+		}
+
+		Set<Long> trashedArticleIds = trashContext.getEntityIds(
+			JournalArticle.class.getName());
+
+		Map<Long, Integer> threadStatusMap = trashContext.getDependentStatuses(
+			JournalArticle.class.getName());
+
+		JournalArticleResource articleResource = null;
+
+		List<JournalArticle> articles = journalArticleLocalService.getArticles(
+			groupId, parentFolderId);
+
+		for (JournalArticle article : articles) {
+			if (trashedArticleIds.contains(article.getResourcePrimKey())) {
+				continue;
+			}
+
+			Integer oldStatus = threadStatusMap.get(article.getId());
+
+			if (oldStatus == null) {
+				oldStatus = WorkflowConstants.STATUS_APPROVED;
+			}
+
+			String articleId = article.getArticleId();
+
+			article.setArticleId(
+				articleId.substring(articleId.indexOf(CharPool.UNDERLINE) + 1));
+
+			if ((articleResource == null) ||
+				(articleResource.getPrimaryKey() !=
+					article.getResourcePrimKey())) {
+
+				articleResource =
+					journalArticleResourceLocalService.getArticleResource(
+						article.getResourcePrimKey());
+
+				articleResource.setArticleId(article.getArticleId());
+
+				journalArticleResourceLocalService.updateJournalArticleResource(
+					articleResource);
+			}
+
+			journalArticleLocalService.updateStatus(
+				userId, article, oldStatus, null, trashContext);
 		}
 	}
 
