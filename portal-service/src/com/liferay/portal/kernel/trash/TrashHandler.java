@@ -16,7 +16,9 @@ package com.liferay.portal.kernel.trash;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.model.ClassedModel;
 import com.liferay.portal.model.ContainerModel;
+import com.liferay.portal.model.TrashedModel;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.trash.model.TrashEntry;
@@ -138,6 +140,9 @@ public interface TrashHandler {
 	 * @throws SystemException if a system exception occurred
 	 */
 	public ContainerModel getContainerModel(long containerModelId)
+		throws PortalException, SystemException;
+
+	public ContainerModel getContainerModel(TrashedModel trashedModel)
 		throws PortalException, SystemException;
 
 	/**
@@ -367,9 +372,6 @@ public interface TrashHandler {
 			long classPK, int start, int end)
 		throws PortalException, SystemException;
 
-	public ContainerModel getTrashContainer(long classPK)
-		throws PortalException, SystemException;
-
 	/**
 	 * Returns the name of the container model.
 	 *
@@ -429,6 +431,9 @@ public interface TrashHandler {
 	 */
 	public List<TrashRenderer> getTrashContainerModelTrashRenderers(
 			long classPK, int start, int end)
+		throws PortalException, SystemException;
+
+	public TrashEntry getTrashEntry(long classPK)
 		throws PortalException, SystemException;
 
 	/**
@@ -543,6 +548,9 @@ public interface TrashHandler {
 	 */
 	public boolean isRestorable(long classPK)
 		throws PortalException, SystemException;
+
+	public boolean isTrashEntry(
+		TrashEntry trashEntry, ClassedModel classedModel);
 
 	/**
 	 * Moves the entity with the class primary key to the container model with

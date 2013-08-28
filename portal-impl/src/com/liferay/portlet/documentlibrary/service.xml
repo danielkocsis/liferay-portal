@@ -368,6 +368,7 @@
 		<column name="statusByUserId" type="long" />
 		<column name="statusByUserName" type="String" />
 		<column name="statusDate" type="Date" />
+		<column name="trashEntryId" type="long" />
 
 		<!-- Finder methods -->
 
@@ -433,6 +434,7 @@
 		<column name="statusByUserId" type="long" />
 		<column name="statusByUserName" type="String" />
 		<column name="statusDate" type="Date" />
+		<column name="trashEntryId" type="long" />
 
 		<!-- Order -->
 
@@ -502,6 +504,7 @@
 		<column name="statusByUserId" type="long" />
 		<column name="statusByUserName" type="String" />
 		<column name="statusDate" type="Date" />
+		<column name="trashEntryId" type="long" />
 
 		<!-- Relationships -->
 
