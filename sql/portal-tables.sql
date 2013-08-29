@@ -247,7 +247,8 @@ create table BlogsEntry (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table BlogsStatsUser (
@@ -281,7 +282,8 @@ create table BookmarksEntry (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table BookmarksFolder (
@@ -300,7 +302,8 @@ create table BookmarksFolder (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table BrowserTracker (
@@ -649,7 +652,8 @@ create table DLFileShortcut (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table DLFileVersion (
@@ -677,7 +681,8 @@ create table DLFileVersion (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table DLFolder (
@@ -701,7 +706,8 @@ create table DLFolder (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table DLSyncEvent (
@@ -845,7 +851,8 @@ create table JournalArticle (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table JournalArticleImage (
@@ -917,7 +924,8 @@ create table JournalFolder (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table Layout (
@@ -1139,7 +1147,8 @@ create table MBCategory (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table MBDiscussion (
@@ -1210,7 +1219,8 @@ create table MBMessage (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table MBStatsUser (
@@ -1242,7 +1252,8 @@ create table MBThread (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table MBThreadFlag (
@@ -2316,7 +2327,8 @@ create table WikiNode (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table WikiPage (
@@ -2342,7 +2354,8 @@ create table WikiPage (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null
+	statusDate DATE null,
+	trashEntryId LONG
 );
 
 create table WikiPageResource (
