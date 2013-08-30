@@ -571,10 +571,30 @@ public class JournalFolderLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.portlet.journal.model.JournalFolder moveFolderToTrash(
+		long userId, com.liferay.portlet.journal.model.JournalFolder folder,
+		com.liferay.portal.kernel.trash.TrashContext trashContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _journalFolderLocalService.moveFolderToTrash(userId, folder,
+			trashContext);
+	}
+
+	@Override
 	public void restoreFolderFromTrash(long userId, long folderId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		_journalFolderLocalService.restoreFolderFromTrash(userId, folderId);
+	}
+
+	@Override
+	public void restoreFolderFromTrash(long userId,
+		com.liferay.portlet.journal.model.JournalFolder folder, int status,
+		com.liferay.portal.kernel.trash.TrashContext trashContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_journalFolderLocalService.restoreFolderFromTrash(userId, folder,
+			status, trashContext);
 	}
 
 	@Override
