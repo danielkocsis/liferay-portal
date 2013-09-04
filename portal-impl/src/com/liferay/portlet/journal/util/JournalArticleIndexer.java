@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchEngineUtil;
 import com.liferay.portal.kernel.search.Summary;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -48,9 +49,7 @@ import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUt
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 import com.liferay.portlet.dynamicdatamapping.util.DDMIndexerUtil;
 import com.liferay.portlet.dynamicdatamapping.util.DDMUtil;
-import com.liferay.portlet.journal.asset.JournalArticleAssetRendererFactory;
 import com.liferay.portlet.journal.model.JournalArticle;
-import com.liferay.portlet.journal.model.JournalFolder;
 import com.liferay.portlet.journal.model.JournalFolderConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portlet.journal.service.JournalFolderServiceUtil;
@@ -361,7 +360,13 @@ public class JournalArticleIndexer extends BaseIndexer {
 		String articleId = article.getArticleId();
 
 		if (article.isInTrash()) {
-			articleId = TrashUtil.getOriginalTitle(articleId);
+			if (articleId.contains(StringPool.UNDERLINE)) {
+				articleId = articleId.substring(
+					articleId.indexOf(CharPool.UNDERLINE) + 1);
+			}
+			else {
+				articleId = TrashUtil.getOriginalTitle(articleId);
+			}
 		}
 
 		document.addKeyword("articleId", articleId);
@@ -371,21 +376,6 @@ public class JournalArticleIndexer extends BaseIndexer {
 		document.addKeyword("head", false);
 
 		addDDMStructureAttributes(document, article);
-
-		if (!article.isInTrash() && article.isInTrashContainer()) {
-			JournalFolder folder = article.getTrashContainer();
-
-			addTrashFields(
-				document, JournalFolder.class.getName(), folder.getFolderId(),
-				null, null, JournalArticleAssetRendererFactory.TYPE);
-
-			document.addKeyword(
-				Field.ROOT_ENTRY_CLASS_NAME, JournalFolder.class.getName());
-			document.addKeyword(
-				Field.ROOT_ENTRY_CLASS_PK, folder.getFolderId());
-			document.addKeyword(
-				Field.STATUS, WorkflowConstants.STATUS_IN_TRASH);
-		}
 
 		return document;
 	}
