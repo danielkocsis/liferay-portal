@@ -25,12 +25,10 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutSetPrototype;
 import com.liferay.portal.model.LayoutTypePortlet;
-import com.liferay.portal.model.PortletConstants;
-import com.liferay.portal.model.PortletPreferences;
+import com.liferay.portal.model.Portlet;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetPrototypeLocalServiceUtil;
 import com.liferay.portal.service.PortletLocalServiceUtil;
-import com.liferay.portal.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.test.MainServletExecutionTestListener;
@@ -38,7 +36,6 @@ import com.liferay.portal.test.Sync;
 import com.liferay.portal.test.SynchronousDestinationExecutionTestListener;
 import com.liferay.portal.test.TransactionalCallbackAwareExecutionTestListener;
 import com.liferay.portal.util.LayoutTestUtil;
-import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.TestPropsValues;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
@@ -160,50 +157,7 @@ public class LayoutSetPrototypePropagationTest
 	public void testPortletPreferencesPropagationWithNonUniquePreferences()
 		throws Exception {
 
-		Layout layout = LayoutTestUtil.addLayout(
-			_layoutSetPrototypeGroup.getGroupId(),
-			ServiceTestUtil.randomString(), false);
-
-		Map<String, String> preferences = new HashMap<String, String>();
-
-		preferences.put("bulletStyle", "Dots");
-
-		String navigationPortletOne = addPortletToLayout(
-			TestPropsValues.getUserId(), layout, "column-1", "71", preferences,
-			false);
-
-		preferences.put("bulletStyle", "Arrows");
-
-		String navigationPortletTwo = addPortletToLayout(
-			TestPropsValues.getUserId(), layout, "column-2", "71", preferences,
-			false);
-
-		javax.portlet.PortletPreferences jxPreferencesNavigationPortletOne =
-			PortletPreferencesFactoryUtil.getPortletSetup(
-				layout, navigationPortletOne, null);
-
-		javax.portlet.PortletPreferences jxPreferencesNavigationPortletTwo =
-			PortletPreferencesFactoryUtil.getPortletSetup(
-				layout, navigationPortletTwo, null);
-
-		javax.portlet.PortletPreferences jxGroupPreferencesNavigationPortlet =
-			PortletPreferencesFactoryUtil.getPortletSetup(
-				_layoutSetPrototypeGroup.getGroupId(), layout, "71", null);
-
-		Assert.assertEquals(
-			"Arrows",
-			jxPreferencesNavigationPortletOne.getValue(
-				"bulletStyle", StringPool.BLANK));
-
-		Assert.assertEquals(
-			"Arrows",
-			jxPreferencesNavigationPortletTwo.getValue(
-				"bulletStyle", StringPool.BLANK));
-
-		Assert.assertEquals(
-			"Arrows",
-			jxGroupPreferencesNavigationPortlet.getValue(
-				"bulletStyle", StringPool.BLANK));
+		doTestPortletPreferencesPropagationWithNonUniquePreferences();
 	}
 
 	@Test
@@ -263,14 +217,7 @@ public class LayoutSetPrototypePropagationTest
 			jxPreferences.setValue(key, preferences.get(key));
 		}
 
-		if (!preferencesUniquePerLayout) {
-			updateGroupPortletPreferences(
-				layout.getGroupId(), layoutPortletId, jxPreferences);
-		}
-		else {
-			updatePortletPreferences(
-				layout.getPlid(), layoutPortletId, jxPreferences);
-		}
+		jxPreferences.store();
 
 		return layoutPortletId;
 	}
@@ -463,6 +410,60 @@ public class LayoutSetPrototypePropagationTest
 		doTestPortletPreferencesPropagation(linkEnabled, false);
 	}
 
+	protected void doTestPortletPreferencesPropagationWithNonUniquePreferences()
+		throws Exception {
+
+		Layout layout = LayoutTestUtil.addLayout(
+			_layoutSetPrototypeGroup.getGroupId(),
+			ServiceTestUtil.randomString(), false);
+
+		Map<String, String> preferences = new HashMap<String, String>();
+
+		preferences.put("bulletStyle", "Dots");
+
+		Portlet portlet = PortletLocalServiceUtil.getPortletById(
+			TestPropsValues.getCompanyId(), "71");
+
+		portlet.setPreferencesUniquePerLayout(false);
+
+		String navigationPortletOne = addPortletToLayout(
+			TestPropsValues.getUserId(), layout, "column-1", "71", preferences,
+			false);
+
+		preferences.put("bulletStyle", "Arrows");
+
+		String navigationPortletTwo = addPortletToLayout(
+			TestPropsValues.getUserId(), layout, "column-2", "71", preferences,
+			false);
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletOne =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				layout, navigationPortletOne, null);
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletTwo =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				layout, navigationPortletTwo, null);
+
+		javax.portlet.PortletPreferences jxGroupPreferencesNavigationPortlet =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				_layoutSetPrototypeGroup.getGroupId(), layout, "71", null);
+
+		Assert.assertEquals(
+			"Arrows",
+			jxPreferencesNavigationPortletOne.getValue(
+				"bulletStyle", StringPool.BLANK));
+
+		Assert.assertEquals(
+			"Arrows",
+			jxPreferencesNavigationPortletTwo.getValue(
+				"bulletStyle", StringPool.BLANK));
+
+		Assert.assertEquals(
+			"Arrows",
+			jxGroupPreferencesNavigationPortlet.getValue(
+				"bulletStyle", StringPool.BLANK));
+	}
+
 	protected int getGroupLayoutCount() throws Exception {
 		return LayoutLocalServiceUtil.getLayoutsCount(group, false);
 	}
@@ -539,35 +540,6 @@ public class LayoutSetPrototypePropagationTest
 						"template with link disabled");
 			}
 		}
-	}
-
-	protected PortletPreferences updateGroupPortletPreferences(
-			long groupId, String portletId,
-			javax.portlet.PortletPreferences jxPreferences)
-		throws Exception {
-
-		String rootPortletId = PortletConstants.getRootPortletId(portletId);
-
-		PortletPreferences portletPreferences =
-			PortletPreferencesLocalServiceUtil.updatePreferences(
-				groupId, PortletKeys.PREFS_OWNER_TYPE_GROUP,
-				PortletKeys.PREFS_PLID_SHARED, rootPortletId, jxPreferences);
-
-		return portletPreferences;
-	}
-
-	protected PortletPreferences updatePortletPreferences(
-			long plid, String portletId,
-			javax.portlet.PortletPreferences jxPreferences)
-		throws Exception {
-
-		PortletPreferences portletPreferences =
-			PortletPreferencesLocalServiceUtil.updatePreferences(
-				PortletKeys.PREFS_OWNER_ID_DEFAULT,
-				PortletKeys.PREFS_OWNER_TYPE_LAYOUT, plid, portletId,
-				jxPreferences);
-
-		return portletPreferences;
 	}
 
 	private int _initialLayoutCount;
