@@ -18,13 +18,17 @@ import com.liferay.portal.LayoutParentLayoutIdException;
 import com.liferay.portal.kernel.staging.MergeLayoutPrototypesThreadLocal;
 import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutSetPrototype;
+import com.liferay.portal.model.LayoutTypePortlet;
+import com.liferay.portal.model.Portlet;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetPrototypeLocalServiceUtil;
+import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.test.MainServletExecutionTestListener;
@@ -33,11 +37,15 @@ import com.liferay.portal.test.SynchronousDestinationExecutionTestListener;
 import com.liferay.portal.test.TransactionalCallbackAwareExecutionTestListener;
 import com.liferay.portal.util.LayoutTestUtil;
 import com.liferay.portal.util.TestPropsValues;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portlet.journal.util.JournalTestUtil;
 import com.liferay.portlet.sites.util.Sites;
 import com.liferay.portlet.sites.util.SitesUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -146,6 +154,13 @@ public class LayoutSetPrototypePropagationTest
 	}
 
 	@Test
+	public void testPortletPreferencesPropagationWithNonUniquePreferences()
+		throws Exception {
+
+		doTestPortletPreferencesPropagationWithNonUniquePreferences();
+	}
+
+	@Test
 	public void testReset() throws Exception {
 		SitesUtil.resetPrototype(layout);
 		SitesUtil.resetPrototype(_layout);
@@ -170,6 +185,41 @@ public class LayoutSetPrototypePropagationTest
 		Assert.assertTrue(SitesUtil.isLayoutModifiedSinceLastMerge(_layout));
 		Assert.assertEquals(
 			"1_column", LayoutTestUtil.getLayoutTemplateId(_layout));
+	}
+
+	protected String addPortletToLayout(
+			long userId, Layout layout, String columnId, String portletId,
+			Map<String, String> preferences, boolean preferencesUniquePerLayout)
+		throws Exception {
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		String layoutPortletId = layoutTypePortlet.addPortletId(
+			userId, portletId, columnId, -1);
+
+		LayoutLocalServiceUtil.updateLayout(
+			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
+			layout.getTypeSettings());
+
+		javax.portlet.PortletPreferences jxPreferences = null;
+
+		if (!preferencesUniquePerLayout) {
+			jxPreferences = PortletPreferencesFactoryUtil.getPortletSetup(
+				layout.getGroupId(), layout, portletId, StringPool.BLANK);
+		}
+		else {
+			jxPreferences = PortletPreferencesFactoryUtil.getLayoutPortletSetup(
+				layout, portletId);
+		}
+
+		for (String key : preferences.keySet()) {
+			jxPreferences.setValue(key, preferences.get(key));
+		}
+
+		jxPreferences.store();
+
+		return layoutPortletId;
 	}
 
 	@Override
@@ -358,6 +408,60 @@ public class LayoutSetPrototypePropagationTest
 		throws Exception {
 
 		doTestPortletPreferencesPropagation(linkEnabled, false);
+	}
+
+	protected void doTestPortletPreferencesPropagationWithNonUniquePreferences()
+		throws Exception {
+
+		Layout layout = LayoutTestUtil.addLayout(
+			_layoutSetPrototypeGroup.getGroupId(),
+			ServiceTestUtil.randomString(), false);
+
+		Map<String, String> preferences = new HashMap<String, String>();
+
+		preferences.put("bulletStyle", "Dots");
+
+		Portlet portlet = PortletLocalServiceUtil.getPortletById(
+			TestPropsValues.getCompanyId(), "71");
+
+		portlet.setPreferencesUniquePerLayout(false);
+
+		String navigationPortletOne = addPortletToLayout(
+			TestPropsValues.getUserId(), layout, "column-1", "71", preferences,
+			false);
+
+		preferences.put("bulletStyle", "Arrows");
+
+		String navigationPortletTwo = addPortletToLayout(
+			TestPropsValues.getUserId(), layout, "column-2", "71", preferences,
+			false);
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletOne =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				layout, navigationPortletOne, null);
+
+		javax.portlet.PortletPreferences jxPreferencesNavigationPortletTwo =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				layout, navigationPortletTwo, null);
+
+		javax.portlet.PortletPreferences jxGroupPreferencesNavigationPortlet =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				_layoutSetPrototypeGroup.getGroupId(), layout, "71", null);
+
+		Assert.assertEquals(
+			"Arrows",
+			jxPreferencesNavigationPortletOne.getValue(
+				"bulletStyle", StringPool.BLANK));
+
+		Assert.assertEquals(
+			"Arrows",
+			jxPreferencesNavigationPortletTwo.getValue(
+				"bulletStyle", StringPool.BLANK));
+
+		Assert.assertEquals(
+			"Arrows",
+			jxGroupPreferencesNavigationPortlet.getValue(
+				"bulletStyle", StringPool.BLANK));
 	}
 
 	protected int getGroupLayoutCount() throws Exception {

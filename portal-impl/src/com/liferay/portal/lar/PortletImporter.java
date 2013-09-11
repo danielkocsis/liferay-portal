@@ -1016,10 +1016,19 @@ public class PortletImporter {
 		String scopeType = StringPool.BLANK;
 		String scopeLayoutUuid = StringPool.BLANK;
 
+		if (portletId == null) {
+			portletId = parentElement.attributeValue("portlet-id");
+		}
+
+		Portlet portlet = PortletLocalServiceUtil.getPortletById(
+			portletDataContext.getCompanyId(), portletId);
+
 		if (layout != null) {
 			plid = layout.getPlid();
 
-			if (preserveScopeLayoutId && (portletId != null)) {
+			if (preserveScopeLayoutId && (portletId != null) &&
+				portlet.isPreferencesUniquePerLayout()) {
+
 				javax.portlet.PortletPreferences jxPortletPreferences =
 					PortletPreferencesFactoryUtil.getLayoutPortletSetup(
 						layout, portletId);
@@ -1093,17 +1102,17 @@ public class PortletImporter {
 				if (ownerType == PortletKeys.PREFS_OWNER_TYPE_GROUP) {
 					plid = PortletKeys.PREFS_PLID_SHARED;
 					ownerId = portletDataContext.getScopeGroupId();
+
+					if (!portlet.isPreferencesUniquePerLayout()) {
+						portletId = portlet.getRootPortletId();
+					}
 				}
 
 				boolean defaultUser = GetterUtil.getBoolean(
 					element.attributeValue("default-user"));
 
-				if (portletId == null) {
-					portletId = element.attributeValue("portlet-id");
-				}
-
 				if (ownerType == PortletKeys.PREFS_OWNER_TYPE_ARCHIVED) {
-					portletId = PortletConstants.getRootPortletId(portletId);
+					portletId = portlet.getRootPortletId();
 
 					String userUuid = element.attributeValue(
 						"archive-user-uuid");
@@ -1132,9 +1141,6 @@ public class PortletImporter {
 				javax.portlet.PortletPreferences jxPortletPreferences =
 					PortletPreferencesFactoryUtil.fromXML(
 						companyId, ownerId, ownerType, plid, portletId, xml);
-
-				Portlet portlet = PortletLocalServiceUtil.getPortletById(
-					companyId, portletId);
 
 				if (portlet != null) {
 					Element importDataRootElement =
@@ -1166,12 +1172,13 @@ public class PortletImporter {
 
 				updatePortletPreferences(
 					portletDataContext, ownerId, ownerType, plid, portletId,
-					PortletPreferencesFactoryUtil.toXML(jxPortletPreferences),
-					importPortletData);
+					xml, importPortletData);
 			}
 		}
 
-		if (preserveScopeLayoutId && (layout != null)) {
+		if (preserveScopeLayoutId && (layout != null) &&
+			portlet.isPreferencesUniquePerLayout()) {
+
 			javax.portlet.PortletPreferences jxPortletPreferences =
 				PortletPreferencesFactoryUtil.getLayoutPortletSetup(
 					layout, portletId);
