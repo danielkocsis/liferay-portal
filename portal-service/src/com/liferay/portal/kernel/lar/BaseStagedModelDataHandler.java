@@ -132,12 +132,6 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 		throws PortletDataException {
 
 		try {
-			TrashedModel trashedModel = (TrashedModel)stagedModel;
-
-			if (!trashedModel.isInTrash()) {
-				return;
-			}
-
 			doRestoreStagedModel(portletDataContext, stagedModel);
 		}
 		catch (Exception e) {

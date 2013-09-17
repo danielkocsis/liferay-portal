@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
+import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -647,6 +648,38 @@ public class JournalArticleStagedModelDataHandler
 				smallFile.delete();
 			}
 		}
+	}
+
+	@Override
+	protected void doRestoreStagedModel(
+			PortletDataContext portletDataContext, JournalArticle article)
+		throws Exception {
+
+		long userId = portletDataContext.getUserId(article.getUserUuid());
+
+		JournalArticleResource existingArticleResource =
+			JournalArticleResourceLocalServiceUtil.
+				fetchJournalArticleResourceByUuidAndGroupId(
+					article.getArticleResourceUuid(),
+					portletDataContext.getScopeGroupId());
+
+		if (existingArticleResource == null) {
+			return;
+		}
+
+		JournalArticle existingArticle =
+			JournalArticleLocalServiceUtil.fetchLatestArticle(
+				existingArticleResource.getResourcePrimKey(),
+				WorkflowConstants.STATUS_ANY, false);
+
+		if ((existingArticle == null) || !existingArticle.isInTrash()) {
+			return;
+		}
+
+		TrashHandler trashHandler = existingArticle.getTrashHandler();
+
+		trashHandler.restoreTrashEntry(
+			userId, existingArticle.getResourcePrimKey());
 	}
 
 	protected void exportArticleImage(
