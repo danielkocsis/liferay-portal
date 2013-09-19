@@ -159,7 +159,7 @@ public class PermissionImporter {
 
 		Element permissionsElement = portletElement.element("permissions");
 
-		if (permissionsElement != null) {
+		if ((permissionsElement != null) && (layout != null)) {
 			String resourceName = PortletConstants.getRootPortletId(portletId);
 
 			String resourcePrimKey = PortletPermissionUtil.getPrimaryKey(
