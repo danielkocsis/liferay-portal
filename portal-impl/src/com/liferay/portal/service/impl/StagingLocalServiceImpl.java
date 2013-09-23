@@ -72,8 +72,9 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 
 		ServiceContext serviceContext = new ServiceContext();
 
-		Repository repository = PortletFileRepositoryUtil.addPortletRepository(
-			groupId, PortletKeys.SITES_ADMIN, serviceContext);
+		Repository repository =
+			PortletFileRepositoryUtil.addPortletRepository(
+				groupId, PortletKeys.SITES_ADMIN, serviceContext);
 
 		Folder folder = PortletFileRepositoryUtil.addPortletFolder(
 			userId, repository.getRepositoryId(),
@@ -91,6 +92,7 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 
 		try {
 			ExportImportThreadLocal.setLayoutImportInProcess(true);
+			ExportImportThreadLocal.setStagingInProcess(true);
 
 			Folder folder = PortletFileRepositoryUtil.getPortletFolder(
 				stagingRequestId);
@@ -104,6 +106,7 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 		}
 		finally {
 			ExportImportThreadLocal.setLayoutImportInProcess(false);
+			ExportImportThreadLocal.setStagingInProcess(false);
 		}
 	}
 
@@ -133,6 +136,7 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 
 		try {
 			ExportImportThreadLocal.setLayoutValidationInProcess(true);
+			ExportImportThreadLocal.setStagingInProcess(true);
 
 			Folder folder = PortletFileRepositoryUtil.getPortletFolder(
 				stagingRequestId);
@@ -146,6 +150,7 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 		}
 		finally {
 			ExportImportThreadLocal.setLayoutValidationInProcess(false);
+			ExportImportThreadLocal.setStagingInProcess(false);
 		}
 	}
 
