@@ -117,6 +117,8 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.time.StopWatch;
+
 /**
  * @author Raymond Augé
  * @author Ryan Park
@@ -326,49 +328,24 @@ public class SitesImpl implements Sites {
 	public void copyPortletPermissions(Layout targetLayout, Layout sourceLayout)
 		throws Exception {
 
-		long companyId = targetLayout.getCompanyId();
+		StopWatch stopWatch = null;
 
-		List<Role> roles = RoleLocalServiceUtil.getRoles(companyId);
+		if (_log.isDebugEnabled()) {
+			stopWatch = new StopWatch();
 
-		LayoutTypePortlet sourceLayoutTypePortlet =
-			(LayoutTypePortlet)sourceLayout.getLayoutType();
+			stopWatch.start();
+		}
 
-		List<String> sourcePortletIds = sourceLayoutTypePortlet.getPortletIds();
+		try {
+			doCopyPortletPermissions(targetLayout, sourceLayout);
+		}
+		finally {
+			if (stopWatch != null) {
+				stopWatch.stop();
 
-		for (String sourcePortletId : sourcePortletIds) {
-			String resourceName = PortletConstants.getRootPortletId(
-				sourcePortletId);
-
-			String sourceResourcePrimKey = PortletPermissionUtil.getPrimaryKey(
-				sourceLayout.getPlid(), sourcePortletId);
-
-			String targetResourcePrimKey = PortletPermissionUtil.getPrimaryKey(
-				targetLayout.getPlid(), sourcePortletId);
-
-			List<String> actionIds =
-				ResourceActionsUtil.getPortletResourceActions(resourceName);
-
-			for (Role role : roles) {
-				String roleName = role.getName();
-
-				if (roleName.equals(RoleConstants.ADMINISTRATOR) ||
-					(targetLayout.isPrivateLayout() &&
-					 roleName.equals(RoleConstants.GUEST))) {
-
-					continue;
-				}
-
-				List<String> actions =
-					ResourcePermissionLocalServiceUtil.
-						getAvailableResourcePermissionActionIds(
-							companyId, resourceName,
-							ResourceConstants.SCOPE_INDIVIDUAL,
-							sourceResourcePrimKey, role.getRoleId(), actionIds);
-
-				ResourcePermissionLocalServiceUtil.setResourcePermissions(
-					companyId, resourceName, ResourceConstants.SCOPE_INDIVIDUAL,
-					targetResourcePrimKey, role.getRoleId(),
-					actions.toArray(new String[actions.size()]));
+				_log.debug(
+					"doCopyPortletPermissions() took " + stopWatch.getTime() +
+						" ms");
 			}
 		}
 	}
@@ -1513,6 +1490,59 @@ public class SitesImpl implements Sites {
 				 (permissionChecker.getUserId() != group.getClassPK())) {
 
 			throw new PrincipalException();
+		}
+	}
+
+	protected void doCopyPortletPermissions(
+			Layout targetLayout, Layout sourceLayout)
+		throws Exception {
+
+		long companyId = targetLayout.getCompanyId();
+
+		long groupId = targetLayout.getGroupId();
+
+		List<Role> roles = RoleLocalServiceUtil.getGroupRelatedRoles(groupId);
+
+		LayoutTypePortlet sourceLayoutTypePortlet =
+			(LayoutTypePortlet)sourceLayout.getLayoutType();
+
+		List<String> sourcePortletIds = sourceLayoutTypePortlet.getPortletIds();
+
+		for (String sourcePortletId : sourcePortletIds) {
+			String resourceName = PortletConstants.getRootPortletId(
+				sourcePortletId);
+
+			String sourceResourcePrimKey = PortletPermissionUtil.getPrimaryKey(
+				sourceLayout.getPlid(), sourcePortletId);
+
+			String targetResourcePrimKey = PortletPermissionUtil.getPrimaryKey(
+				targetLayout.getPlid(), sourcePortletId);
+
+			List<String> actionIds =
+				ResourceActionsUtil.getPortletResourceActions(resourceName);
+
+			for (Role role : roles) {
+				String roleName = role.getName();
+
+				if (roleName.equals(RoleConstants.ADMINISTRATOR) ||
+					(targetLayout.isPrivateLayout() &&
+					 roleName.equals(RoleConstants.GUEST))) {
+
+					continue;
+				}
+
+				List<String> actions =
+					ResourcePermissionLocalServiceUtil.
+						getAvailableResourcePermissionActionIds(
+							companyId, resourceName,
+							ResourceConstants.SCOPE_INDIVIDUAL,
+							sourceResourcePrimKey, role.getRoleId(), actionIds);
+
+				ResourcePermissionLocalServiceUtil.setResourcePermissions(
+					companyId, resourceName, ResourceConstants.SCOPE_INDIVIDUAL,
+					targetResourcePrimKey, role.getRoleId(),
+					actions.toArray(new String[actions.size()]));
+			}
 		}
 	}
 
