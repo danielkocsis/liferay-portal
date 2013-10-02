@@ -1086,9 +1086,6 @@ public class StagingImpl implements Staging {
 			PortletDataHandlerKeys.PORTLET_SETUP_ALL,
 			new String[] {Boolean.TRUE.toString()});
 		parameterMap.put(
-			PortletDataHandlerKeys.THEME,
-			new String[] {Boolean.FALSE.toString()});
-		parameterMap.put(
 			PortletDataHandlerKeys.THEME_REFERENCE,
 			new String[] {Boolean.TRUE.toString()});
 		parameterMap.put(
@@ -1173,12 +1170,6 @@ public class StagingImpl implements Staging {
 
 			parameterMap.put(
 				PortletDataHandlerKeys.PORTLET_DATA_ALL,
-				new String[] {Boolean.FALSE.toString()});
-		}
-
-		if (!parameterMap.containsKey(PortletDataHandlerKeys.THEME)) {
-			parameterMap.put(
-				PortletDataHandlerKeys.THEME,
 				new String[] {Boolean.FALSE.toString()});
 		}
 
