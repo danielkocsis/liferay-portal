@@ -212,7 +212,7 @@ public class LayoutStagedModelDataHandler
 		}
 
 		if (layout.isTypeArticle()) {
-			exportJournalArticle(portletDataContext, layout, layoutElement);
+			exportJournalArticle(portletDataContext, layout);
 		}
 		else if (layout.isTypeLinkToLayout()) {
 			exportLinkedLayout(portletDataContext, layout, layoutElement);
@@ -485,7 +485,7 @@ public class LayoutStagedModelDataHandler
 			PortletDataHandlerKeys.PORTLETS_MERGE_MODE_REPLACE);
 
 		if (layout.isTypeArticle()) {
-			importJournalArticle(portletDataContext, layout, layoutElement);
+			importJournalArticle(portletDataContext, layout);
 
 			updateTypeSettings(importedLayout, layout);
 		}
@@ -569,8 +569,7 @@ public class LayoutStagedModelDataHandler
 	}
 
 	protected void exportJournalArticle(
-			PortletDataContext portletDataContext, Layout layout,
-			Element layoutElement)
+			PortletDataContext portletDataContext, Layout layout)
 		throws Exception {
 
 		UnicodeProperties typeSettingsProperties =
@@ -816,8 +815,7 @@ public class LayoutStagedModelDataHandler
 	}
 
 	protected void importJournalArticle(
-			PortletDataContext portletDataContext, Layout layout,
-			Element layoutElement)
+			PortletDataContext portletDataContext, Layout layout)
 		throws Exception {
 
 		UnicodeProperties typeSettingsProperties =
@@ -832,7 +830,7 @@ public class LayoutStagedModelDataHandler
 
 		List<Element> referenceDataElements =
 			portletDataContext.getReferenceDataElements(
-				layoutElement, JournalArticle.class);
+				layout, JournalArticle.class);
 
 		if (!referenceDataElements.isEmpty()) {
 			StagedModelDataHandlerUtil.importReferenceStagedModel(
