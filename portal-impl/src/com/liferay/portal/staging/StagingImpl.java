@@ -119,6 +119,7 @@ import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.FileExtensionException;
 import com.liferay.portlet.documentlibrary.FileNameException;
 import com.liferay.portlet.documentlibrary.FileSizeException;
+import com.liferay.portlet.pluginsadmin.lar.ThemeStagingWrapper;
 
 import java.io.Serializable;
 
@@ -641,9 +642,19 @@ public class StagingImpl implements Staging {
 			JSONObject errorMessageJSONObject =
 				JSONFactoryUtil.createJSONObject();
 
+			String className = missingReference.getClassName();
 			Map<String, String> referrers = missingReference.getReferrers();
 
-			if (referrers.size() == 1) {
+			if (className.equals(ThemeStagingWrapper.class.getName())) {
+				errorMessageJSONObject.put(
+					"info",
+					LanguageUtil.format(
+						locale,
+						"the-referenced-theme-x-is-not-deployed-in-the-" +
+							"current-environment",
+						missingReference.getClassPk()));
+			}
+			else if (referrers.size() == 1) {
 				Set<Map.Entry<String, String>> referrerDisplayNames =
 					referrers.entrySet();
 
@@ -1075,9 +1086,6 @@ public class StagingImpl implements Staging {
 			PortletDataHandlerKeys.PORTLET_SETUP_ALL,
 			new String[] {Boolean.TRUE.toString()});
 		parameterMap.put(
-			PortletDataHandlerKeys.THEME,
-			new String[] {Boolean.FALSE.toString()});
-		parameterMap.put(
 			PortletDataHandlerKeys.THEME_REFERENCE,
 			new String[] {Boolean.TRUE.toString()});
 		parameterMap.put(
@@ -1162,12 +1170,6 @@ public class StagingImpl implements Staging {
 
 			parameterMap.put(
 				PortletDataHandlerKeys.PORTLET_DATA_ALL,
-				new String[] {Boolean.FALSE.toString()});
-		}
-
-		if (!parameterMap.containsKey(PortletDataHandlerKeys.THEME)) {
-			parameterMap.put(
-				PortletDataHandlerKeys.THEME,
 				new String[] {Boolean.FALSE.toString()});
 		}
 
