@@ -107,6 +107,10 @@ public class DeletionSystemEventExporter {
 					for (StagedModelType stagedModelType :
 							deletionSystemEventStagedModelTypes) {
 
+						if (stagedModelType.getReferrerClassNameId() < 0) {
+							continue;
+						}
+
 						Conjunction conjunction =
 							RestrictionsFactoryUtil.conjunction();
 
