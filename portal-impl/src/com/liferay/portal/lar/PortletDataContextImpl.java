@@ -1030,9 +1030,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 	public Element getImportDataStagedModelElement(StagedModel stagedModel) {
 		String path = ExportImportPathUtil.getModelPath(stagedModel);
 
-		Class<?> clazz = stagedModel.getModelClass();
+		StagedModelType stagedModelType = stagedModel.getStagedModelType();
 
-		return getImportDataElement(clazz.getSimpleName(), "path", path);
+		return getImportDataElement(
+			stagedModelType.getClassSimpleName(), "path", path);
 	}
 
 	@Override
@@ -1197,16 +1198,30 @@ public class PortletDataContextImpl implements PortletDataContext {
 		StagedModel parentStagedModel, Class<?> clazz, String referenceType) {
 
 		List<Element> referenceElements = getReferenceElements(
-			parentStagedModel, clazz, referenceType);
+			parentStagedModel, clazz, 0, referenceType);
 
 		return getReferenceDataElements(referenceElements, clazz);
+	}
+
+	@Override
+	public Element getReferenceElement(
+		StagedModel parentStagedModel, Class<?> clazz, long classPk) {
+
+		List<Element> referenceElements = getReferenceElements(
+			parentStagedModel, clazz, classPk, null);
+
+		if (!referenceElements.isEmpty()) {
+			return referenceElements.get(0);
+		}
+
+		return null;
 	}
 
 	@Override
 	public List<Element> getReferenceElements(
 		StagedModel parentStagedModel, Class<?> clazz) {
 
-		return getReferenceElements(parentStagedModel, clazz, null);
+		return getReferenceElements(parentStagedModel, clazz, 0, null);
 	}
 
 	@Override
@@ -2421,13 +2436,14 @@ public class PortletDataContextImpl implements PortletDataContext {
 	}
 
 	protected List<Element> getReferenceElements(
-		StagedModel parentStagedModel, Class<?> clazz, String referenceType) {
+		StagedModel parentStagedModel, Class<?> clazz, long classPk,
+		String referenceType) {
 
 		Element stagedModelElement = getImportDataStagedModelElement(
 			parentStagedModel);
 
 		return getReferenceElements(
-			stagedModelElement, clazz, 0, null, 0, referenceType);
+			stagedModelElement, clazz, 0, null, classPk, referenceType);
 	}
 
 	protected String getReferenceKey(ClassedModel classedModel) {
