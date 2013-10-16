@@ -70,7 +70,6 @@ import com.liferay.portal.model.impl.LockImpl;
 import com.liferay.portal.security.permission.ResourceActionsUtil;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.LockLocalServiceUtil;
-import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.service.ResourceBlockLocalServiceUtil;
 import com.liferay.portal.service.ResourceBlockPermissionLocalServiceUtil;
 import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
@@ -432,31 +431,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 	@Override
 	public void addLocks(String className, String key, Lock lock) {
 		_locksMap.put(getPrimaryKeyString(className, key), lock);
-	}
-
-	@Override
-	public Element addMissingReferenceElement(
-		String referrerPortletId, ClassedModel classedModel) {
-
-		Portlet referrerPortlet = PortletLocalServiceUtil.getPortletById(
-			referrerPortletId);
-
-		if (referrerPortlet == null) {
-			return null;
-		}
-
-		String referenceKey = getReferenceKey(classedModel);
-
-		if (_missingReferences.contains(referenceKey)) {
-			return getMissingReferenceElement(classedModel);
-		}
-
-		_missingReferences.add(referenceKey);
-
-		return doAddReferenceElement(
-			referrerPortlet, null, classedModel,
-			classedModel.getModelClassName(), null, REFERENCE_TYPE_EMBEDDED,
-			true);
 	}
 
 	@Override
