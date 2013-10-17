@@ -164,12 +164,48 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 	}
 
 	@Test
+	public void testDeleteTimestampFromDLReferenceUrls() throws Exception {
+		Element rootElement =
+			_portletDataContextExport.getExportDataRootElement();
+
+		String content = replaceParameters(
+			getContent("dl_references_timestamp.txt"), _fileEntry, false);
+
+		List<String> urls = replaceTimestampParameters(content);
+
+		content = StringUtil.merge(urls,"\n");
+
+		content = ExportImportHelperUtil.replaceExportContentReferences(
+			_portletDataContextExport, _referrerStagedModel,
+			rootElement.element("entry"), content, true);
+
+		String[] exportedUrls = content.split("\n");
+
+		Assert.assertEquals(urls.size(), exportedUrls.length);
+
+		for (int i = 0; i < urls.size(); i++) {
+			String exportedUrl = exportedUrls[i];
+			String url = urls.get(i);
+
+			Assert.assertFalse(exportedUrl.matches("[?&]t="));
+
+			if (url.contains("/documents/") && url.contains("?")) {
+				Assert.assertTrue(exportedUrl.contains("width=100&height=100"));
+			}
+
+			if (url.contains("/documents/") && url.contains("mustkeep")) {
+				Assert.assertTrue(exportedUrl.contains("mustkeep"));
+			}
+		}
+	}
+
+	@Test
 	public void testExportDLReferences() throws Exception {
 		Element rootElement =
 			_portletDataContextExport.getExportDataRootElement();
 
 		String content = replaceParameters(
-			getContent("dl_references.txt"), _fileEntry);
+			getContent("dl_references_timestamp.txt"), _fileEntry, true);
 
 		List<String> urls = getURLs(content);
 
@@ -229,7 +265,7 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 			_portletDataContextExport.getExportDataRootElement();
 
 		String content = replaceParameters(
-			getContent("layout_references.txt"), _fileEntry);
+			getContent("layout_references.txt"), _fileEntry, true);
 
 		content = ExportImportHelperUtil.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel,
@@ -277,7 +313,7 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 			_portletDataContextExport.getExportDataRootElement();
 
 		String content = replaceParameters(
-			getContent("layout_references.txt"), _fileEntry);
+			getContent("layout_references.txt"), _fileEntry, true);
 
 		content = ExportImportHelperUtil.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel,
@@ -310,7 +346,7 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 			_portletDataContextExport.getExportDataRootElement();
 
 		String content = replaceParameters(
-			getContent("layout_links.txt"), _fileEntry);
+			getContent("layout_links.txt"), _fileEntry, true);
 
 		content = ExportImportHelperUtil.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel,
@@ -345,7 +381,7 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 		Element entryElement = rootElement.element("entry");
 
 		String content = replaceParameters(
-			getContent("dl_references.txt"), _fileEntry);
+			getContent("dl_references_timestamp.txt"), _fileEntry, true);
 
 		content = ExportImportHelperUtil.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel, entryElement,
@@ -364,7 +400,7 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 		Element entryElement = rootElement.element("entry");
 
 		String content = replaceParameters(
-			getContent("layout_references.txt"), _fileEntry);
+			getContent("layout_references.txt"), _fileEntry, true);
 
 		content = ExportImportHelperUtil.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel, entryElement,
@@ -391,7 +427,7 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 		Element entryElement = rootElement.element("entry");
 
 		String content = replaceParameters(
-			getContent("layout_links.txt"), _fileEntry);
+			getContent("layout_links.txt"), _fileEntry, true);
 
 		content = ExportImportHelperUtil.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel, entryElement,
@@ -408,7 +444,7 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 	@Test
 	public void testValidateMissingReferences() throws Exception {
 		String xml = replaceParameters(
-			getContent("missing_references.txt"), _fileEntry);
+			getContent("missing_references.txt"), _fileEntry, true);
 
 		ZipWriter zipWriter = ZipWriterFactoryUtil.getZipWriter();
 
@@ -446,7 +482,7 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 
 	protected List<String> getURLs(String content) {
 		Pattern pattern = Pattern.compile(
-			"(?:href=|\\{|\\[)(.*?)(?:>|\\}|\\]|Link\\]\\])");
+			"(?:href=|\\{|\\[[^$])(.*?)(?:>|\\}|[^$]\\]|Link\\]\\])");
 
 		Matcher matcher = pattern.matcher(content);
 
@@ -461,7 +497,20 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 		return urls;
 	}
 
-	protected String replaceParameters(String content, FileEntry fileEntry) {
+	protected String replaceParameters(
+		String content, FileEntry fileEntry, boolean changeTimestamp) {
+
+		if (changeTimestamp) {
+			try {
+				content = StringUtil.replace(
+					content,
+					new String[] {"[$TIMESTAMP$]", "[$ONLYTIMESTAMP$]"},
+					new String[] {"", "?t=" + ServiceTestUtil.randomLong()});
+			}
+			catch (Exception e) {
+			}
+		}
+
 		return StringUtil.replace(
 			content,
 			new String[] {
@@ -480,6 +529,53 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				fileEntry.getTitle(), fileEntry.getUuid()
 			});
+	}
+
+	protected List<String> replaceTimestampParameters(String content)
+		throws Exception {
+
+		List<String> urls = new ArrayList<String>();
+
+		for (String line : content.split("\n")) {
+			if (line.contains("TIMESTAMP$]")) {
+				urls.add(line);
+			}
+		}
+
+		String timestampParameter = "t=" + ServiceTestUtil.randomLong();
+
+		String parameters1 = timestampParameter + "&width=100&height=100";
+		String parameters2 = "width=100&" + timestampParameter + "&height=100";
+		String parameters3 = "width=100&height=100&" + timestampParameter;
+		String parameters4 =
+			timestampParameter + "?" + timestampParameter +
+				"&width=100&height=100";
+
+		List<String> outUrls = new ArrayList<String>();
+
+		for (String url : urls) {
+			outUrls.add(
+				StringUtil.replace(
+					url, new String[] {"[$TIMESTAMP$]", "[$ONLYTIMESTAMP$]"},
+					new String[] {"&" + parameters1, "?" + parameters1}));
+
+			outUrls.add(
+				StringUtil.replace(
+					url, new String[] {"[$TIMESTAMP$]", "[$ONLYTIMESTAMP$]"},
+					new String[] {"&" + parameters2, "?" + parameters2}));
+
+			outUrls.add(
+				StringUtil.replace(
+					url, new String[] {"[$TIMESTAMP$]", "[$ONLYTIMESTAMP$]"},
+					new String[] {"&" + parameters3, "?" + parameters3}));
+
+			outUrls.add(
+				StringUtil.replace(
+					url, new String[] {"[$TIMESTAMP$]", "[$ONLYTIMESTAMP$]"},
+					new String[] {"", "?" + parameters4}));
+		}
+
+		return outUrls;
 	}
 
 	protected void setFinalStaticField(Field field, Object newValue)
