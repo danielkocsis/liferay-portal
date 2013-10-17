@@ -152,7 +152,7 @@ public class WikiPortletDataHandler extends BasePortletDataHandler {
 		List<Element> nodeElements = nodesElement.elements();
 
 		for (Element nodeElement : nodeElements) {
-			StagedModelDataHandlerUtil.importReferenceStagedModel(
+			StagedModelDataHandlerUtil.importStagedModel(
 				portletDataContext, nodeElement);
 		}
 
@@ -162,7 +162,7 @@ public class WikiPortletDataHandler extends BasePortletDataHandler {
 		List<Element> pageElements = pagesElement.elements();
 
 		for (Element pageElement : pageElements) {
-			StagedModelDataHandlerUtil.importReferenceStagedModel(
+			StagedModelDataHandlerUtil.importStagedModel(
 				portletDataContext, pageElement);
 		}
 
@@ -211,12 +211,8 @@ public class WikiPortletDataHandler extends BasePortletDataHandler {
 				WikiNodeLocalServiceUtil.getNode(
 					portletDataContext.getScopeGroupId(), hiddenNodeName);
 
-			portletDataContext.addReferenceElement(
-				portlet, portletDataContext.getExportDataRootElement(),
-				wikiNode, WikiNode.class,
-				PortletDataContext.REFERENCE_TYPE_DEPENDENCY,
-				!portletDataContext.getBooleanParameter(
-					NAMESPACE, "wiki-pages"));
+			StagedModelDataHandlerUtil.exportReferenceStagedModel(
+				portletDataContext, portletId, wikiNode);
 		}
 
 		String visibleNodeNames = portletPreferences.getValue(
@@ -227,13 +223,21 @@ public class WikiPortletDataHandler extends BasePortletDataHandler {
 				WikiNodeLocalServiceUtil.getNode(
 					portletDataContext.getScopeGroupId(), visibleNodeName);
 
-			portletDataContext.addReferenceElement(
-				portlet, portletDataContext.getExportDataRootElement(),
-				wikiNode, WikiNode.class,
-				PortletDataContext.REFERENCE_TYPE_DEPENDENCY,
-				!portletDataContext.getBooleanParameter(
-					NAMESPACE, "wiki-pages"));
+			StagedModelDataHandlerUtil.exportReferenceStagedModel(
+				portletDataContext, portletId, wikiNode);
 		}
+
+		return portletPreferences;
+	}
+
+	@Override
+	protected PortletPreferences doProcessImportPortletPreferences(
+			PortletDataContext portletDataContext, String portletId,
+			PortletPreferences portletPreferences)
+		throws Exception {
+
+		StagedModelDataHandlerUtil.importReferenceStagedModels(
+			portletDataContext, WikiNode.class);
 
 		return portletPreferences;
 	}
