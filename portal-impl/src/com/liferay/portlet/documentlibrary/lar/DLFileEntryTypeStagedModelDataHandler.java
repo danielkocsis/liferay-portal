@@ -20,19 +20,24 @@ import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
+import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Mate Thurzo
@@ -163,6 +168,10 @@ public class DLFileEntryTypeStagedModelDataHandler
 						portletDataContext.getScopeGroupId());
 
 			if (existingDLFileEntryType == null) {
+
+			}
+
+			if (existingDLFileEntryType == null) {
 				serviceContext.setUuid(fileEntryType.getUuid());
 
 				importedDLFileEntryType =
@@ -239,6 +248,45 @@ public class DLFileEntryTypeStagedModelDataHandler
 		}
 
 		return true;
+	}
+
+	protected DLFileEntryType fetchExistingFileEntryType(
+			DLFileEntryType fileEntryType, long groupId)
+		throws Exception {
+
+		DLFileEntryType existingFileEntryType =
+			DLFileEntryTypeLocalServiceUtil.
+				fetchDLFileEntryTypeByUuidAndGroupId(
+					fileEntryType.getUuid(), groupId);
+
+		if ((existingFileEntryType == null) &&
+			defaultFileEntryTypeSet.contains(
+				fileEntryType.getFileEntryTypeKey())) {
+
+			List<DLFileEntryType> groupFileEntryTypes =
+				DLFileEntryTypeLocalServiceUtil.getFileEntryTypes(
+					new long[] {groupId});
+
+			for (DLFileEntryType groupFileEntryType : groupFileEntryTypes) {
+
+			}
+		}
+
+		return existingFileEntryType;
+	}
+
+	protected static Set<String> defaultFileEntryTypeSet =
+		new HashSet<String>();
+
+	static {
+		String[] defaultFileEntryTypeArray = new String[] {
+			DLFileEntryTypeConstants.NAME_CONTRACT,
+			DLFileEntryTypeConstants.NAME_IG_IMAGE,
+			DLFileEntryTypeConstants.NAME_MARKETING_BANNER,
+			DLFileEntryTypeConstants.NAME_ONLINE_TRAINING,
+			DLFileEntryTypeConstants.NAME_SALES_PRESENTATION};
+
+		defaultFileEntryTypeSet = SetUtil.fromArray(defaultFileEntryTypeArray);
 	}
 
 }
