@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.lar.MissingReference;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.model.Group;
@@ -56,11 +57,17 @@ public class StagingUtil {
 			remoteGroupId, privateLayout);
 	}
 
+	public static String buildRemoteURL(
+		UnicodeProperties typeSettingsProperties) {
+
+		return getStaging().buildRemoteURL(typeSettingsProperties);
+	}
+
 	public static void checkDefaultLayoutSetBranches(
 			long userId, Group liveGroup, boolean branchingPublic,
 			boolean branchingPrivate, boolean remote,
 			ServiceContext serviceContext)
-		throws Exception {
+		throws PortalException, SystemException {
 
 		getStaging().checkDefaultLayoutSetBranches(
 			userId, liveGroup, branchingPublic, branchingPrivate, false,
@@ -107,7 +114,7 @@ public class StagingUtil {
 
 	public static void deleteLastImportSettings(
 			Group liveGroup, boolean privateLayout)
-		throws Exception {
+		throws PortalException, SystemException {
 
 		getStaging().deleteLastImportSettings(liveGroup, privateLayout);
 	}
@@ -342,7 +349,7 @@ public class StagingUtil {
 			long userId, long sourceGroupId, long targetGroupId,
 			boolean privateLayout, long[] layoutIds,
 			Map<String, String[]> parameterMap, Date startDate, Date endDate)
-		throws Exception {
+		throws PortalException, SystemException {
 
 		getStaging().publishLayouts(
 			userId, sourceGroupId, targetGroupId, privateLayout, layoutIds,
@@ -353,7 +360,7 @@ public class StagingUtil {
 			long userId, long sourceGroupId, long targetGroupId,
 			boolean privateLayout, Map<Long, Boolean> layoutIdMap,
 			Map<String, String[]> parameterMap, Date startDate, Date endDate)
-		throws Exception {
+		throws PortalException, SystemException {
 
 		getStaging().publishLayouts(
 			userId, sourceGroupId, targetGroupId, privateLayout, layoutIdMap,
@@ -364,7 +371,7 @@ public class StagingUtil {
 			long userId, long sourceGroupId, long targetGroupId,
 			boolean privateLayout, Map<String, String[]> parameterMap,
 			Date startDate, Date endDate)
-		throws Exception {
+		throws PortalException, SystemException {
 
 		getStaging().publishLayouts(
 			userId, sourceGroupId, targetGroupId, privateLayout, parameterMap,
@@ -510,6 +517,16 @@ public class StagingUtil {
 		throws Exception {
 
 		getStaging().updateStaging(PortletRequest, liveGroup);
+	}
+
+	public static void validateRemote(
+			String remoteAddress, int remotePort, String remotePathContext,
+			boolean secureConnection, long remoteGroupId)
+		throws PortalException {
+
+		getStaging().validateRemote(
+			remoteAddress, remotePort, remotePathContext, secureConnection,
+			remoteGroupId);
 	}
 
 	public void setStaging(Staging staging) {
