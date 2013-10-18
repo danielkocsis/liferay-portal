@@ -463,6 +463,7 @@ public class StagingImpl implements Staging {
 		disableStaging((PortletRequest)null, liveGroup, serviceContext);
 	}
 
+	@Deprecated
 	@Override
 	public void disableStaging(Group liveGroup, ServiceContext serviceContext)
 		throws Exception {
@@ -480,6 +481,7 @@ public class StagingImpl implements Staging {
 		disableStaging(portletRequest, liveGroup, serviceContext);
 	}
 
+	@Deprecated
 	@Override
 	public void disableStaging(
 			PortletRequest portletRequest, Group liveGroup,
@@ -547,6 +549,7 @@ public class StagingImpl implements Staging {
 			liveGroup.getGroupId(), typeSettingsProperties.toString());
 	}
 
+	@Deprecated
 	@Override
 	public void enableLocalStaging(
 			long userId, Group scopeGroup, Group liveGroup,
@@ -610,6 +613,7 @@ public class StagingImpl implements Staging {
 			serviceContext);
 	}
 
+	@Deprecated
 	@Override
 	public void enableRemoteStaging(
 			long userId, Group scopeGroup, Group liveGroup,
