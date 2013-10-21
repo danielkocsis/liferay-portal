@@ -30,6 +30,7 @@ import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetBranchLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.StagingLocalServiceUtil;
 import com.liferay.portal.spring.transaction.TransactionAttributeBuilder;
 import com.liferay.portal.spring.transaction.TransactionalCallableUtil;
 
@@ -97,7 +98,8 @@ public class LayoutStagingBackgroundTaskExecutor
 			StagingUtil.unlockGroup(targetGroupId);
 
 			if (failed && initialImport) {
-				StagingUtil.disableStaging(sourceGroup, serviceContext);
+				StagingLocalServiceUtil.disableStaging(
+					sourceGroup, serviceContext);
 			}
 		}
 
