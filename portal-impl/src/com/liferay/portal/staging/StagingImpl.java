@@ -1767,7 +1767,8 @@ public class StagingImpl implements Staging {
 
 	@Override
 	public void updateLastPublishDate(
-			long groupId, boolean privateLayout, Date lastPublishDate)
+			long groupId, boolean privateLayout, Date lastPublishDate,
+			Map<String, String[]> parameterMap)
 		throws Exception {
 
 		if (lastPublishDate == null) {
@@ -1783,9 +1784,23 @@ public class StagingImpl implements Staging {
 		settingsProperties.setProperty(
 			"last-publish-date", String.valueOf(lastPublishDate.getTime()));
 
-		LayoutSetLocalServiceUtil.updateSettings(
-			layoutSet.getGroupId(), layoutSet.isPrivateLayout(),
-			settingsProperties.toString());
+		boolean exportLAR = MapUtil.getBoolean(parameterMap, "exportLAR");
+
+		if (!exportLAR &&
+			LayoutStagingUtil.isBranchingLayoutSet(
+				layoutSet.getGroup(), privateLayout)) {
+
+			long layoutSetBranchId = MapUtil.getLong(
+				parameterMap, "layoutSetBranchId");
+
+			LayoutSetBranchLocalServiceUtil.updateSettings(
+				layoutSetBranchId, settingsProperties.toSortedString());
+		}
+		else {
+			LayoutSetLocalServiceUtil.updateSettings(
+				layoutSet.getGroupId(), layoutSet.isPrivateLayout(),
+				settingsProperties.toString());
+		}
 	}
 
 	@Override

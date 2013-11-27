@@ -498,11 +498,12 @@ public class StagingUtil {
 	}
 
 	public static void updateLastPublishDate(
-			long sourceGroupId, boolean privateLayout, Date lastPublishDate)
+			long sourceGroupId, boolean privateLayout, Date lastPublishDate,
+			Map<String, String[]> parameterMap)
 		throws Exception {
 
 		getStaging().updateLastPublishDate(
-			sourceGroupId, privateLayout, lastPublishDate);
+			sourceGroupId, privateLayout, lastPublishDate, parameterMap);
 	}
 
 	public static void updateLastPublishDate(
