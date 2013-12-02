@@ -196,11 +196,13 @@ public class LayoutStagingBackgroundTaskExecutor
 
 					if (!sourceGroup.hasStagingGroup()) {
 						StagingUtil.updateLastPublishDate(
-							_sourceGroupId, privateLayout, endDate);
+							_sourceGroupId, privateLayout, endDate,
+							parameterMap);
 					}
 					else {
 						StagingUtil.updateLastPublishDate(
-							_targetGroupId, privateLayout, endDate);
+							_targetGroupId, privateLayout, endDate,
+							parameterMap);
 					}
 				}
 			}

@@ -285,7 +285,8 @@ public interface Staging {
 		throws Exception;
 
 	public void updateLastPublishDate(
-			long sourceGroupId, boolean privateLayout, Date lastPublishDate)
+			long sourceGroupId, boolean privateLayout, Date lastPublishDate,
+			Map<String, String[]> parameterMap)
 		throws Exception;
 
 	public void updateLastPublishDate(

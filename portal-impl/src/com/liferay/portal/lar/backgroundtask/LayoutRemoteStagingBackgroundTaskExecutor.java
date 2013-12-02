@@ -127,7 +127,7 @@ public class LayoutRemoteStagingBackgroundTaskExecutor
 
 			if (updateLastPublishDate) {
 				StagingUtil.updateLastPublishDate(
-					sourceGroupId, privateLayout, endDate);
+					sourceGroupId, privateLayout, endDate, parameterMap);
 			}
 		}
 		finally {
