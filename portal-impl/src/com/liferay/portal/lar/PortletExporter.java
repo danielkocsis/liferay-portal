@@ -69,20 +69,14 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.asset.model.AssetCategory;
-import com.liferay.portlet.asset.model.AssetCategoryConstants;
-import com.liferay.portlet.asset.model.AssetCategoryProperty;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLink;
 import com.liferay.portlet.asset.model.AssetTag;
 import com.liferay.portlet.asset.model.AssetTagProperty;
-import com.liferay.portlet.asset.model.AssetVocabulary;
 import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
-import com.liferay.portlet.asset.service.AssetCategoryPropertyLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagPropertyLocalServiceUtil;
-import com.liferay.portlet.asset.service.persistence.AssetCategoryUtil;
-import com.liferay.portlet.asset.service.persistence.AssetVocabularyUtil;
 import com.liferay.portlet.expando.model.ExpandoColumn;
 import com.liferay.portlet.messageboards.model.MBDiscussion;
 import com.liferay.portlet.messageboards.model.MBMessage;
@@ -528,77 +522,6 @@ public class PortletExporter {
 		}
 	}
 
-	protected void exportAssetCategory(
-			PortletDataContext portletDataContext,
-			Element assetVocabulariesElement, Element assetCategoriesElement,
-			AssetCategory assetCategory)
-		throws Exception {
-
-		exportAssetVocabulary(
-			portletDataContext, assetVocabulariesElement,
-			assetCategory.getVocabularyId());
-
-		if (assetCategory.getParentCategoryId() !=
-				AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) {
-
-			exportAssetCategory(
-				portletDataContext, assetVocabulariesElement,
-				assetCategoriesElement, assetCategory.getParentCategoryId());
-		}
-
-		String path = getAssetCategoryPath(
-			portletDataContext, assetCategory.getCategoryId());
-
-		if (!portletDataContext.isPathNotProcessed(path)) {
-			return;
-		}
-
-		Element assetCategoryElement = assetCategoriesElement.addElement(
-			"category");
-
-		assetCategoryElement.addAttribute("path", path);
-
-		assetCategory.setUserUuid(assetCategory.getUserUuid());
-
-		portletDataContext.addZipEntry(path, assetCategory);
-
-		List<AssetCategoryProperty> assetCategoryProperties =
-			AssetCategoryPropertyLocalServiceUtil.getCategoryProperties(
-				assetCategory.getCategoryId());
-
-		for (AssetCategoryProperty assetCategoryProperty :
-				assetCategoryProperties) {
-
-			Element propertyElement = assetCategoryElement.addElement(
-				"property");
-
-			propertyElement.addAttribute(
-				"userUuid", assetCategoryProperty.getUserUuid());
-			propertyElement.addAttribute("key", assetCategoryProperty.getKey());
-			propertyElement.addAttribute(
-				"value", assetCategoryProperty.getValue());
-		}
-
-		portletDataContext.addPermissions(
-			AssetCategory.class, assetCategory.getCategoryId());
-	}
-
-	protected void exportAssetCategory(
-			PortletDataContext portletDataContext,
-			Element assetVocabulariesElement, Element assetCategoriesElement,
-			long assetCategoryId)
-		throws Exception {
-
-		AssetCategory assetCategory = AssetCategoryUtil.fetchByPrimaryKey(
-			assetCategoryId);
-
-		if (assetCategory != null) {
-			exportAssetCategory(
-				portletDataContext, assetVocabulariesElement,
-				assetCategoriesElement, assetCategory);
-		}
-	}
-
 	protected void exportAssetLinks(PortletDataContext portletDataContext)
 		throws Exception {
 
@@ -722,43 +645,6 @@ public class PortletExporter {
 		portletDataContext.addZipEntry(
 			ExportImportPathUtil.getRootPath(portletDataContext) + "/tags.xml",
 			document.formattedString());
-	}
-
-	protected void exportAssetVocabulary(
-			PortletDataContext portletDataContext,
-			Element assetVocabulariesElement, AssetVocabulary assetVocabulary)
-		throws Exception {
-
-		String path = getAssetVocabulariesPath(
-			portletDataContext, assetVocabulary.getVocabularyId());
-
-		if (!portletDataContext.isPathNotProcessed(path)) {
-			return;
-		}
-
-		Element assetVocabularyElement = assetVocabulariesElement.addElement(
-			"vocabulary");
-
-		assetVocabularyElement.addAttribute("path", path);
-
-		assetVocabulary.setUserUuid(assetVocabulary.getUserUuid());
-
-		portletDataContext.addZipEntry(path, assetVocabulary);
-
-		portletDataContext.addPermissions(
-			AssetVocabulary.class, assetVocabulary.getVocabularyId());
-	}
-
-	protected void exportAssetVocabulary(
-			PortletDataContext portletDataContext,
-			Element assetVocabulariesElement, long assetVocabularyId)
-		throws Exception {
-
-		AssetVocabulary assetVocabulary = AssetVocabularyUtil.findByPrimaryKey(
-			assetVocabularyId);
-
-		exportAssetVocabulary(
-			portletDataContext, assetVocabulariesElement, assetVocabulary);
 	}
 
 	protected void exportComments(PortletDataContext portletDataContext)
