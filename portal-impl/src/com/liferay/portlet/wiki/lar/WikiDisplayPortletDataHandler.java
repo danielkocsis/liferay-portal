@@ -128,10 +128,10 @@ public class WikiDisplayPortletDataHandler extends WikiPortletDataHandler {
 			WikiPermission.RESOURCE_NAME);
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, WikiNode.class);
+			portletDataContext, portletId, WikiNode.class);
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, WikiPage.class);
+			portletDataContext, portletId, WikiPage.class);
 
 		long nodeId = GetterUtil.getLong(
 			portletPreferences.getValue("nodeId", StringPool.BLANK));

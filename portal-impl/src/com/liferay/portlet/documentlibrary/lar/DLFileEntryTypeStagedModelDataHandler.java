@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
+import com.liferay.portal.kernel.lar.LarHandlerUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataException;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
@@ -98,13 +99,18 @@ public class DLFileEntryTypeStagedModelDataHandler
 
 	@Override
 	public void importCompanyStagedModel(
-			PortletDataContext portletDataContext, Element element)
+			PortletDataContext portletDataContext,
+			DLFileEntryType fileEntryType)
 		throws PortletDataException {
 
-		String uuid = element.attributeValue("uuid");
-		String fileEntryTypeKey = element.attributeValue("file-entry-type-key");
-		boolean preloaded = GetterUtil.getBoolean(
-			element.attributeValue("preloaded"));
+		Map<String, String> modelAttributes =
+			LarHandlerUtil.readModelAttributes(
+				portletDataContext, fileEntryType);
+
+		String uuid = MapUtil.getString(modelAttributes, "uuid");
+		String fileEntryTypeKey = MapUtil.getString(
+			modelAttributes, "file-entry-type-key");
+		boolean preloaded = MapUtil.getBoolean(modelAttributes, "preloaded");
 
 		DLFileEntryType existingFileEntryType = null;
 
@@ -121,8 +127,7 @@ public class DLFileEntryTypeStagedModelDataHandler
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				DLFileEntryType.class);
 
-		long fileEntryTypeId = GetterUtil.getLong(
-			element.attributeValue("class-pk"));
+		long fileEntryTypeId = MapUtil.getLong(modelAttributes, "class-pk");
 
 		fileEntryTypeIds.put(
 			fileEntryTypeId, existingFileEntryType.getFileEntryTypeId());

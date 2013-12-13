@@ -17,14 +17,16 @@ package com.liferay.portlet.bookmarks.lar;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.lar.BasePortletDataHandler;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
+import com.liferay.portal.kernel.lar.LarHandlerUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataHandlerBoolean;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
-import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.model.ClassedModel;
 import com.liferay.portal.model.Portlet;
+import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.bookmarks.model.BookmarksEntry;
@@ -95,17 +97,18 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
-		Element rootElement = addExportDataRootElement(portletDataContext);
-
 		if (!portletDataContext.getBooleanParameter(NAMESPACE, "entries")) {
-			return getExportDataRootElementString(rootElement);
+			return LarHandlerUtil.getExportedContent(
+				portletDataContext, portletId);
 		}
 
 		portletDataContext.addPortletPermissions(
 			BookmarksPermission.RESOURCE_NAME);
 
-		rootElement.addAttribute(
-			"group-id", String.valueOf(portletDataContext.getScopeGroupId()));
+		// todo: portlet element attributes??
+
+		//rootElement.addAttribute(
+		//	"group-id", String.valueOf(portletDataContext.getScopeGroupId()));
 
 		ActionableDynamicQuery folderActionableDynamicQuery =
 			new BookmarksFolderExportActionableDynamicQuery(portletDataContext);
@@ -117,7 +120,7 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 
 		entryActionableDynamicQuery.performActions();
 
-		return getExportDataRootElementString(rootElement);
+		return LarHandlerUtil.getExportedContent(portletDataContext, portletId);
 	}
 
 	@Override
@@ -133,24 +136,20 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 		portletDataContext.importPortletPermissions(
 			BookmarksPermission.RESOURCE_NAME);
 
-		Element foldersElement = portletDataContext.getImportDataGroupElement(
-			BookmarksFolder.class);
+		List<ClassedModel> folderModels = LarHandlerUtil.readModels(
+			portletDataContext, BookmarksFolder.class);
 
-		List<Element> folderElements = foldersElement.elements();
-
-		for (Element folderElement : folderElements) {
+		for (ClassedModel folderModel : folderModels) {
 			StagedModelDataHandlerUtil.importStagedModel(
-				portletDataContext, folderElement);
+				portletDataContext, (StagedModel)folderModel);
 		}
 
-		Element entriesElement = portletDataContext.getImportDataGroupElement(
-			BookmarksEntry.class);
+		List<ClassedModel> entryModels = LarHandlerUtil.readModels(
+			portletDataContext, BookmarksEntry.class);
 
-		List<Element> entryElements = entriesElement.elements();
-
-		for (Element entryElement : entryElements) {
+		for (ClassedModel entryModel : entryModels) {
 			StagedModelDataHandlerUtil.importStagedModel(
-				portletDataContext, entryElement);
+				portletDataContext, (StagedModel)entryModel);
 		}
 
 		return null;

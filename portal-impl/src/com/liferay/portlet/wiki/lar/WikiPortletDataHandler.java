@@ -232,7 +232,7 @@ public class WikiPortletDataHandler extends BasePortletDataHandler {
 		throws Exception {
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, WikiNode.class);
+			portletDataContext, portletId, WikiNode.class);
 
 		return portletPreferences;
 	}

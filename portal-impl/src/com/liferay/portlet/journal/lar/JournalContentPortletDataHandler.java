@@ -206,13 +206,13 @@ public class JournalContentPortletDataHandler
 		}
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, DDMStructure.class);
+			portletDataContext, portletId, DDMStructure.class);
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, DDMTemplate.class);
+			portletDataContext, portletId, DDMTemplate.class);
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, JournalArticle.class);
+			portletDataContext, portletId, JournalArticle.class);
 
 		String articleId = portletPreferences.getValue("articleId", null);
 

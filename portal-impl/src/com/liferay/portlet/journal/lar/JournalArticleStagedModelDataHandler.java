@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
 import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
+import com.liferay.portal.kernel.lar.LarHandlerUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataException;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
@@ -163,14 +164,17 @@ public class JournalArticleStagedModelDataHandler
 
 	@Override
 	public void importCompanyStagedModel(
-			PortletDataContext portletDataContext, Element element)
+			PortletDataContext portletDataContext, JournalArticle article)
 		throws PortletDataException {
 
-		String articleResourceUuid = element.attributeValue(
-			"article-resource-uuid");
-		String articleArticleId = element.attributeValue("article-id");
-		boolean preloaded = GetterUtil.getBoolean(
-			element.attributeValue("preloaded"));
+		Map<String, String> modelAttributes =
+			LarHandlerUtil.readModelAttributes(portletDataContext, article);
+
+		String articleResourceUuid = MapUtil.getString(
+			modelAttributes, "article-resource-uuid");
+		String articleArticleId = MapUtil.getString(
+			modelAttributes, "article-id");
+		boolean preloaded = MapUtil.getBoolean(modelAttributes, "preloaded");
 
 		JournalArticle existingArticle = null;
 
@@ -197,7 +201,7 @@ public class JournalArticleStagedModelDataHandler
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				JournalArticle.class);
 
-		long articleId = GetterUtil.getLong(element.attributeValue("class-pk"));
+		long articleId = MapUtil.getLong(modelAttributes, "class-pk");
 
 		articleIds.put(articleId, existingArticle.getId());
 	}

@@ -179,7 +179,7 @@ public class RSSPortletDataHandler extends BasePortletDataHandler {
 		throws Exception {
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, JournalArticle.class);
+			portletDataContext, portletId, JournalArticle.class);
 
 		Layout layout = LayoutLocalServiceUtil.getLayout(
 			portletDataContext.getPlid());

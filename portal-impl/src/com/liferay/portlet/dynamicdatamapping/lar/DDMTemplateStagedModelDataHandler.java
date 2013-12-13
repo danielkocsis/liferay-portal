@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
 import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
+import com.liferay.portal.kernel.lar.LarHandlerUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataException;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
@@ -113,15 +114,18 @@ public class DDMTemplateStagedModelDataHandler
 
 	@Override
 	public void importCompanyStagedModel(
-			PortletDataContext portletDataContext, Element element)
+			PortletDataContext portletDataContext, DDMTemplate template)
 		throws PortletDataException {
 
-		String uuid = element.attributeValue("uuid");
-		long classNameId = PortalUtil.getClassNameId(
-			element.attributeValue("referenced-class-name"));
-		String templateKey = element.attributeValue("template-key");
-		boolean preloaded = GetterUtil.getBoolean(
-			element.attributeValue("preloaded"));
+		Map<String, String> modelAttributes =
+			LarHandlerUtil.readModelAttributes(portletDataContext, template);
+
+		String uuid = MapUtil.getString(modelAttributes, "uuid");
+		long classNameId = MapUtil.getLong(
+			modelAttributes, "referenced-class-name");
+		String templateKey = MapUtil.getString(
+			modelAttributes, "structure-key");
+		boolean preloaded = MapUtil.getBoolean(modelAttributes, "preloaded");
 
 		DDMTemplate existingTemplate = null;
 
@@ -138,8 +142,7 @@ public class DDMTemplateStagedModelDataHandler
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				DDMTemplate.class);
 
-		long templateId = GetterUtil.getLong(
-			element.attributeValue("class-pk"));
+		long templateId = MapUtil.getLong(modelAttributes, "class-pk");
 
 		templateIds.put(templateId, existingTemplate.getTemplateId());
 

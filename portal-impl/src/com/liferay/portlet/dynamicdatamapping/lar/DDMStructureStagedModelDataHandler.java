@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
+import com.liferay.portal.kernel.lar.LarHandlerUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataException;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
@@ -103,15 +104,18 @@ public class DDMStructureStagedModelDataHandler
 
 	@Override
 	public void importCompanyStagedModel(
-			PortletDataContext portletDataContext, Element element)
+			PortletDataContext portletDataContext, DDMStructure structure)
 		throws PortletDataException {
 
-		String uuid = element.attributeValue("uuid");
-		long classNameId = PortalUtil.getClassNameId(
-			element.attributeValue("referenced-class-name"));
-		String structureKey = element.attributeValue("structure-key");
-		boolean preloaded = GetterUtil.getBoolean(
-			element.attributeValue("preloaded"));
+		Map<String, String> modelAttributes =
+			LarHandlerUtil.readModelAttributes(portletDataContext, structure);
+
+		String uuid = MapUtil.getString(modelAttributes, "uuid");
+		long classNameId = MapUtil.getLong(
+			modelAttributes, "referenced-class-name");
+		String structureKey = MapUtil.getString(
+			modelAttributes, "structure-key");
+		boolean preloaded = MapUtil.getBoolean(modelAttributes, "preloaded");
 
 		DDMStructure existingStructure = null;
 
@@ -128,8 +132,7 @@ public class DDMStructureStagedModelDataHandler
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				DDMStructure.class);
 
-		long structureId = GetterUtil.getLong(
-			element.attributeValue("class-pk"));
+		long structureId = MapUtil.getLong(modelAttributes, "class-pk");
 
 		structureIds.put(structureId, existingStructure.getStructureId());
 

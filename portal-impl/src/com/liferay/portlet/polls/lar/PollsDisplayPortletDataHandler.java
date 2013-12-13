@@ -126,13 +126,13 @@ public class PollsDisplayPortletDataHandler extends PollsPortletDataHandler {
 			PollsPermission.RESOURCE_NAME);
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, PollsQuestion.class);
+			portletDataContext, portletId, PollsQuestion.class);
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, PollsChoice.class);
+			portletDataContext, portletId, PollsChoice.class);
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, PollsVote.class);
+			portletDataContext, portletId, PollsVote.class);
 
 		long questionId = GetterUtil.getLong(
 			portletPreferences.getValue("questionId", StringPool.BLANK));

@@ -17,12 +17,10 @@ package com.liferay.portlet.bookmarks.lar;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
-import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.util.MapUtil;
-import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.bookmarks.model.BookmarksEntry;
 import com.liferay.portlet.bookmarks.model.BookmarksFolder;
@@ -77,10 +75,8 @@ public class BookmarksEntryStagedModelDataHandler
 				PortletDataContext.REFERENCE_TYPE_PARENT);
 		}
 
-		Element entryElement = portletDataContext.getExportDataElement(entry);
-
-		portletDataContext.addClassedModel(
-			entryElement, ExportImportPathUtil.getModelPath(entry), entry);
+		StagedModelDataHandlerUtil.serializeStagedModel(
+			portletDataContext, entry, null);
 	}
 
 	@Override
