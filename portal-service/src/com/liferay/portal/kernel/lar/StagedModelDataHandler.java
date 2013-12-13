@@ -46,11 +46,11 @@ public interface StagedModelDataHandler<T extends StagedModel> {
 		PortletDataContext portletDataContext, T stagedModel);
 
 	public void importCompanyStagedModel(
-			PortletDataContext portletDataContext, Element element)
+			PortletDataContext portletDataContext, String uuid, long classPK)
 		throws PortletDataException;
 
 	public void importCompanyStagedModel(
-			PortletDataContext portletDataContext, String uuid, long classPK)
+			PortletDataContext portletDataContext, T stagedModel)
 		throws PortletDataException;
 
 	public void importStagedModel(

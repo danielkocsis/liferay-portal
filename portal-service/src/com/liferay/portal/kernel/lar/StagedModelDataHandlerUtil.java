@@ -16,19 +16,19 @@ package com.liferay.portal.kernel.lar;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.xml.Attribute;
 import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.model.AttachedModel;
+import com.liferay.portal.model.AuditedModel;
 import com.liferay.portal.model.ClassedModel;
 import com.liferay.portal.model.Portlet;
+import com.liferay.portal.model.ResourcedModel;
 import com.liferay.portal.model.StagedGroupedModel;
 import com.liferay.portal.model.StagedModel;
-import com.liferay.portal.model.TypedModel;
 import com.liferay.portal.service.PortletLocalServiceUtil;
-import com.liferay.portal.util.PortalUtil;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,15 +57,18 @@ public class StagedModelDataHandlerUtil {
 		}
 	}
 
-	public static <T extends StagedModel> Element exportReferenceStagedModel(
+	public static <T extends StagedModel> void exportReferenceStagedModel(
 			PortletDataContext portletDataContext, String referrerPortletId,
 			T stagedModel)
 		throws PortletDataException {
 
-		Element referenceElement = null;
-
 		Portlet referrerPortlet = PortletLocalServiceUtil.getPortletById(
 			referrerPortletId);
+
+		Map<String, String> referenceParameters = new HashMap<String, String>();
+
+		referenceParameters.put(
+			"type", PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
 
 		if (stagedModel instanceof StagedGroupedModel) {
 			StagedGroupedModel stagedGroupedModel =
@@ -74,24 +77,22 @@ public class StagedModelDataHandlerUtil {
 			if (portletDataContext.isCompanyStagedGroupedModel(
 					stagedGroupedModel)) {
 
-				referenceElement = portletDataContext.addReferenceElement(
-					referrerPortlet,
-					portletDataContext.getExportDataRootElement(), stagedModel,
-					stagedModel.getModelClass(),
-					PortletDataContext.REFERENCE_TYPE_DEPENDENCY, true);
+				referenceParameters.put(
+					"missing", String.valueOf(Boolean.TRUE));
 
-				return referenceElement;
+				LarHandlerUtil.writeReference(
+					portletDataContext, referrerPortlet, stagedModel,
+					referenceParameters);
 			}
 		}
 
 		exportStagedModel(portletDataContext, stagedModel);
 
-		referenceElement = portletDataContext.addReferenceElement(
-			referrerPortlet, portletDataContext.getExportDataRootElement(),
-			stagedModel, stagedModel.getModelClass(),
-			PortletDataContext.REFERENCE_TYPE_DEPENDENCY, false);
+		referenceParameters.put("missing", String.valueOf(Boolean.FALSE));
 
-		return referenceElement;
+		LarHandlerUtil.writeReference(
+			portletDataContext, referrerPortlet, stagedModel,
+			referenceParameters);
 	}
 
 	public static <T extends StagedModel, U extends StagedModel> Element
@@ -144,6 +145,45 @@ public class StagedModelDataHandlerUtil {
 		return referenceElement;
 	}
 
+	public static <T extends StagedModel, U extends StagedModel> void
+		exportReferenceStagedModel(
+			PortletDataContext portletDataContext, T referrerStagedModel,
+			U stagedModel, Class<?> stagedModelClass, String referenceType)
+		throws PortletDataException {
+
+		Map<String, String> referenceParameters = new HashMap<String, String>();
+
+		referenceParameters.put(
+			"staged-model-class", stagedModelClass.getName());
+
+		if (stagedModel instanceof StagedGroupedModel) {
+			StagedGroupedModel stagedGroupedModel =
+				(StagedGroupedModel)stagedModel;
+
+			if (portletDataContext.isCompanyStagedGroupedModel(
+					stagedGroupedModel)) {
+
+				referenceParameters.put(
+					"type", PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
+				referenceParameters.put(
+					"missing", String.valueOf(Boolean.TRUE));
+
+				LarHandlerUtil.writeReference(
+					portletDataContext, referrerStagedModel, stagedModel,
+					referenceParameters);
+			}
+		}
+
+		exportStagedModel(portletDataContext, stagedModel);
+
+		referenceParameters.put("type", referenceType);
+		referenceParameters.put("missing", String.valueOf(Boolean.FALSE));
+
+		LarHandlerUtil.writeReference(
+			portletDataContext, referrerStagedModel, stagedModel,
+			referenceParameters);
+	}
+
 	public static <T extends StagedModel, U extends StagedModel> Element
 		exportReferenceStagedModel(
 			PortletDataContext portletDataContext, T referrerStagedModel,
@@ -190,83 +230,89 @@ public class StagedModelDataHandlerUtil {
 
 	public static <T extends StagedModel> void importReferenceStagedModel(
 			PortletDataContext portletDataContext, T referrerStagedModel,
-			Class<?> stagedModelClass, long classPK)
+			Class<? extends ClassedModel> stagedModelClass, long classPK)
 		throws PortletDataException {
 
-		Element referenceElement =
-			portletDataContext.getReferenceElement(
-				referrerStagedModel, stagedModelClass, classPK);
+		StagedModel stagedModel =
+			(StagedModel)LarHandlerUtil.readReferencedModel(
+				portletDataContext, referrerStagedModel, stagedModelClass,
+				classPK);
 
-		if (referenceElement == null) {
-			return;
-		}
+		importReferenceStagedModel(
+			portletDataContext, referrerStagedModel, stagedModel);
+	}
 
-		long groupId = GetterUtil.getLong(
-			referenceElement.attributeValue("group-id"));
+	public static <T extends StagedModel, U extends StagedModel>
+		void importReferenceStagedModel(
+			PortletDataContext portletDataContext, T referrerStagedModel,
+			U referredStagedModel)
+		throws PortletDataException {
+
+		Map<String, String> attributes =
+			LarHandlerUtil.readReferenceAttributes(
+				portletDataContext, referrerStagedModel, referredStagedModel);
+
+		long groupId = MapUtil.getLong(attributes, "group-id");
 
 		if ((portletDataContext.getSourceCompanyGroupId() == groupId) &&
 			(portletDataContext.getGroupId() !=
 				portletDataContext.getCompanyGroupId())) {
 
-			StagedModelDataHandler<?> stagedModelDataHandler =
-				StagedModelDataHandlerRegistryUtil.getStagedModelDataHandler(
-					stagedModelClass.getName());
+			StagedModelType stagedModelType =
+				referredStagedModel.getStagedModelType();
+
+			StagedModelDataHandler<U> stagedModelDataHandler =
+				(StagedModelDataHandler<U>)
+					StagedModelDataHandlerRegistryUtil.
+						getStagedModelDataHandler(
+							stagedModelType.getClassName());
 
 			stagedModelDataHandler.importCompanyStagedModel(
-				portletDataContext, referenceElement);
+				portletDataContext, referredStagedModel);
 
 			return;
 		}
 
-		Element referenceDataElement =
-			portletDataContext.getReferenceDataElement(
-				referrerStagedModel, stagedModelClass, classPK);
-
-		importStagedModel(portletDataContext, referenceDataElement);
+		importStagedModel(portletDataContext, referredStagedModel);
 	}
 
 	public static void importReferenceStagedModels(
-			PortletDataContext portletDataContext, Class<?> stagedModelClass)
+			PortletDataContext portletDataContext, Portlet referrerPortlet,
+			Class<? extends ClassedModel> stagedModelClass)
 		throws PortletDataException {
 
-		Element importDataRootElement =
-			portletDataContext.getImportDataRootElement();
+		List<ClassedModel> referencedModels =
+			LarHandlerUtil.readReferencedModels(
+				portletDataContext, referrerPortlet, stagedModelClass);
 
-		Element referencesElement = importDataRootElement.element("references");
-
-		if (referencesElement == null) {
+		if (referencedModels == null) {
 			return;
 		}
 
-		List<Element> referenceElements = referencesElement.elements();
+		for (ClassedModel referenceModel : referencedModels) {
+			Map<String, String> attributes =
+				LarHandlerUtil.readReferenceAttributes(
+					portletDataContext, referrerPortlet, referenceModel);
 
-		for (Element referenceElement : referenceElements) {
-			String className = referenceElement.attributeValue("class-name");
-			String stagedModelClassName = stagedModelClass.getName();
-
-			if (!stagedModelClassName.equals(className)) {
-				continue;
-			}
-
-			long groupId = GetterUtil.getLong(
-				referenceElement.attributeValue("group-id"));
+			long groupId = MapUtil.getLong(attributes, "group-id");
 
 			if ((portletDataContext.getSourceCompanyGroupId() == groupId) &&
 				(portletDataContext.getGroupId() !=
 					portletDataContext.getCompanyGroupId())) {
 
-				StagedModelDataHandler<?> stagedModelDataHandler =
-					StagedModelDataHandlerRegistryUtil.
-						getStagedModelDataHandler(stagedModelClass.getName());
+				StagedModelDataHandler<StagedModel> stagedModelDataHandler =
+					(StagedModelDataHandler<StagedModel>)
+						StagedModelDataHandlerRegistryUtil.
+							getStagedModelDataHandler(
+								stagedModelClass.getName());
 
 				stagedModelDataHandler.importCompanyStagedModel(
-					portletDataContext, referenceElement);
+					portletDataContext, (StagedModel)referenceModel);
 
 				continue;
 			}
 
-			long classPK = GetterUtil.getLong(
-				referenceElement.attributeValue("class-pk"));
+			long classPK = MapUtil.getLong(attributes, "class-pk");
 
 			String stagedModelPath = ExportImportPathUtil.getModelPath(
 				portletDataContext, stagedModelClass.getName(), classPK);
@@ -279,22 +325,37 @@ public class StagedModelDataHandlerUtil {
 		}
 	}
 
-	public static <T extends StagedModel> void importReferenceStagedModels(
-			PortletDataContext portletDataContext, T referrerStagedModel,
-			Class<?> stagedModelClass)
+	public static void importReferenceStagedModels(
+			PortletDataContext portletDataContext, String portletId,
+			Class<? extends ClassedModel> stagedModelClass)
 		throws PortletDataException {
 
-		List<Element> referenceElements =
-			portletDataContext.getReferenceElements(
-				referrerStagedModel, stagedModelClass);
+		Portlet portlet = null;
 
-		for (Element referenceElement : referenceElements) {
-			long classPK = GetterUtil.getLong(
-				referenceElement.attributeValue("class-pk"));
+		try {
+			PortletLocalServiceUtil.getPortletById(portletId);
+		}
+		catch (Exception e) {
+			throw new PortletDataException(e);
+		}
 
+		importReferenceStagedModels(
+			portletDataContext, portlet, stagedModelClass);
+	}
+
+	public static <T extends StagedModel> void importReferenceStagedModels(
+			PortletDataContext portletDataContext, T referrerStagedModel,
+			Class<? extends ClassedModel> stagedModelClass)
+		throws PortletDataException {
+
+		List<ClassedModel> referenceModels =
+			LarHandlerUtil.readReferencedModels(
+				portletDataContext, referrerStagedModel, stagedModelClass);
+
+		for (ClassedModel referencedModel : referenceModels) {
 			importReferenceStagedModel(
-				portletDataContext, referrerStagedModel, stagedModelClass,
-				classPK);
+				portletDataContext, referrerStagedModel,
+				(StagedModel)referencedModel);
 		}
 	}
 
@@ -302,9 +363,10 @@ public class StagedModelDataHandlerUtil {
 			PortletDataContext portletDataContext, Element element)
 		throws PortletDataException {
 
-		StagedModel stagedModel = _getStagedModel(portletDataContext, element);
+		//StagedModel stagedModel =
+		// _getStagedModel(portletDataContext, element);
 
-		importStagedModel(portletDataContext, stagedModel);
+		//importStagedModel(portletDataContext, stagedModel);
 	}
 
 	public static <T extends StagedModel> void importStagedModel(
@@ -318,31 +380,103 @@ public class StagedModelDataHandlerUtil {
 			portletDataContext, stagedModel);
 	}
 
-	private static StagedModel _getStagedModel(
-		PortletDataContext portletDataContext, Element element) {
+	public static<T extends StagedModel> void serializeStagedModel(
+			PortletDataContext portletDataContext, T stagedModel,
+			Map<String, String> attributes)
+		throws SystemException {
 
-		String path = element.attributeValue("path");
+		String path = ExportImportPathUtil.getModelPath(stagedModel);
 
-		StagedModel stagedModel =
-			(StagedModel)portletDataContext.getZipEntryAsObject(element, path);
+		attributes.put("path", path);
 
-		Attribute classNameAttribute = element.attribute("class-name");
+		if (stagedModel instanceof AttachedModel) {
+			AttachedModel attachedModel = (AttachedModel)stagedModel;
 
-		if ((classNameAttribute != null) &&
-			(stagedModel instanceof TypedModel)) {
-
-			String className = classNameAttribute.getValue();
-
-			if (Validator.isNotNull(className)) {
-				long classNameId = PortalUtil.getClassNameId(className);
-
-				TypedModel typedModel = (TypedModel)stagedModel;
-
-				typedModel.setClassNameId(classNameId);
-			}
+			attributes.put("class-name", attachedModel.getClassName());
 		}
 
-		return stagedModel;
+		// todo: move this to portal-impl now
+
+		/*
+		else if (BeanUtil.hasProperty(stagedModel, "className")) {
+			String className = BeanPropertiesUtil.getStringSilent(
+				stagedModel, "className");
+
+			if (className != null) {
+				attributes.put("class-name", className);
+			}
+		}
+		 */
+
+		if (portletDataContext.isPathProcessed(path)) {
+			return;
+		}
+
+		if (stagedModel instanceof AuditedModel) {
+			AuditedModel auditedModel = (AuditedModel)stagedModel;
+
+			auditedModel.setUserUuid(auditedModel.getUserUuid());
+		}
+
+		if (!isResourceMain(stagedModel)) {
+			portletDataContext.addZipEntry(path, stagedModel);
+
+			return;
+		}
+
+		/*
+		long classPK = getClassPK(stagedModel);
+
+		portletDataContext.addAssetCategories(clazz, classPK);
+		//portletDataContext.addAssetLinks(clazz, classPK);
+		portletDataContext.addAssetTags(clazz, classPK);
+		portletDataContext.addExpando(element, path, stagedModel, clazz);
+		portletDataContext.addLocks(clazz, String.valueOf(classPK));
+		portletDataContext.addPermissions(clazz, classPK);
+
+		boolean portletDataAll = MapUtil.getBoolean(
+			portletDataContext.getParameterMap(),
+			PortletDataHandlerKeys.PORTLET_DATA_ALL);
+
+		if (portletDataAll ||
+			MapUtil.getBoolean(
+				portletDataContext.getParameterMap(),
+				PortletDataHandlerKeys.COMMENTS)) {
+
+			portletDataContext.addComments(clazz, classPK);
+		}
+
+		if (portletDataAll ||
+			MapUtil.getBoolean(
+				portletDataContext.getParameterMap(),
+				PortletDataHandlerKeys.RATINGS)) {
+
+			portletDataContext.addRatingsEntries(clazz, classPK);
+		}
+		 */
+
+		portletDataContext.addZipEntry(path, stagedModel);
+	}
+
+	protected static long getClassPK(ClassedModel classedModel) {
+		if (classedModel instanceof ResourcedModel) {
+			ResourcedModel resourcedModel = (ResourcedModel)classedModel;
+
+			return resourcedModel.getResourcePrimKey();
+		}
+		else {
+			return (Long)classedModel.getPrimaryKeyObj();
+		}
+	}
+
+	protected static boolean isResourceMain(StagedModel stagedModel) {
+		if (stagedModel instanceof ResourcedModel) {
+			ResourcedModel resourcedModel = (ResourcedModel)stagedModel;
+
+			return resourcedModel.isResourceMain();
+		}
+
+		return true;
 	}
 
 	private static <T extends StagedModel> StagedModelDataHandler<T>

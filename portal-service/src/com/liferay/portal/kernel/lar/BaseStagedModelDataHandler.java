@@ -22,7 +22,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.trash.TrashHandlerRegistryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.model.StagedModel;
@@ -109,17 +109,6 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 	@Override
 	public void importCompanyStagedModel(
-			PortletDataContext portletDataContext, Element element)
-		throws PortletDataException {
-
-		String uuid = element.attributeValue("uuid");
-		long classPK = GetterUtil.getLong(element.attributeValue("class-pk"));
-
-		importCompanyStagedModel(portletDataContext, uuid, classPK);
-	}
-
-	@Override
-	public void importCompanyStagedModel(
 			PortletDataContext portletDataContext, String uuid, long classPK)
 		throws PortletDataException {
 
@@ -132,6 +121,20 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 		catch (Exception e) {
 			throw new PortletDataException(e);
 		}
+	}
+
+	@Override
+	public void importCompanyStagedModel(
+			PortletDataContext portletDataContext, T stagedModel)
+		throws PortletDataException {
+
+		Map<String, String> modelAttributes =
+			LarHandlerUtil.readModelAttributes(portletDataContext, stagedModel);
+
+		String uuid = MapUtil.getString(modelAttributes, "uuid");
+		long classPK = MapUtil.getLong(modelAttributes, "class-pk");
+
+		importCompanyStagedModel(portletDataContext, uuid, classPK);
 	}
 
 	@Override

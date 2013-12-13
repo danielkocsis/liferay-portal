@@ -1042,6 +1042,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 		return _manifestSummary;
 	}
 
+	public Set<String> getMissingReferences() {
+		return _missingReferences;
+	}
+
 	@Override
 	public Element getMissingReferencesElement() {
 		return _missingReferencesElement;
@@ -1236,6 +1240,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 		StagedModel parentStagedModel, Class<?> clazz) {
 
 		return getReferenceElements(parentStagedModel, clazz, 0, null);
+	}
+
+	public Set<String> getReferences() {
+		return _references;
 	}
 
 	@Override
@@ -1953,6 +1961,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 		_manifestSummary = manifestSummary;
 	}
 
+	public void setMissingReferences(Set<String> missingReferences) {
+		_missingReferences = missingReferences;
+	}
+
 	@Override
 	public void setMissingReferencesElement(Element missingReferencesElement) {
 		_missingReferencesElement = missingReferencesElement;
@@ -1988,6 +2000,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 	@Override
 	public void setPrivateLayout(boolean privateLayout) {
 		_privateLayout = privateLayout;
+	}
+
+	public void setReferences(Set<String> references) {
+		_references = references;
 	}
 
 	@Override

@@ -315,6 +315,8 @@ public interface PortletDataContext extends Serializable {
 
 	public ManifestSummary getManifestSummary();
 
+	public Set<String> getMissingReferences();
+
 	public Element getMissingReferencesElement();
 
 	public List<Layout> getNewLayouts();
@@ -385,6 +387,8 @@ public interface PortletDataContext extends Serializable {
 
 	public List<Element> getReferenceElements(
 		StagedModel parentStagedModel, Class<?> clazz);
+
+	public Set<String> getReferences();
 
 	/**
 	 * @deprecated As of 6.2.0, replaced by {@link
@@ -582,6 +586,8 @@ public interface PortletDataContext extends Serializable {
 
 	public void setManifestSummary(ManifestSummary manifestSummary);
 
+	public void setMissingReferences(Set<String> missingReferences);
+
 	public void setMissingReferencesElement(Element missingReferencesElement);
 
 	public void setNewLayouts(List<Layout> newLayouts);
@@ -596,6 +602,8 @@ public interface PortletDataContext extends Serializable {
 		PortletDataContextListener portletDataContextListener);
 
 	public void setPrivateLayout(boolean privateLayout);
+
+	public void setReferences(Set<String> references);
 
 	public void setScopeGroupId(long scopeGroupId);
 
