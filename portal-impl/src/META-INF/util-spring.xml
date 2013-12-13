@@ -197,6 +197,11 @@
 			<bean class="com.liferay.portal.language.UnicodeLanguageImpl" />
 		</property>
 	</bean>
+	<bean id="com.liferay.portal.kernel.lar.LarHandlerUtil" class="com.liferay.portal.kernel.lar.LarHandlerUtil">
+		<property name="larHandler">
+			<bean class="com.liferay.portal.lar.XMLLarHandlerImpl" />
+		</property>
+	</bean>
 	<bean id="com.liferay.portal.kernel.lar.ExportImportHelper" class="com.liferay.portal.lar.ExportImportHelperImpl" />
 	<bean id="com.liferay.portal.kernel.lar.ExportImportHelperUtil" class="com.liferay.portal.kernel.lar.ExportImportHelperUtil">
 		<property name="exportImportHelper" ref="com.liferay.portal.kernel.lar.ExportImportHelper" />
