@@ -72,6 +72,7 @@ public class BookmarksEntryStagedModelDataHandler
 
 			StagedModelDataHandlerUtil.exportReferenceStagedModel(
 				portletDataContext, entry, entry.getFolder(),
+				entry.getModelClass(),
 				PortletDataContext.REFERENCE_TYPE_PARENT);
 		}
 

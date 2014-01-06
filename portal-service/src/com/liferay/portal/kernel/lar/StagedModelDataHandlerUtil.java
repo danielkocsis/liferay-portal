@@ -190,10 +190,11 @@ public class StagedModelDataHandlerUtil {
 			U stagedModel, String referenceType)
 		throws PortletDataException {
 
-		return exportReferenceStagedModel(
-			portletDataContext, referrerStagedModel,
-			referrerStagedModel.getModelClass(), stagedModel,
-			stagedModel.getModelClass(), referenceType);
+		exportReferenceStagedModel(
+			portletDataContext, referrerStagedModel, stagedModel,
+			referrerStagedModel.getModelClass(), referenceType);
+
+		return null;
 	}
 
 	public static <T extends StagedModel> void exportStagedModel(
@@ -386,6 +387,10 @@ public class StagedModelDataHandlerUtil {
 		throws SystemException {
 
 		String path = ExportImportPathUtil.getModelPath(stagedModel);
+
+		if (attributes == null) {
+			attributes = new HashMap<String, String>();
+		}
 
 		attributes.put("path", path);
 
