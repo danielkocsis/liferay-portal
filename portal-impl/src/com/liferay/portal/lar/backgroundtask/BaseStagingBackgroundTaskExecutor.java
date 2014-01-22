@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.BackgroundTask;
 import com.liferay.portal.service.BackgroundTaskLocalServiceUtil;
+import com.liferay.portal.service.persistence.BackgroundTaskUtil;
 
 import java.io.Serializable;
 
@@ -64,8 +65,11 @@ public abstract class BaseStagingBackgroundTaskExecutor
 	}
 
 	protected BackgroundTask markBackgroundTask(
-			BackgroundTask backgroundTask, String backgroundTaskState)
+			long backgroundTaskId, String backgroundTaskState)
 		throws SystemException {
+
+		BackgroundTask backgroundTask = BackgroundTaskUtil.fetchByPrimaryKey(
+			backgroundTaskId);
 
 		Map<String, Serializable> taskContextMap =
 			backgroundTask.getTaskContextMap();
@@ -84,7 +88,11 @@ public abstract class BaseStagingBackgroundTaskExecutor
 	}
 
 	protected BackgroundTaskResult processMissingReferences(
-		BackgroundTask backgroundTask, MissingReferences missingReferences) {
+			long backgroundTaskId, MissingReferences missingReferences)
+		throws SystemException {
+
+		BackgroundTask backgroundTask = BackgroundTaskUtil.fetchByPrimaryKey(
+			backgroundTaskId);
 
 		BackgroundTaskResult backgroundTaskResult = new BackgroundTaskResult(
 			BackgroundTaskConstants.STATUS_SUCCESSFUL);
