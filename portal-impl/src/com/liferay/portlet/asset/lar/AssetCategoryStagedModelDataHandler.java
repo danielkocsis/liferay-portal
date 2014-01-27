@@ -14,19 +14,36 @@
 
 package com.liferay.portlet.asset.lar;
 
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
+import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
+import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetCategoryConstants;
+import com.liferay.portlet.asset.model.AssetCategoryProperty;
 import com.liferay.portlet.asset.model.AssetVocabulary;
 import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
+import com.liferay.portlet.asset.service.AssetCategoryPropertyLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetVocabularyLocalServiceUtil;
+import com.liferay.portlet.asset.service.persistence.AssetCategoryUtil;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Zsolt Berentey
  * @author Gergely Mathe
+ * @author Mate Thurzo
  */
 public class AssetCategoryStagedModelDataHandler
 	extends BaseStagedModelDataHandler<AssetCategory> {
@@ -57,6 +74,20 @@ public class AssetCategoryStagedModelDataHandler
 		return category.getTitleCurrentValue();
 	}
 
+	protected ServiceContext createServiceContext(
+		PortletDataContext portletDataContext, AssetCategory category) {
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setAddGroupPermissions(true);
+		serviceContext.setAddGuestPermissions(true);
+		serviceContext.setCreateDate(category.getCreateDate());
+		serviceContext.setModifiedDate(category.getModifiedDate());
+		serviceContext.setScopeGroupId(portletDataContext.getScopeGroupId());
+
+		return serviceContext;
+	}
+
 	@Override
 	protected void doExportStagedModel(
 			PortletDataContext portletDataContext, AssetCategory category)
@@ -83,43 +114,19 @@ public class AssetCategoryStagedModelDataHandler
 				PortletDataContext.REFERENCE_TYPE_PARENT);
 		}
 
-		exportAssetVocabulary(
-			portletDataContext, assetVocabulariesElement,
-			assetCategory.getVocabularyId());
+		Element categoryElement = portletDataContext.getExportDataElement(
+			category);
 
-		if (assetCategory.getParentCategoryId() !=
-				AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) {
-
-			exportAssetCategory(
-				portletDataContext, assetVocabulariesElement,
-				assetCategoriesElement, assetCategory.getParentCategoryId());
-		}
-
-		String path = getAssetCategoryPath(
-			portletDataContext, assetCategory.getCategoryId());
-
-		if (!portletDataContext.isPathNotProcessed(path)) {
-			return;
-		}
-
-		Element assetCategoryElement = assetCategoriesElement.addElement(
-			"category");
-
-		assetCategoryElement.addAttribute("path", path);
-
-		assetCategory.setUserUuid(assetCategory.getUserUuid());
-
-		portletDataContext.addZipEntry(path, assetCategory);
+		category.setUserUuid(category.getUserUuid());
 
 		List<AssetCategoryProperty> assetCategoryProperties =
 			AssetCategoryPropertyLocalServiceUtil.getCategoryProperties(
-				assetCategory.getCategoryId());
+				category.getCategoryId());
 
 		for (AssetCategoryProperty assetCategoryProperty :
 				assetCategoryProperties) {
 
-			Element propertyElement = assetCategoryElement.addElement(
-				"property");
+			Element propertyElement = categoryElement.addElement("property");
 
 			propertyElement.addAttribute(
 				"userUuid", assetCategoryProperty.getUserUuid());
@@ -128,14 +135,22 @@ public class AssetCategoryStagedModelDataHandler
 				"value", assetCategoryProperty.getValue());
 		}
 
+		String categoryPath = ExportImportPathUtil.getModelPath(category);
+
+		categoryElement.addAttribute("path", categoryPath);
+
 		portletDataContext.addPermissions(
-			AssetCategory.class, assetCategory.getCategoryId());
+			AssetCategory.class, category.getCategoryId());
+
+		portletDataContext.addZipEntry(categoryPath, category);
 	}
 
 	@Override
 	protected void doImportStagedModel(
 			PortletDataContext portletDataContext, AssetCategory category)
 		throws Exception {
+
+		long userId = portletDataContext.getUserId(category.getUserUuid());
 
 		if (category.getParentCategoryId() !=
 				AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) {
@@ -150,65 +165,28 @@ public class AssetCategoryStagedModelDataHandler
 				category.getVocabularyId());
 		}
 
-		long userId = portletDataContext.getUserId(assetCategory.getUserUuid());
 		long groupId = portletDataContext.getGroupId();
-		long assetVocabularyId = MapUtil.getLong(
-			assetVocabularyPKs, assetCategory.getVocabularyId(),
-			assetCategory.getVocabularyId());
-		long parentAssetCategoryId = MapUtil.getLong(
-			assetCategoryPKs, assetCategory.getParentCategoryId(),
-			assetCategory.getParentCategoryId());
 
-		if ((parentAssetCategoryId !=
-				AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) &&
-			(parentAssetCategoryId == assetCategory.getParentCategoryId())) {
+		Map<Long, Long> vocabularyIds =
+			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+				AssetVocabulary.class);
 
-			String path = getAssetCategoryPath(
-				portletDataContext, parentAssetCategoryId);
+		long vocabularyId = MapUtil.getLong(
+			vocabularyIds, category.getVocabularyId(),
+			category.getVocabularyId());
 
-			AssetCategory parentAssetCategory =
-				(AssetCategory)portletDataContext.getZipEntryAsObject(path);
+		Map<Long, Long> categoryIds =
+			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+				AssetCategory.class);
 
-			Node parentCategoryNode =
-				assetCategoryElement.getParent().selectSingleNode(
-					"./category[@path='" + path + "']");
+		long parentCategoryId = MapUtil.getLong(
+			categoryIds, category.getParentCategoryId(),
+			category.getParentCategoryId());
 
-			if (parentCategoryNode != null) {
-				importAssetCategory(
-					portletDataContext, assetVocabularyPKs, assetCategoryPKs,
-					assetCategoryUuids, (Element)parentCategoryNode,
-					parentAssetCategory);
+		Element categoryElement = portletDataContext.getImportDataElement(
+			category);
 
-				parentAssetCategoryId = MapUtil.getLong(
-					assetCategoryPKs, assetCategory.getParentCategoryId(),
-					assetCategory.getParentCategoryId());
-			}
-		}
-
-		ServiceContext serviceContext = new ServiceContext();
-
-		serviceContext.setAddGroupPermissions(true);
-		serviceContext.setAddGuestPermissions(true);
-		serviceContext.setCreateDate(assetCategory.getCreateDate());
-		serviceContext.setModifiedDate(assetCategory.getModifiedDate());
-		serviceContext.setScopeGroupId(portletDataContext.getScopeGroupId());
-
-		AssetCategory importedAssetCategory = null;
-
-		if ((parentAssetCategoryId !=
-				AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) &&
-			(AssetCategoryUtil.fetchByPrimaryKey(parentAssetCategoryId) ==
-				null)) {
-
-			_log.error(
-				"Could not find the parent category for category " +
-					assetCategory.getCategoryId());
-
-			return;
-		}
-
-		List<Element> propertyElements = assetCategoryElement.elements(
-			"property");
+		List<Element> propertyElements = categoryElement.elements("property");
 
 		String[] properties = new String[propertyElements.size()];
 
@@ -223,57 +201,58 @@ public class AssetCategoryStagedModelDataHandler
 					value);
 		}
 
+		ServiceContext serviceContext = createServiceContext(
+			portletDataContext, category);
+
+		AssetCategory importedAssetCategory = null;
+
 		AssetCategory existingAssetCategory = AssetCategoryUtil.fetchByUUID_G(
-			assetCategory.getUuid(), groupId);
+			category.getUuid(), groupId);
 
 		if (existingAssetCategory == null) {
 			existingAssetCategory = AssetCategoryUtil.fetchByUUID_G(
-				assetCategory.getUuid(),
-				portletDataContext.getCompanyGroupId());
+				category.getUuid(), portletDataContext.getCompanyGroupId());
 		}
 
 		if (existingAssetCategory == null) {
 			String name = getAssetCategoryName(
-				null, groupId, parentAssetCategoryId, assetCategory.getName(),
-				assetCategory.getVocabularyId(), 2);
+				null, groupId, parentCategoryId, category.getName(),
+				category.getVocabularyId(), 2);
 
-			serviceContext.setUuid(assetCategory.getUuid());
+			serviceContext.setUuid(category.getUuid());
 
 			importedAssetCategory =
 				AssetCategoryLocalServiceUtil.addCategory(
-					userId, parentAssetCategoryId,
-					getAssetCategoryTitleMap(groupId, assetCategory, name),
-					assetCategory.getDescriptionMap(), assetVocabularyId,
-					properties, serviceContext);
-		}
-		else if (portletDataContext.isCompanyStagedGroupedModel(
-					existingAssetCategory)) {
-
-			return;
+					userId, parentCategoryId,
+					getAssetCategoryTitleMap(groupId, category, name),
+					category.getDescriptionMap(), vocabularyId, properties,
+					serviceContext);
 		}
 		else {
 			String name = getAssetCategoryName(
-				assetCategory.getUuid(), groupId, parentAssetCategoryId,
-				assetCategory.getName(), assetCategory.getVocabularyId(), 2);
+				category.getUuid(), groupId, parentCategoryId,
+				category.getName(), category.getVocabularyId(), 2);
 
 			importedAssetCategory =
 				AssetCategoryLocalServiceUtil.updateCategory(
 					userId, existingAssetCategory.getCategoryId(),
-					parentAssetCategoryId,
-					getAssetCategoryTitleMap(groupId, assetCategory, name),
-					assetCategory.getDescriptionMap(), assetVocabularyId,
-					properties, serviceContext);
+					parentCategoryId,
+					getAssetCategoryTitleMap(groupId, category, name),
+					category.getDescriptionMap(), vocabularyId, properties,
+					serviceContext);
 		}
 
-		assetCategoryPKs.put(
-			assetCategory.getCategoryId(),
-			importedAssetCategory.getCategoryId());
+		categoryIds.put(
+			category.getCategoryId(), importedAssetCategory.getCategoryId());
 
-		assetCategoryUuids.put(
-			assetCategory.getUuid(), importedAssetCategory.getUuid());
+		Map<String, String> categoryUuids =
+			(Map<String, String>)portletDataContext.getNewPrimaryKeysMap(
+				AssetCategory.class + ".uuid");
+
+		categoryUuids.put(category.getUuid(), importedAssetCategory.getUuid());
 
 		portletDataContext.importPermissions(
-			AssetCategory.class, assetCategory.getCategoryId(),
+			AssetCategory.class, category.getCategoryId(),
 			importedAssetCategory.getCategoryId());
 	}
 
