@@ -14,9 +14,19 @@
 
 package com.liferay.portlet.asset.lar;
 
+import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.BasePortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataContext;
+import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portlet.asset.model.AssetCategory;
+import com.liferay.portlet.asset.model.AssetVocabulary;
+import com.liferay.portlet.asset.service.persistence.AssetCategoryExportActionableDynamicQuery;
+import com.liferay.portlet.asset.service.persistence.AssetVocabularyExportActionableDynamicQuery;
+
+import java.util.List;
 
 import javax.portlet.PortletPreferences;
 
@@ -36,47 +46,22 @@ public class AssetCategoryPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
-		Document document = SAXReaderUtil.createDocument();
+		Element rootElement = addExportDataRootElement(portletDataContext);
 
-		Element rootElement = document.addElement("categories-hierarchy");
+		rootElement.addAttribute(
+			"group-id", String.valueOf(portletDataContext.getScopeGroupId()));
 
-		if (exportPortletDataAll || exportCategories || companyGroup) {
-			if (_log.isDebugEnabled()) {
-				_log.debug("Export categories");
-			}
+		ActionableDynamicQuery categoryActionableDynamicQuery =
+			getCategoryActionableDynamicQuery(portletDataContext);
 
-			Element assetVocabulariesElement = rootElement.addElement(
-				"vocabularies");
+		categoryActionableDynamicQuery.performActions();
 
-			List<AssetVocabulary> assetVocabularies =
-				AssetVocabularyLocalServiceUtil.getGroupVocabularies(
-					portletDataContext.getGroupId());
+		ActionableDynamicQuery vocabularyActionableDynamicQuery =
+			getVocabularyActionableDynamicQuery(portletDataContext);
 
-			for (AssetVocabulary assetVocabulary : assetVocabularies) {
-				_portletExporter.exportAssetVocabulary(
-					portletDataContext, assetVocabulariesElement,
-					assetVocabulary);
-			}
+		vocabularyActionableDynamicQuery.performActions();
 
-			Element categoriesElement = rootElement.addElement("categories");
-
-			List<AssetCategory> assetCategories =
-				AssetCategoryUtil.findByGroupId(
-					portletDataContext.getGroupId());
-
-			for (AssetCategory assetCategory : assetCategories) {
-				_portletExporter.exportAssetCategory(
-					portletDataContext, assetVocabulariesElement,
-					categoriesElement, assetCategory);
-			}
-		}
-
-		_portletExporter.exportAssetCategories(portletDataContext, rootElement);
-
-		portletDataContext.addZipEntry(
-			ExportImportPathUtil.getRootPath(portletDataContext) +
-				"/categories-hierarchy.xml",
-			document.formattedString());
+		return getExportDataRootElementString(rootElement);
 	}
 
 	@Override
@@ -85,109 +70,80 @@ public class AssetCategoryPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences, String data)
 		throws Exception {
 
-		String xml = portletDataContext.getZipEntryAsString(
-			ExportImportPathUtil.getSourceRootPath(portletDataContext) +
-				"/categories-hierarchy.xml");
+		Element categoriesElement =
+			portletDataContext.getImportDataGroupElement(AssetCategory.class);
 
-		if (xml == null) {
-			return;
+		List<Element> categoryElements = categoriesElement.elements();
+
+		for (Element categoryElement : categoryElements) {
+			StagedModelDataHandlerUtil.importStagedModel(
+				portletDataContext, categoryElement);
 		}
 
-		Document document = SAXReaderUtil.read(xml);
+		Element vocabulariesElement =
+			portletDataContext.getImportDataGroupElement(AssetVocabulary.class);
 
-		Element rootElement = document.getRootElement();
+		List<Element> vocabularyElements = vocabulariesElement.elements();
 
-		Element assetVocabulariesElement = rootElement.element("vocabularies");
+		for (Element vocabularyElement : vocabularyElements) {
+			StagedModelDataHandlerUtil.importStagedModel(
+				portletDataContext, vocabularyElement);
+		}
 
-		List<Element> assetVocabularyElements =
-			assetVocabulariesElement.elements("vocabulary");
+		return null;
+	}
 
-		Map<Long, Long> assetVocabularyPKs =
-			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
-				AssetVocabulary.class);
+	@Override
+	protected void doPrepareManifestSummary(
+			PortletDataContext portletDataContext,
+			PortletPreferences portletPreferences)
+		throws Exception {
 
-		for (Element assetVocabularyElement : assetVocabularyElements) {
-			String path = assetVocabularyElement.attributeValue("path");
+		ActionableDynamicQuery categoryActionableDynamicQuery =
+			getCategoryActionableDynamicQuery(portletDataContext);
 
-			if (!portletDataContext.isPathNotProcessed(path)) {
-				continue;
+		categoryActionableDynamicQuery.performCount();
+
+		ActionableDynamicQuery vocabularyActionableDynamicQuery =
+			getVocabularyActionableDynamicQuery(portletDataContext);
+
+		vocabularyActionableDynamicQuery.performCount();
+	}
+
+	protected ActionableDynamicQuery getCategoryActionableDynamicQuery(
+			final PortletDataContext portletDataContext)
+		throws SystemException {
+
+		return new AssetCategoryExportActionableDynamicQuery(
+			portletDataContext) {
+
+			@Override
+			protected void addCriteria(DynamicQuery dynamicQuery) {
+
+				// Omit date range filter by override
+
+				return;
 			}
 
-			AssetVocabulary assetVocabulary =
-				(AssetVocabulary)portletDataContext.getZipEntryAsObject(path);
+		};
+	}
 
-			importAssetVocabulary(
-				portletDataContext, assetVocabularyPKs, assetVocabularyElement,
-				assetVocabulary);
-		}
+	protected ActionableDynamicQuery getVocabularyActionableDynamicQuery(
+			final PortletDataContext portletDataContext)
+		throws SystemException {
 
-		Element assetCategoriesElement = rootElement.element("categories");
+		return new AssetVocabularyExportActionableDynamicQuery(
+			portletDataContext) {
 
-		List<Element> assetCategoryElements = assetCategoriesElement.elements(
-			"category");
+			@Override
+			protected void addCriteria(DynamicQuery dynamicQuery) {
 
-		Map<Long, Long> assetCategoryPKs =
-			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
-				AssetCategory.class);
+				// Omit date range filter by override
 
-		Map<String, String> assetCategoryUuids =
-			(Map<String, String>)portletDataContext.getNewPrimaryKeysMap(
-				AssetCategory.class + ".uuid");
-
-		for (Element assetCategoryElement : assetCategoryElements) {
-			String path = assetCategoryElement.attributeValue("path");
-
-			if (!portletDataContext.isPathNotProcessed(path)) {
-				continue;
+				return;
 			}
 
-			AssetCategory assetCategory =
-				(AssetCategory)portletDataContext.getZipEntryAsObject(path);
-
-			importAssetCategory(
-				portletDataContext, assetVocabularyPKs, assetCategoryPKs,
-				assetCategoryUuids, assetCategoryElement, assetCategory);
-		}
-
-		Element assetsElement = rootElement.element("assets");
-
-		List<Element> assetElements = assetsElement.elements("asset");
-
-		for (Element assetElement : assetElements) {
-			String className = GetterUtil.getString(
-				assetElement.attributeValue("class-name"));
-			long classPK = GetterUtil.getLong(
-				assetElement.attributeValue("class-pk"));
-			String[] assetCategoryUuidArray = StringUtil.split(
-				GetterUtil.getString(
-					assetElement.attributeValue("category-uuids")));
-
-			long[] assetCategoryIds = new long[0];
-
-			for (String assetCategoryUuid : assetCategoryUuidArray) {
-				assetCategoryUuid = MapUtil.getString(
-					assetCategoryUuids, assetCategoryUuid, assetCategoryUuid);
-
-				AssetCategory assetCategory = AssetCategoryUtil.fetchByUUID_G(
-					assetCategoryUuid, portletDataContext.getScopeGroupId());
-
-				if (assetCategory == null) {
-					Group companyGroup = GroupLocalServiceUtil.getCompanyGroup(
-						portletDataContext.getCompanyId());
-
-					assetCategory = AssetCategoryUtil.fetchByUUID_G(
-						assetCategoryUuid, companyGroup.getGroupId());
-				}
-
-				if (assetCategory != null) {
-					assetCategoryIds = ArrayUtil.append(
-						assetCategoryIds, assetCategory.getCategoryId());
-				}
-			}
-
-			portletDataContext.addAssetCategories(
-				className, classPK, assetCategoryIds);
-		}
+		};
 	}
 
 }
