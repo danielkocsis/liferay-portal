@@ -464,7 +464,6 @@ public class LayoutImporter {
 			_permissionImporter.readPortletDataPermissions(portletDataContext);
 		}
 
-		_portletImporter.readAssetCategories(portletDataContext);
 		_portletImporter.readAssetTags(portletDataContext);
 		_portletImporter.readComments(portletDataContext);
 		_portletImporter.readExpandoTables(portletDataContext);
