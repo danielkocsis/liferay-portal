@@ -574,54 +574,6 @@ public class LayoutExporter {
 		return zipWriter.getFile();
 	}
 
-	protected void exportAssetCategories(
-			PortletDataContext portletDataContext, boolean exportPortletDataAll,
-			boolean exportCategories, boolean companyGroup)
-		throws Exception {
-
-		Document document = SAXReaderUtil.createDocument();
-
-		Element rootElement = document.addElement("categories-hierarchy");
-
-		if (exportPortletDataAll || exportCategories || companyGroup) {
-			if (_log.isDebugEnabled()) {
-				_log.debug("Export categories");
-			}
-
-			Element assetVocabulariesElement = rootElement.addElement(
-				"vocabularies");
-
-			List<AssetVocabulary> assetVocabularies =
-				AssetVocabularyLocalServiceUtil.getGroupVocabularies(
-					portletDataContext.getGroupId());
-
-			for (AssetVocabulary assetVocabulary : assetVocabularies) {
-				_portletExporter.exportAssetVocabulary(
-					portletDataContext, assetVocabulariesElement,
-					assetVocabulary);
-			}
-
-			Element categoriesElement = rootElement.addElement("categories");
-
-			List<AssetCategory> assetCategories =
-				AssetCategoryUtil.findByGroupId(
-					portletDataContext.getGroupId());
-
-			for (AssetCategory assetCategory : assetCategories) {
-				_portletExporter.exportAssetCategory(
-					portletDataContext, assetVocabulariesElement,
-					categoriesElement, assetCategory);
-			}
-		}
-
-		_portletExporter.exportAssetCategories(portletDataContext, rootElement);
-
-		portletDataContext.addZipEntry(
-			ExportImportPathUtil.getRootPath(portletDataContext) +
-				"/categories-hierarchy.xml",
-			document.formattedString());
-	}
-
 	protected void exportLayout(
 			PortletDataContext portletDataContext, List<Portlet> portlets,
 			long[] layoutIds, Map<String, Object[]> portletIds, Layout layout)

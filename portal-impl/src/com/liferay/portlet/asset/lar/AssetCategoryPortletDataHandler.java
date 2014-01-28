@@ -16,6 +16,7 @@ package com.liferay.portlet.asset.lar;
 
 import com.liferay.portal.kernel.lar.BasePortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataContext;
+import com.liferay.portal.kernel.xml.Element;
 
 import javax.portlet.PortletPreferences;
 
@@ -35,8 +36,47 @@ public class AssetCategoryPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
-		return super.doExportData(
-			portletDataContext, portletId, portletPreferences);
+		Document document = SAXReaderUtil.createDocument();
+
+		Element rootElement = document.addElement("categories-hierarchy");
+
+		if (exportPortletDataAll || exportCategories || companyGroup) {
+			if (_log.isDebugEnabled()) {
+				_log.debug("Export categories");
+			}
+
+			Element assetVocabulariesElement = rootElement.addElement(
+				"vocabularies");
+
+			List<AssetVocabulary> assetVocabularies =
+				AssetVocabularyLocalServiceUtil.getGroupVocabularies(
+					portletDataContext.getGroupId());
+
+			for (AssetVocabulary assetVocabulary : assetVocabularies) {
+				_portletExporter.exportAssetVocabulary(
+					portletDataContext, assetVocabulariesElement,
+					assetVocabulary);
+			}
+
+			Element categoriesElement = rootElement.addElement("categories");
+
+			List<AssetCategory> assetCategories =
+				AssetCategoryUtil.findByGroupId(
+					portletDataContext.getGroupId());
+
+			for (AssetCategory assetCategory : assetCategories) {
+				_portletExporter.exportAssetCategory(
+					portletDataContext, assetVocabulariesElement,
+					categoriesElement, assetCategory);
+			}
+		}
+
+		_portletExporter.exportAssetCategories(portletDataContext, rootElement);
+
+		portletDataContext.addZipEntry(
+			ExportImportPathUtil.getRootPath(portletDataContext) +
+				"/categories-hierarchy.xml",
+			document.formattedString());
 	}
 
 	@Override
@@ -45,8 +85,109 @@ public class AssetCategoryPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences, String data)
 		throws Exception {
 
-		return super.doImportData(
-			portletDataContext, portletId, portletPreferences, data);
+		String xml = portletDataContext.getZipEntryAsString(
+			ExportImportPathUtil.getSourceRootPath(portletDataContext) +
+				"/categories-hierarchy.xml");
+
+		if (xml == null) {
+			return;
+		}
+
+		Document document = SAXReaderUtil.read(xml);
+
+		Element rootElement = document.getRootElement();
+
+		Element assetVocabulariesElement = rootElement.element("vocabularies");
+
+		List<Element> assetVocabularyElements =
+			assetVocabulariesElement.elements("vocabulary");
+
+		Map<Long, Long> assetVocabularyPKs =
+			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+				AssetVocabulary.class);
+
+		for (Element assetVocabularyElement : assetVocabularyElements) {
+			String path = assetVocabularyElement.attributeValue("path");
+
+			if (!portletDataContext.isPathNotProcessed(path)) {
+				continue;
+			}
+
+			AssetVocabulary assetVocabulary =
+				(AssetVocabulary)portletDataContext.getZipEntryAsObject(path);
+
+			importAssetVocabulary(
+				portletDataContext, assetVocabularyPKs, assetVocabularyElement,
+				assetVocabulary);
+		}
+
+		Element assetCategoriesElement = rootElement.element("categories");
+
+		List<Element> assetCategoryElements = assetCategoriesElement.elements(
+			"category");
+
+		Map<Long, Long> assetCategoryPKs =
+			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+				AssetCategory.class);
+
+		Map<String, String> assetCategoryUuids =
+			(Map<String, String>)portletDataContext.getNewPrimaryKeysMap(
+				AssetCategory.class + ".uuid");
+
+		for (Element assetCategoryElement : assetCategoryElements) {
+			String path = assetCategoryElement.attributeValue("path");
+
+			if (!portletDataContext.isPathNotProcessed(path)) {
+				continue;
+			}
+
+			AssetCategory assetCategory =
+				(AssetCategory)portletDataContext.getZipEntryAsObject(path);
+
+			importAssetCategory(
+				portletDataContext, assetVocabularyPKs, assetCategoryPKs,
+				assetCategoryUuids, assetCategoryElement, assetCategory);
+		}
+
+		Element assetsElement = rootElement.element("assets");
+
+		List<Element> assetElements = assetsElement.elements("asset");
+
+		for (Element assetElement : assetElements) {
+			String className = GetterUtil.getString(
+				assetElement.attributeValue("class-name"));
+			long classPK = GetterUtil.getLong(
+				assetElement.attributeValue("class-pk"));
+			String[] assetCategoryUuidArray = StringUtil.split(
+				GetterUtil.getString(
+					assetElement.attributeValue("category-uuids")));
+
+			long[] assetCategoryIds = new long[0];
+
+			for (String assetCategoryUuid : assetCategoryUuidArray) {
+				assetCategoryUuid = MapUtil.getString(
+					assetCategoryUuids, assetCategoryUuid, assetCategoryUuid);
+
+				AssetCategory assetCategory = AssetCategoryUtil.fetchByUUID_G(
+					assetCategoryUuid, portletDataContext.getScopeGroupId());
+
+				if (assetCategory == null) {
+					Group companyGroup = GroupLocalServiceUtil.getCompanyGroup(
+						portletDataContext.getCompanyId());
+
+					assetCategory = AssetCategoryUtil.fetchByUUID_G(
+						assetCategoryUuid, companyGroup.getGroupId());
+				}
+
+				if (assetCategory != null) {
+					assetCategoryIds = ArrayUtil.append(
+						assetCategoryIds, assetCategory.getCategoryId());
+				}
+			}
+
+			portletDataContext.addAssetCategories(
+				className, classPK, assetCategoryIds);
+		}
 	}
 
 }
