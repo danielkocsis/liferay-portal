@@ -68,12 +68,10 @@ import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
-import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLink;
 import com.liferay.portlet.asset.model.AssetTag;
 import com.liferay.portlet.asset.model.AssetTagProperty;
-import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagPropertyLocalServiceUtil;
@@ -419,7 +417,6 @@ public class PortletExporter {
 			exportPortletControls[1], exportPortletControls[2],
 			exportPortletControls[3]);
 
-		exportAssetCategories(portletDataContext);
 		exportAssetLinks(portletDataContext);
 		exportAssetTags(portletDataContext);
 		exportComments(portletDataContext);
@@ -452,74 +449,6 @@ public class PortletExporter {
 		}
 
 		return zipWriter.getFile();
-	}
-
-	protected void exportAssetCategories(PortletDataContext portletDataContext)
-		throws Exception {
-
-		Document document = SAXReaderUtil.createDocument();
-
-		Element rootElement = document.addElement("categories-hierarchy");
-
-		exportAssetCategories(portletDataContext, rootElement);
-
-		portletDataContext.addZipEntry(
-			ExportImportPathUtil.getRootPath(portletDataContext) +
-				"/categories-hierarchy.xml",
-			document.formattedString());
-	}
-
-	protected void exportAssetCategories(
-			PortletDataContext portletDataContext, Element rootElement)
-		throws Exception {
-
-		Element assetsElement = rootElement.element("assets");
-
-		if (assetsElement == null) {
-			assetsElement = rootElement.addElement("assets");
-		}
-
-		Element assetCategoriesElement = rootElement.element("categories");
-
-		if (assetCategoriesElement == null) {
-			assetCategoriesElement = rootElement.addElement("categories");
-		}
-
-		Element assetVocabulariesElement = rootElement.element("vocabularies");
-
-		if (assetVocabulariesElement == null) {
-			assetVocabulariesElement = rootElement.addElement("vocabularies");
-		}
-
-		Map<String, String[]> assetCategoryUuidsMap =
-			portletDataContext.getAssetCategoryUuidsMap();
-
-		for (Map.Entry<String, String[]> entry :
-				assetCategoryUuidsMap.entrySet()) {
-
-			String[] assetCategoryEntryParts = StringUtil.split(
-				entry.getKey(), CharPool.POUND);
-
-			String className = assetCategoryEntryParts[0];
-			String classPK = assetCategoryEntryParts[1];
-
-			Element assetElement = assetsElement.addElement("asset");
-
-			assetElement.addAttribute("class-name", className);
-			assetElement.addAttribute("class-pk", classPK);
-			assetElement.addAttribute(
-				"category-uuids", StringUtil.merge(entry.getValue()));
-
-			List<AssetCategory> assetCategories =
-				AssetCategoryLocalServiceUtil.getCategories(
-					className, GetterUtil.getLong(classPK));
-
-			for (AssetCategory assestCategory : assetCategories) {
-				exportAssetCategory(
-					portletDataContext, assetVocabulariesElement,
-					assetCategoriesElement, assestCategory);
-			}
-		}
 	}
 
 	protected void exportAssetLinks(PortletDataContext portletDataContext)
@@ -1231,19 +1160,6 @@ public class PortletExporter {
 			document.formattedString());
 	}
 
-	protected String getAssetCategoryPath(
-		PortletDataContext portletDataContext, long assetCategoryId) {
-
-		StringBundler sb = new StringBundler(4);
-
-		sb.append(ExportImportPathUtil.getRootPath(portletDataContext));
-		sb.append("/categories/");
-		sb.append(assetCategoryId);
-		sb.append(".xml");
-
-		return sb.toString();
-	}
-
 	protected String getAssetLinkPath(
 		PortletDataContext portletDataContext, long assetLinkId) {
 
@@ -1265,19 +1181,6 @@ public class PortletExporter {
 		sb.append(ExportImportPathUtil.getRootPath(portletDataContext));
 		sb.append("/tags/");
 		sb.append(assetCategoryId);
-		sb.append(".xml");
-
-		return sb.toString();
-	}
-
-	protected String getAssetVocabulariesPath(
-		PortletDataContext portletDataContext, long assetVocabularyId) {
-
-		StringBundler sb = new StringBundler(4);
-
-		sb.append(ExportImportPathUtil.getRootPath(portletDataContext));
-		sb.append("/vocabularies/");
-		sb.append(assetVocabularyId);
 		sb.append(".xml");
 
 		return sb.toString();

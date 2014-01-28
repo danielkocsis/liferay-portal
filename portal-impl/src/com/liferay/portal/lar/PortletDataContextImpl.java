@@ -80,10 +80,8 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.TeamLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
-import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLink;
-import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetLinkLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
@@ -289,7 +287,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 		long classPK = ExportImportClassUtil.getClassPK(classedModel);
 
-		addAssetCategories(clazz, classPK);
 		addAssetLinks(clazz, classPK);
 		addAssetTags(clazz, classPK);
 		addExpando(element, path, classedModel, clazz);
