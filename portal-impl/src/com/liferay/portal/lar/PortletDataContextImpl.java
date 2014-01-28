@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.lar.ExportImportClassUtil;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.ManifestSummary;
 import com.liferay.portal.kernel.lar.PortletDataContext;
@@ -286,7 +287,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			return;
 		}
 
-		long classPK = getClassPK(classedModel);
+		long classPK = ExportImportClassUtil.getClassPK(classedModel);
 
 		addAssetCategories(clazz, classPK);
 		addAssetLinks(clazz, classPK);
@@ -1463,9 +1464,9 @@ public class PortletDataContextImpl implements PortletDataContext {
 			return;
 		}
 
-		long classPK = getClassPK(classedModel);
+		long classPK = ExportImportClassUtil.getClassPK(classedModel);
 
-		long newClassPK = getClassPK(newClassedModel);
+		long newClassPK = ExportImportClassUtil.getClassPK(newClassedModel);
 
 		Map<Long, Long> newPrimaryKeysMap =
 			(Map<Long, Long>)getNewPrimaryKeysMap(clazz);
@@ -2096,7 +2097,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 		Element element, String path, ClassedModel classedModel,
 		Class<?> clazz) {
 
-		long classPK = getClassPK(classedModel);
+		long classPK = ExportImportClassUtil.getClassPK(classedModel);
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -2282,17 +2283,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 				getAvailableResourcePermissionActionIds(
 					companyId, className, ResourceConstants.SCOPE_INDIVIDUAL,
 					String.valueOf(primKey), roleIds, actionIds);
-		}
-	}
-
-	protected long getClassPK(ClassedModel classedModel) {
-		if (classedModel instanceof ResourcedModel) {
-			ResourcedModel resourcedModel = (ResourcedModel)classedModel;
-
-			return resourcedModel.getResourcePrimKey();
-		}
-		else {
-			return (Long)classedModel.getPrimaryKeyObj();
 		}
 	}
 
