@@ -83,6 +83,9 @@ public class ExportLayoutsAction extends PortletAction {
 					actionRequest.getParameterMap(), dateRange.getStartDate(),
 					dateRange.getEndDate(), fileName);
 
+				ExportImportHelperUtil.createExportLayoutConfiguration(
+					actionRequest);
+
 				String redirect = ParamUtil.getString(
 					actionRequest, "redirect");
 

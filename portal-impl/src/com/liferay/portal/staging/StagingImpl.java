@@ -1477,6 +1477,9 @@ public class StagingImpl implements Staging {
 				publishLayouts(
 					portletRequest, stagingGroup.getGroupId(), groupId,
 					parameterMap, false);
+
+				ExportImportHelperUtil.createLocalLayoutPublishConfiguration(
+					portletRequest);
 			}
 		}
 	}
@@ -1531,6 +1534,9 @@ public class StagingImpl implements Staging {
 		throws Exception {
 
 		publishToRemote(portletRequest, false);
+
+		ExportImportHelperUtil.createRemoteLayoutPublishConfiguration(
+			portletRequest);
 	}
 
 	@Override
@@ -1644,6 +1650,19 @@ public class StagingImpl implements Staging {
 		portalPreferences.setValue(
 			Staging.class.getName(), getRecentLayoutSetBranchIdKey(layoutSetId),
 			String.valueOf(layoutSetBranchId));
+	}
+
+	public String stripProtocolFromRemoteAddress(String remoteAddress) {
+		if (remoteAddress.startsWith(Http.HTTP_WITH_SLASH)) {
+			remoteAddress = remoteAddress.substring(
+				Http.HTTP_WITH_SLASH.length());
+		}
+		else if (remoteAddress.startsWith(Http.HTTPS_WITH_SLASH)) {
+			remoteAddress = remoteAddress.substring(
+				Http.HTTPS_WITH_SLASH.length());
+		}
+
+		return remoteAddress;
 	}
 
 	@Override
@@ -2491,19 +2510,6 @@ public class StagingImpl implements Staging {
 			Staging.class.getName(),
 			getRecentLayoutBranchIdKey(layoutSetBranchId, plid),
 			String.valueOf(layoutBranchId));
-	}
-
-	protected String stripProtocolFromRemoteAddress(String remoteAddress) {
-		if (remoteAddress.startsWith(Http.HTTP_WITH_SLASH)) {
-			remoteAddress = remoteAddress.substring(
-				Http.HTTP_WITH_SLASH.length());
-		}
-		else if (remoteAddress.startsWith(Http.HTTPS_WITH_SLASH)) {
-			remoteAddress = remoteAddress.substring(
-				Http.HTTPS_WITH_SLASH.length());
-		}
-
-		return remoteAddress;
 	}
 
 	protected void updateGroupTypeSettingsProperties(
