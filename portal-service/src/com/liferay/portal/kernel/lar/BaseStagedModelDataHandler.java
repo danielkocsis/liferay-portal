@@ -41,6 +41,37 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 	implements StagedModelDataHandler<T> {
 
 	@Override
+	public void addAssetCategories(Class<?> clazz, long classPK)
+		throws SystemException {
+
+		List<AssetCategory> assetCategories =
+			AssetCategoryLocalServiceUtil.getCategories(
+				clazz.getName(), classPK);
+
+		_assetCategoryUuidsMap.put(
+			getPrimaryKeyString(clazz, classPK),
+			StringUtil.split(
+				ListUtil.toString(
+					assetCategories, AssetCategory.UUID_ACCESSOR)));
+		_assetCategoryIdsMap.put(
+			getPrimaryKeyString(clazz, classPK),
+			StringUtil.split(
+				ListUtil.toString(
+					assetCategories, AssetCategory.CATEGORY_ID_ACCESSOR), 0L));
+	}
+
+	protected long getClassPK(ClassedModel classedModel) {
+		if (classedModel instanceof ResourcedModel) {
+			ResourcedModel resourcedModel = (ResourcedModel)classedModel;
+
+			return resourcedModel.getResourcePrimKey();
+		}
+		else {
+			return (Long)classedModel.getPrimaryKeyObj();
+		}
+	}
+
+	@Override
 	public abstract void deleteStagedModel(
 			String uuid, long groupId, String className, String extraData)
 		throws PortalException, SystemException;
@@ -66,6 +97,8 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 				"stagedModel", stagedModel, manifestSummary);
 
 			doExportStagedModel(portletDataContext, (T)stagedModel.clone());
+
+			addAssetCategories(clazz, classPK);
 
 			if (countStagedModel(portletDataContext, stagedModel)) {
 				manifestSummary.incrementModelAdditionCount(
