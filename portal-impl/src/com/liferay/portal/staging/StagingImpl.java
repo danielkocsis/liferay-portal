@@ -1477,6 +1477,9 @@ public class StagingImpl implements Staging {
 				publishLayouts(
 					portletRequest, stagingGroup.getGroupId(), groupId,
 					parameterMap, false);
+
+				ExportImportHelperUtil.createLocalLayoutPublishConfiguration(
+					portletRequest);
 			}
 		}
 	}
@@ -1531,6 +1534,9 @@ public class StagingImpl implements Staging {
 		throws Exception {
 
 		publishToRemote(portletRequest, false);
+
+		ExportImportHelperUtil.createRemoteLayoutPublishConfiguration(
+			portletRequest);
 	}
 
 	@Override
