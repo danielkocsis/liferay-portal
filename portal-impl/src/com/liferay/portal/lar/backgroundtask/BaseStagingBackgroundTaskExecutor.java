@@ -63,15 +63,23 @@ public abstract class BaseStagingBackgroundTaskExecutor
 		backgroundTaskStatus.clearAttributes();
 	}
 
-	protected BackgroundTask markBackgroundTask(
-			BackgroundTask backgroundTask, String backgroundTaskState)
+	protected void markBackgroundTask(
+			long backgroundTaskId, String backgroundTaskState)
 		throws SystemException {
+
+		BackgroundTask backgroundTask =
+			BackgroundTaskLocalServiceUtil.fetchBackgroundTask(
+				backgroundTaskId);
+
+		if (backgroundTask == null) {
+			return;
+		}
 
 		Map<String, Serializable> taskContextMap =
 			backgroundTask.getTaskContextMap();
 
 		if (Validator.isNull(backgroundTaskState)) {
-			return backgroundTask;
+			return;
 		}
 
 		taskContextMap.put(backgroundTaskState, Boolean.TRUE);
@@ -79,12 +87,16 @@ public abstract class BaseStagingBackgroundTaskExecutor
 		backgroundTask.setTaskContext(
 			JSONFactoryUtil.serialize(taskContextMap));
 
-		return BackgroundTaskLocalServiceUtil.updateBackgroundTask(
-			backgroundTask);
+		BackgroundTaskLocalServiceUtil.updateBackgroundTask(backgroundTask);
 	}
 
 	protected BackgroundTaskResult processMissingReferences(
-		BackgroundTask backgroundTask, MissingReferences missingReferences) {
+			long backgroundTaskId, MissingReferences missingReferences)
+		throws SystemException {
+
+		BackgroundTask backgroundTask =
+			BackgroundTaskLocalServiceUtil.fetchBackgroundTask(
+				backgroundTaskId);
 
 		BackgroundTaskResult backgroundTaskResult = new BackgroundTaskResult(
 			BackgroundTaskConstants.STATUS_SUCCESSFUL);
