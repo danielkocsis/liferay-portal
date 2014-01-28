@@ -23,13 +23,17 @@ import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.trash.TrashHandlerRegistryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.model.TrashedModel;
 import com.liferay.portal.model.WorkflowedModel;
+import com.liferay.portlet.asset.model.AssetCategory;
+import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,37 +43,6 @@ import java.util.Map;
  */
 public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 	implements StagedModelDataHandler<T> {
-
-	@Override
-	public void addAssetCategories(Class<?> clazz, long classPK)
-		throws SystemException {
-
-		List<AssetCategory> assetCategories =
-			AssetCategoryLocalServiceUtil.getCategories(
-				clazz.getName(), classPK);
-
-		_assetCategoryUuidsMap.put(
-			getPrimaryKeyString(clazz, classPK),
-			StringUtil.split(
-				ListUtil.toString(
-					assetCategories, AssetCategory.UUID_ACCESSOR)));
-		_assetCategoryIdsMap.put(
-			getPrimaryKeyString(clazz, classPK),
-			StringUtil.split(
-				ListUtil.toString(
-					assetCategories, AssetCategory.CATEGORY_ID_ACCESSOR), 0L));
-	}
-
-	protected long getClassPK(ClassedModel classedModel) {
-		if (classedModel instanceof ResourcedModel) {
-			ResourcedModel resourcedModel = (ResourcedModel)classedModel;
-
-			return resourcedModel.getResourcePrimKey();
-		}
-		else {
-			return (Long)classedModel.getPrimaryKeyObj();
-		}
-	}
 
 	@Override
 	public abstract void deleteStagedModel(
@@ -98,7 +71,7 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 			doExportStagedModel(portletDataContext, (T)stagedModel.clone());
 
-			addAssetCategories(clazz, classPK);
+			exportAssetCategories(portletDataContext, stagedModel);
 
 			if (countStagedModel(portletDataContext, stagedModel)) {
 				manifestSummary.incrementModelAdditionCount(
@@ -189,6 +162,8 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 				restoreStagedModel(portletDataContext, stagedModel);
 			}
 
+			importAssetCategories(portletDataContext, stagedModel);
+
 			doImportStagedModel(portletDataContext, stagedModel);
 
 			manifestSummary.incrementModelAdditionCount(
@@ -268,6 +243,60 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 		throws Exception {
 
 		throw new UnsupportedOperationException();
+	}
+
+	protected void exportAssetCategories(
+			PortletDataContext portletDataContext, T stagedModel)
+		throws PortletDataException, SystemException {
+
+		List<AssetCategory> assetCategories =
+			AssetCategoryLocalServiceUtil.getCategories(
+				stagedModel.getModelClassName(),
+				ExportImportClassUtil.getClassPK(stagedModel));
+
+		for (AssetCategory assetCategory : assetCategories) {
+			StagedModelDataHandlerUtil.exportReferenceStagedModel(
+				portletDataContext, stagedModel, assetCategory,
+				PortletDataContext.REFERENCE_TYPE_WEAK);
+		}
+	}
+
+	protected void importAssetCategories(
+			PortletDataContext portletDataContext, T stagedModel)
+		throws PortletDataException {
+
+		List<Element> referenceElements =
+			portletDataContext.getReferenceElements(
+				stagedModel, AssetCategory.class);
+
+		long[] categoryIds = new long[referenceElements.size()];
+
+		int i = 0;
+
+		for (Element referenceElement : referenceElements) {
+			long classPK = GetterUtil.getLong(
+				referenceElement.attributeValue("class-pk"));
+
+			StagedModelDataHandlerUtil.importReferenceStagedModel(
+				portletDataContext, stagedModel, AssetCategory.class, classPK);
+
+			categoryIds[i++] = classPK;
+		}
+
+		Map<Long, Long> categoryIdsMap =
+			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+				AssetCategory.class);
+
+		long[] importedCategoryIds = new long[categoryIds.length];
+
+		for (i = 0; i < categoryIds.length; i++) {
+			importedCategoryIds[i] = MapUtil.getLong(
+				categoryIdsMap, categoryIds[i], categoryIds[i]);
+		}
+
+		portletDataContext.addAssetCategories(
+			stagedModel.getModelClassName(),
+			ExportImportClassUtil.getClassPK(stagedModel), importedCategoryIds);
 	}
 
 	protected void validateExport(
