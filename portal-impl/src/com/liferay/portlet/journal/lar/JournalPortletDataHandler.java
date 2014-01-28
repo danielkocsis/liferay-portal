@@ -162,6 +162,8 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 				new JournalFeedExportActionableDynamicQuery(portletDataContext);
 
 			feedActionableDynamicQuery.performActions();
+
+			_clazzNames.add("feeds");
 		}
 
 		if (portletDataContext.getBooleanParameter(NAMESPACE, "structures")) {
@@ -186,6 +188,8 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 				getDDMTemplateActionableDynamicQuery(portletDataContext);
 
 			ddmTemplateActionableDynamicQuery.performActions();
+
+			_clazzNames.add("structures");
 		}
 
 		if (portletDataContext.getBooleanParameter(NAMESPACE, "web-content")) {
@@ -199,6 +203,8 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 				getArticleActionableDynamicQuery(portletDataContext);
 
 			articleActionableDynamicQuery.performActions();
+
+			_clazzNames.add("web-content");
 		}
 
 		return getExportDataRootElementString(rootElement);

@@ -356,6 +356,12 @@ public class PortletDataContextImpl implements PortletDataContext {
 			return;
 		}
 
+		addComments(discussion);
+	}
+
+	public void addComments(MBDiscussion discussion)
+		throws SystemException {
+
 		List<MBMessage> messages = MBMessageLocalServiceUtil.getThreadMessages(
 			discussion.getThreadId(), WorkflowConstants.STATUS_APPROVED);
 
@@ -373,7 +379,9 @@ public class PortletDataContextImpl implements PortletDataContext {
 			addRatingsEntries(MBDiscussion.class, message.getPrimaryKey());
 		}
 
-		_commentsMap.put(getPrimaryKeyString(clazz, classPK), messages);
+		_commentsMap.put(
+			getPrimaryKeyString(
+				discussion.getClassName(), discussion.getClassPK()), messages);
 	}
 
 	@Override

@@ -15,6 +15,11 @@
 package com.liferay.portal.kernel.lar;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskThreadLocal;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.Property;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -22,6 +27,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.DocumentException;
 import com.liferay.portal.kernel.xml.Element;
@@ -32,12 +38,20 @@ import com.liferay.portal.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+<<<<<<< Updated upstream
 import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUtil;
+=======
+import com.liferay.portlet.messageboards.model.MBDiscussion;
+import com.liferay.portlet.messageboards.model.MBMessage;
+import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.persistence.MBDiscussionExportActionableDynamicQuery;
+>>>>>>> Stashed changes
 import com.liferay.portlet.portletdisplaytemplate.util.PortletDisplayTemplate;
 import com.liferay.portlet.portletdisplaytemplate.util.PortletDisplayTemplateUtil;
+import com.liferay.portlet.ratings.model.RatingsEntry;
+import com.liferay.portlet.ratings.service.persistence.RatingsEntryActionableDynamicQuery;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,6 +135,9 @@ public abstract class BasePortletDataHandler implements PortletDataHandler {
 
 			return doExportData(
 				portletDataContext, portletId, portletPreferences);
+
+			exportComments(portletDataContext, className);
+			exportRatings(portletDataContext, className);
 		}
 		catch (PortletDataException pde) {
 			throw pde;
@@ -135,6 +152,83 @@ public abstract class BasePortletDataHandler implements PortletDataHandler {
 				_log.info("Exported portlet in " + Time.getDuration(duration));
 			}
 		}
+	}
+
+	public void exportComments(
+			final PortletDataContext portletDataContext, final String className)
+		throws SystemException, PortalException {
+
+		MBDiscussionExportActionableDynamicQuery
+			commentsActionableDynamicQuery =
+				new MBDiscussionExportActionableDynamicQuery(
+					portletDataContext) {
+
+					@Override
+					protected void addCriteria(DynamicQuery dynamicQuery) {
+						super.addCriteria(dynamicQuery);
+
+						Property classNameIdProperty =
+							PropertyFactoryUtil.forName("classNameId");
+
+						long classNameId = PortalUtil.getClassNameId(
+							className);
+
+						dynamicQuery.add(classNameIdProperty.eq(classNameId));
+					}
+
+					@Override
+					protected void performAction(Object object)
+						throws PortalException, SystemException {
+
+						MBDiscussion discussion = (MBDiscussion)object;
+
+						portletDataContext.addComments(discussion);
+					}
+				};
+
+		commentsActionableDynamicQuery.performActions();
+	}
+
+	public void exportRatings(
+			final PortletDataContext portletDataContext, final String className)
+		throws SystemException, PortalException {
+
+		RatingsEntryActionableDynamicQuery
+			ratingsEntryActionableDynamicQuery =
+				new RatingsEntryActionableDynamicQuery() {
+
+					@Override
+					protected void addCriteria(DynamicQuery dynamicQuery) {
+						super.addCriteria(dynamicQuery);
+
+						Property classNameIdProperty =
+							PropertyFactoryUtil.forName("classNameId");
+
+						long classNameId = PortalUtil.getClassNameId(
+							className);
+
+						dynamicQuery.add(classNameIdProperty.eq(classNameId));
+
+						portletDataContext.addDateRangeCriteria(
+							dynamicQuery, "modifiedDate");
+
+						setCompanyId(portletDataContext.getCompanyId());
+
+						setGroupId(portletDataContext.getScopeGroupId());
+					}
+
+					@Override
+					protected void performAction(Object object)
+						throws PortalException, SystemException {
+
+						RatingsEntry ratingsEntry = (RatingsEntry)object;
+
+						portletDataContext.addRatingsEntries(
+							ratingsEntry.getClass(), ratingsEntry.getClassPK());
+					}
+				};
+
+		ratingsEntryActionableDynamicQuery.performActions();
 	}
 
 	@Override
@@ -909,6 +1003,7 @@ public abstract class BasePortletDataHandler implements PortletDataHandler {
 		_supportsDataStrategyCopyAsNew = supportsDataStrategyCopyAsNew;
 	}
 
+	protected List<String> _clazzNames;
 	private static Log _log = LogFactoryUtil.getLog(
 		BasePortletDataHandler.class);
 
