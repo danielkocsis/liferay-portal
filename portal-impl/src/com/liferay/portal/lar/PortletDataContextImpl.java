@@ -80,10 +80,8 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.TeamLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
-import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLink;
-import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetLinkLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
@@ -153,24 +151,15 @@ public class PortletDataContextImpl implements PortletDataContext {
 		initXStream();
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, see {@link com.liferay.portal.kernel.lar.BaseStagedModelDataHandler#exportAssetCategories(PortletDataContext, StagedModel)}
+	 */
+	@Deprecated
 	@Override
 	public void addAssetCategories(Class<?> clazz, long classPK)
 		throws SystemException {
 
-		List<AssetCategory> assetCategories =
-			AssetCategoryLocalServiceUtil.getCategories(
-				clazz.getName(), classPK);
-
-		_assetCategoryUuidsMap.put(
-			getPrimaryKeyString(clazz, classPK),
-			StringUtil.split(
-				ListUtil.toString(
-					assetCategories, AssetCategory.UUID_ACCESSOR)));
-		_assetCategoryIdsMap.put(
-			getPrimaryKeyString(clazz, classPK),
-			StringUtil.split(
-				ListUtil.toString(
-					assetCategories, AssetCategory.CATEGORY_ID_ACCESSOR), 0L));
+		return;
 	}
 
 	@Override
@@ -815,17 +804,21 @@ public class PortletDataContextImpl implements PortletDataContext {
 	}
 
 	/**
-	 * @deprecated As of 7.0.0
+	 * @deprecated As of 7.0.0, with no direct replacement
 	 */
 	@Deprecated
 	@Override
 	public Map<String, long[]> getAssetCategoryIdsMap() {
-		return _assetCategoryIdsMap;
+		return Collections.EMPTY_MAP;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public Map<String, String[]> getAssetCategoryUuidsMap() {
-		return _assetCategoryUuidsMap;
+		return Collections.EMPTY_MAP;
 	}
 
 	@Override
@@ -2324,10 +2317,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 		return (Element)xPath.selectSingleNode(parentElement);
 	}
 
-	protected String getExpandoPath(String path) {
-		return ExportImportPathUtil.getExpandoPath(path);
-	}
-
 	protected Element getExportDataGroupElement(String name) {
 		if (_exportDataRootElement == null) {
 			throw new IllegalStateException(
@@ -2568,8 +2557,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 	private Map<String, long[]> _assetCategoryIdsMap =
 		new HashMap<String, long[]>();
-	private Map<String, String[]> _assetCategoryUuidsMap =
-		new HashMap<String, String[]>();
 	private Map<String, List<AssetLink>> _assetLinksMap =
 		new HashMap<String, List<AssetLink>>();
 	private Map<String, String[]> _assetTagNamesMap =
