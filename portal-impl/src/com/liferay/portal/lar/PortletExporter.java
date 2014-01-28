@@ -231,6 +231,9 @@ public class PortletExporter {
 		}
 	}
 
+	/**
+	 * @deprecated As of 6.2.0, with no direct replacement
+	 */
 	@Deprecated
 	public byte[] exportPortletInfo(
 			long plid, long groupId, String portletId,
