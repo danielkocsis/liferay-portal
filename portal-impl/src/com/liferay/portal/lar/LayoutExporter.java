@@ -180,6 +180,10 @@ public class LayoutExporter {
 		return portlets;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public static List<Portlet> getPortletDataHandlerPortlets(
 			long groupId, boolean privateLayout)
 		throws Exception {
