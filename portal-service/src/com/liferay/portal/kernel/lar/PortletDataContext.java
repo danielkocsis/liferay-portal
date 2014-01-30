@@ -32,12 +32,12 @@ import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.asset.model.AssetLink;
 import com.liferay.portlet.expando.model.ExpandoColumn;
+import com.liferay.portlet.messageboards.model.MBDiscussion;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.ratings.model.RatingsEntry;
 
 import java.io.InputStream;
 import java.io.Serializable;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -132,6 +132,8 @@ public interface PortletDataContext extends Serializable {
 			Element element, String path, ClassedModel classedModel,
 			String namespace)
 		throws PortalException, SystemException;
+
+	public void addComments(MBDiscussion discussion) throws SystemException;
 
 	public void addComments(Class<?> clazz, long classPK)
 		throws SystemException;
