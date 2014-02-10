@@ -287,7 +287,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			return;
 		}
 
-		long classPK = getClassPK(classedModel);
+		long classPK = ExportImportClassedModelUtil.getClassPK(classedModel);
 
 		addAssetCategories(clazz, classPK);
 		addAssetLinks(clazz, classPK);
@@ -1479,9 +1479,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 			return;
 		}
 
-		long classPK = getClassPK(classedModel);
+		long classPK = ExportImportClassedModelUtil.getClassPK(classedModel);
 
-		long newClassPK = getClassPK(newClassedModel);
+		long newClassPK = ExportImportClassedModelUtil.getClassPK(
+			newClassedModel);
 
 		Map<Long, Long> newPrimaryKeysMap =
 			(Map<Long, Long>)getNewPrimaryKeysMap(clazz);
@@ -2112,7 +2113,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 		Element element, String path, ClassedModel classedModel,
 		Class<?> clazz) {
 
-		long classPK = getClassPK(classedModel);
+		long classPK = ExportImportClassedModelUtil.getClassPK(classedModel);
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -2299,17 +2300,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 				getAvailableResourcePermissionActionIds(
 					companyId, className, ResourceConstants.SCOPE_INDIVIDUAL,
 					String.valueOf(primKey), roleIds, actionIds);
-		}
-	}
-
-	protected long getClassPK(ClassedModel classedModel) {
-		if (classedModel instanceof ResourcedModel) {
-			ResourcedModel resourcedModel = (ResourcedModel)classedModel;
-
-			return resourcedModel.getResourcePrimKey();
-		}
-		else {
-			return (Long)classedModel.getPrimaryKeyObj();
 		}
 	}
 
