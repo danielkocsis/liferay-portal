@@ -1,3 +1,14 @@
+.config-description {
+	color: #999;
+	font-style: italic;
+	margin-left: .5em;
+	margin-right: .5em;
+}
+
+.config-name {
+	display: block;
+}
+
 .portlet-communities, .portlet-users-admin {
 	.lfr-theme-list {
 		li {
@@ -472,6 +483,13 @@
 
 .lfr-tree-controls-collapse {
 	background-image: url(@theme_image_path@/trees/collapse_all.png);
+}
+
+.user-avatar-image {
+	background-size: auto 26px;
+	height: 26px;
+	margin-top: 0;
+	width: 26px;
 }
 
 .ie6 {
