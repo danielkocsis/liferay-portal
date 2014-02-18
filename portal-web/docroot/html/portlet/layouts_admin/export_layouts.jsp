@@ -85,6 +85,8 @@ portletURL.setParameter("rootNodeName", rootNodeName);
 
 if (cmd.equals(Constants.ADD)) {
 	portletURL.setParameter("tabs2", "new-export-process");
+
+	portletURL.setParameter("exportNav", "export-configurations");
 }
 else {
 	portletURL.setParameter("tabs2", "current-and-previous");
@@ -637,18 +639,7 @@ if (!cmd.equals(Constants.ADD)) {
 						<c:when test="<%= cmd.equals(Constants.ADD) %>">
 							<aui:button type="submit" value="save" />
 
-							<portlet:renderURL var="cancelURL">
-								<portlet:param name="struts_action" value="/layouts_admin/export_layouts" />
-								<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.EXPORT %>" />
-								<portlet:param name="exportNav" value="export-configurations" />
-								<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
-								<portlet:param name="liveGroupId" value="<%= String.valueOf(liveGroupId) %>" />
-								<portlet:param name="newTemplate" value="<%= String.valueOf(false) %>" />
-								<portlet:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" />
-								<portlet:param name="rootNodeName" value="<%= rootNodeName %>" />
-							</portlet:renderURL>
-
-							<aui:button href="<%= cancelURL %>" type="cancel" />
+							<aui:button href="<%= portletURL.toString() %>" type="cancel" />
 						</c:when>
 						<c:otherwise>
 							<aui:button type="submit" value="export" />
