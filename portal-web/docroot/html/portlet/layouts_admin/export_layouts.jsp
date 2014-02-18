@@ -17,9 +17,9 @@
 <%@ include file="/html/portlet/layouts_admin/init.jsp" %>
 
 <%
-String exportNav = ParamUtil.getString(request, "exportNav", "custom");
+String cmd = ParamUtil.getString(request, Constants.CMD);
 
-boolean newTemplate = ParamUtil.getBoolean(request, "newTemplate", false);
+String exportNav = ParamUtil.getString(request, "exportNav", "custom");
 
 long groupId = ParamUtil.getLong(request, "groupId");
 
@@ -77,12 +77,13 @@ if (selectedLayouts.isEmpty()) {
 PortletURL portletURL = renderResponse.createRenderURL();
 
 portletURL.setParameter("struts_action", "/layouts_admin/export_layouts");
+portletURL.setParameter(Constants.CMD, Constants.EXPORT);
 portletURL.setParameter("groupId", String.valueOf(groupId));
 portletURL.setParameter("liveGroupId", String.valueOf(liveGroupId));
 portletURL.setParameter("privateLayout", String.valueOf(privateLayout));
 portletURL.setParameter("rootNodeName", rootNodeName);
 
-if (newTemplate) {
+if (cmd.equals(Constants.ADD)) {
 	portletURL.setParameter("tabs2", "new-export-process");
 }
 else {
@@ -100,7 +101,7 @@ else {
 />
 
 <liferay-ui:tabs
-	names='<%= newTemplate ? StringPool.BLANK : "new-export-process,current-and-previous" %>'
+	names='<%= addConfiguration ? StringPool.BLANK : "new-export-process,current-and-previous" %>'
 	param="tabs2"
 	refresh="<%= false %>"
 >
@@ -116,7 +117,7 @@ else {
 	</div>
 
 	<liferay-ui:section>
-		<div <%= !newTemplate ? StringPool.BLANK : "class=\"hide\"" %>>
+		<div <%= !cmd.equals(Constants.ADD) ? StringPool.BLANK : "class=\"hide\"" %>>
 			<aui:nav-bar>
 				<aui:nav id="exportNav">
 					<aui:nav-item
@@ -143,12 +144,12 @@ else {
 			</portlet:actionURL>
 
 			<aui:form action='<%= exportPagesURL + "&etag=0&strip=0" %>' cssClass="lfr-export-dialog" method="post" name="fm1">
-				<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= newTemplate ? Constants.ADD : Constants.EXPORT %>" />
+				<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= cmd.equals(Constants.ADD) ? Constants.ADD : Constants.EXPORT %>" />
 				<aui:input name="redirect" type="hidden" value="<%= portletURL.toString() %>" />
 
 				<div class="export-dialog-tree">
 					<c:choose>
-						<c:when test="<%= newTemplate %>">
+						<c:when test="<%= addExportConfiguration %>">
 							<aui:fieldset cssClass="options-group" label="new-export-template">
 								<aui:model-context bean="<%= new ExportImportConfigurationImpl() %>" model="<%= ExportImportConfiguration.class %>" />
 
@@ -622,7 +623,7 @@ else {
 
 				<aui:button-row>
 					<c:choose>
-						<c:when test="<%= newTemplate %>">
+						<c:when test="<%= cmd.equals(Constants.ADD) %>">
 							<aui:button type="submit" value="save" />
 
 							<portlet:renderURL var="cancelURL">
@@ -659,7 +660,7 @@ else {
 	</liferay-ui:section>
 
 	<liferay-ui:section>
-		<c:if test="<%= !newTemplate %>">
+		<c:if test="<%= !cmd.equals(Constants.ADD) %>">
 			<div class="process-list" id="<portlet:namespace />exportProcesses">
 				<liferay-util:include page="/html/portlet/layouts_admin/export_layouts_processes.jsp">
 					<liferay-util:param name="groupId" value="<%= String.valueOf(liveGroupId) %>" />
