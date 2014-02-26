@@ -313,6 +313,12 @@ public class ExportImportConfigurationLocalServiceWrapper
 	}
 
 	@Override
+	public int getExportImportConfigurationCount(long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _exportImportConfigurationLocalService.getExportImportConfigurationCount(groupId);
+	}
+
+	@Override
 	public java.util.List<com.liferay.portal.model.ExportImportConfiguration> getExportImportConfigurations(
 		long groupId, int type, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
