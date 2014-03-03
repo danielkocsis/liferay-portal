@@ -374,6 +374,7 @@ else {
 					<liferay-util:param name="liveGroupId" value="<%= String.valueOf(liveGroupId) %>" />
 					<liferay-util:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" />
 					<liferay-util:param name="rootNodeName" value="<%= rootNodeName %>" />
+					<liferay-util:param name="configurationType" value="<%= localPublishing ? String.valueOf(ExportImportConfigurationConstants.TYPE_PUBLISH_LAYOUT_LOCAL) : String.valueOf(ExportImportConfigurationConstants.TYPE_PUBLISH_LAYOUT_REMOTE) %>" />
 				</liferay-util:include>
 			</div>
 

@@ -658,6 +658,7 @@ if (!cmd.equals(Constants.ADD)) {
 				<liferay-util:param name="liveGroupId" value="<%= String.valueOf(liveGroupId) %>" />
 				<liferay-util:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" />
 				<liferay-util:param name="rootNodeName" value="<%= rootNodeName %>" />
+				<liferay-util:param name="configurationType" value="<%= String.valueOf(ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT) %>" />
 			</liferay-util:include>
 		</div>
 	</liferay-ui:section>

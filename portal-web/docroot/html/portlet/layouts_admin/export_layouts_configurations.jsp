@@ -21,19 +21,24 @@ long groupId = ParamUtil.getLong(request, "groupId");
 long liveGroupId = ParamUtil.getLong(request, "liveGroupId");
 boolean privateLayout = ParamUtil.getBoolean(request, "privateLayout");
 String rootNodeName = ParamUtil.getString(request, "rootNodeName");
+
+int configurationType = ParamUtil.getInteger(request, "configurationType");
 %>
 
-<portlet:renderURL var="addExportConfigurationURL">
-	<portlet:param name="struts_action" value="/layouts_admin/export_layouts" />
-	<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.ADD %>" />
-	<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
-	<portlet:param name="liveGroupId" value="<%= String.valueOf(liveGroupId) %>" />
-	<portlet:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" />
-	<portlet:param name="redirect" value="<%= String.valueOf(privateLayout) %>" />
-	<portlet:param name="rootNodeName" value="<%= rootNodeName %>" />
-</portlet:renderURL>
+<c:if test="<%= configurationType == ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT %>">
+	<portlet:renderURL var="addExportConfigurationURL">
+		<portlet:param name="struts_action" value="/layouts_admin/export_layouts" />
+		<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.ADD %>" />
+		<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
+		<portlet:param name="liveGroupId" value="<%= String.valueOf(liveGroupId) %>" />
+		<portlet:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" />
+		<portlet:param name="redirect" value="<%= String.valueOf(privateLayout) %>" />
+		<portlet:param name="rootNodeName" value="<%= rootNodeName %>" />
+		<portlet:param name="configurationType" value="<%= String.valueOf(configurationType) %>" />
+	</portlet:renderURL>
 
-<aui:button href="<%= addExportConfigurationURL %>" value="new" />
+	<aui:button href="<%= addExportConfigurationURL %>" value="new" />
+</c:if>
 
 <liferay-portlet:renderURL varImpl="portletURL">
 	<portlet:param name="struts_action" value="/layouts_admin/export_layouts" />
@@ -47,12 +52,12 @@ String rootNodeName = ParamUtil.getString(request, "rootNodeName");
 </liferay-portlet:renderURL>
 
 <liferay-ui:search-container
-	emptyResultsMessage="there-are-no-export-templates"
+	emptyResultsMessage='<%= (configurationType == ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT) ? "there-are-no-export-templates" : "there-are-no-publish-templates" %>'
 	iteratorURL="<%= portletURL %>"
-	total="<%= ExportImportConfigurationLocalServiceUtil.getExportImportConfigurationsCount(groupId, ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT) %>"
+	total="<%= ExportImportConfigurationLocalServiceUtil.getExportImportConfigurationsCount(groupId, configurationType) %>"
 >
 	<liferay-ui:search-container-results
-		results="<%= ExportImportConfigurationLocalServiceUtil.getExportImportConfigurations(groupId, ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT, searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator()) %>"
+		results="<%= ExportImportConfigurationLocalServiceUtil.getExportImportConfigurations(groupId, configurationType, searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator()) %>"
 	/>
 
 	<liferay-ui:search-container-row
