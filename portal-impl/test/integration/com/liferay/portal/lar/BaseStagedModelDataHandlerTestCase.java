@@ -30,8 +30,10 @@ import com.liferay.portal.kernel.zip.ZipReader;
 import com.liferay.portal.kernel.zip.ZipReaderFactoryUtil;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
+import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.StagedModel;
+import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
@@ -47,6 +49,7 @@ import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetVocabularyLocalServiceUtil;
+import com.liferay.portlet.asset.util.AssetTestUtil;
 
 import java.io.Serializable;
 
@@ -285,23 +288,32 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
 
-		AssetVocabulary assetVocabulary =
-			AssetVocabularyLocalServiceUtil.addVocabulary(
-				TestPropsValues.getUserId(), ServiceTestUtil.randomString(),
-				serviceContext);
+		AssetVocabulary assetVocabulary = AssetTestUtil.addVocabulary(
+			stagingGroup.getGroupId());
 
-		AssetCategory assetCategory = AssetCategoryLocalServiceUtil.addCategory(
-			TestPropsValues.getUserId(), ServiceTestUtil.randomString(),
-			assetVocabulary.getVocabularyId(), serviceContext);
+		AssetCategory assetCategory = AssetTestUtil.addCategory(
+			stagingGroup.getGroupId(), assetVocabulary.getVocabularyId());
 
-		AssetTag assetTag = AssetTagLocalServiceUtil.addTag(
-			TestPropsValues.getUserId(), ServiceTestUtil.randomString(), null,
-			serviceContext);
+		Company company = CompanyLocalServiceUtil.getCompany(
+			stagedModel.getCompanyId());
+
+		Group companyGroup = company.getGroup();
+
+		AssetVocabulary globalAssetVocabulary = AssetTestUtil.addVocabulary(
+			companyGroup.getGroupId());
+
+		AssetCategory globalAssetCategory = AssetTestUtil.addCategory(
+			companyGroup.getGroupId(), globalAssetVocabulary.getVocabularyId());
+
+		AssetTag assetTag = AssetTestUtil.addTag(stagingGroup.getGroupId());
 
 		AssetEntryLocalServiceUtil.updateEntry(
 			TestPropsValues.getUserId(), stagingGroup.getGroupId(),
 			assetEntry.getClassName(), assetEntry.getClassPK(),
-			new long[] {assetCategory.getCategoryId()},
+			new long[] {
+				assetCategory.getCategoryId(),
+				globalAssetCategory.getCategoryId()
+			},
 			new String[] {assetTag.getName()});
 
 		return new StagedModelAssets(assetCategory, assetTag, assetVocabulary);
@@ -322,13 +334,29 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 			AssetCategoryLocalServiceUtil.getEntryCategories(
 				assetEntry.getEntryId());
 
-		Assert.assertEquals(1, assetCategories.size());
+		Assert.assertEquals(2, assetCategories.size());
 
-		AssetCategory assetCategory = stagedModelAssets.getAssetCategory();
-		AssetCategory importedAssetCategory = assetCategories.get(0);
+		AssetCategory stageAssetCategory = stagedModelAssets.getAssetCategory();
+
+		AssetCategory importedAssetCategory = null;
+
+		Company company = CompanyLocalServiceUtil.getCompany(
+			group.getCompanyId());
+
+		long companyGroupId = company.getGroupId();
+
+		for (AssetCategory assetCategory : assetCategories) {
+			long groupId = assetCategory.getGroupId();
+
+			if (groupId != companyGroupId) {
+				importedAssetCategory = assetCategory;
+
+				break;
+			}
+		}
 
 		Assert.assertEquals(
-			assetCategory.getUuid(), importedAssetCategory.getUuid());
+			stageAssetCategory.getUuid(), importedAssetCategory.getUuid());
 
 		List<AssetTag> assetTags = AssetTagLocalServiceUtil.getEntryTags(
 			assetEntry.getEntryId());
