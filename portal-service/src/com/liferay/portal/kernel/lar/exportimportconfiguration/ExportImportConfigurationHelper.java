@@ -22,9 +22,6 @@ import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.ExportImportConfiguration;
 import com.liferay.portal.service.ExportImportConfigurationLocalServiceUtil;
@@ -187,16 +184,7 @@ public class ExportImportConfigurationHelper {
 		DateRange dateRange = ExportImportDateUtil.getDateRange(
 			exportImportConfiguration);
 
-		StringBundler sb = new StringBundler(4);
-
-		String name = exportImportConfiguration.getName();
-
-		sb.append(name.replace(StringPool.SPACE, StringPool.UNDERLINE));
-		sb.append(StringPool.DASH);
-		sb.append(Time.getShortTimestamp());
-		sb.append(".lar");
-
-		String fileName = sb.toString();
+		String fileName = exportImportConfiguration.getName();
 
 		LayoutServiceUtil.exportLayoutsAsFileInBackground(
 			fileName, groupId, privateLayout, layoutIds, parameterMap,

@@ -64,12 +64,20 @@ public class LayoutExportBackgroundTaskExecutor
 		Date startDate = (Date)taskContextMap.get("startDate");
 		Date endDate = (Date)taskContextMap.get("endDate");
 
+		StringBundler sb = new StringBundler(4);
+
+		sb.append(fileName.replace(StringPool.SPACE, StringPool.UNDERLINE));
+		sb.append(StringPool.DASH);
+		sb.append(Time.getShortTimestamp());
+		sb.append(".lar");
+
 		File larFile = LayoutLocalServiceUtil.exportLayoutsAsFile(
 			groupId, privateLayout, layoutIds, parameterMap, startDate,
 			endDate);
 
 		BackgroundTaskLocalServiceUtil.addBackgroundTaskAttachment(
-			userId, backgroundTask.getBackgroundTaskId(), fileName, larFile);
+			userId, backgroundTask.getBackgroundTaskId(), sb.toString(),
+			larFile);
 
 		boolean updateLastPublishDate = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.UPDATE_LAST_PUBLISH_DATE);
