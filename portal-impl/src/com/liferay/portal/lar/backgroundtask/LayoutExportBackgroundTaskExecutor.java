@@ -21,8 +21,13 @@ import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.model.BackgroundTask;
+import com.liferay.portal.model.ExportImportConfiguration;
 import com.liferay.portal.service.BackgroundTaskLocalServiceUtil;
+import com.liferay.portal.service.ExportImportConfigurationLocalServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 
 import java.io.File;
@@ -51,18 +56,26 @@ public class LayoutExportBackgroundTaskExecutor
 		Map<String, Serializable> taskContextMap =
 			backgroundTask.getTaskContextMap();
 
-		long userId = MapUtil.getLong(taskContextMap, "userId");
-		String fileName = MapUtil.getString(taskContextMap, "fileName");
+		ExportImportConfiguration exportConfiguration =
+			ExportImportConfigurationLocalServiceUtil.
+				getExportImportConfiguration(
+					MapUtil.getLong(
+						taskContextMap, "exportImportConfigurationId"));
 
-		long groupId = MapUtil.getLong(taskContextMap, "groupId");
+		Map<String, Serializable> settingsMap =
+			exportConfiguration.getSettingsMap();
+
+		long userId = MapUtil.getLong(settingsMap, "userId");
+		String fileName = exportConfiguration.getName();
+		long groupId = MapUtil.getLong(settingsMap, "sourceGroupId");
 		boolean privateLayout = MapUtil.getBoolean(
-			taskContextMap, "privateLayout");
+			settingsMap, "privateLayout");
 		long[] layoutIds = GetterUtil.getLongValues(
-			taskContextMap.get("layoutIds"));
+			settingsMap.get("layoutIds"));
 		Map<String, String[]> parameterMap =
-			(Map<String, String[]>)taskContextMap.get("parameterMap");
-		Date startDate = (Date)taskContextMap.get("startDate");
-		Date endDate = (Date)taskContextMap.get("endDate");
+			(Map<String, String[]>)settingsMap.get("parameterMap");
+		Date startDate = (Date)settingsMap.get("startDate");
+		Date endDate = (Date)settingsMap.get("endDate");
 
 		StringBundler sb = new StringBundler(4);
 
