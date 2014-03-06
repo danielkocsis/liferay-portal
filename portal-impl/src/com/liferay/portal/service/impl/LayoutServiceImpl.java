@@ -55,6 +55,7 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1194,8 +1195,13 @@ public class LayoutServiceImpl extends LayoutServiceBaseImpl {
 
 		Map<String, Serializable> settingsMap =
 			ExportImportConfigurationSettingsMapFactory.buildSettingsMap(
-				getUserId(), sourceGroupId, targetGroupId, privateLayout,
-				layoutIdMap, parameterMap, startDate, endDate, null, null);
+				getUserId(), sourceGroupId, targetGroupId, privateLayout, null,
+				parameterMap, startDate, endDate, null, null);
+
+		HashMap<Long, Boolean> serializableLayoutIdMap =
+			new HashMap<Long, Boolean>(layoutIdMap);
+
+		settingsMap.put("layoutIdMap", serializableLayoutIdMap);
 
 		ExportImportConfiguration exportImportConfiguration =
 			exportImportConfigurationLocalService.addExportImportConfiguration(
