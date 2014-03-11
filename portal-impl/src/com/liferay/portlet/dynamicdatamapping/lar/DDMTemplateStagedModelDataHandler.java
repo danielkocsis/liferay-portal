@@ -118,13 +118,9 @@ public class DDMTemplateStagedModelDataHandler
 		throws PortletDataException {
 
 		String uuid = referenceElement.attributeValue("uuid");
+
 		long liveGroupId = GetterUtil.getLong(
 			referenceElement.attributeValue("live-group-id"));
-		long classNameId = PortalUtil.getClassNameId(
-			referenceElement.attributeValue("referenced-class-name"));
-		String templateKey = referenceElement.attributeValue("template-key");
-		boolean preloaded = GetterUtil.getBoolean(
-			referenceElement.attributeValue("preloaded"));
 
 		importMissingGroupReference(portletDataContext, referenceElement);
 
@@ -133,6 +129,12 @@ public class DDMTemplateStagedModelDataHandler
 				Group.class);
 
 		liveGroupId = MapUtil.getLong(groupIds, liveGroupId, liveGroupId);
+
+		long classNameId = PortalUtil.getClassNameId(
+			referenceElement.attributeValue("referenced-class-name"));
+		String templateKey = referenceElement.attributeValue("template-key");
+		boolean preloaded = GetterUtil.getBoolean(
+			referenceElement.attributeValue("preloaded"));
 
 		DDMTemplate existingTemplate = null;
 
