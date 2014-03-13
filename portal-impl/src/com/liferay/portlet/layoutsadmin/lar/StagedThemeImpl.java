@@ -58,12 +58,12 @@ public class StagedThemeImpl extends ThemeImpl implements StagedTheme {
 
 	@Override
 	public Class<?> getModelClass() {
-		return StagedThemeImpl.class;
+		return StagedTheme.class;
 	}
 
 	@Override
 	public String getModelClassName() {
-		return StagedThemeImpl.class.getName();
+		return StagedTheme.class.getName();
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class StagedThemeImpl extends ThemeImpl implements StagedTheme {
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return new StagedModelType(StagedThemeImpl.class);
+		return new StagedModelType(StagedTheme.class);
 	}
 
 	@Override
