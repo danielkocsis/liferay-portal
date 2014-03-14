@@ -77,7 +77,6 @@ import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.LayoutUtil;
 import com.liferay.portal.service.persistence.UserUtil;
 import com.liferay.portal.servlet.filters.cache.CacheUtil;
-import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journalcontent.util.JournalContentUtil;
 import com.liferay.portlet.sites.util.Sites;
 
@@ -163,6 +162,7 @@ public class LayoutImporter {
 	}
 
 	protected void deleteMissingLayouts(
+			PortletDataContext portletDataContext,
 			List<String> sourceLayoutUuids, List<Layout> previousLayouts,
 			ServiceContext serviceContext)
 		throws Exception {
@@ -171,8 +171,14 @@ public class LayoutImporter {
 			_log.debug("Delete missing layouts");
 		}
 
+		Map<Long, Long> layoutPlids =
+			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+				Layout.class);
+
 		for (Layout layout : previousLayouts) {
-			if (!sourceLayoutUuids.contains(layout.getUuid())) {
+			if (!sourceLayoutUuids.contains(layout.getUuid()) &&
+				!layoutPlids.containsValue(layout.getPlid())) {
+
 				try {
 					LayoutLocalServiceUtil.deleteLayout(
 						layout, false, serviceContext);
@@ -498,19 +504,16 @@ public class LayoutImporter {
 			}
 		}
 
-		List<String> sourceLayoutsUuids = new ArrayList<String>();
-		List<Layout> newLayouts = new ArrayList<Layout>();
-
 		if (_log.isDebugEnabled()) {
 			if (_layoutElements.size() > 0) {
 				_log.debug("Importing layouts");
 			}
 		}
 
+		List<String> sourceLayoutsUuids = new ArrayList<String>();
+
 		for (Element layoutElement : _layoutElements) {
-			importLayout(
-				portletDataContext, sourceLayoutsUuids, newLayouts,
-				layoutElement);
+			importLayout(portletDataContext, sourceLayoutsUuids, layoutElement);
 		}
 
 		// Delete portlet data
@@ -672,7 +675,8 @@ public class LayoutImporter {
 
 		if (deleteMissingLayouts) {
 			deleteMissingLayouts(
-				sourceLayoutsUuids, previousLayouts, serviceContext);
+				portletDataContext, sourceLayoutsUuids, previousLayouts,
+				serviceContext);
 		}
 
 		// Page count
@@ -689,44 +693,17 @@ public class LayoutImporter {
 
 		long lastMergeTime = System.currentTimeMillis();
 
-		for (Layout layout : newLayouts) {
-			layout = LayoutLocalServiceUtil.getLayout(layout.getPlid());
-
-			boolean modifiedTypeSettingsProperties = false;
-
-			UnicodeProperties typeSettingsProperties =
-				layout.getTypeSettingsProperties();
-
-			// Journal article layout type
-
-			String articleId = typeSettingsProperties.getProperty("article-id");
-
-			if (Validator.isNotNull(articleId)) {
-				Map<String, String> articleIds =
-					(Map<String, String>)portletDataContext.
-						getNewPrimaryKeysMap(
-							JournalArticle.class + ".articleId");
-
-				typeSettingsProperties.setProperty(
-					"article-id",
-					MapUtil.getString(articleIds, articleId, articleId));
-
-				modifiedTypeSettingsProperties = true;
-			}
-
-			// Last merge time for layout
-
+		for (Layout layout : newLayoutsMap.values()) {
 			if (layoutsImportMode.equals(
 					PortletDataHandlerKeys.
 						LAYOUTS_IMPORT_MODE_CREATED_FROM_PROTOTYPE)) {
 
+				UnicodeProperties typeSettingsProperties =
+					layout.getTypeSettingsProperties();
+
 				typeSettingsProperties.setProperty(
 					Sites.LAST_MERGE_TIME, String.valueOf(lastMergeTime));
 
-				modifiedTypeSettingsProperties = true;
-			}
-
-			if (modifiedTypeSettingsProperties) {
 				LayoutUtil.update(layout);
 			}
 		}
@@ -773,8 +750,7 @@ public class LayoutImporter {
 
 	protected void importLayout(
 			PortletDataContext portletDataContext,
-			List<String> sourceLayoutsUuids, List<Layout> newLayouts,
-			Element layoutElement)
+			List<String> sourceLayoutsUuids, Element layoutElement)
 		throws Exception {
 
 		String action = layoutElement.attributeValue("action");
@@ -782,13 +758,6 @@ public class LayoutImporter {
 		if (!action.equals(Constants.SKIP)) {
 			StagedModelDataHandlerUtil.importStagedModel(
 				portletDataContext, layoutElement);
-
-			List<Layout> portletDataContextNewLayouts =
-				portletDataContext.getNewLayouts();
-
-			newLayouts.addAll(portletDataContextNewLayouts);
-
-			portletDataContextNewLayouts.clear();
 		}
 
 		if (!action.equals(Constants.DELETE)) {
