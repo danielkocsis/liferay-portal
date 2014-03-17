@@ -508,7 +508,7 @@
 			<hint name="max-length">4000</hint>
 			<validator name="required" />
 		</field>
-		<field name="description" type="String" localized="true">
+		<field name="description" type="String">
 			<hint-collection name="TEXTAREA" />
 		</field>
 		<field name="settings" type="String">
