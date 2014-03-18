@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.journal.util;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -102,6 +103,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -1245,6 +1247,61 @@ public class JournalUtil {
 		return curContent;
 	}
 
+	public static String prepareLanguageContentForImport(
+			String content, Locale defaultImportLocale)
+		throws LocaleException {
+
+		try {
+			Document curDocument = SAXReaderUtil.read(content);
+
+			Document updatedDocument = SAXReaderUtil.read(content);
+
+			Element updatedRootElement = updatedDocument.getRootElement();
+
+			Attribute availableLocales = updatedRootElement.attribute(
+				"available-locales");
+
+			String defaultImportLocaleId = LocaleUtil.toLanguageId(
+				defaultImportLocale);
+
+			if (!StringUtil.contains(
+					availableLocales.getValue(), defaultImportLocaleId)) {
+
+				StringBundler sb = new StringBundler(3);
+
+				sb.append(availableLocales.getValue());
+				sb.append(StringPool.COMMA);
+				sb.append(defaultImportLocaleId);
+
+				availableLocales.setValue(sb.toString());
+
+				_mergeArticleContentUpdate(
+					curDocument, updatedRootElement,
+					LocaleUtil.toLanguageId(defaultImportLocale));
+
+				content = DDMXMLUtil.formatXML(updatedDocument);
+			}
+
+			Attribute defaultLocale = updatedRootElement.attribute(
+				"default-locale");
+
+			Locale contentDefaultLocale = LocaleUtil.fromLanguageId(
+				defaultLocale.getValue());
+
+			if (!LocaleUtil.equals(contentDefaultLocale, defaultImportLocale)) {
+				defaultLocale.setValue(defaultImportLocaleId);
+
+				content = DDMXMLUtil.formatXML(updatedDocument);
+			}
+		}
+
+		catch (Exception e) {
+			throw new LocaleException(LocaleException.TYPE_DEFAULT, e);
+		}
+
+		return content;
+	}
+
 	public static void removeArticleLocale(Element element, String languageId)
 		throws PortalException, SystemException {
 
@@ -1448,6 +1505,10 @@ public class JournalUtil {
 
 	private static Element _getElementByInstanceId(
 		Document document, String instanceId) {
+
+		if (Validator.isNull(instanceId)) {
+			return null;
+		}
 
 		XPath xPathSelector = SAXReaderUtil.createXPath(
 			"//dynamic-element[@instance-id=" +

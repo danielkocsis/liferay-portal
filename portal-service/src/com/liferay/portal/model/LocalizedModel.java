@@ -12,23 +12,24 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.util;
+package com.liferay.portal.model;
 
-import java.util.List;
+import com.liferay.portal.LocaleException;
+
+import java.util.Locale;
 
 /**
- * @author Eduardo Garcia
+ * @author Daniel Kocsis
  */
-public interface DDMDisplayRegistry {
+public interface LocalizedModel {
 
-	public DDMDisplay getDDMDisplay(String portletId);
+	public String[] getAvailableLanguageIds();
 
-	public List<DDMDisplay> getDDMDisplays();
+	public String getDefaultLanguageId();
 
-	public String[] getPortletIds();
+	public void prepareLocalizedFieldsForImport() throws LocaleException;
 
-	public void register(DDMDisplay ddmDisplay);
-
-	public void unregister(DDMDisplay ddmDisplay);
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
 
 }
