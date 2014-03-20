@@ -370,6 +370,11 @@ else {
 
 							<c:if test="<%= !group.isCompany() %>">
 								<aui:fieldset cssClass="options-group" label="pages">
+
+									<%
+									request.setAttribute("select_pages.jsp-parameterMap", parameterMap);
+									%>
+
 									<liferay-util:include page="/html/portlet/layouts_admin/export_configuration/select_pages.jsp">
 										<liferay-util:param name="<%= Constants.CMD %>" value="<%= Constants.PUBLISH %>" />
 										<liferay-util:param name="groupId" value="<%= String.valueOf(stagingGroupId) %>" />
