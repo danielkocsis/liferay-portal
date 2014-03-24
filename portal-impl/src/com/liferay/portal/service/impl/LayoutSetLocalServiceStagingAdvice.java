@@ -81,7 +81,7 @@ public class LayoutSetLocalServiceStagingAdvice
 				(String)arguments[3]);
 		}
 		else if (methodName.equals("updateLogo") && (arguments.length == 4)) {
-			updateLogo(
+			returnValue = updateLogo(
 				(LayoutSetLocalService)thisObject, (Long)arguments[0],
 				(Boolean)arguments[1], (Boolean)arguments[2],
 				(byte[])arguments[3]);
