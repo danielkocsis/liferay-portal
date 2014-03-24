@@ -193,6 +193,8 @@ public class LayoutSetLocalServiceStagingAdvice
 		PortalUtil.updateImageId(
 			layoutSetBranch, logo, logoBytes, "logoId", 0, 0, 0);
 
+		layoutSetBranchPersistence.update(layoutSetBranch);
+
 		return layoutSet;
 	}
 
