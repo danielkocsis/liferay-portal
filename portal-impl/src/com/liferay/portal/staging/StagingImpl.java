@@ -2181,10 +2181,11 @@ public class StagingImpl implements Staging {
 
 		String scope = ParamUtil.getString(portletRequest, "scope");
 
-		Map<Long, Boolean> layoutIdMap = new LinkedHashMap<Long, Boolean>();
+		long[] layoutIds = null;
 
 		if (scope.equals("selected-pages")) {
-			layoutIdMap = ExportImportHelperUtil.getLayoutIdMap(portletRequest);
+			layoutIds = ExportImportHelperUtil.getLayoutIds(
+				portletRequest, targetGroupId);
 		}
 
 		DateRange dateRange = ExportImportDateUtil.getDateRange(
@@ -2220,7 +2221,7 @@ public class StagingImpl implements Staging {
 				portletRequest, "description");
 
 			LayoutServiceUtil.schedulePublishToLive(
-				sourceGroupId, targetGroupId, privateLayout, layoutIdMap,
+				sourceGroupId, targetGroupId, privateLayout, layoutIds,
 				parameterMap, scope, dateRange.getStartDate(),
 				dateRange.getEndDate(), groupName, cronText,
 				startCalendar.getTime(), schedulerEndDate, description);
@@ -2240,7 +2241,7 @@ public class StagingImpl implements Staging {
 				else {
 					publishLayouts(
 						themeDisplay.getUserId(), sourceGroupId, targetGroupId,
-						privateLayout, layoutIdMap, parameterMap,
+						privateLayout, layoutIds, parameterMap,
 						dateRange.getStartDate(), dateRange.getEndDate());
 				}
 			}
@@ -2256,15 +2257,10 @@ public class StagingImpl implements Staging {
 					ExportImportConfigurationSettingsMapFactory.
 						buildSettingsMap(
 							themeDisplay.getUserId(), sourceGroupId,
-							targetGroupId, privateLayout, null, parameterMap,
-							dateRange.getStartDate(), dateRange.getEndDate(),
-							themeDisplay.getLocale(),
+							targetGroupId, privateLayout, layoutIds,
+							parameterMap, dateRange.getStartDate(),
+							dateRange.getEndDate(), themeDisplay.getLocale(),
 							themeDisplay.getTimeZone());
-
-				HashMap<Long, Boolean> serializableLayoutIdMap =
-					new HashMap<Long, Boolean>(layoutIdMap);
-
-				settingsMap.put("layoutIdMap", serializableLayoutIdMap);
 
 				ExportImportConfiguration exportImportConfiguration =
 					ExportImportConfigurationLocalServiceUtil.

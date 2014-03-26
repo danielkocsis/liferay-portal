@@ -18,6 +18,7 @@ import com.liferay.portal.NoSuchLayoutException;
 import com.liferay.portal.kernel.cache.ThreadLocalCachable;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
 import com.liferay.portal.kernel.lar.MissingReferences;
 import com.liferay.portal.kernel.lar.exportimportconfiguration.ExportImportConfigurationConstants;
 import com.liferay.portal.kernel.lar.exportimportconfiguration.ExportImportConfigurationSettingsMapFactory;
@@ -55,7 +56,6 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1156,8 +1156,8 @@ public class LayoutServiceImpl extends LayoutServiceBaseImpl {
 	 * @param  sourceGroupId the primary key of the source group
 	 * @param  targetGroupId the primary key of the target group
 	 * @param  privateLayout whether the layout is private to the group
-	 * @param  layoutIdMap the layouts considered for publishing, specified by
-	 *         the layout IDs and booleans indicating whether they have children
+	 * @param  layoutIds the layouts considered for publishing, specified by the
+	 *         layout IDs
 	 * @param  parameterMap the mapping of parameters indicating which
 	 *         information will be used. See {@link
 	 *         com.liferay.portal.kernel.lar.PortletDataHandlerKeys}
@@ -1180,10 +1180,9 @@ public class LayoutServiceImpl extends LayoutServiceBaseImpl {
 	@Override
 	public void schedulePublishToLive(
 			long sourceGroupId, long targetGroupId, boolean privateLayout,
-			Map<Long, Boolean> layoutIdMap, Map<String, String[]> parameterMap,
-			String scope, Date startDate, Date endDate, String groupName,
-			String cronText, Date schedulerStartDate, Date schedulerEndDate,
-			String description)
+			long[] layoutIds, Map<String, String[]> parameterMap, String scope,
+			Date startDate, Date endDate, String groupName, String cronText,
+			Date schedulerStartDate, Date schedulerEndDate, String description)
 		throws PortalException, SystemException {
 
 		GroupPermissionUtil.check(
@@ -1195,13 +1194,8 @@ public class LayoutServiceImpl extends LayoutServiceBaseImpl {
 
 		Map<String, Serializable> settingsMap =
 			ExportImportConfigurationSettingsMapFactory.buildSettingsMap(
-				getUserId(), sourceGroupId, targetGroupId, privateLayout, null,
-				parameterMap, startDate, endDate, null, null);
-
-		HashMap<Long, Boolean> serializableLayoutIdMap =
-			new HashMap<Long, Boolean>(layoutIdMap);
-
-		settingsMap.put("layoutIdMap", serializableLayoutIdMap);
+				getUserId(), sourceGroupId, targetGroupId, privateLayout,
+				layoutIds, parameterMap, startDate, endDate, null, null);
 
 		ExportImportConfiguration exportImportConfiguration =
 			exportImportConfigurationLocalService.addExportImportConfiguration(
