@@ -17,7 +17,6 @@ package com.liferay.portal.kernel.lar.exportimportconfiguration;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.lar.ExportImportDateUtil;
-import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
 import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -100,11 +99,8 @@ public class ExportImportConfigurationHelper {
 		long targetGroupId = MapUtil.getLong(settingsMap, "targetGroupId");
 		boolean privateLayout = GetterUtil.getBoolean(
 			settingsMap.get("privateLayout"));
-
-		Map<Long, Boolean> layoutIdMap = (Map<Long, Boolean>)settingsMap.get(
-			"layoutIdMap");
-
-		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(layoutIdMap);
+		long[] layoutIds = GetterUtil.getLongValues(
+			settingsMap.get("layoutIds"));
 
 		Map<String, String[]> parameterMap =
 			(Map<String, String[]>)settingsMap.get("parameterMap");
@@ -185,11 +181,8 @@ public class ExportImportConfigurationHelper {
 		long groupId = MapUtil.getLong(settingsMap, "sourceGroupId");
 		boolean privateLayout = GetterUtil.getBoolean(
 			settingsMap.get("privateLayout"));
-
-		Map<Long, Boolean> layoutIdMap = (Map<Long, Boolean>)settingsMap.get(
-			"layoutIdMap");
-
-		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(layoutIdMap);
+		long[] layoutIds = GetterUtil.getLongValues(
+			settingsMap.get("layoutIds"));
 
 		DateRange dateRange = ExportImportDateUtil.getDateRange(
 			exportImportConfiguration);
