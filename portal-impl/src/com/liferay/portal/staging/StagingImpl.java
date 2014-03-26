@@ -1387,6 +1387,11 @@ public class StagingImpl implements Staging {
 			new ServiceContext());
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link #publishLayouts(long, long,
+	 *             long, boolean, long[], Map, Date, Date)}
+	 */
+	@Deprecated
 	@Override
 	public void publishLayouts(
 			long userId, long sourceGroupId, long targetGroupId,
