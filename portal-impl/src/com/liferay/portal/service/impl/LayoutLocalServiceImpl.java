@@ -932,7 +932,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 		ServiceContext serviceContext = new ServiceContext();
 
-		ExportImportConfiguration exportConfiguration =
+		ExportImportConfiguration exportImportConfiguration =
 			exportImportConfigurationLocalService.addExportImportConfiguration(
 				userId, groupId, taskName, StringPool.BLANK,
 				ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT,
@@ -943,8 +943,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 		taskContextMap.put(
 			"exportImportConfigurationId",
-			exportConfiguration.getExportImportConfigurationId());
-		taskContextMap.put("fileName", fileName);
+			exportImportConfiguration.getExportImportConfigurationId());
 
 		BackgroundTask backgroundTask =
 			backgroundTaskLocalService.addBackgroundTask(

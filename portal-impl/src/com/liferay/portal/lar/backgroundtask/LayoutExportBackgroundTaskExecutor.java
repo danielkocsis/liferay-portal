@@ -56,17 +56,17 @@ public class LayoutExportBackgroundTaskExecutor
 		Map<String, Serializable> taskContextMap =
 			backgroundTask.getTaskContextMap();
 
-		ExportImportConfiguration exportConfiguration =
+		long exportImportConfigurationId = MapUtil.getLong(
+			taskContextMap, "exportImportConfigurationId");
+
+		ExportImportConfiguration exportImportConfiguration =
 			ExportImportConfigurationLocalServiceUtil.
-				getExportImportConfiguration(
-					MapUtil.getLong(
-						taskContextMap, "exportImportConfigurationId"));
+				getExportImportConfiguration(exportImportConfigurationId);
 
 		Map<String, Serializable> settingsMap =
-			exportConfiguration.getSettingsMap();
+			exportImportConfiguration.getSettingsMap();
 
 		long userId = MapUtil.getLong(settingsMap, "userId");
-		String fileName = exportConfiguration.getName();
 		long groupId = MapUtil.getLong(settingsMap, "sourceGroupId");
 		boolean privateLayout = MapUtil.getBoolean(
 			settingsMap, "privateLayout");
@@ -76,6 +76,7 @@ public class LayoutExportBackgroundTaskExecutor
 			(Map<String, String[]>)settingsMap.get("parameterMap");
 		Date startDate = (Date)settingsMap.get("startDate");
 		Date endDate = (Date)settingsMap.get("endDate");
+		String fileName = exportImportConfiguration.getName();
 
 		StringBundler sb = new StringBundler(4);
 
