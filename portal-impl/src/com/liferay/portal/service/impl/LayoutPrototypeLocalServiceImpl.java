@@ -191,7 +191,8 @@ public class LayoutPrototypeLocalServiceImpl
 		LayoutPrototype layoutPrototype =
 			layoutPrototypePersistence.findByPrimaryKey(layoutPrototypeId);
 
-		return deleteLayoutPrototype(layoutPrototype);
+		return layoutPrototypeLocalService.deleteLayoutPrototype(
+			layoutPrototype);
 	}
 
 	@Override
@@ -205,7 +206,8 @@ public class LayoutPrototypeLocalServiceImpl
 
 		for (LayoutPrototype layoutPrototype : layoutPrototypes) {
 			if (layoutPrototype.getUserId() != defaultUserId) {
-				deleteLayoutPrototype(layoutPrototype);
+				layoutPrototypeLocalService.deleteLayoutPrototype(
+					layoutPrototype);
 			}
 		}
 	}
