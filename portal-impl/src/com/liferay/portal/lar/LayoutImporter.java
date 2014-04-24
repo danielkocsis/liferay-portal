@@ -113,7 +113,7 @@ import org.apache.commons.lang.time.StopWatch;
  */
 public class LayoutImporter {
 
-	public void importLayouts(
+	public static void importLayouts(
 			long userId, long groupId, boolean privateLayout,
 			Map<String, String[]> parameterMap, File file)
 		throws Exception {
@@ -132,7 +132,7 @@ public class LayoutImporter {
 		}
 	}
 
-	public MissingReferences validateFile(
+	public static MissingReferences validateFile(
 			long userId, long groupId, boolean privateLayout,
 			Map<String, String[]> parameterMap, File file)
 		throws Exception {
@@ -170,7 +170,7 @@ public class LayoutImporter {
 		}
 	}
 
-	protected void deleteMissingLayouts(
+	protected static void deleteMissingLayouts(
 			PortletDataContext portletDataContext,
 			List<String> sourceLayoutUuids, List<Layout> previousLayouts,
 			ServiceContext serviceContext)
@@ -198,7 +198,7 @@ public class LayoutImporter {
 		}
 	}
 
-	protected void doImportLayouts(
+	protected static void doImportLayouts(
 			long userId, long groupId, boolean privateLayout,
 			Map<String, String[]> parameterMap, File file)
 		throws Exception {
@@ -262,7 +262,7 @@ public class LayoutImporter {
 			ServiceContextThreadLocal.pushServiceContext(serviceContext);
 		}
 
-		UserIdStrategy strategy = _portletImporter.getUserIdStrategy(
+		UserIdStrategy strategy = PortletImporter.getUserIdStrategy(
 			user, userIdStrategy);
 
 		ManifestSummary manifestSummary =
@@ -446,7 +446,7 @@ public class LayoutImporter {
 			}
 		}
 
-		_themeImporter.importTheme(portletDataContext, layoutSet);
+		ThemeImporter.importTheme(portletDataContext, layoutSet);
 
 		if (importLayoutSetSettings) {
 			String settings = GetterUtil.getString(
@@ -470,17 +470,17 @@ public class LayoutImporter {
 				Document portletDocument = SAXReaderUtil.read(
 					portletDataContext.getZipEntryAsString(portletPath));
 
-				_permissionImporter.checkRoles(
+				PermissionImporter.checkRoles(
 					layoutCache, companyId, groupId, userId,
 					portletDocument.getRootElement());
 			}
 
-			_permissionImporter.readPortletDataPermissions(portletDataContext);
+			PermissionImporter.readPortletDataPermissions(portletDataContext);
 		}
 
-		_portletImporter.readAssetTags(portletDataContext);
-		_portletImporter.readExpandoTables(portletDataContext);
-		_portletImporter.readLocks(portletDataContext);
+		PortletImporter.readAssetTags(portletDataContext);
+		PortletImporter.readExpandoTables(portletDataContext);
+		PortletImporter.readLocks(portletDataContext);
 
 		// Layouts
 
@@ -561,7 +561,7 @@ public class LayoutImporter {
 
 				portletDataContext.setPlid(plid);
 
-				_portletImporter.deletePortletData(
+				PortletImporter.deletePortletData(
 					portletDataContext, portletId, plid);
 			}
 		}
@@ -632,7 +632,7 @@ public class LayoutImporter {
 
 				// Portlet preferences
 
-				_portletImporter.importPortletPreferences(
+				PortletImporter.importPortletPreferences(
 					portletDataContext, layoutSet.getCompanyId(),
 					portletPreferencesGroupId, layout, null, portletElement,
 					false,
@@ -650,27 +650,27 @@ public class LayoutImporter {
 				if (importPortletControlsMap.get(
 						PortletDataHandlerKeys.PORTLET_DATA)) {
 
-					_portletImporter.importPortletData(
+					PortletImporter.importPortletData(
 						portletDataContext, portletId, plid,
 						portletDataElement);
 				}
 			}
 			finally {
-				_portletImporter.resetPortletScope(
+				PortletImporter.resetPortletScope(
 					portletDataContext, portletPreferencesGroupId);
 			}
 
 			// Portlet permissions
 
 			if (importPermissions) {
-				_permissionImporter.importPortletPermissions(
+				PermissionImporter.importPortletPermissions(
 					layoutCache, companyId, groupId, userId, layout,
 					portletElement, portletId);
 			}
 
 			// Archived setups
 
-			_portletImporter.importPortletPreferences(
+			PortletImporter.importPortletPreferences(
 				portletDataContext, layoutSet.getCompanyId(), groupId, null,
 				null, portletElement, false,
 				importPortletControlsMap.get(
@@ -694,7 +694,7 @@ public class LayoutImporter {
 
 		// Asset links
 
-		_portletImporter.readAssetLinks(portletDataContext);
+		PortletImporter.readAssetLinks(portletDataContext);
 
 		// Delete missing layouts
 
@@ -768,7 +768,7 @@ public class LayoutImporter {
 
 		// Deletion system events
 
-		_deletionSystemEventImporter.importDeletionSystemEvents(
+		DeletionSystemEventImporter.importDeletionSystemEvents(
 			portletDataContext);
 
 		if (_log.isInfoEnabled()) {
@@ -778,7 +778,7 @@ public class LayoutImporter {
 		zipReader.close();
 	}
 
-	protected void importLayout(
+	protected static void importLayout(
 			PortletDataContext portletDataContext,
 			List<String> sourceLayoutsUuids, Element layoutElement)
 		throws Exception {
@@ -795,7 +795,7 @@ public class LayoutImporter {
 		}
 	}
 
-	protected void readXML(PortletDataContext portletDataContext)
+	protected static void readXML(PortletDataContext portletDataContext)
 		throws Exception {
 
 		if (portletDataContext.getImportDataRootElement() != null) {
@@ -819,7 +819,7 @@ public class LayoutImporter {
 		}
 	}
 
-	protected void setPortletScope(
+	protected static void setPortletScope(
 		PortletDataContext portletDataContext, Element portletElement) {
 
 		// Portlet data scope
@@ -909,7 +909,8 @@ public class LayoutImporter {
 		}
 	}
 
-	protected void updateLayoutPriorities(PortletDataContext portletDataContext)
+	protected static void updateLayoutPriorities(
+			PortletDataContext portletDataContext, List<Element> layoutElements)
 		throws PortalException, SystemException {
 
 		Map<Long, Layout> layouts =
@@ -1006,7 +1007,7 @@ public class LayoutImporter {
 		}
 	}
 
-	protected void validateFile(PortletDataContext portletDataContext)
+	protected static void validateFile(PortletDataContext portletDataContext)
 		throws Exception {
 
 		// Build compatibility
@@ -1112,9 +1113,8 @@ public class LayoutImporter {
 			portletDataContext.getImportDataGroupElement(Layout.class));
 	}
 
-	protected void validateLayoutPrototypes(
-			long companyId, Element layoutsElement,
-			List<Element> layoutElements)
+	protected static void validateLayoutPrototypes(
+			long companyId, Element layoutsElement)
 		throws Exception {
 
 		List<Tuple> missingLayoutPrototypes = new ArrayList<Tuple>();
@@ -1175,15 +1175,5 @@ public class LayoutImporter {
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(LayoutImporter.class);
-
-	private DeletionSystemEventImporter _deletionSystemEventImporter =
-		new DeletionSystemEventImporter();
-	private Element _headerElement;
-	private List<Element> _layoutElements;
-	private Element _layoutsElement;
-	private PermissionImporter _permissionImporter = new PermissionImporter();
-	private PortletImporter _portletImporter = new PortletImporter();
-	private Element _rootElement;
-	private ThemeImporter _themeImporter = new ThemeImporter();
 
 }
