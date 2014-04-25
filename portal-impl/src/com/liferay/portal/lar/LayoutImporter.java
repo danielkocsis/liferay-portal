@@ -323,6 +323,14 @@ public class LayoutImporter {
 		portletDataContext.setSourceUserPersonalSiteGroupId(
 			sourceUserPersonalSiteGroupId);
 
+		// Add source and target group id to PK map
+
+		Map<Long, Long> groupIds =
+			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+				Group.class);
+
+		groupIds.put(sourceGroupId, groupId);
+
 		// Layout and layout set prototype
 
 		Element layoutsElement = portletDataContext.getImportDataGroupElement(
