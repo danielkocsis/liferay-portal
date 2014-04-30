@@ -30,7 +30,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.lar.DefaultConfigurationPortletDataHandler;
 import com.liferay.portal.kernel.lar.ExportImportDateUtil;
 import com.liferay.portal.kernel.lar.ExportImportHelper;
-import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.ManifestSummary;
 import com.liferay.portal.kernel.lar.MissingReference;
@@ -853,13 +852,13 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 			String content, boolean exportReferencedContent)
 		throws Exception {
 
-		content = ExportImportHelperUtil.replaceExportLayoutReferences(
+		content = replaceExportLayoutReferences(
 			portletDataContext, content, exportReferencedContent);
-		content = ExportImportHelperUtil.replaceExportLinksToLayouts(
+		content = replaceExportLinksToLayouts(
 			portletDataContext, entityStagedModel, entityElement, content,
 			exportReferencedContent);
 
-		content = ExportImportHelperUtil.replaceExportDLReferences(
+		content = replaceExportDLReferences(
 			portletDataContext, entityStagedModel, entityElement, content,
 			exportReferencedContent);
 
@@ -1254,12 +1253,12 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 			String content, boolean importReferencedContent)
 		throws Exception {
 
-		content = ExportImportHelperUtil.replaceImportLayoutReferences(
+		content = replaceImportLayoutReferences(
 			portletDataContext, content, importReferencedContent);
-		content = ExportImportHelperUtil.replaceImportLinksToLayouts(
+		content = replaceImportLinksToLayouts(
 			portletDataContext, content, importReferencedContent);
 
-		content = ExportImportHelperUtil.replaceImportDLReferences(
+		content = replaceImportDLReferences(
 			portletDataContext, entityStagedModel, content,
 			importReferencedContent);
 
