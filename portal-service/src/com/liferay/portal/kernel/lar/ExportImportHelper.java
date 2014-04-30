@@ -208,10 +208,34 @@ public interface ExportImportHelper {
 	public boolean isReferenceWithinExportScope(
 		PortletDataContext portletDataContext, StagedModel stagedModel);
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #replaceExportContentReferences(PortletDataContext,
+	 *             StagedModel, String, boolean)}
+	 */
+	@Deprecated
+	public String replaceExportContentReferences(
+			PortletDataContext portletDataContext,
+			StagedModel entityStagedModel, Element entityElement,
+			String content, boolean exportReferencedContent)
+		throws Exception;
+
 	public String replaceExportContentReferences(
 			PortletDataContext portletDataContext,
 			StagedModel entityStagedModel, String content,
 			boolean exportReferencedContent)
+		throws Exception;
+
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #replaceExportDLReferences(PortletDataContext, StagedModel,
+	 *             String, boolean)}
+	 */
+	@Deprecated
+	public String replaceExportDLReferences(
+			PortletDataContext portletDataContext,
+			StagedModel entityStagedModel, Element entityElement,
+			String content, boolean exportReferencedContent)
 		throws Exception;
 
 	public String replaceExportDLReferences(
@@ -224,6 +248,28 @@ public interface ExportImportHelper {
 			PortletDataContext portletDataContext, String content)
 		throws Exception;
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #replaceExportLayoutReferences(PortletDataContext, String)}
+	 */
+	@Deprecated
+	public String replaceExportLayoutReferences(
+			PortletDataContext portletDataContext, String content,
+			boolean exportReferencedContent)
+		throws Exception;
+
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #replaceExportLinksToLayouts(PortletDataContext, StagedModel,
+	 *             String)}
+	 */
+	@Deprecated
+	public String replaceExportLinksToLayouts(
+			PortletDataContext portletDataContext,
+			StagedModel entityStagedModel, Element entityElement,
+			String content, boolean exportReferencedContent)
+		throws Exception;
+
 	public String replaceExportLinksToLayouts(
 			PortletDataContext portletDataContext,
 			StagedModel entityStagedModel, String content)
@@ -232,7 +278,7 @@ public interface ExportImportHelper {
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link
 	 *             #replaceImportContentReferences(PortletDataContext,
-	 *             StagedModel, Element, String, boolean)}
+	 *             StagedModel, String)}
 	 */
 	@Deprecated
 	public String replaceImportContentReferences(
@@ -248,7 +294,7 @@ public interface ExportImportHelper {
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link
 	 *             #replaceImportDLReferences(PortletDataContext, StagedModel,
-	 *             String, boolean)}
+	 *             String)}
 	 */
 	@Deprecated
 	public String replaceImportDLReferences(
@@ -265,8 +311,28 @@ public interface ExportImportHelper {
 			PortletDataContext portletDataContext, String content)
 		throws Exception;
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #replaceImportLayoutReferences(PortletDataContext, String)}
+	 */
+	@Deprecated
+	public String replaceImportLayoutReferences(
+			PortletDataContext portletDataContext, String content,
+			boolean importReferencedContent)
+		throws Exception;
+
 	public String replaceImportLinksToLayouts(
 			PortletDataContext portletDataContext, String content)
+		throws Exception;
+
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #replaceImportLinksToLayouts(PortletDataContext, String)}
+	 */
+	@Deprecated
+	public String replaceImportLinksToLayouts(
+			PortletDataContext portletDataContext, String content,
+			boolean importReferencedContent)
 		throws Exception;
 
 	public void updateExportPortletPreferencesClassPKs(
