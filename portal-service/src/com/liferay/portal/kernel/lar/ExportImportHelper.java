@@ -210,14 +210,14 @@ public interface ExportImportHelper {
 
 	public String replaceExportContentReferences(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, Element entityElement,
-			String content, boolean exportReferencedContent)
+			StagedModel entityStagedModel, String content,
+			boolean exportReferencedContent)
 		throws Exception;
 
 	public String replaceExportDLReferences(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, Element entityElement,
-			String content, boolean exportReferencedContent)
+			StagedModel entityStagedModel, String content,
+			boolean exportReferencedContent)
 		throws Exception;
 
 	public String replaceExportLayoutReferences(
@@ -226,8 +226,7 @@ public interface ExportImportHelper {
 
 	public String replaceExportLinksToLayouts(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, Element entityElement,
-			String content)
+			StagedModel entityStagedModel, String content)
 		throws Exception;
 
 	/**

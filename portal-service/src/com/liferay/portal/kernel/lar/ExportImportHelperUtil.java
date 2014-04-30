@@ -273,23 +273,23 @@ public class ExportImportHelperUtil {
 
 	public static String replaceExportContentReferences(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, Element entityElement,
-			String content, boolean exportReferencedContent)
+			StagedModel entityStagedModel, String content,
+			boolean exportReferencedContent)
 		throws Exception {
 
 		return getExportImportHelper().replaceExportContentReferences(
-			portletDataContext, entityStagedModel, entityElement, content,
+			portletDataContext, entityStagedModel, content,
 			exportReferencedContent);
 	}
 
 	public static String replaceExportDLReferences(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, Element entityElement,
-			String content, boolean exportReferencedContent)
+			StagedModel entityStagedModel, String content,
+			boolean exportReferencedContent)
 		throws Exception {
 
 		return getExportImportHelper().replaceExportDLReferences(
-			portletDataContext, entityStagedModel, entityElement, content,
+			portletDataContext, entityStagedModel, content,
 			exportReferencedContent);
 	}
 
@@ -303,12 +303,11 @@ public class ExportImportHelperUtil {
 
 	public static String replaceExportLinksToLayouts(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, Element entityElement,
-			String content)
+			StagedModel entityStagedModel, String content)
 		throws Exception {
 
 		return getExportImportHelper().replaceExportLinksToLayouts(
-			portletDataContext, entityStagedModel, entityElement, content);
+			portletDataContext, entityStagedModel, content);
 	}
 
 	/**
