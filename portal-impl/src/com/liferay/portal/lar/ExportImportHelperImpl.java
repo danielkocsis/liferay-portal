@@ -852,11 +852,9 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 			String content, boolean exportReferencedContent)
 		throws Exception {
 
-		content = replaceExportLayoutReferences(
-			portletDataContext, content, exportReferencedContent);
+		content = replaceExportLayoutReferences(portletDataContext, content);
 		content = replaceExportLinksToLayouts(
-			portletDataContext, entityStagedModel, entityElement, content,
-			exportReferencedContent);
+			portletDataContext, entityStagedModel, entityElement, content);
 
 		content = replaceExportDLReferences(
 			portletDataContext, entityStagedModel, entityElement, content,
@@ -964,8 +962,7 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 
 	@Override
 	public String replaceExportLayoutReferences(
-			PortletDataContext portletDataContext, String content,
-			boolean exportReferencedContent)
+			PortletDataContext portletDataContext, String content)
 		throws Exception {
 
 		Group group = GroupLocalServiceUtil.getGroup(
@@ -1168,7 +1165,7 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 	public String replaceExportLinksToLayouts(
 			PortletDataContext portletDataContext,
 			StagedModel entityStagedModel, Element entityElement,
-			String content, boolean exportReferencedContent)
+			String content)
 		throws Exception {
 
 		List<String> oldLinksToLayout = new ArrayList<String>();
@@ -1249,18 +1246,14 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 	@Override
 	public String replaceImportContentReferences(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, Element entityElement,
-			String content, boolean importReferencedContent)
+			StagedModel entityStagedModel, String content)
 		throws Exception {
 
-		content = replaceImportLayoutReferences(
-			portletDataContext, content, importReferencedContent);
-		content = replaceImportLinksToLayouts(
-			portletDataContext, content, importReferencedContent);
+		content = replaceImportLayoutReferences(portletDataContext, content);
+		content = replaceImportLinksToLayouts(portletDataContext, content);
 
 		content = replaceImportDLReferences(
-			portletDataContext, entityStagedModel, content,
-			importReferencedContent);
+			portletDataContext, entityStagedModel, content);
 
 		return content;
 	}
@@ -1283,9 +1276,8 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 	@Override
 	public String replaceImportDLReferences(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, String content,
-			boolean importReferencedContent)
-		throws Exception {
+			StagedModel entityStagedModel, String content)
+	throws Exception {
 
 		List<Element> referenceElements =
 			portletDataContext.getReferenceElements(
@@ -1353,8 +1345,7 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 
 	@Override
 	public String replaceImportLayoutReferences(
-			PortletDataContext portletDataContext, String content,
-			boolean importReferencedContent)
+			PortletDataContext portletDataContext, String content)
 		throws Exception {
 
 		String companyPortalURL = StringPool.BLANK;
@@ -1449,8 +1440,7 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 
 	@Override
 	public String replaceImportLinksToLayouts(
-			PortletDataContext portletDataContext, String content,
-			boolean importReferencedContent)
+			PortletDataContext portletDataContext, String content)
 		throws Exception {
 
 		List<String> oldLinksToLayout = new ArrayList<String>();

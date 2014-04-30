@@ -294,23 +294,21 @@ public class ExportImportHelperUtil {
 	}
 
 	public static String replaceExportLayoutReferences(
-			PortletDataContext portletDataContext, String content,
-			boolean exportReferencedContent)
+			PortletDataContext portletDataContext, String content)
 		throws Exception {
 
 		return getExportImportHelper().replaceExportLayoutReferences(
-			portletDataContext, content, exportReferencedContent);
+			portletDataContext, content);
 	}
 
 	public static String replaceExportLinksToLayouts(
 			PortletDataContext portletDataContext,
 			StagedModel entityStagedModel, Element entityElement,
-			String content, boolean exportReferencedContent)
+			String content)
 		throws Exception {
 
 		return getExportImportHelper().replaceExportLinksToLayouts(
-			portletDataContext, entityStagedModel, entityElement, content,
-			exportReferencedContent);
+			portletDataContext, entityStagedModel, entityElement, content);
 	}
 
 	/**
@@ -331,13 +329,11 @@ public class ExportImportHelperUtil {
 
 	public static String replaceImportContentReferences(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, Element entityElement,
-			String content, boolean importReferencedContent)
+			StagedModel entityStagedModel, String content)
 		throws Exception {
 
 		return getExportImportHelper().replaceImportContentReferences(
-			portletDataContext, entityStagedModel, entityElement, content,
-			importReferencedContent);
+			portletDataContext, entityStagedModel, content);
 	}
 
 	/**
@@ -358,31 +354,27 @@ public class ExportImportHelperUtil {
 
 	public static String replaceImportDLReferences(
 			PortletDataContext portletDataContext,
-			StagedModel entityStagedModel, String content,
-			boolean importReferencedContent)
+			StagedModel entityStagedModel, String content)
 		throws Exception {
 
 		return getExportImportHelper().replaceImportDLReferences(
-			portletDataContext, entityStagedModel, content,
-			importReferencedContent);
+			portletDataContext, entityStagedModel, content);
 	}
 
 	public static String replaceImportLayoutReferences(
-			PortletDataContext portletDataContext, String content,
-			boolean importReferencedContent)
+			PortletDataContext portletDataContext, String content)
 		throws Exception {
 
 		return getExportImportHelper().replaceImportLayoutReferences(
-			portletDataContext, content, importReferencedContent);
+			portletDataContext, content);
 	}
 
 	public static String replaceImportLinksToLayouts(
-			PortletDataContext portletDataContext, String content,
-			boolean importReferencedContent)
+			PortletDataContext portletDataContext, String content)
 		throws Exception {
 
 		return getExportImportHelper().replaceImportLinksToLayouts(
-			portletDataContext, content, importReferencedContent);
+			portletDataContext, content);
 	}
 
 	public static void updateExportPortletPreferencesClassPKs(
