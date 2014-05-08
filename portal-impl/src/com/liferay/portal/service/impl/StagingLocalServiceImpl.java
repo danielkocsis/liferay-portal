@@ -67,12 +67,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.portlet.PortletRequest;
 
@@ -117,6 +122,17 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 					userId, targetGroupId, liveGroup.getDescriptiveName(),
 					false, serviceContext);
 			}
+			else {
+				clearLastPublishDate(targetGroupId, false);
+			}
+		}
+		else {
+			if (branchedPublic) {
+				disablePageVersioning(targetGroupId, false);
+			}
+			else {
+				clearLastPublishDate(targetGroupId, false);
+			}
 		}
 
 		if (branchingPrivate) {
@@ -130,11 +146,18 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 					userId, targetGroupId, liveGroup.getDescriptiveName(), true,
 					serviceContext);
 			}
+			else {
+				clearLastPublishDate(targetGroupId, true);
+			}
 		}
-
-		updatePageVersioning(
-			targetGroupId, branchingPublic, branchingPrivate, branchedPublic,
-			branchedPrivate);
+		else {
+			if (branchedPrivate) {
+				disablePageVersioning(targetGroupId, true);
+			}
+			else {
+				clearLastPublishDate(targetGroupId, true);
+			}
+		}
 	}
 
 	@Override
@@ -549,7 +572,8 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 			layoutSetBranchLocalService.getLayoutSetBranches(
 				groupId, privateLayout);
 
-		Map<Long, Long> publishedLayoutRevisions = new HashMap<Long, Long>();
+		SortedMap<Long, LayoutRevisionHelper> publishedLayoutRevisions =
+			new TreeMap<Long, LayoutRevisionHelper>();
 
 		for (LayoutSetBranch layoutSetBranch : layoutSetBranches) {
 			String lastPublishDate = layoutSetBranch.getSettingsProperty(
@@ -570,19 +594,56 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 			for (LayoutRevision layoutRevision : headRevisions) {
 				Date statusDate = layoutRevision.getStatusDate();
 
+				LayoutRevisionHelper storedLayoutRevisionHelper =
+					publishedLayoutRevisions.get(layoutRevision.getPlid());
+
+				if (Validator.isNotNull(storedLayoutRevisionHelper) &&
+					(storedLayoutRevisionHelper.getLastPublishDate() >
+					statusDate.getTime())) {
+
+					continue;
+				}
+
 				if (statusDate.getTime() <=
 						GetterUtil.getLong(lastPublishDate)) {
 
+					LayoutRevisionHelper layoutRevisionHelper =
+						new LayoutRevisionHelper(
+							layoutRevision.getPlid(),
+							layoutRevision.getLayoutRevisionId(),
+							statusDate.getTime());
+
 					publishedLayoutRevisions.put(
-						layoutRevision.getPlid(),
-						layoutRevision.getLayoutRevisionId());
+						layoutRevision.getPlid(), layoutRevisionHelper);
 				}
 			}
 		}
 
-		for (Long plid : publishedLayoutRevisions.keySet()) {
+		SortedSet<Map.Entry<Long, LayoutRevisionHelper>> sortedRevisions =
+			new TreeSet<Map.Entry<Long, LayoutRevisionHelper>>(
+				new Comparator<Map.Entry<Long, LayoutRevisionHelper>>() {
+
+					@Override
+					public int compare(
+						Map.Entry<Long, LayoutRevisionHelper> e1,
+						Map.Entry<Long, LayoutRevisionHelper> e2) {
+
+						return e1.getValue().compareTo(e2.getValue());
+					}
+				}
+		);
+
+		sortedRevisions.addAll(publishedLayoutRevisions.entrySet());
+
+		for (Map.Entry<Long, LayoutRevisionHelper> entry : sortedRevisions) {
+			LayoutRevisionHelper layoutRevisionHelper = entry.getValue();
+
+			_log.info(
+				"Published date to process: " +
+					new Date(layoutRevisionHelper.getLastPublishDate()));
+
 			updateLayoutWithLayoutRevision(
-				plid, publishedLayoutRevisions.get(plid));
+				entry.getKey(), layoutRevisionHelper.getLayoutRevisionId());
 		}
 
 		layoutSetBranchLocalService.deleteLayoutSetBranches(
@@ -829,26 +890,6 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 		return layoutLocalService.updateLayout(layout);
 	}
 
-	protected void updatePageVersioning(
-			long groupId, boolean branchingPublic, boolean branchingPrivate,
-			boolean branchedPublic, boolean branchedPrivate)
-		throws PortalException, SystemException {
-
-		if (branchedPrivate && !branchingPrivate) {
-			disablePageVersioning(groupId, true);
-		}
-		else {
-			clearLastPublishDate(groupId, true);
-		}
-
-		if (branchedPublic && !branchingPublic) {
-			disablePageVersioning(groupId, false);
-		}
-		else {
-			clearLastPublishDate(groupId, false);
-		}
-	}
-
 	protected void updateStagedPortlets(
 			String remoteURL, long remoteGroupId,
 			UnicodeProperties typeSettingsProperties)
@@ -911,5 +952,72 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 
 	private static Log _log = LogFactoryUtil.getLog(
 		StagingLocalServiceImpl.class);
+
+	private class LayoutRevisionHelper
+		implements Comparable<LayoutRevisionHelper> {
+
+		public LayoutRevisionHelper() {
+		}
+
+		public LayoutRevisionHelper(
+			long plid, long layoutRevision, long lastPublishedDate) {
+
+			_lastPublishDate = lastPublishedDate;
+			_layoutRevisionId = layoutRevision;
+			_plid = plid;
+		}
+
+		@Override
+		public int compareTo(LayoutRevisionHelper layoutRevisionHelper) {
+			long lastPublishDate = layoutRevisionHelper.getLastPublishDate();
+
+			if (getLastPublishDate() < lastPublishDate) {
+				return -1;
+			}
+			else if (getLastPublishDate() > lastPublishDate) {
+				return 1;
+			}
+
+			return 0;
+		}
+
+		public long getLastPublishDate() {
+			return _lastPublishDate;
+		}
+
+		public long getLayoutRevisionId() {
+			return _layoutRevisionId;
+		}
+
+		public long getPlid() {
+			return _plid;
+		}
+
+		public void setLastPublishDate(long lastPublishDate) {
+			_lastPublishDate = lastPublishDate;
+		}
+
+		public void setLayoutRevisionId(long layoutRevisionId) {
+			_layoutRevisionId = layoutRevisionId;
+		}
+
+		public void setPlid(long plid) {
+			_plid = plid;
+		}
+
+		private long _lastPublishDate;
+		private long _layoutRevisionId;
+		private long _plid;
+
+	}
+//
+//	private class LayoutRevisionHelperComparator
+//		implements Comparator<LayoutRevisionHelper> {
+//
+//		@Override
+//		public int compare(LayoutRevisionHelper l1, LayoutRevisionHelper l2) {
+//			return l1.compareTo(l2);
+//		}
+//	}
 
 }
