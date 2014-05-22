@@ -16,13 +16,16 @@ package com.liferay.portal.lar;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskThreadLocal;
 import com.liferay.portal.kernel.lar.ManifestSummary;
+import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandlerStatusMessageSender;
 import com.liferay.portal.kernel.lar.StagedModelDataHandler;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.sender.SingleDestinationMessageSender;
 import com.liferay.portal.kernel.util.LongWrapper;
+import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.StagedModel;
+import com.liferay.portal.service.PortletLocalServiceUtil;
 
 import java.util.Map;
 
@@ -57,6 +60,25 @@ public class PortletDataHandlerStatusMessageSenderImpl
 
 		message.put("portletId", portletId);
 
+		Portlet portlet = PortletLocalServiceUtil.getPortletById(portletId);
+
+		if (portlet != null) {
+			PortletDataHandler portletDataHandler =
+				portlet.getPortletDataHandlerInstance();
+
+			long portletModelAdditionCountersTotal =
+				portletDataHandler.getExportModelCount(manifestSummary);
+
+			if (portletModelAdditionCountersTotal < 0) {
+				portletModelAdditionCountersTotal = 0;
+			}
+
+			message.put(
+				"portletModelAdditionCountersTotal",
+				portletModelAdditionCountersTotal);
+		}
+
+		_singleDestinationMessageSender.send(message);
 	}
 
 	@Override
