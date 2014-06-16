@@ -55,14 +55,14 @@ public class DefaultExportImportBackgroundTaskStatusMessageTranslator
 
 		backgroundTaskStatus.clearAttributes();
 
-		backgroundTaskStatus.setAttribute("allModelAdditionCountersTotal", 0);
-		backgroundTaskStatus.setAttribute("allPortletAdditionCounter", 0);
+		backgroundTaskStatus.setAttribute("allModelAdditionCountersTotal", 0L);
+		backgroundTaskStatus.setAttribute("allPortletAdditionCounter", 0L);
 		backgroundTaskStatus.setAttribute(
 			"allPortletModelAdditionCounters",
 			new HashMap<String, LongWrapper>());
 		backgroundTaskStatus.setAttribute(
-			"currentModelAdditionCountersTotal", 0);
-		backgroundTaskStatus.setAttribute("currentPortletAdditionCounter", 0);
+			"currentModelAdditionCountersTotal", 0L);
+		backgroundTaskStatus.setAttribute("currentPortletAdditionCounter", 0L);
 		backgroundTaskStatus.setAttribute(
 			"currentPortletModelAdditionCounters",
 			new HashMap<String, LongWrapper>());
