@@ -359,7 +359,7 @@ public class StagingImpl implements Staging {
 				user.getUserId(), sourceGroupId, privateLayout, layoutIdMap,
 				parameterMap, remoteAddress, remotePort, remotePathContext,
 				secureConnection, remoteGroupId, remotePrivateLayout, startDate,
-				endDate, null, null);
+				endDate, user.getLocale(), user.getTimeZone());
 
 		ServiceContext serviceContext = new ServiceContext();
 
