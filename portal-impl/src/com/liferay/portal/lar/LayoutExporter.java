@@ -388,8 +388,6 @@ public class LayoutExporter {
 				continue;
 			}
 
-			// Calculate the amount of exported data
-
 			if (BackgroundTaskThreadLocal.hasBackgroundTask()) {
 				PortletDataHandler portletDataHandler =
 					portlet.getPortletDataHandlerInstance();

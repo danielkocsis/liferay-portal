@@ -463,7 +463,7 @@ public class LayoutImporter {
 		}
 
 		// Read asset tags, expando tables, locks, and permissions to make them
-		// available to the data handlers through the context
+		// available to the data handlers through the portlet data context
 
 		if (importPermissions) {
 			for (Element portletElement : portletElements) {
