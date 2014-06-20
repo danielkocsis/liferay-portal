@@ -107,6 +107,7 @@ import com.liferay.portal.service.LockLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.StagingLocalServiceUtil;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.WorkflowInstanceLinkLocalServiceUtil;
 import com.liferay.portal.service.http.GroupServiceHttp;
 import com.liferay.portal.service.permission.GroupPermissionUtil;
@@ -1368,10 +1369,13 @@ public class StagingImpl implements Staging {
 			PortletDataHandlerKeys.PERFORM_DIRECT_BINARY_IMPORT,
 			new String[] {Boolean.TRUE.toString()});
 
+		User user = UserLocalServiceUtil.getUser(userId);
+
 		Map<String, Serializable> settingsMap =
 			ExportImportConfigurationSettingsMapFactory.buildSettingsMap(
 				userId, sourceGroupId, targetGroupId, privateLayout, layoutIds,
-				parameterMap, startDate, endDate, null, null);
+				parameterMap, startDate, endDate,user.getLocale(),
+				user.getTimeZone());
 
 		ExportImportConfiguration exportImportConfiguration =
 			ExportImportConfigurationLocalServiceUtil.
