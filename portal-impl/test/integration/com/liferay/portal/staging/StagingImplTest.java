@@ -18,11 +18,10 @@ import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.StagingLocalServiceUtil;
+import com.liferay.portal.service.util.test.StagingTestUtil;
 import com.liferay.portal.test.DeleteAfterTestRun;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.test.MainServletExecutionTestListener;
@@ -124,41 +123,27 @@ public class StagingImplTest {
 
 		Map<String, String[]> parameters = StagingUtil.getStagingParameters();
 
-		parameters.put(
-			PortletDataHandlerKeys.PORTLET_CONFIGURATION +
-				StringPool.UNDERLINE + PortletKeys.JOURNAL,
-			new String[] {String.valueOf(stageJournal)});
+		StagingTestUtil.addStagedPortletParameters(
+			parameters, PortletKeys.JOURNAL, stageJournal, stageJournal,
+			stageJournal, stageJournal, serviceContext);
+
+		StagingTestUtil.addStagedPortletParameters(
+			parameters, PortletKeys.ASSET_CATEGORIES_ADMIN, false,
+			stageCategories, false, false, serviceContext);
+
 		parameters.put(
 			PortletDataHandlerKeys.PORTLET_CONFIGURATION_ALL,
 			new String[] {Boolean.FALSE.toString()});
 		parameters.put(
-			PortletDataHandlerKeys.PORTLET_DATA + StringPool.UNDERLINE +
-				PortletKeys.ASSET_CATEGORIES_ADMIN,
-			new String[] {String.valueOf(stageCategories)});
-		parameters.put(
-			PortletDataHandlerKeys.PORTLET_DATA + StringPool.UNDERLINE +
-				PortletKeys.JOURNAL,
-			new String[] {String.valueOf(stageJournal)});
-		parameters.put(
 			PortletDataHandlerKeys.PORTLET_DATA_ALL,
 			new String[] {Boolean.FALSE.toString()});
-		parameters.put(
-			PortletDataHandlerKeys.PORTLET_SETUP + StringPool.UNDERLINE +
-				PortletKeys.JOURNAL,
-			new String[] {String.valueOf(stageJournal)});
-
-		serviceContext.setAttribute(
-			StagingUtil.getStagedPortletId(PortletKeys.JOURNAL), stageJournal);
 
 		for (String parameterName : parameters.keySet()) {
 			serviceContext.setAttribute(
 				parameterName, parameters.get(parameterName)[0]);
 		}
 
-		// Enable staging
-
-		StagingLocalServiceUtil.enableLocalStaging(
-			TestPropsValues.getUserId(), _group, false, false, serviceContext);
+		StagingTestUtil.enableLocalStaging(_group, serviceContext);
 
 		Group stagingGroup = _group.getStagingGroup();
 
