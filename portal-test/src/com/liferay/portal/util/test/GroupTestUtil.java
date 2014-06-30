@@ -16,7 +16,6 @@ package com.liferay.portal.util.test;
 
 import com.liferay.portal.kernel.cache.Lifecycle;
 import com.liferay.portal.kernel.cache.ThreadLocalCacheManager;
-import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -30,7 +29,7 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.GroupServiceUtil;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.StagingLocalServiceUtil;
+import com.liferay.portal.service.util.test.StagingTestUtil;
 
 import java.util.Locale;
 import java.util.Map;
@@ -152,20 +151,13 @@ public class GroupTestUtil {
 
 		Map<String, String[]> parameters = StagingUtil.getStagingParameters();
 
-		parameters.put(
-			PortletDataHandlerKeys.PORTLET_CONFIGURATION_ALL,
-			new String[] {Boolean.FALSE.toString()});
-		parameters.put(
-			PortletDataHandlerKeys.PORTLET_DATA_ALL,
-			new String[] {Boolean.FALSE.toString()});
+		StagingTestUtil.addPortletConfigurationAllParameter(
+			parameters, false, serviceContext);
 
-		for (String parameterName : parameters.keySet()) {
-			serviceContext.setAttribute(
-				parameterName, parameters.get(parameterName)[0]);
-		}
+		StagingTestUtil.addPortletDataAllParameter(
+			parameters, false, serviceContext);
 
-		StagingLocalServiceUtil.enableLocalStaging(
-			TestPropsValues.getUserId(), group, false, false, serviceContext);
+		StagingTestUtil.enableLocalStaging(group, serviceContext);
 	}
 
 	public static Group updateDisplaySettings(

@@ -14,7 +14,6 @@
 
 package com.liferay.portal.staging;
 
-import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -127,21 +126,14 @@ public class StagingImplTest {
 			parameters, PortletKeys.JOURNAL, stageJournal, stageJournal,
 			stageJournal, stageJournal, serviceContext);
 
+		StagingTestUtil.addPortletConfigurationAllParameter(
+			parameters, false, serviceContext);
+		StagingTestUtil.addPortletDataAllParameter(
+			parameters, false, serviceContext);
+
 		StagingTestUtil.addStagedPortletParameters(
 			parameters, PortletKeys.ASSET_CATEGORIES_ADMIN, false,
 			stageCategories, false, false, serviceContext);
-
-		parameters.put(
-			PortletDataHandlerKeys.PORTLET_CONFIGURATION_ALL,
-			new String[] {Boolean.FALSE.toString()});
-		parameters.put(
-			PortletDataHandlerKeys.PORTLET_DATA_ALL,
-			new String[] {Boolean.FALSE.toString()});
-
-		for (String parameterName : parameters.keySet()) {
-			serviceContext.setAttribute(
-				parameterName, parameters.get(parameterName)[0]);
-		}
 
 		StagingTestUtil.enableLocalStaging(_group, serviceContext);
 
