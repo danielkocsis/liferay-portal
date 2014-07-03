@@ -221,14 +221,6 @@ public class DDMStructureStagedModelDataHandler
 
 		long userId = portletDataContext.getUserId(structure.getUserUuid());
 
-		if (structure.getParentStructureId() !=
-				DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID) {
-
-			StagedModelDataHandlerUtil.importReferenceStagedModel(
-				portletDataContext, structure, DDMStructure.class,
-				structure.getParentStructureId());
-		}
-
 		Map<Long, Long> structureIds =
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				DDMStructure.class);
