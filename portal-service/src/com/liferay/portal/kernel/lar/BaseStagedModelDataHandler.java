@@ -268,6 +268,8 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 			importAssetCategories(portletDataContext, stagedModel);
 
+			importReferenceStagedModels(portletDataContext, stagedModel);
+
 			doImportStagedModel(portletDataContext, stagedModel);
 
 			importComments(portletDataContext, stagedModel);
@@ -536,6 +538,47 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
 			portletDataContext, stagedModel, RatingsEntry.class);
+	}
+
+	protected void importReferenceStagedModels(
+			PortletDataContext portletDataContext, T stagedModel)
+		throws PortletDataException {
+
+		Element stagedModelElement =
+			portletDataContext.getImportDataStagedModelElement(stagedModel);
+
+		Element referencesElement = stagedModelElement.element("references");
+
+		if (referencesElement == null) {
+			return;
+		}
+
+		List<Element> referenceElements = referencesElement.elements();
+
+		for (Element referenceElement : referenceElements) {
+			String className = referenceElement.attributeValue("class-name");
+
+			if (className.equals(AssetCategory.class.getName()) ||
+				className.equals(RatingsEntry.class.getName()) ||
+				className.equals(MBMessage.class.getName())) {
+
+				continue;
+			}
+
+			try {
+				Class<?> referencedStagedModelClass = Class.forName(className);
+
+				long classPK = GetterUtil.getLong(
+					referenceElement.attributeValue("class-pk"));
+
+				StagedModelDataHandlerUtil.importReferenceStagedModel(
+					portletDataContext, stagedModel, referencedStagedModelClass,
+					classPK);
+			}
+			catch (ClassNotFoundException cnfe) {
+				continue;
+			}
+		}
 	}
 
 	protected void validateExport(
