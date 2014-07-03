@@ -189,9 +189,6 @@ public class RepositoryStagedModelDataHandler
 		}
 
 		portletDataContext.importClassedModel(repository, importedRepository);
-
-		StagedModelDataHandlerUtil.importReferenceStagedModels(
-			portletDataContext, repository, RepositoryEntry.class);
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(

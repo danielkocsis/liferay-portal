@@ -27,9 +27,7 @@ import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.model.DLFileShortcut;
-import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileShortcutLocalServiceUtil;
@@ -112,14 +110,6 @@ public class DLFileShortcutStagedModelDataHandler
 
 		long userId = portletDataContext.getUserId(fileShortcut.getUserUuid());
 
-		if (fileShortcut.getFolderId() !=
-				DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-
-			StagedModelDataHandlerUtil.importReferenceStagedModel(
-				portletDataContext, fileShortcut, DLFolder.class,
-				fileShortcut.getFolderId());
-		}
-
 		Map<Long, Long> folderIds =
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				Folder.class);
@@ -134,10 +124,6 @@ public class DLFileShortcutStagedModelDataHandler
 
 			groupId = folder.getRepositoryId();
 		}
-
-		StagedModelDataHandlerUtil.importReferenceStagedModel(
-			portletDataContext, fileShortcut, DLFileEntry.class,
-			fileShortcut.getToFileEntryId());
 
 		Element fileShortcutElement =
 			portletDataContext.getImportDataStagedModelElement(fileShortcut);
