@@ -95,9 +95,6 @@ public class PollsVoteStagedModelDataHandler
 			PortletDataContext portletDataContext, PollsVote vote)
 		throws Exception {
 
-		StagedModelDataHandlerUtil.importReferenceStagedModel(
-			portletDataContext, vote, PollsChoice.class, vote.getChoiceId());
-
 		Map<Long, Long> questionIds =
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				PollsQuestion.class);

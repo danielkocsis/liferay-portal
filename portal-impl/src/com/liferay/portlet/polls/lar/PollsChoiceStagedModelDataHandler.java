@@ -106,10 +106,6 @@ public class PollsChoiceStagedModelDataHandler
 
 		long userId = portletDataContext.getUserId(choice.getUserUuid());
 
-		StagedModelDataHandlerUtil.importReferenceStagedModel(
-			portletDataContext, choice, PollsQuestion.class,
-			choice.getQuestionId());
-
 		Map<Long, Long> questionIds =
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				PollsQuestion.class);
