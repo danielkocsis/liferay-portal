@@ -112,7 +112,8 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 		// Try to fetch the existing staged model from the actual group
 
-		T existingStagedModel = doFetchExistingStagedModel(uuid, groupId);
+		T existingStagedModel = doFetchExistingStagedModelByUuidAndGroupId(
+			uuid, groupId);
 
 		if (existingStagedModel != null) {
 			return existingStagedModel;
@@ -122,15 +123,25 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 			// Try to fetch the existing staged model from the parent sites
 
-			Group group = GroupLocalServiceUtil.getGroup(groupId);
+			Group originalGroup = GroupLocalServiceUtil.getGroup(groupId);
+			Group group = originalGroup.getParentGroup();
 
-			while ((group = group.getParentGroup()) != null) {
-				existingStagedModel = doFetchExistingStagedModel(
-					uuid, group.getGroupId());
+			while (group != null) {
+				existingStagedModel =
+					doFetchExistingStagedModelByUuidAndGroupId(
+						uuid, group.getGroupId());
 
 				if (existingStagedModel != null) {
 					break;
 				}
+
+				group = group.getParentGroup();
+			}
+
+			if (existingStagedModel == null) {
+				existingStagedModel =
+					doFetchExistingStagedModelByUuidAndCompanyId(
+						uuid, originalGroup.getCompanyId());
 			}
 
 			return existingStagedModel;
@@ -336,7 +347,12 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			PortletDataContext portletDataContext, T stagedModel)
 		throws Exception;
 
-	protected T doFetchExistingStagedModel(String uuid, long groupId) {
+	protected abstract T doFetchExistingStagedModelByUuidAndCompanyId(
+		String uuid, long companyId);
+
+	protected T doFetchExistingStagedModelByUuidAndGroupId(
+		String uuid, long groupId) {
+
 		return null;
 	}
 
