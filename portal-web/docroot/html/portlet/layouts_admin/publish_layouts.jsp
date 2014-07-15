@@ -67,12 +67,7 @@ String layoutSetBranchName = MapUtil.getString(parameterMap, "layoutSetBranchNam
 
 boolean localPublishing = true;
 
-if (liveGroup.isStaged()) {
-	if (liveGroup.isStagedRemotely()) {
-		localPublishing = false;
-	}
-}
-else if (cmd.equals(Constants.PUBLISH_TO_REMOTE)) {
+if ((liveGroup.isStaged() && liveGroup.isStagedRemotely()) || cmd.equals(Constants.PUBLISH_TO_REMOTE)) {
 	localPublishing = false;
 }
 
@@ -91,10 +86,7 @@ treeId = treeId + liveGroupId;
 
 String publishActionKey = "copy";
 
-if (liveGroup.isStaged()) {
-	publishActionKey = "publish";
-}
-else if (cmd.equals(Constants.PUBLISH_TO_REMOTE)) {
+if (liveGroup.isStaged() || cmd.equals(Constants.PUBLISH_TO_REMOTE)) {
 	publishActionKey = "publish";
 }
 

@@ -31,18 +31,28 @@ page import="com.liferay.portal.lar.LayoutExporter" %>
 <%
 PortletRequest renderRequest = (PortletRequest)request.getAttribute("liferay-staging:content:renderRequest");
 Map<String, String[]> parameterMap = (Map<String, String[]>)GetterUtil.getObject(request.getAttribute("liferay-staging:content:parameterMap"), Collections.emptyMap());
-String type = GetterUtil.getString(request.getAttribute("liferay-staging:content:renderRequest"));
+String type = GetterUtil.getString(request.getAttribute("liferay-staging:content:type"));
 
-DateRange dateRange = ExportImportDateUtil.getDateRange(renderRequest, liveGroupId, privateLayout, 0, null, ExportImportDateUtil.RANGE_ALL);
+DateRange dateRange = null;
 
-if (!type.equals(Constants.EXPORT)) {
+if (type.equals(Constants.EXPORT)) {
+	dateRange = ExportImportDateUtil.getDateRange(renderRequest, liveGroupId, privateLayout, 0, null, ExportImportDateUtil.RANGE_ALL);
+}
+else {
 	dateRange = ExportImportDateUtil.getDateRange(renderRequest, stagingGroupId, privateLayout, 0, null, ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE);
 }
 
 Date startDate = dateRange.getStartDate();
 Date endDate = dateRange.getEndDate();
 
-PortletDataContext portletDataContext = PortletDataContextFactoryUtil.createPreparePortletDataContext(company.getCompanyId(), liveGroupId, startDate, endDate);
+PortletDataContext portletDataContext = null;
+
+if (type.equals(Constants.EXPORT)) {
+	portletDataContext = PortletDataContextFactoryUtil.createPreparePortletDataContext(company.getCompanyId(), liveGroupId, startDate, endDate);
+}
+else {
+	portletDataContext = PortletDataContextFactoryUtil.createPreparePortletDataContext(company.getCompanyId(), stagingGroupId, startDate, endDate);
+}
 
 List<Portlet> dataSiteLevelPortlets = LayoutExporter.getDataSiteLevelPortlets(company.getCompanyId(), false);
 
