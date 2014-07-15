@@ -21,9 +21,9 @@
 		<ul class="lfr-tree list-unstyled">
 			<li class="tree-item">
 				<aui:input name="<%= PortletDataHandlerKeys.PORTLET_DATA %>" type="hidden" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA, true) %>" />
-				<aui:input checked="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_ALL, true) %>" helpMessage='<%= isExport ? "all-content-export-help" : "all-content-publish-help" %>' id="allContent" label="all-content" name="<%= PortletDataHandlerKeys.PORTLET_DATA_ALL %>" type="radio" value="<%= true %>" />
+				<aui:input checked="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_ALL, true) %>" helpMessage='<%= type.equals(Constants.EXPORT) ? "all-content-export-help" : "all-content-publish-help" %>' id="allContent" label="all-content" name="<%= PortletDataHandlerKeys.PORTLET_DATA_ALL %>" type="radio" value="<%= true %>" />
 
-				<c:if test="<%= !isExport && group.isStagingGroup() && localPublishing %>">
+				<c:if test="<%= type.equals(Constants.PUBLISH_TO_LIVE) && group.isStagingGroup()%>">
 					<div class="hide" id="<portlet:namespace />globalContent">
 						<aui:fieldset cssClass="portlet-data-section" label="all-content">
 							<aui:input label="delete-portlet-data-before-importing" name="<%= PortletDataHandlerKeys.DELETE_PORTLET_DATA %>" type="checkbox" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.DELETE_PORTLET_DATA, true) %>" />
@@ -54,7 +54,7 @@
 				</c:if>
 
 				<aui:input name="<%= PortletDataHandlerKeys.PORTLET_DATA_CONTROL_DEFAULT %>" type="hidden" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_CONTROL_DEFAULT, true) %>" />
-				<aui:input checked="<%= !MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_ALL, true) %>" helpMessage='<%= isExport ? "choose-content-export-help" : "choose-content-publish-help" %>' id="chooseContent" label="choose-content" name="<%= PortletDataHandlerKeys.PORTLET_DATA_ALL %>" type="radio" value="<%= false %>" />
+				<aui:input checked="<%= !MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_ALL, true) %>" helpMessage='<%= type.equals(Constants.EXPORT) ? "choose-content-export-help" : "choose-content-publish-help" %>' id="chooseContent" label="choose-content" name="<%= PortletDataHandlerKeys.PORTLET_DATA_ALL %>" type="radio" value="<%= false %>" />
 
 				<ul class="hide select-options" id="<portlet:namespace />selectContents">
 					<li>
@@ -69,7 +69,7 @@
 
 										<aui:input checked="<%= selectedRange.equals(ExportImportDateUtil.RANGE_ALL) %>" id="rangeAll" label="all" name="range" type="radio" value="<%= ExportImportDateUtil.RANGE_ALL %>" />
 
-										<c:if test="<%= !isExport %>">
+										<c:if test="<%= !type.equals(Constants.EXPORT) %>">
 											<aui:input checked="<%= selectedRange.equals(ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE) %>"  id="rangeLastPublish" label="from-last-publish-date" name="range" type="radio" value="<%= ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE %>" />
 										</c:if>
 
@@ -222,8 +222,8 @@
 
 								boolean displayCounts = (exportModelCount != 0) || (modelDeletionCount != 0);
 
-								if (!isExport) {
-									displayCounts = GetterUtil.getBoolean(liveGroupTypeSettings.getProperty(StagingUtil.getStagedPortletId(portlet.getRootPortletId())), portletDataHandler.isPublishToLiveByDefault()) && ((exportModelCount != 0) || (modelDeletionCount !=0));
+								if (!type.equals(Constants.EXPORT)) {
+									displayCounts = displayCounts && GetterUtil.getBoolean(liveGroupTypeSettings.getProperty(StagingUtil.getStagedPortletId(portlet.getRootPortletId())), portletDataHandler.isPublishToLiveByDefault());
 								}
 							%>
 
@@ -250,7 +250,7 @@
 
 													<%
 													if (exportControls != null) {
-														if (isExport) {
+														if (type.equals(Constants.EXPORT)) {
 															request.setAttribute("render_controls.jsp-action", Constants.EXPORT);
 															request.setAttribute("render_controls.jsp-controls", exportControls);
 															request.setAttribute("render_controls.jsp-manifestSummary", manifestSummary);
@@ -323,7 +323,7 @@
 									<%
 									String portletId = portlet.getPortletId();
 
-									if (!isExport) {
+									if (!type.equals(Constants.EXPORT)) {
 										portletId = portlet.getRootPortletId();
 									}
 									%>
@@ -360,7 +360,7 @@
 
 						</ul>
 
-						<aui:fieldset cssClass="content-options" label='<%= isExport ? "for-each-of-the-selected-content-types,-export-their" : "for-each-of-the-selected-content-types,-publish-their" %>'>
+						<aui:fieldset cssClass="content-options" label='<%= type.equals(Constants.EXPORT) ? "for-each-of-the-selected-content-types,-export-their" : "for-each-of-the-selected-content-types,-publish-their" %>'>
 							<span class="selected-labels" id="<portlet:namespace />selectedContentOptions"></span>
 
 							<aui:a cssClass="modify-link" href="javascript:;" id="contentOptionsLink" label="change" method="get" />
@@ -382,7 +382,7 @@
 											String deletionsLabel = LanguageUtil.get(request, "deletions") + (modelDeletionCount > 0 ? " (" + modelDeletionCount + ")" : StringPool.BLANK);
 											%>
 
-											<aui:input checked="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.DELETIONS, !isExport) %>" data-name="<%= deletionsLabel %>" helpMessage="deletions-help" label="<%= deletionsLabel %>" name="<%= PortletDataHandlerKeys.DELETIONS %>" type="checkbox" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.DELETIONS, false) %>" />
+											<aui:input checked="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.DELETIONS, !type.equals(Constants.EXPORT)) %>" data-name="<%= deletionsLabel %>" helpMessage="deletions-help" label="<%= deletionsLabel %>" name="<%= PortletDataHandlerKeys.DELETIONS %>" type="checkbox" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.DELETIONS, false) %>" />
 										</c:if>
 									</li>
 								</ul>

@@ -335,7 +335,7 @@ else {
 								</aui:fieldset>
 							</c:if>
 
-							<liferay-staging:content localPublishing="<%= localPublishing %>" parameterMap="<%= parameterMap %>" type="<%= Constants.PUBLISH %>" />
+							<liferay-staging:content parameterMap="<%= parameterMap %>" type="<%= localPublishing ? Constants.PUBLISH_TO_LIVE : Constants.PUBLISH_TO_REMOTE %>" />
 
 							<aui:fieldset cssClass="options-group" label="permissions">
 								<%@ include file="/html/portlet/layouts_admin/export_configuration/permissions.jspf" %>

@@ -16,7 +16,6 @@ package com.liferay.taglib.staging;
 
 import com.liferay.taglib.util.IncludeTag;
 
-import java.util.Collections;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,10 +24,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author Levente Hudák
  */
 public class ContentTag extends IncludeTag {
-
-	public void setLocalPublishing(boolean localPublishing) {
-		_localPublishing = localPublishing;
-	}
 
 	public void setParameterMap(Map<String, String[]> parameterMap) {
 		_parameterMap = parameterMap;
@@ -52,19 +47,16 @@ public class ContentTag extends IncludeTag {
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
 		request.setAttribute(
-			"liferay-staging:content:localPublishing", _localPublishing);
+			"liferay-staging:content:parameterMap", _parameterMap);
 		request.setAttribute(
 			"liferay-staging:content:renderRequest",
 			pageContext.getAttribute("renderRequest"));
-		request.setAttribute(
-			"liferay-staging:content:parameterMap", _parameterMap);
 		request.setAttribute("liferay-staging:content:type", _type);
 	}
 
 	private static final String _PAGE = "/html/taglib/staging/content/page.jsp";
 
-	private boolean _localPublishing;
-	private Map<String, String[]> _parameterMap = Collections.emptyMap();
+	private Map<String, String[]> _parameterMap;
 	private String _type;
 
 }

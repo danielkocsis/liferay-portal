@@ -29,16 +29,13 @@ page import="com.liferay.portal.lar.LayoutExporter" %>
 <liferay-staging:defineObjects />
 
 <%
-boolean localPublishing = GetterUtil.getBoolean(request.getAttribute("liferay-staging:content:localPublishing"));
 PortletRequest renderRequest = (PortletRequest)request.getAttribute("liferay-staging:content:renderRequest");
 Map<String, String[]> parameterMap = (Map<String, String[]>)GetterUtil.getObject(request.getAttribute("liferay-staging:content:parameterMap"), Collections.emptyMap());
 String type = GetterUtil.getString(request.getAttribute("liferay-staging:content:renderRequest"));
 
-boolean isExport = type.equals(Constants.EXPORT);
-
 DateRange dateRange = ExportImportDateUtil.getDateRange(renderRequest, liveGroupId, privateLayout, 0, null, ExportImportDateUtil.RANGE_ALL);
 
-if (!isExport) {
+if (!type.equals(Constants.EXPORT)) {
 	dateRange = ExportImportDateUtil.getDateRange(renderRequest, stagingGroupId, privateLayout, 0, null, ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE);
 }
 
