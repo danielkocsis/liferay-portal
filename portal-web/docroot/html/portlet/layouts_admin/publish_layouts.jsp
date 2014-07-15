@@ -116,22 +116,6 @@ treeId = treeId + privateLayout + layoutSetBranchId;
 
 long[] selectedLayoutIds = GetterUtil.getLongValues(StringUtil.split(SessionTreeJSClicks.getOpenNodes(request, treeId + "SelectedNode"), ','));
 
-List<Layout> selectedLayouts = new ArrayList<Layout>();
-
-long selectedLayoutsGroupId = group.getGroupId();
-
-if (stagingGroupId > 0) {
-	selectedLayoutsGroupId = stagingGroupId;
-}
-
-for (int i = 0; i < selectedLayoutIds.length; i++) {
-	try {
-		selectedLayouts.add(LayoutLocalServiceUtil.getLayout(selectedLayoutsGroupId, privateLayout, selectedLayoutIds[i]));
-	}
-	catch (NoSuchLayoutException nsle) {
-	}
-}
-
 UnicodeProperties liveGroupTypeSettings = liveGroup.getTypeSettingsProperties();
 
 PortletURL portletURL = renderResponse.createActionURL();
@@ -351,15 +335,7 @@ else {
 								</aui:fieldset>
 							</c:if>
 
-							<%
-							List<Portlet> dataSiteLevelPortlets = LayoutExporter.getDataSiteLevelPortlets(company.getCompanyId(), false);
-							%>
-
-							<c:if test="<%= !dataSiteLevelPortlets.isEmpty() %>">
-								<aui:fieldset cssClass="options-group" label="content">
-									<%@ include file="/html/portlet/layouts_admin/publish_layouts_portlets_data.jspf" %>
-								</aui:fieldset>
-							</c:if>
+							<liferay-staging:content localPublishing="<%= localPublishing %>" parameterMap="<%= parameterMap %>" type="<%= Constants.PUBLISH %>" />
 
 							<aui:fieldset cssClass="options-group" label="permissions">
 								<%@ include file="/html/portlet/layouts_admin/export_configuration/permissions.jspf" %>
