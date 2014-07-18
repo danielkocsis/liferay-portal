@@ -159,7 +159,6 @@ public class LayoutSetPrototypeStagedModelDataHandler
 					serviceContext);
 		}
 
-		importLayoutPrototypes(portletDataContext, layoutSetPrototype);
 		importLayouts(
 			portletDataContext, layoutSetPrototype, importedLayoutSetPrototype,
 			serviceContext);
@@ -306,6 +305,15 @@ public class LayoutSetPrototypeStagedModelDataHandler
 		finally {
 			StreamUtil.cleanUp(inputStream);
 		}
+	}
+
+	@Override
+	protected void importReferenceStagedModels(
+			PortletDataContext portletDataContext,
+			LayoutSetPrototype layoutSetPrototype)
+		throws PortletDataException {
+
+		importLayoutPrototypes(portletDataContext, layoutSetPrototype);
 	}
 
 	@Override

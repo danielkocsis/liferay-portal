@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
+import com.liferay.portal.kernel.lar.PortletDataException;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -189,6 +190,17 @@ public class RepositoryStagedModelDataHandler
 		}
 
 		portletDataContext.importClassedModel(repository, importedRepository);
+
+		StagedModelDataHandlerUtil.importReferenceStagedModels(
+			portletDataContext, repository, RepositoryEntry.class);
+	}
+
+	@Override
+	protected void importReferenceStagedModels(
+			PortletDataContext portletDataContext, Repository repository)
+		throws PortletDataException {
+
+		return;
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(
