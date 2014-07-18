@@ -112,8 +112,7 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 		// Try to fetch the existing staged model from the actual group
 
-		T existingStagedModel = doFetchExistingStagedModelByUuidAndGroupId(
-			uuid, groupId);
+		T existingStagedModel = fetchStagedModelByUuidAndGroupId(uuid, groupId);
 
 		if (existingStagedModel != null) {
 			return existingStagedModel;
@@ -127,9 +126,8 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			Group group = originalGroup.getParentGroup();
 
 			while (group != null) {
-				existingStagedModel =
-					doFetchExistingStagedModelByUuidAndGroupId(
-						uuid, group.getGroupId());
+				existingStagedModel = fetchStagedModelByUuidAndGroupId(
+					uuid, group.getGroupId());
 
 				if (existingStagedModel != null) {
 					break;
@@ -156,6 +154,13 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 			return null;
 		}
+	}
+
+	public abstract T fetchStagedModelByUuidAndCompanyId(
+		String uuid, long companyId);
+
+	public T fetchStagedModelByUuidAndGroupId(String uuid, long groupId) {
+		return null;
 	}
 
 	@Override
@@ -346,15 +351,6 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 	protected abstract void doExportStagedModel(
 			PortletDataContext portletDataContext, T stagedModel)
 		throws Exception;
-
-	protected abstract T doFetchExistingStagedModelByUuidAndCompanyId(
-		String uuid, long companyId);
-
-	protected T doFetchExistingStagedModelByUuidAndGroupId(
-		String uuid, long groupId) {
-
-		return null;
-	}
 
 	protected void doImportMissingReference(
 			PortletDataContext portletDataContext, String uuid, long groupId,
@@ -625,7 +621,7 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 	protected boolean validateMissingReference(
 		String uuid, long companyId, long groupId) {
 
-		T existingStagedModel = fetchExistingStagedModel(uuid, groupId);
+		T existingStagedModel = fetchMissingReference(uuid, groupId);
 
 		if (existingStagedModel == null) {
 			return false;
