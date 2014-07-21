@@ -45,16 +45,5 @@ else {
 Date startDate = dateRange.getStartDate();
 Date endDate = dateRange.getEndDate();
 
-PortletDataContext portletDataContext = null;
-
-if (type.equals(Constants.EXPORT)) {
-	portletDataContext = PortletDataContextFactoryUtil.createPreparePortletDataContext(company.getCompanyId(), liveGroupId, startDate, endDate);
-}
-else {
-	portletDataContext = PortletDataContextFactoryUtil.createPreparePortletDataContext(company.getCompanyId(), stagingGroupId, startDate, endDate);
-}
-
 List<Portlet> dataSiteLevelPortlets = LayoutExporter.getDataSiteLevelPortlets(company.getCompanyId(), false);
-
-ManifestSummary manifestSummary = portletDataContext.getManifestSummary();
 %>
