@@ -20,13 +20,13 @@
 	<aui:fieldset cssClass="options-group" label="content">
 		<ul class="lfr-tree list-unstyled">
 			<li class="tree-item">
-				<aui:input name="<%= PortletDataHandlerKeys.PORTLET_DATA %>" type="hidden" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA, true) %>" />
-				<aui:input checked="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_ALL, true) %>" helpMessage='<%= type.equals(Constants.EXPORT) ? "all-content-export-help" : "all-content-publish-help" %>' id="allContent" label="all-content" name="<%= PortletDataHandlerKeys.PORTLET_DATA_ALL %>" type="radio" value="<%= true %>" />
+				<aui:input disabled="<%= disableInputs %>" name="<%= PortletDataHandlerKeys.PORTLET_DATA %>" type="hidden" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA, true) %>" />
+				<aui:input checked="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_ALL, true) %>" disabled="<%= disableInputs %>" helpMessage='<%= type.equals(Constants.EXPORT) ? "all-content-export-help" : "all-content-publish-help" %>' id="allContent" label="all-content" name="<%= PortletDataHandlerKeys.PORTLET_DATA_ALL %>" type='<%= disableInputs ? "hidden" : "radio" %>' value="<%= true %>" />
 
 				<c:if test="<%= type.equals(Constants.PUBLISH_TO_LIVE) && group.isStagingGroup() %>">
 					<div class="hide" id="<portlet:namespace />globalContent">
 						<aui:fieldset cssClass="portlet-data-section" label="all-content">
-							<aui:input label="delete-portlet-data-before-importing" name="<%= PortletDataHandlerKeys.DELETE_PORTLET_DATA %>" type="checkbox" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.DELETE_PORTLET_DATA, true) %>" />
+							<aui:input disabled="<%= disableInputs %>" label="delete-portlet-data-before-importing" name="<%= PortletDataHandlerKeys.DELETE_PORTLET_DATA %>" type="checkbox" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.DELETE_PORTLET_DATA, true) %>" />
 
 							<ul class="list-unstyled" id="<portlet:namespace />showDeleteContentWarning">
 								<li>
@@ -48,15 +48,17 @@
 						<li>
 							<span class="selected-labels" id="<portlet:namespace />selectedGlobalContent"></span>
 
-							<aui:a cssClass="modify-link" href="javascript:;" id="globalContentLink" label="change" method="get" />
+							<span <%= !disableInputs ? StringPool.BLANK : "class=\"hide\"" %>>
+								<aui:a cssClass="modify-link" href="javascript:;" id="globalContentLink" label="change" method="get" />
+							</span>
 						</li>
 					</ul>
 				</c:if>
 
-				<aui:input name="<%= PortletDataHandlerKeys.PORTLET_DATA_CONTROL_DEFAULT %>" type="hidden" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_CONTROL_DEFAULT, true) %>" />
-				<aui:input checked="<%= !MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_ALL, true) %>" helpMessage='<%= type.equals(Constants.EXPORT) ? "choose-content-export-help" : "choose-content-publish-help" %>' id="chooseContent" label="choose-content" name="<%= PortletDataHandlerKeys.PORTLET_DATA_ALL %>" type="radio" value="<%= false %>" />
+				<aui:input disabled="<%= disableInputs %>" name="<%= PortletDataHandlerKeys.PORTLET_DATA_CONTROL_DEFAULT %>" type="hidden" value="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_CONTROL_DEFAULT, true) %>" />
+				<aui:input checked="<%= !MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.PORTLET_DATA_ALL, true) %>" disabled="<%= disableInputs %>" helpMessage='<%= type.equals(Constants.EXPORT) ? "choose-content-export-help" : "choose-content-publish-help" %>' id="chooseContent" label="choose-content" name="<%= PortletDataHandlerKeys.PORTLET_DATA_ALL %>" type='<%= disableInputs ? "hidden" : "radio" %>' value="<%= false %>" />
 
-				<ul class="hide select-options" id="<portlet:namespace />selectContents">
+				<ul class='<%= disableInputs ? "select-options" : "hide select-options" %>' id="<portlet:namespace />selectContents">
 					<li>
 						<div class="hide" id="<portlet:namespace />range">
 							<ul class="lfr-tree list-unstyled">
@@ -64,16 +66,16 @@
 									<aui:fieldset cssClass="portlet-data-section" label="date-range">
 
 										<%
-										String selectedRange = MapUtil.getString(parameterMap, "range");
+										String selectedRange = MapUtil.getString(parameterMap, "range", ExportImportDateUtil.RANGE_ALL);
 										%>
 
-										<aui:input checked="<%= selectedRange.equals(ExportImportDateUtil.RANGE_ALL) %>" id="rangeAll" label="all" name="range" type="radio" value="<%= ExportImportDateUtil.RANGE_ALL %>" />
+										<aui:input checked="<%= selectedRange.equals(ExportImportDateUtil.RANGE_ALL) %>" disabled="<%= disableInputs %>" id="rangeAll" label="all" name="range" type="radio" value="<%= ExportImportDateUtil.RANGE_ALL %>" />
 
 										<c:if test="<%= !type.equals(Constants.EXPORT) %>">
-											<aui:input checked="<%= selectedRange.equals(ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE) %>"  id="rangeLastPublish" label="from-last-publish-date" name="range" type="radio" value="<%= ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE %>" />
+											<aui:input checked="<%= selectedRange.equals(ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE) %>" disabled="<%= disableInputs %>"  id="rangeLastPublish" label="from-last-publish-date" name="range" type="radio" value="<%= ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE %>" />
 										</c:if>
 
-										<aui:input checked="<%= selectedRange.equals(ExportImportDateUtil.RANGE_DATE_RANGE) %>" helpMessage="export-date-range-help" id="rangeDateRange" label="date-range" name="range" type="radio" value="<%= ExportImportDateUtil.RANGE_DATE_RANGE %>" />
+										<aui:input checked="<%= selectedRange.equals(ExportImportDateUtil.RANGE_DATE_RANGE) %>" disabled="<%= disableInputs %>" helpMessage="export-date-range-help" id="rangeDateRange" label="date-range" name="range" type="radio" value="<%= ExportImportDateUtil.RANGE_DATE_RANGE %>" />
 
 										<%
 										Calendar endCalendar = CalendarFactoryUtil.getCalendar(timeZone, locale);
@@ -181,7 +183,9 @@
 						<liferay-util:buffer var="selectedLabelsHTML">
 							<span class="selected-labels" id="<portlet:namespace />selectedRange"></span>
 
-							<aui:a cssClass="modify-link" href="javascript:;" id="rangeLink" label="change" method="get" />
+							<span <%= !disableInputs ? StringPool.BLANK : "class=\"hide\"" %>>
+								<aui:a cssClass="modify-link" href="javascript:;" id="rangeLink" label="change" method="get" />
+							</span>
 						</liferay-util:buffer>
 
 						<liferay-ui:icon
@@ -198,4 +202,11 @@
 			</li>
 		</ul>
 	</aui:fieldset>
+</c:if>
+
+<c:if test="<%= !disableInputs %>">
+	<aui:script>
+		Liferay.Util.toggleRadio('<portlet:namespace />chooseContent', '<portlet:namespace />selectContents', ['<portlet:namespace />showChangeGlobalContent']);
+		Liferay.Util.toggleRadio('<portlet:namespace />allContent', '<portlet:namespace />showChangeGlobalContent', ['<portlet:namespace />selectContents']);
+	</aui:script>
 </c:if>

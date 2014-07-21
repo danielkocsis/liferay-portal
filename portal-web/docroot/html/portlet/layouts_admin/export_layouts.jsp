@@ -191,7 +191,7 @@ if (!cmd.equals(Constants.ADD)) {
 						</aui:fieldset>
 					</c:if>
 
-					<liferay-staging:content parameterMap="<%= parameterMap %>" type="<%= Constants.EXPORT %>" />
+					<liferay-staging:content disableInputs="<%= false %>" parameterMap="<%= parameterMap %>" type="<%= Constants.EXPORT %>" />
 
 					<aui:fieldset cssClass="options-group" label="permissions">
 						<%@ include file="/html/portlet/layouts_admin/export_configuration/permissions.jspf" %>
@@ -323,7 +323,4 @@ if (!cmd.equals(Constants.ADD)) {
 	Liferay.Util.toggleRadio('<portlet:namespace />rangeAll', '', ['<portlet:namespace />startEndDate', '<portlet:namespace />rangeLastInputs']);
 	Liferay.Util.toggleRadio('<portlet:namespace />rangeDateRange', '<portlet:namespace />startEndDate', '<portlet:namespace />rangeLastInputs');
 	Liferay.Util.toggleRadio('<portlet:namespace />rangeLast', '<portlet:namespace />rangeLastInputs', ['<portlet:namespace />startEndDate']);
-
-	Liferay.Util.toggleRadio('<portlet:namespace />chooseContent', '<portlet:namespace />selectContents', ['<portlet:namespace />showChangeGlobalContent']);
-	Liferay.Util.toggleRadio('<portlet:namespace />allContent', '<portlet:namespace />showChangeGlobalContent', ['<portlet:namespace />selectContents']);
 </aui:script>
