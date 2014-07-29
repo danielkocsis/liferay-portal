@@ -31,17 +31,17 @@ else if (exportImportConfiguration.getType() == ExportImportConfigurationConstan
 }
 
 Map<String, Serializable> settingsMap = exportImportConfiguration.getSettingsMap();
-long [] selectedLayoutIds = GetterUtil.getLongValues(settingsMap.get("layoutIds"));
-Map<String, String[]> parameterMap = (Map<String, String[]>)settingsMap.get("parameterMap");
-
-String backUrl = ParamUtil.getString(request, "backUrl");
-String redirectUrl = ParamUtil.getString(request, "redirect");
 
 String hoursAgo = Time.getRelativeTimeDescription(exportImportConfiguration.getCreateDate(), locale, timeZone);
+Map<String, String[]> parameterMap = (Map<String, String[]>)settingsMap.get("parameterMap");
+long [] selectedLayoutIds = GetterUtil.getLongValues(settingsMap.get("layoutIds"));
+
+String backURL = ParamUtil.getString(request, "backURL");
+String redirectURL = ParamUtil.getString(request, "redirect");
 %>
 
 <liferay-ui:header
-	backURL="<%= backUrl %>"
+	backURL="<%= backURL %>"
 	title="<%= exportImportConfiguration.getName() %>"
 />
 
@@ -63,24 +63,17 @@ String hoursAgo = Time.getRelativeTimeDescription(exportImportConfiguration.getC
 				<liferay-ui:message key="<%= hoursAgo %>" />
 			</aui:fieldset>
 
-			<portlet:actionURL var="exportByExportImportConfigurationURL">
-				<portlet:param name="struts_action" value="/layouts_admin/edit_export_configuration" />
-				<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.EXPORT %>" />
-				<portlet:param name="redirect" value="<%= redirectUrl %>" />
-				<portlet:param name="exportImportConfigurationId" value="<%= String.valueOf(exportImportConfiguration.getExportImportConfigurationId()) %>" />
-			</portlet:actionURL>
-
-			<portlet:actionURL var="publishByExportImportConfigurationURL">
-				<portlet:param name="struts_action" value="/layouts_admin/edit_publish_configuration" />
+			<portlet:actionURL var="actionURL">
+				<portlet:param name="struts_action" value='<%= (cmd.equals(Constants.EXPORT) ? "/layouts_admin/edit_export_configuration" : "/layouts_admin/edit_publish_configuration") %>' />
 				<portlet:param name="<%= Constants.CMD %>" value="<%= cmd %>" />
-				<portlet:param name="redirect" value="<%= redirectUrl %>" />
+				<portlet:param name="redirect" value="<%= redirectURL %>" />
 				<portlet:param name="exportImportConfigurationId" value="<%= String.valueOf(exportImportConfiguration.getExportImportConfigurationId()) %>" />
 			</portlet:actionURL>
 
-			<aui:form action='<%= (cmd.equals(Constants.EXPORT) ? exportByExportImportConfigurationURL : publishByExportImportConfigurationURL) + "&etag=0&strip=0" %>' cssClass="lfr-export-dialog" method="post" name="fm2">
+			<aui:form action='<%= actionURL.toString() + "&etag=0&strip=0" %>' cssClass="lfr-export-dialog" method="post" name="fm2">
 				<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= cmd %>" />
-				<aui:input name="redirect" type="hidden" value="<%= redirectUrl %>" />
 				<aui:input name="exportImportConfigurationId" type="hidden" value="<%= exportImportConfigurationId %>" />
+				<aui:input name="redirect" type="hidden" value="<%= redirectURL %>" />
 
 				<aui:fieldset cssClass="options-group" label="pages">
 					<span class="selected-labels" id="<portlet:namespace />pagesSection">
@@ -120,7 +113,7 @@ String hoursAgo = Time.getRelativeTimeDescription(exportImportConfiguration.getC
 				<aui:button-row>
 					<aui:button type="submit" value="<%= LanguageUtil.get(request, cmd) %>" />
 
-					<aui:button href="<%= backUrl %>" type="cancel" />
+					<aui:button href="<%= backURL %>" type="cancel" />
 				</aui:button-row>
 			</aui:form>
 		</li>

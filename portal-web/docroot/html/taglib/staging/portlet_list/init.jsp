@@ -23,10 +23,10 @@ page import="com.liferay.portal.kernel.util.DateRange" %>
 <liferay-staging:defineObjects />
 
 <%
-List<Portlet> dataSiteLevelPortlets = (List<Portlet>)GetterUtil.getObject(request.getAttribute("liferay-staging:portlet-list:portlets"), Collections.emptyList());
-DateRange dateRange = (DateRange)GetterUtil.getObject(request.getAttribute("liferay-staging:portlet-list:dateRange"), null);
+DateRange dateRange = (DateRange)GetterUtil.getObject(request.getAttribute("liferay-staging:portlet-list:dateRange"));
 boolean disableInputs = GetterUtil.getBoolean(request.getAttribute("liferay-staging:portlet-list:disableInputs"));
 Map<String, String[]> parameterMap = (Map<String, String[]>)GetterUtil.getObject(request.getAttribute("liferay-staging:content:parameterMap"), Collections.emptyMap());
+List<Portlet> portlets = (List<Portlet>)GetterUtil.getObject(request.getAttribute("liferay-staging:portlet-list:portlets"), Collections.emptyList());
 String type = GetterUtil.getString(request.getAttribute("liferay-staging:portlet-list:type"));
 
 Set<String> displayedControls = new HashSet<String>();

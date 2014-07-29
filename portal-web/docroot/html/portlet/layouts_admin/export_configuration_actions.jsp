@@ -59,7 +59,7 @@ ExportImportConfiguration exportImportConfiguration = (ExportImportConfiguration
 	<portlet:param name="struts_action" value="/layouts_admin/confirmation" />
 	<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.EXPORT %>" />
 	<portlet:param name="redirect" value="<%= exportRedirectURL %>" />
-	<portlet:param name="backUrl" value="<%= deleteRedirectURL %>" />
+	<portlet:param name="backURL" value="<%= deleteRedirectURL %>" />
 	<portlet:param name="exportImportConfigurationId" value="<%= String.valueOf(exportImportConfiguration.getExportImportConfigurationId()) %>" />
 </portlet:renderURL>
 
