@@ -19,7 +19,7 @@
 <ul class="portlet-list">
 
 	<%
-	for (Portlet portlet : dataSiteLevelPortlets) {
+	for (Portlet portlet : portlets) {
 		String portletDataHandlerClass = portlet.getPortletDataHandlerClass();
 
 		if (portletDataHandlerClasses.contains(portletDataHandlerClass)) {
@@ -62,7 +62,9 @@
 			PortletDataHandlerControl[] exportControls = portletDataHandler.getExportControls();
 			PortletDataHandlerControl[] metadataControls = portletDataHandler.getExportMetadataControls();
 
-			if (ArrayUtil.isNotEmpty(exportControls) || ArrayUtil.isNotEmpty(metadataControls)) {
+			if (ArrayUtil.isEmpty(exportControls) && ArrayUtil.isEmpty(metadataControls)) {
+				continue;
+			}
 			%>
 
 			<div class='<%= disableInputs && showPortletDataInput ? StringPool.BLANK : "hide " %>' id="<portlet:namespace />content_<%= portlet.getPortletId() %>">
@@ -169,11 +171,6 @@
 			<aui:script>
 				Liferay.Util.toggleBoxes('<portlet:namespace /><%= PortletDataHandlerKeys.PORTLET_DATA + StringPool.UNDERLINE + portlet.getPortletId() %>', '<portlet:namespace />showChangeContent<%= StringPool.UNDERLINE + portlet.getPortletId() %>');
 			</aui:script>
-
-			<%
-			}
-			%>
-
 		</li>
 	</c:if>
 
