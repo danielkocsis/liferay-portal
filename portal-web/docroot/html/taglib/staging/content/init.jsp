@@ -23,7 +23,7 @@ page import="com.liferay.portal.lar.LayoutExporter" %>
 <liferay-staging:defineObjects />
 
 <%
-boolean disableInputs = GetterUtil.getBoolean(request.getAttribute("liferay-staging:content:disableInputs"), false);
+boolean disableInputs = GetterUtil.getBoolean(request.getAttribute("liferay-staging:content:disableInputs"));
 PortletRequest renderRequest = (PortletRequest)request.getAttribute("liferay-staging:content:renderRequest");
 Map<String, String[]> parameterMap = (Map<String, String[]>)GetterUtil.getObject(request.getAttribute("liferay-staging:content:parameterMap"), Collections.emptyMap());
 String type = GetterUtil.getString(request.getAttribute("liferay-staging:content:type"));
