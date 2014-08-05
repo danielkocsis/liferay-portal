@@ -264,11 +264,11 @@ public class StagingUtil {
 			locale, e, contextMap);
 	}
 
-	public static Group getLiveGroup(long groupId) throws PortalException {
+	public static Group getLiveGroup(long groupId) {
 		return getStaging().getLiveGroup(groupId);
 	}
 
-	public static long getLiveGroupId(long groupId) throws PortalException {
+	public static long getLiveGroupId(long groupId) {
 		return getStaging().getLiveGroupId(groupId);
 	}
 

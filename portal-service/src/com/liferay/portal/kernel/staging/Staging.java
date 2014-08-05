@@ -180,9 +180,9 @@ public interface Staging {
 	public JSONObject getExceptionMessagesJSONObject(
 		Locale locale, Exception e, Map<String, Serializable> contextMap);
 
-	public Group getLiveGroup(long groupId) throws PortalException;
+	public Group getLiveGroup(long groupId);
 
-	public long getLiveGroupId(long groupId) throws PortalException;
+	public long getLiveGroupId(long groupId);
 
 	/**
 	 * @deprecated As of 7.0.0, moved to {@link
