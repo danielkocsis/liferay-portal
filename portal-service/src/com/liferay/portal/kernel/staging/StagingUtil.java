@@ -327,6 +327,10 @@ public class StagingUtil {
 		return _staging;
 	}
 
+	public static Group getStagingGroup(long groupId) {
+		return getStaging().getStagingGroup(groupId);
+	}
+
 	public static Map<String, String[]> getStagingParameters() {
 		return getStaging().getStagingParameters();
 	}

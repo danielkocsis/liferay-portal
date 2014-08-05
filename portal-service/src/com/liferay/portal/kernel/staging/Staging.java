@@ -210,6 +210,8 @@ public interface Staging {
 
 	public String getStagedPortletId(String portletId);
 
+	public Group getStagingGroup(long groupId);
+
 	public Map<String, String[]> getStagingParameters();
 
 	public Map<String, String[]> getStagingParameters(
