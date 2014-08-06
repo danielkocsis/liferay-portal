@@ -53,10 +53,6 @@ public class GroupDisplayContextHelper {
 			return _groupId;
 		}
 
-		Group liveGroup = getLiveGroup();
-
-		_groupId = liveGroup.getGroupId();
-
 		Group group = getGroup();
 
 		if (group != null) {
