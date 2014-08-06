@@ -36,7 +36,11 @@ public class FileVersionConverter implements XStreamConverter {
 
 	@Override
 	public boolean canConvert(Class clazz) {
-		return clazz.equals(FileVersionProxyBean.class);
+		if (clazz.equals(FileVersionProxyBean.class)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override

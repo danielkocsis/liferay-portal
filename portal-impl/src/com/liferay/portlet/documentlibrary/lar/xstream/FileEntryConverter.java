@@ -38,7 +38,11 @@ public class FileEntryConverter implements XStreamConverter {
 
 	@Override
 	public boolean canConvert(Class clazz) {
-		return clazz.equals(FileEntryProxyBean.class);
+		if (clazz.equals(FileEntryProxyBean.class)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override

@@ -36,7 +36,11 @@ public class FolderConverter implements XStreamConverter {
 
 	@Override
 	public boolean canConvert(Class clazz) {
-		return clazz.equals(FolderProxyBean.class);
+		if (clazz.equals(FolderProxyBean.class)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
