@@ -23,7 +23,7 @@ public interface XStreamConverter {
 
 	public void marshal(
 			Object object, XStreamHierarchicalStreamWriter writer,
-			XStreamMarshallingContext mashallingContext)
+			XStreamMarshallingContext marshallingContext)
 		throws Exception;
 
 	public Object unmarshal(
