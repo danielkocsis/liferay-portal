@@ -106,7 +106,9 @@ public class GroupDisplayContextHelper {
 
 		Group liveGroup = getLiveGroup();
 
-		_liveGroupId = liveGroup.getGroupId();
+		if (liveGroup != null) {
+			_liveGroupId = liveGroup.getGroupId();
+		}
 
 		return _liveGroupId;
 	}
