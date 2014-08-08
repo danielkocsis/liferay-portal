@@ -66,14 +66,14 @@ String redirectURL = ParamUtil.getString(request, "redirect");
 				<liferay-ui:message key="<%= hoursAgo %>" />
 			</aui:fieldset>
 
-			<portlet:actionURL var="actionURL">
+			<portlet:actionURL var="confirmedActionURL">
 				<portlet:param name="struts_action" value='<%= (cmd.equals(Constants.EXPORT) ? "/layouts_admin/edit_export_configuration" : "/layouts_admin/edit_publish_configuration") %>' />
 				<portlet:param name="<%= Constants.CMD %>" value="<%= cmd %>" />
 				<portlet:param name="redirect" value="<%= redirectURL %>" />
 				<portlet:param name="exportImportConfigurationId" value="<%= String.valueOf(exportImportConfiguration.getExportImportConfigurationId()) %>" />
 			</portlet:actionURL>
 
-			<aui:form action='<%= actionURL.toString() + "&etag=0&strip=0" %>' cssClass="lfr-export-dialog" method="post" name="fm2">
+			<aui:form action='<%= confirmedActionURL.toString() + "&etag=0&strip=0" %>' cssClass="lfr-export-dialog" method="post" name="fm2">
 				<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= cmd %>" />
 				<aui:input name="exportImportConfigurationId" type="hidden" value="<%= exportImportConfigurationId %>" />
 				<aui:input name="redirect" type="hidden" value="<%= redirectURL %>" />
