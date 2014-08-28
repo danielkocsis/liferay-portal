@@ -15,11 +15,14 @@
 package com.liferay.portal.lar.backgroundtask;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskResult;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.lar.MissingReferences;
+import com.liferay.portal.kernel.staging.Staging;
 import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.model.BackgroundTask;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
+import com.liferay.portal.service.LockLocalServiceUtil;
 
 import java.io.File;
 import java.io.Serializable;
@@ -89,6 +92,18 @@ public class PortletStagingBackgroundTaskExecutor
 
 		return processMissingReferences(
 			backgroundTask.getBackgroundTaskId(), missingReferences);
+	}
+
+	@Override
+	public boolean isLocked(BackgroundTask backgroundTask)
+		throws PortalException {
+
+		Map<String, Serializable> taskContextMap =
+			backgroundTask.getTaskContextMap();
+
+		long groupId = MapUtil.getLong(taskContextMap, "targetGroupId");
+
+		return LockLocalServiceUtil.isLocked(Staging.class.getName(), groupId);
 	}
 
 }
