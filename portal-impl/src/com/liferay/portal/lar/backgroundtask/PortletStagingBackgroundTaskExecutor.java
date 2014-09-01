@@ -15,10 +15,14 @@
 package com.liferay.portal.lar.backgroundtask;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskResult;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.lar.MissingReferences;
+import com.liferay.portal.kernel.staging.Staging;
+import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.model.BackgroundTask;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
+import com.liferay.portal.service.LockLocalServiceUtil;
 
 import java.io.File;
 import java.io.Serializable;
@@ -45,8 +49,11 @@ public class PortletStagingBackgroundTaskExecutor
 			backgroundTask.getTaskContextMap();
 
 		long userId = MapUtil.getLong(taskContextMap, "userId");
-		long targetPlid = MapUtil.getLong(taskContextMap, "targetPlid");
 		long targetGroupId = MapUtil.getLong(taskContextMap, "targetGroupId");
+
+		StagingUtil.lockGroup(userId, targetGroupId);
+
+		long targetPlid = MapUtil.getLong(taskContextMap, "targetPlid");
 		String portletId = MapUtil.getString(taskContextMap, "portletId");
 		Map<String, String[]> parameterMap =
 			(Map<String, String[]>)taskContextMap.get("parameterMap");
@@ -79,10 +86,24 @@ public class PortletStagingBackgroundTaskExecutor
 		}
 		finally {
 			larFile.delete();
+
+			StagingUtil.unlockGroup(targetGroupId);
 		}
 
 		return processMissingReferences(
 			backgroundTask.getBackgroundTaskId(), missingReferences);
+	}
+
+	@Override
+	public boolean isLocked(BackgroundTask backgroundTask)
+		throws PortalException {
+
+		Map<String, Serializable> taskContextMap =
+			backgroundTask.getTaskContextMap();
+
+		long groupId = MapUtil.getLong(taskContextMap, "targetGroupId");
+
+		return LockLocalServiceUtil.isLocked(Staging.class.getName(), groupId);
 	}
 
 }

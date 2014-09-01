@@ -12,27 +12,21 @@
  * details.
  */
 
-package com.liferay.portal.kernel.backgroundtask;
+package com.liferay.portal.lar.backgroundtask;
 
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.model.BackgroundTask;
+import com.liferay.portal.kernel.backgroundtask.BaseBackgroundTaskExecutor;
 
 /**
- * @author Michael C. Han
+ * @author Gergely Mathe
  */
-public interface BackgroundTaskExecutor {
+public abstract class BaseExportImportBackgroundTaskExecutor
+	extends BaseBackgroundTaskExecutor {
 
-	public BackgroundTaskResult execute(BackgroundTask backgroundTask)
-		throws Exception;
+	public BaseExportImportBackgroundTaskExecutor() {
+		setBackgroundTaskStatusMessageTranslator(
+			new DefaultExportImportBackgroundTaskStatusMessageTranslator());
 
-	public BackgroundTaskStatusMessageTranslator
-		getBackgroundTaskStatusMessageTranslator();
-
-	public String handleException(BackgroundTask backgroundTask, Exception e);
-
-	public boolean isLocked(BackgroundTask backgroundTask)
-		throws PortalException;
-
-	public boolean isSerial();
+		setSerial(false);
+	}
 
 }
