@@ -94,10 +94,11 @@ public class JournalArticleStagedModelDataHandler
 		if (Validator.isNotNull(extraData) &&
 			!extraDataJSONObject.getBoolean("inTrash")) {
 
-			double version = extraDataJSONObject.getDouble("version");
+			String articleUuid = extraDataJSONObject.getString("uuid");
 
-			article = JournalArticleLocalServiceUtil.getArticle(
-				groupId, article.getArticleId(), version);
+			article =
+				JournalArticleLocalServiceUtil.
+					fetchJournalArticleByUuidAndGroupId(articleUuid, groupId);
 		}
 
 		JournalArticleLocalServiceUtil.deleteArticle(article);
@@ -226,13 +227,14 @@ public class JournalArticleStagedModelDataHandler
 		liveGroupId = MapUtil.getLong(groupIds, liveGroupId);
 
 		String articleArticleId = referenceElement.attributeValue("article-id");
+		String uuid = referenceElement.attributeValue("uuid");
 		boolean preloaded = GetterUtil.getBoolean(
 			referenceElement.attributeValue("preloaded"));
 
 		JournalArticle existingArticle = null;
 
 		existingArticle = fetchExistingArticle(
-			articleResourceUuid, liveGroupId, articleArticleId, null, 0.0,
+			uuid, articleResourceUuid, liveGroupId, articleArticleId, null, 0.0,
 			preloaded);
 
 		Map<String, String> articleArticleIds =
@@ -270,11 +272,12 @@ public class JournalArticleStagedModelDataHandler
 		liveGroupId = MapUtil.getLong(groupIds, liveGroupId);
 
 		String articleArticleId = referenceElement.attributeValue("article-id");
+		String uuid = referenceElement.attributeValue("uuid");
 		boolean preloaded = GetterUtil.getBoolean(
 			referenceElement.attributeValue("preloaded"));
 
 		JournalArticle existingArticle = fetchExistingArticle(
-			articleResourceUuid, liveGroupId, articleArticleId, null, 0.0,
+			uuid, articleResourceUuid, liveGroupId, articleArticleId, null, 0.0,
 			preloaded);
 
 		if (existingArticle == null) {
@@ -663,8 +666,9 @@ public class JournalArticleStagedModelDataHandler
 					articleElement.attributeValue("preloaded"));
 
 				JournalArticle existingArticle = fetchExistingArticle(
-					articleResourceUuid, portletDataContext.getScopeGroupId(),
-					articleId, newArticleId, article.getVersion(), preloaded);
+					article.getUuid(), articleResourceUuid,
+					portletDataContext.getScopeGroupId(), articleId,
+					newArticleId, article.getVersion(), preloaded);
 
 				if (existingArticle == null) {
 					importedArticle =
@@ -705,6 +709,16 @@ public class JournalArticleStagedModelDataHandler
 							article.isIndexable(), article.isSmallImage(),
 							article.getSmallImageURL(), smallFile, images,
 							articleURL, serviceContext);
+				}
+
+				String originalUuid = article.getUuid();
+
+				if (!originalUuid.equals(importedArticle.getUuid())) {
+					importedArticle.setUuid(article.getUuid());
+
+					importedArticle =
+						JournalArticleLocalServiceUtil.updateJournalArticle(
+							importedArticle);
 				}
 			}
 			else {
@@ -756,9 +770,9 @@ public class JournalArticleStagedModelDataHandler
 			articleElement.attributeValue("preloaded"));
 
 		JournalArticle existingArticle = fetchExistingArticle(
-			articleResourceUuid, portletDataContext.getScopeGroupId(),
-			article.getArticleId(), article.getArticleId(),
-			article.getVersion(), preloaded);
+			article.getUuid(), articleResourceUuid,
+			portletDataContext.getScopeGroupId(), article.getArticleId(),
+			article.getArticleId(), article.getVersion(), preloaded);
 
 		if ((existingArticle == null) || !existingArticle.isInTrash()) {
 			return;
@@ -815,8 +829,9 @@ public class JournalArticleStagedModelDataHandler
 	}
 
 	protected JournalArticle fetchExistingArticle(
-		String articleResourceUuid, long groupId, String articleId,
-		String newArticleId, double version, boolean preloaded) {
+		String articleUuid, String articleResourceUuid, long groupId,
+		String articleId, String newArticleId, double version,
+		boolean preloaded) {
 
 		if (!preloaded) {
 			return fetchStagedModelByUuidAndGroupId(
@@ -829,10 +844,10 @@ public class JournalArticleStagedModelDataHandler
 
 		JournalArticle existingArticle = null;
 
-		if (existingArticleResource != null) {
-			existingArticle = JournalArticleLocalServiceUtil.fetchLatestArticle(
-				existingArticleResource.getResourcePrimKey(),
-				WorkflowConstants.STATUS_ANY, false);
+		if (Validator.isNotNull(articleUuid)) {
+			existingArticle =
+				JournalArticleLocalServiceUtil.
+					fetchJournalArticleByUuidAndGroupId(articleUuid, groupId);
 		}
 
 		if ((existingArticle == null) && Validator.isNotNull(newArticleId) &&
@@ -845,6 +860,12 @@ public class JournalArticleStagedModelDataHandler
 		if ((existingArticle == null) && Validator.isNull(newArticleId)) {
 			existingArticle = JournalArticleLocalServiceUtil.fetchArticle(
 				groupId, articleId, version);
+		}
+
+		if (existingArticleResource != null) {
+			existingArticle = JournalArticleLocalServiceUtil.fetchLatestArticle(
+				existingArticleResource.getResourcePrimKey(),
+				WorkflowConstants.STATUS_ANY, false);
 		}
 
 		return existingArticle;
