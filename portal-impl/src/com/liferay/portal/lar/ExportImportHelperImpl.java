@@ -1247,21 +1247,17 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 				portletDataContext, entityStagedModel, DLFileEntry.class,
 				classPK);
 
-			String uuid = referenceElement.attributeValue("uuid");
-
-			Map<Long, Long> groupIds =
+			Map<Long, Long> fileEntryIds =
 				(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
-					Group.class);
+					DLFileEntry.class);
 
-			long importGroupId = MapUtil.getLong(
-				groupIds, groupId, portletDataContext.getScopeGroupId());
+			long fileEntryId = MapUtil.getLong(fileEntryIds, classPK, classPK);
 
 			FileEntry importedFileEntry = null;
 
 			try {
-				importedFileEntry =
-					DLAppLocalServiceUtil.getFileEntryByUuidAndGroupId(
-						uuid, importGroupId);
+				importedFileEntry = DLAppLocalServiceUtil.getFileEntry(
+					fileEntryId);
 			}
 			catch (PortalException pe) {
 				if (_log.isDebugEnabled()) {
