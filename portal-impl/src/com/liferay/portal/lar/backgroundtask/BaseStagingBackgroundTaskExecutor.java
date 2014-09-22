@@ -43,7 +43,8 @@ public abstract class BaseStagingBackgroundTaskExecutor
 		setBackgroundTaskStatusMessageTranslator(
 			new DefaultExportImportBackgroundTaskStatusMessageTranslator());
 
-		setSerial(false);
+		setIsolationLevel(BackgroundTaskConstants.ISOLATION_LEVEL_GROUP);
+		setSerial(true);
 	}
 
 	@Override
