@@ -16,6 +16,7 @@ package com.liferay.portal.service.impl;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTaskHelperUtil;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatus;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatusRegistry;
 import com.liferay.portal.kernel.bean.BeanReference;
@@ -28,6 +29,7 @@ import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackRegistryUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.InstanceFactory;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -38,6 +40,7 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.base.BackgroundTaskLocalServiceBaseImpl;
+import com.liferay.portal.util.ClassLoaderUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 
@@ -198,9 +201,11 @@ public class BackgroundTaskLocalServiceImpl
 		final BackgroundTask backgroundTask, final int status) {
 
 		try {
+			String lockKey = BackgroundTaskHelperUtil.getLockKey(
+				getBackgroundTaskExecutor(backgroundTask), backgroundTask);
+
 			Lock lock = lockLocalService.getLock(
-				BackgroundTaskExecutor.class.getName(),
-				backgroundTask.getTaskExecutorClassName());
+				BackgroundTaskExecutor.class.getName(), lockKey);
 
 			String owner =
 				backgroundTask.getName() + StringPool.POUND +
@@ -208,8 +213,7 @@ public class BackgroundTaskLocalServiceImpl
 
 			if (owner.equals(lock.getOwner())) {
 				lockLocalService.unlock(
-					BackgroundTaskExecutor.class.getName(),
-					backgroundTask.getTaskExecutorClassName());
+					BackgroundTaskExecutor.class.getName(), lockKey);
 			}
 		}
 		catch (Exception e) {
@@ -537,6 +541,26 @@ public class BackgroundTaskLocalServiceImpl
 		message.put("backgroundTaskId", backgroundTaskId);
 
 		MessageBusUtil.sendMessage(DestinationNames.BACKGROUND_TASK, message);
+	}
+
+	private BackgroundTaskExecutor getBackgroundTaskExecutor(
+			BackgroundTask backgroundTask)
+		throws Exception {
+
+		ClassLoader classLoader = ClassLoaderUtil.getPortalClassLoader();
+
+		String servletContextNames = backgroundTask.getServletContextNames();
+
+		if (Validator.isNotNull(servletContextNames)) {
+			classLoader = ClassLoaderUtil.getAggregatePluginsClassLoader(
+				StringUtil.split(servletContextNames), false);
+		}
+
+		BackgroundTaskExecutor backgroundTaskExecutor =
+			(BackgroundTaskExecutor)InstanceFactory.newInstance(
+				classLoader, backgroundTask.getTaskExecutorClassName());
+
+		return backgroundTaskExecutor;
 	}
 
 	@BeanReference(type = BackgroundTaskStatusRegistry.class)

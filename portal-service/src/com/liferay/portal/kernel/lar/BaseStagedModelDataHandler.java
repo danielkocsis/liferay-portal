@@ -62,6 +62,12 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			PortletDataContext portletDataContext, T stagedModel)
 		throws PortletDataException {
 
+		try {
+			Thread.sleep(5000);
+		}
+		catch (Exception e) {
+		}
+
 		validateExport(portletDataContext, stagedModel);
 
 		String path = ExportImportPathUtil.getModelPath(stagedModel);
@@ -261,6 +267,12 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 	public void importStagedModel(
 			PortletDataContext portletDataContext, T stagedModel)
 		throws PortletDataException {
+
+		try {
+			Thread.sleep(5000);
+		}
+		catch (Exception e) {
+		}
 
 		String path = ExportImportPathUtil.getModelPath(stagedModel);
 

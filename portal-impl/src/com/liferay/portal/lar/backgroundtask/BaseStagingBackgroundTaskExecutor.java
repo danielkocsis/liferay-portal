@@ -43,6 +43,7 @@ public abstract class BaseStagingBackgroundTaskExecutor
 		setBackgroundTaskStatusMessageTranslator(
 			new DefaultExportImportBackgroundTaskStatusMessageTranslator());
 
+		setIsolationLevel(BackgroundTaskConstants.ISOLATION_LEVEL_GROUP);
 		setSerial(true);
 	}
 
@@ -65,6 +66,10 @@ public abstract class BaseStagingBackgroundTaskExecutor
 	protected void markBackgroundTask(
 		long backgroundTaskId, String backgroundTaskState) {
 
+		if (Validator.isNull(backgroundTaskState)) {
+			return;
+		}
+
 		BackgroundTask backgroundTask =
 			BackgroundTaskLocalServiceUtil.fetchBackgroundTask(
 				backgroundTaskId);
@@ -75,10 +80,6 @@ public abstract class BaseStagingBackgroundTaskExecutor
 
 		Map<String, Serializable> taskContextMap =
 			backgroundTask.getTaskContextMap();
-
-		if (Validator.isNull(backgroundTaskState)) {
-			return;
-		}
 
 		taskContextMap.put(backgroundTaskState, Boolean.TRUE);
 

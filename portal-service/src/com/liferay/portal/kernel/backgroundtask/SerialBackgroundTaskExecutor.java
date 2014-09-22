@@ -59,7 +59,8 @@ public class SerialBackgroundTaskExecutor
 			if (lock != null) {
 				LockLocalServiceUtil.unlock(
 					BackgroundTaskExecutor.class.getName(),
-					backgroundTask.getTaskExecutorClassName(), owner);
+					BackgroundTaskHelperUtil.getLockKey(
+						getBackgroundTaskExecutor(), backgroundTask), owner);
 			}
 		}
 	}
@@ -73,7 +74,8 @@ public class SerialBackgroundTaskExecutor
 			try {
 				lock = LockLocalServiceUtil.lock(
 					BackgroundTaskExecutor.class.getName(),
-					backgroundTask.getTaskExecutorClassName(), owner);
+					BackgroundTaskHelperUtil.getLockKey(
+						getBackgroundTaskExecutor(), backgroundTask), owner);
 
 				break;
 			}

@@ -14,6 +14,7 @@
 
 package com.liferay.portal.lar.backgroundtask;
 
+import com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskResult;
 import com.liferay.portal.kernel.backgroundtask.BaseBackgroundTaskExecutor;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -37,6 +38,7 @@ public class PortletImportBackgroundTaskExecutor
 	public PortletImportBackgroundTaskExecutor() {
 		setBackgroundTaskStatusMessageTranslator(
 			new PortletExportImportBackgroundTaskStatusMessageTranslator());
+		setIsolationLevel(BackgroundTaskConstants.ISOLATION_LEVEL_GROUP);
 		setSerial(true);
 	}
 

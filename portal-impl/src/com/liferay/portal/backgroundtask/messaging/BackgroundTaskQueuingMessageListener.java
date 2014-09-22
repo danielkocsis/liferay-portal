@@ -16,13 +16,17 @@ package com.liferay.portal.backgroundtask.messaging;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTaskHelperUtil;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
 import com.liferay.portal.kernel.messaging.Message;
+import com.liferay.portal.kernel.util.InstanceFactory;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.BackgroundTask;
 import com.liferay.portal.service.BackgroundTaskLocalService;
-import com.liferay.portal.service.LockLocalServiceUtil;
+import com.liferay.portal.service.LockLocalService;
+import com.liferay.portal.util.ClassLoaderUtil;
 
 /**
  * @author Michael C. Han
@@ -47,8 +51,16 @@ public class BackgroundTaskQueuingMessageListener extends BaseMessageListener {
 			executeQueuedBackgroundTasks(taskExecutorClassName);
 		}
 		else if (status == BackgroundTaskConstants.STATUS_QUEUED) {
-			boolean locked = LockLocalServiceUtil.isLocked(
-				BackgroundTaskExecutor.class.getName(), taskExecutorClassName);
+			long backgroundTaskId = (Long)message.get("backgroundTaskId");
+
+			BackgroundTask backgroundTask =
+				_backgroundTaskLocalService.fetchBackgroundTask(
+					backgroundTaskId);
+
+			boolean locked = _lockLocalService.isLocked(
+				BackgroundTaskExecutor.class.getName(),
+				BackgroundTaskHelperUtil.getLockKey(
+					getBackgroundTaskExecutor(backgroundTask), backgroundTask));
 
 			if (!locked) {
 				executeQueuedBackgroundTasks(taskExecutorClassName);
@@ -69,7 +81,30 @@ public class BackgroundTaskQueuingMessageListener extends BaseMessageListener {
 			backgroundTask.getBackgroundTaskId());
 	}
 
+	private BackgroundTaskExecutor getBackgroundTaskExecutor(
+			BackgroundTask backgroundTask)
+		throws Exception {
+
+		ClassLoader classLoader = ClassLoaderUtil.getPortalClassLoader();
+
+		String servletContextNames = backgroundTask.getServletContextNames();
+
+		if (Validator.isNotNull(servletContextNames)) {
+			classLoader = ClassLoaderUtil.getAggregatePluginsClassLoader(
+				StringUtil.split(servletContextNames), false);
+		}
+
+		BackgroundTaskExecutor backgroundTaskExecutor =
+			(BackgroundTaskExecutor)InstanceFactory.newInstance(
+				classLoader, backgroundTask.getTaskExecutorClassName());
+
+		return backgroundTaskExecutor;
+	}
+
 	@BeanReference(type = BackgroundTaskLocalService.class)
 	private BackgroundTaskLocalService _backgroundTaskLocalService;
+
+	@BeanReference(type = LockLocalService.class)
+	private LockLocalService _lockLocalService;
 
 }
