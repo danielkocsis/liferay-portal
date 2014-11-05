@@ -258,17 +258,17 @@ public class ExportImportDateUtil {
 		String portletId, PortletPreferences portletPreferences,
 		DateRange dateRange, Date lastPublishDate) {
 
+		Date originalLastPublishDate = getLastPublishDate(portletPreferences);
+
 		if (lastPublishDate == null) {
 			lastPublishDate = new Date();
 		}
 
-		Date originalLastPublishDate = getLastPublishDate(portletPreferences);
+		if (((originalLastPublishDate != null) &&
+			 !isValidDateRange(dateRange, originalLastPublishDate)) ||
+			((originalLastPublishDate == null) &&
+			 !isValidDateRange(dateRange, lastPublishDate))) {
 
-		if (originalLastPublishDate == null) {
-			originalLastPublishDate = lastPublishDate;
-		}
-
-		if (!isValidDateRange(dateRange, originalLastPublishDate)) {
 			return;
 		}
 
