@@ -14,6 +14,7 @@
 
 package com.liferay.portal.dao.orm.hibernate;
 
+import com.liferay.portal.kernel.dao.orm.CacheSizeAwareSession;
 import com.liferay.portal.kernel.dao.orm.ClassLoaderSession;
 import com.liferay.portal.kernel.dao.orm.Dialect;
 import com.liferay.portal.kernel.dao.orm.ORMException;
@@ -145,7 +146,9 @@ public class SessionFactoryImpl implements SessionFactory {
 				liferaySession, _sessionFactoryClassLoader);
 		}
 
-		return liferaySession;
+		return new CacheSizeAwareSession(liferaySession);
+
+		//return liferaySession;
 	}
 
 	private static final String[] _PRELOAD_CLASS_NAMES =
