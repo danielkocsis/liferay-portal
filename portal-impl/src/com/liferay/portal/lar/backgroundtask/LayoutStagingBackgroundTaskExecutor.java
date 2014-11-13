@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.backgroundtask.BackgroundTaskResult;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.ExportImportDateUtil;
+import com.liferay.portal.kernel.lar.ExportImportThreadLocal;
 import com.liferay.portal.kernel.lar.MissingReferences;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.log.Log;
@@ -89,6 +90,8 @@ public class LayoutStagingBackgroundTaskExecutor
 		MissingReferences missingReferences = null;
 
 		try {
+			ExportImportThreadLocal.setLayoutStagingInProcess(true);
+
 			Callable<MissingReferences> layoutStagingCallable =
 				new LayoutStagingCallable(
 					backgroundTask.getBackgroundTaskId(),
@@ -120,6 +123,8 @@ public class LayoutStagingBackgroundTaskExecutor
 			throw new SystemException(t);
 		}
 		finally {
+			ExportImportThreadLocal.setLayoutStagingInProcess(false);
+
 			StagingUtil.unlockGroup(targetGroupId);
 		}
 
