@@ -212,26 +212,6 @@ public class LayoutStagingBackgroundTaskExecutor
 					_userId, _targetGroupId, privateLayout, parameterMap, file);
 
 				initLayoutSetBranches(_userId, _sourceGroupId, _targetGroupId);
-
-				boolean updateLastPublishDate = MapUtil.getBoolean(
-					parameterMap,
-					PortletDataHandlerKeys.UPDATE_LAST_PUBLISH_DATE);
-
-				if (updateLastPublishDate) {
-					Group sourceGroup = GroupLocalServiceUtil.getGroup(
-						_sourceGroupId);
-
-					if (!sourceGroup.hasStagingGroup()) {
-						ExportImportDateUtil.updateLastPublishDate(
-							_sourceGroupId, privateLayout, dateRange,
-							dateRange.getEndDate());
-					}
-					else {
-						ExportImportDateUtil.updateLastPublishDate(
-							_targetGroupId, privateLayout, dateRange,
-							dateRange.getEndDate());
-					}
-				}
 			}
 			finally {
 				FileUtil.delete(file);
