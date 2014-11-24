@@ -1429,8 +1429,12 @@ public class StagingImpl implements Staging {
 			Date startDate, Date endDate)
 		throws PortalException {
 
+		List<Layout> sourceGroupLayouts = LayoutLocalServiceUtil.getLayouts(
+			sourceGroupId, privateLayout);
+
 		publishLayouts(
-			userId, sourceGroupId, targetGroupId, privateLayout, (long[])null,
+			userId, sourceGroupId, targetGroupId, privateLayout,
+			ExportImportHelperUtil.getLayoutIds(sourceGroupLayouts),
 			parameterMap, startDate, endDate);
 	}
 
