@@ -860,16 +860,6 @@ public class StagingImpl implements Staging {
 				locale, "please-import-a-lar-file-for-the-current-portlet");
 			errorType = ServletResponseConstants.SC_FILE_CUSTOM_EXCEPTION;
 		}
-		else if (e instanceof RemoteExportException) {
-			RemoteExportException ree = (RemoteExportException)e;
-
-			if (ree.getType() == RemoteExportException.NO_LAYOUTS) {
-				errorMessage = LanguageUtil.get(
-					locale, "no-pages-are-selected-for-export");
-			}
-
-			errorType = ServletResponseConstants.SC_FILE_CUSTOM_EXCEPTION;
-		}
 		else {
 			errorMessage = e.getLocalizedMessage();
 			errorType = ServletResponseConstants.SC_FILE_CUSTOM_EXCEPTION;
