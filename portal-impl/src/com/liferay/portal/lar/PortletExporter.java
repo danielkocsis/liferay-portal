@@ -31,6 +31,8 @@ import com.liferay.portal.kernel.lar.PortletDataException;
 import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.lar.PortletDataHandlerStatusMessageSenderUtil;
+import com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants;
+import com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleManager;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackRegistryUtil;
@@ -243,11 +245,33 @@ public class PortletExporter {
 			Map<String, String[]> parameterMap, Date startDate, Date endDate)
 		throws Exception {
 
+		PortletDataContext portletDataContext = null;
+
 		try {
 			ExportImportThreadLocal.setPortletExportInProcess(true);
 
-			return doExportPortletInfoAsFile(
-				plid, groupId, portletId, parameterMap, startDate, endDate);
+			portletDataContext = getPortletDataContext(
+				plid, groupId, parameterMap, startDate, endDate);
+
+			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
+				ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_STARTED,
+				portletDataContext);
+
+			File file = doExportPortletInfoAsFile(
+				portletDataContext, portletId);
+
+			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
+				ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_FINISHED,
+				portletDataContext);
+
+			return file;
+		}
+		catch (Throwable t) {
+			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
+				ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_FAILED,
+				portletDataContext, t);
+
+			throw t;
 		}
 		finally {
 			ExportImportThreadLocal.setPortletExportInProcess(false);
@@ -255,12 +279,12 @@ public class PortletExporter {
 	}
 
 	protected File doExportPortletInfoAsFile(
-			long plid, long groupId, String portletId,
-			Map<String, String[]> parameterMap, Date startDate, Date endDate)
+			PortletDataContext portletDataContext, String portletId)
 		throws Exception {
 
 		boolean exportPermissions = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.PERMISSIONS);
+			portletDataContext.getParameterMap(),
+			PortletDataHandlerKeys.PERMISSIONS);
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Export permissions " + exportPermissions);
@@ -270,7 +294,8 @@ public class PortletExporter {
 
 		stopWatch.start();
 
-		Layout layout = LayoutLocalServiceUtil.getLayout(plid);
+		Layout layout = LayoutLocalServiceUtil.getLayout(
+			portletDataContext.getPlid());
 
 		if (!layout.isTypeControlPanel() && !layout.isTypePanel() &&
 			!layout.isTypePortlet()) {
@@ -297,13 +322,11 @@ public class PortletExporter {
 		}
 
 		long layoutSetBranchId = MapUtil.getLong(
-			parameterMap, "layoutSetBranchId");
+			portletDataContext.getParameterMap(), "layoutSetBranchId");
 
 		serviceContext.setAttribute("layoutSetBranchId", layoutSetBranchId);
 
-		ZipWriter zipWriter = ZipWriterFactoryUtil.getZipWriter();
-
-		long scopeGroupId = groupId;
+		long scopeGroupId = portletDataContext.getGroupId();
 
 		javax.portlet.PortletPreferences jxPortletPreferences =
 			PortletPreferencesFactoryUtil.getLayoutPortletSetup(
@@ -330,16 +353,6 @@ public class PortletExporter {
 			}
 		}
 
-		PortletDataContext portletDataContext =
-			PortletDataContextFactoryUtil.createExportPortletDataContext(
-				layout.getCompanyId(), scopeGroupId, parameterMap, startDate,
-				endDate, zipWriter);
-
-		portletDataContext.setPortetDataContextListener(
-			new PortletDataContextListenerImpl(portletDataContext));
-
-		portletDataContext.setPlid(plid);
-		portletDataContext.setOldPlid(plid);
 		portletDataContext.setScopeType(scopeType);
 		portletDataContext.setScopeLayoutUuid(scopeLayoutUuid);
 
@@ -392,7 +405,8 @@ public class PortletExporter {
 
 		Map<String, Boolean> exportPortletControlsMap =
 			ExportImportHelperUtil.getExportPortletControlsMap(
-				layout.getCompanyId(), portletId, parameterMap);
+				layout.getCompanyId(), portletId,
+				portletDataContext.getParameterMap());
 
 		exportPortlet(
 			portletDataContext, portletId, layout, rootElement,
@@ -434,6 +448,8 @@ public class PortletExporter {
 		catch (IOException ioe) {
 			throw new SystemException(ioe);
 		}
+
+		ZipWriter zipWriter = portletDataContext.getZipWriter();
 
 		return zipWriter.getFile();
 	}
@@ -1190,6 +1206,26 @@ public class PortletExporter {
 		sb.append(".xml");
 
 		return sb.toString();
+	}
+
+	protected PortletDataContext getPortletDataContext(
+			long plid, long groupId, Map<String, String[]> parameterMap,
+			Date startDate, Date endDate)
+		throws PortalException {
+
+		Layout layout = LayoutLocalServiceUtil.getLayout(plid);
+
+		ZipWriter zipWriter = ZipWriterFactoryUtil.getZipWriter();
+
+		PortletDataContext portletDataContext =
+			PortletDataContextFactoryUtil.createExportPortletDataContext(
+				layout.getCompanyId(), groupId, parameterMap, startDate,
+				endDate, zipWriter);
+
+		portletDataContext.setPlid(plid);
+		portletDataContext.setOldPlid(plid);
+
+		return portletDataContext;
 	}
 
 	protected PortletPreferences getPortletPreferences(
