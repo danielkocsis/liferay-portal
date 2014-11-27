@@ -128,18 +128,20 @@ public class PortletImporter {
 	}
 
 	public String importPortletData(
-			PortletDataContext portletDataContext, String portletId,
+			PortletDataContext portletDataContext,
 			PortletPreferences portletPreferences, Element portletDataElement)
 		throws Exception {
 
 		Portlet portlet = PortletLocalServiceUtil.getPortletById(
-			portletDataContext.getCompanyId(), portletId);
+			portletDataContext.getCompanyId(),
+			portletDataContext.getPortletId());
 
 		if (portlet == null) {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
-					"Do not import portlet data for " + portletId +
-						" because the portlet does not exist");
+					"Do not import portlet data for " +
+						portletDataContext.getPortletId() +
+							" because the portlet does not exist");
 			}
 
 			return null;
@@ -153,16 +155,18 @@ public class PortletImporter {
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(
-					"Do not import portlet data for " + portletId +
-						" because the portlet does not have a " +
-							"PortletDataHandler");
+					"Do not import portlet data for " +
+						portletDataContext.getPortletId() +
+							" because the portlet does not have a " +
+								"PortletDataHandler");
 			}
 
 			return null;
 		}
 
 		if (_log.isDebugEnabled()) {
-			_log.debug("Importing data for " + portletId);
+			_log.debug(
+				"Importing data for " + portletDataContext.getPortletId());
 		}
 
 		PortletPreferencesImpl portletPreferencesImpl = null;
@@ -183,8 +187,8 @@ public class PortletImporter {
 
 		portletPreferencesImpl =
 			(PortletPreferencesImpl)portletDataHandler.importData(
-				portletDataContext, portletId, portletPreferencesImpl,
-				portletData);
+				portletDataContext, portletDataContext.getPortletId(),
+				portletPreferencesImpl, portletData);
 
 		if (portletPreferencesImpl == null) {
 			return null;
@@ -204,14 +208,14 @@ public class PortletImporter {
 			ExportImportThreadLocal.setPortletImportInProcess(true);
 
 			portletDataContext = getPortletDataContext(
-				userId, plid, groupId, parameterMap, file);
+				userId, plid, groupId, portletId, parameterMap, file);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_STARTED,
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
-			doImportPortletInfo(portletDataContext, userId, portletId);
+			doImportPortletInfo(portletDataContext, userId);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_FINISHED,
@@ -277,8 +281,7 @@ public class PortletImporter {
 		}
 	}
 
-	protected void deletePortletData(
-			PortletDataContext portletDataContext, String portletId)
+	protected void deletePortletData(PortletDataContext portletDataContext)
 		throws Exception {
 
 		long ownerId = PortletKeys.PREFS_OWNER_ID_DEFAULT;
@@ -286,36 +289,38 @@ public class PortletImporter {
 
 		PortletPreferences portletPreferences =
 			PortletPreferencesUtil.fetchByO_O_P_P(
-				ownerId, ownerType, portletDataContext.getPlid(), portletId);
+				ownerId, ownerType, portletDataContext.getPlid(),
+				portletDataContext.getPortletId());
 
 		if (portletPreferences == null) {
 			portletPreferences =
 				new com.liferay.portal.model.impl.PortletPreferencesImpl();
 		}
 
-		String xml = deletePortletData(
-			portletDataContext, portletId, portletPreferences);
+		String xml = deletePortletData(portletDataContext, portletPreferences);
 
 		if (xml != null) {
 			PortletPreferencesLocalServiceUtil.updatePreferences(
-				ownerId, ownerType, portletDataContext.getPlid(), portletId,
-				xml);
+				ownerId, ownerType, portletDataContext.getPlid(),
+				portletDataContext.getPortletId(), xml);
 		}
 	}
 
 	protected String deletePortletData(
-			PortletDataContext portletDataContext, String portletId,
+			PortletDataContext portletDataContext,
 			PortletPreferences portletPreferences)
 		throws Exception {
 
 		Portlet portlet = PortletLocalServiceUtil.getPortletById(
-			portletDataContext.getCompanyId(), portletId);
+			portletDataContext.getCompanyId(),
+			portletDataContext.getPortletId());
 
 		if (portlet == null) {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
-					"Do not delete portlet data for " + portletId +
-						" because the portlet does not exist");
+					"Do not delete portlet data for " +
+						portletDataContext.getPortletId() +
+							" because the portlet does not exist");
 			}
 
 			return null;
@@ -327,16 +332,18 @@ public class PortletImporter {
 		if (portletDataHandler == null) {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
-					"Do not delete portlet data for " + portletId +
-						" because the portlet does not have a " +
-							"PortletDataHandler");
+					"Do not delete portlet data for " +
+						portletDataContext.getPortletId() +
+							" because the portlet does not have a " +
+								"PortletDataHandler");
 			}
 
 			return null;
 		}
 
 		if (_log.isDebugEnabled()) {
-			_log.debug("Deleting data for " + portletId);
+			_log.debug(
+				"Deleting data for " + portletDataContext.getPortletId());
 		}
 
 		PortletPreferencesImpl portletPreferencesImpl =
@@ -347,7 +354,8 @@ public class PortletImporter {
 		try {
 			portletPreferencesImpl =
 				(PortletPreferencesImpl)portletDataHandler.deleteData(
-					portletDataContext, portletId, portletPreferencesImpl);
+					portletDataContext, portletDataContext.getPortletId(),
+					portletPreferencesImpl);
 		}
 		finally {
 			portletDataContext.setGroupId(portletDataContext.getScopeGroupId());
@@ -361,8 +369,7 @@ public class PortletImporter {
 	}
 
 	protected void doImportPortletInfo(
-			PortletDataContext portletDataContext, long userId,
-			String portletId)
+			PortletDataContext portletDataContext, long userId)
 		throws Exception {
 
 		Map<String, String[]> parameterMap =
@@ -394,7 +401,8 @@ public class PortletImporter {
 
 		validateFile(
 			portletDataContext.getCompanyId(), portletDataContext.getGroupId(),
-			portletId, portletDataContext.getZipReader());
+			portletDataContext.getPortletId(),
+			portletDataContext.getZipReader());
 
 		// Source and target group id
 
@@ -413,7 +421,7 @@ public class PortletImporter {
 
 		if (BackgroundTaskThreadLocal.hasBackgroundTask()) {
 			PortletDataHandlerStatusMessageSenderUtil.sendStatusMessage(
-				"portlet", portletId, manifestSummary);
+				"portlet", portletDataContext.getPortletId(), manifestSummary);
 		}
 
 		portletDataContext.setManifestSummary(manifestSummary);
@@ -459,14 +467,15 @@ public class PortletImporter {
 		}
 
 		if (deletePortletData) {
-			deletePortletData(portletDataContext, portletId);
+			deletePortletData(portletDataContext);
 		}
 
 		Element portletDataElement = portletElement.element("portlet-data");
 
 		Map<String, Boolean> importPortletControlsMap =
 			ExportImportHelperUtil.getImportPortletControlsMap(
-				portletDataContext.getCompanyId(), portletId, parameterMap,
+				portletDataContext.getCompanyId(),
+				portletDataContext.getPortletId(), parameterMap,
 				portletDataElement, manifestSummary);
 
 		Layout layout = LayoutLocalServiceUtil.getLayout(
@@ -478,8 +487,7 @@ public class PortletImporter {
 
 			importPortletPreferences(
 				portletDataContext, layout.getCompanyId(),
-				portletDataContext.getGroupId(), layout, portletId,
-				portletElement, true,
+				portletDataContext.getGroupId(), layout, portletElement, true,
 				importPortletControlsMap.get(
 					PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS),
 				importPortletControlsMap.get(
@@ -498,9 +506,7 @@ public class PortletImporter {
 					_log.debug("Importing portlet data");
 				}
 
-				importPortletData(
-					portletDataContext, portletId, portletDataContext.getPlid(),
-					portletDataElement);
+				importPortletData(portletDataContext, portletDataElement);
 			}
 		}
 		finally {
@@ -518,7 +524,7 @@ public class PortletImporter {
 			_permissionImporter.importPortletPermissions(
 				layoutCache, portletDataContext.getCompanyId(),
 				portletDataContext.getGroupId(), userId, layout, portletElement,
-				portletId);
+				portletDataContext.getPortletId());
 
 			if (userId > 0) {
 				Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
@@ -574,7 +580,7 @@ public class PortletImporter {
 	}
 
 	protected PortletDataContext getPortletDataContext(
-			long userId, long plid, long groupId,
+			long userId, long plid, long groupId, String portletId,
 			Map<String, String[]> parameterMap, File file)
 		throws PortalException {
 
@@ -596,6 +602,7 @@ public class PortletImporter {
 
 		portletDataContext.setOldPlid(plid);
 		portletDataContext.setPlid(plid);
+		portletDataContext.setPortletId(portletId);
 		portletDataContext.setPrivateLayout(layout.isPrivateLayout());
 
 		return portletDataContext;
@@ -710,8 +717,7 @@ public class PortletImporter {
 	}
 
 	protected void importPortletData(
-			PortletDataContext portletDataContext, String portletId, long plid,
-			Element portletDataElement)
+			PortletDataContext portletDataContext, Element portletDataElement)
 		throws Exception {
 
 		long ownerId = PortletKeys.PREFS_OWNER_ID_DEFAULT;
@@ -719,7 +725,8 @@ public class PortletImporter {
 
 		PortletPreferences portletPreferences =
 			PortletPreferencesUtil.fetchByO_O_P_P(
-				ownerId, ownerType, plid, portletId);
+				ownerId, ownerType, portletDataContext.getPlid(),
+				portletDataContext.getPortletId());
 
 		if (portletPreferences == null) {
 			portletPreferences =
@@ -727,26 +734,21 @@ public class PortletImporter {
 		}
 
 		String xml = importPortletData(
-			portletDataContext, portletId, portletPreferences,
-			portletDataElement);
+			portletDataContext, portletPreferences, portletDataElement);
 
 		if (Validator.isNotNull(xml)) {
 			PortletPreferencesLocalServiceUtil.updatePreferences(
-				ownerId, ownerType, plid, portletId, xml);
+				ownerId, ownerType, portletDataContext.getPlid(),
+				portletDataContext.getPortletId(), xml);
 		}
 	}
 
 	protected void importPortletPreferences(
 			PortletDataContext portletDataContext, long companyId, long groupId,
-			Layout layout, String portletId, Element parentElement,
-			boolean preserveScopeLayoutId, boolean importPortletArchivedSetups,
-			boolean importPortletData, boolean importPortletSetup,
-			boolean importPortletUserPreferences)
+			Layout layout, Element parentElement, boolean preserveScopeLayoutId,
+			boolean importPortletArchivedSetups, boolean importPortletData,
+			boolean importPortletSetup, boolean importPortletUserPreferences)
 		throws Exception {
-
-		if (portletId == null) {
-			portletId = parentElement.attributeValue("portlet-id");
-		}
 
 		long plid = LayoutConstants.DEFAULT_PLID;
 		String scopeType = StringPool.BLANK;
@@ -755,10 +757,10 @@ public class PortletImporter {
 		if (layout != null) {
 			plid = layout.getPlid();
 
-			if (preserveScopeLayoutId && (portletId != null)) {
+			if (preserveScopeLayoutId) {
 				javax.portlet.PortletPreferences jxPortletPreferences =
 					PortletPreferencesFactoryUtil.getLayoutPortletSetup(
-						layout, portletId);
+						layout, portletDataContext.getPortletId());
 
 				scopeType = GetterUtil.getString(
 					jxPortletPreferences.getValue("lfrScopeType", null));
@@ -817,11 +819,11 @@ public class PortletImporter {
 				}
 
 				long curPlid = plid;
-				String curPortletId = portletId;
+				String curPortletId = portletDataContext.getPortletId();
 
 				if (ownerType == PortletKeys.PREFS_OWNER_TYPE_GROUP) {
 					curPlid = PortletKeys.PREFS_PLID_SHARED;
-					curPortletId = PortletConstants.getRootPortletId(portletId);
+					curPortletId = portletDataContext.getRootPortletId();
 					ownerId = portletDataContext.getScopeGroupId();
 				}
 
@@ -833,7 +835,7 @@ public class PortletImporter {
 
 					String name = element.attributeValue("archive-name");
 
-					curPortletId = PortletConstants.getRootPortletId(portletId);
+					curPortletId = portletDataContext.getRootPortletId();
 
 					PortletItem portletItem =
 						PortletItemLocalServiceUtil.updatePortletItem(
@@ -901,7 +903,7 @@ public class PortletImporter {
 		if (preserveScopeLayoutId && (layout != null)) {
 			javax.portlet.PortletPreferences jxPortletPreferences =
 				PortletPreferencesFactoryUtil.getLayoutPortletSetup(
-					layout, portletId);
+					layout, portletDataContext.getRootPortletId());
 
 			try {
 				jxPortletPreferences.setValue("lfrScopeType", scopeType);

@@ -591,7 +591,6 @@ public class LayoutImporter {
 			}
 
 			for (Element portletElement : portletElements) {
-				String portletId = portletElement.attributeValue("portlet-id");
 				long layoutId = GetterUtil.getLong(
 					portletElement.attributeValue("layout-id"));
 
@@ -604,9 +603,10 @@ public class LayoutImporter {
 				}
 
 				portletDataContext.setPlid(plid);
+				portletDataContext.setPortletId(
+					portletElement.attributeValue("portlet-id"));
 
-				_portletImporter.deletePortletData(
-					portletDataContext, portletId);
+				_portletImporter.deletePortletData(portletDataContext);
 			}
 		}
 
@@ -647,6 +647,7 @@ public class LayoutImporter {
 
 			portletDataContext.setPlid(plid);
 			portletDataContext.setOldPlid(oldPlid);
+			portletDataContext.setPortletId(portletId);
 
 			if (BackgroundTaskThreadLocal.hasBackgroundTask()) {
 				PortletDataHandlerStatusMessageSenderUtil.sendStatusMessage(
@@ -688,8 +689,7 @@ public class LayoutImporter {
 
 				_portletImporter.importPortletPreferences(
 					portletDataContext, layoutSet.getCompanyId(),
-					portletPreferencesGroupId, layout, null, portletElement,
-					false,
+					portletPreferencesGroupId, layout, portletElement, false,
 					importPortletControlsMap.get(
 						PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS),
 					importPortletControlsMap.get(
@@ -705,8 +705,7 @@ public class LayoutImporter {
 						PortletDataHandlerKeys.PORTLET_DATA)) {
 
 					_portletImporter.importPortletData(
-						portletDataContext, portletId, plid,
-						portletDataElement);
+						portletDataContext, portletDataElement);
 				}
 
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
@@ -741,8 +740,7 @@ public class LayoutImporter {
 
 			_portletImporter.importPortletPreferences(
 				portletDataContext, layoutSet.getCompanyId(),
-				portletDataContext.getGroupId(), null, null, portletElement,
-				false,
+				portletDataContext.getGroupId(), null, portletElement, false,
 				importPortletControlsMap.get(
 					PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS),
 				importPortletControlsMap.get(

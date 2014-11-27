@@ -541,6 +541,7 @@ public class LayoutExporter {
 
 			portletDataContext.setPlid(plid);
 			portletDataContext.setOldPlid(plid);
+			portletDataContext.setPortletId(portletId);
 			portletDataContext.setScopeGroupId(scopeGroupId);
 			portletDataContext.setScopeType(scopeType);
 			portletDataContext.setScopeLayoutUuid(scopeLayoutUuid);
@@ -556,7 +557,7 @@ public class LayoutExporter {
 						portletDataContext));
 
 				_portletExporter.exportPortlet(
-					portletDataContext, portletId, layout, portletsElement,
+					portletDataContext, layout, portletsElement,
 					exportPermissions,
 					exportPortletControlsMap.get(
 						PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS),
@@ -567,7 +568,7 @@ public class LayoutExporter {
 					exportPortletControlsMap.get(
 						PortletDataHandlerKeys.PORTLET_USER_PREFERENCES));
 				_portletExporter.exportService(
-					portletDataContext, portletId, servicesElement,
+					portletDataContext, servicesElement,
 					exportPortletControlsMap.get(
 						PortletDataHandlerKeys.PORTLET_SETUP));
 
