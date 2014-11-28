@@ -29,11 +29,6 @@ public class ExportImportLifecycleEventImpl
 	implements ExportImportLifecycleEvent {
 
 	@Override
-	public void addAttribute(Serializable serializable) {
-		_attributes.add(serializable);
-	}
-
-	@Override
 	public List<Serializable> getAttributes() {
 		return _attributes;
 	}
@@ -41,6 +36,11 @@ public class ExportImportLifecycleEventImpl
 	@Override
 	public int getCode() {
 		return _code;
+	}
+
+	@Override
+	public void setAttributes(Serializable... attributes) {
+		_attributes.addAll(ListUtil.fromArray(attributes));
 	}
 
 	@Override
