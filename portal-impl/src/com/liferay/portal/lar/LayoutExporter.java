@@ -196,20 +196,24 @@ public class LayoutExporter {
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_LAYOUT_EXPORT_STARTED,
-				portletDataContext);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext));
 
 			File file = doExportLayoutsAsFile(portletDataContext, layoutIds);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_LAYOUT_EXPORT_FINISHED,
-				portletDataContext);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext));
 
 			return file;
 		}
 		catch (Throwable t) {
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_LAYOUT_EXPORT_FAILED,
-				portletDataContext, t);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				t);
 
 			throw t;
 		}
@@ -548,7 +552,8 @@ public class LayoutExporter {
 			try {
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 					ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_STARTED,
-					portletDataContext);
+					PortletDataContextFactoryUtil.clonePortletDataContext(
+						portletDataContext));
 
 				_portletExporter.exportPortlet(
 					portletDataContext, portletId, layout, portletsElement,
@@ -569,12 +574,15 @@ public class LayoutExporter {
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 					ExportImportLifecycleConstants.
 						EVENT_PORTLET_EXPORT_FINISHED,
-					portletDataContext);
+					PortletDataContextFactoryUtil.clonePortletDataContext(
+						portletDataContext));
 			}
 			catch (Throwable t) {
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 					ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_FAILED,
-					portletDataContext, t);
+					PortletDataContextFactoryUtil.clonePortletDataContext(
+						portletDataContext),
+					t);
 
 				throw t;
 			}

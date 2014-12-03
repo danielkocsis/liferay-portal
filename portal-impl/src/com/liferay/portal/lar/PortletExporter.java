@@ -255,21 +255,25 @@ public class PortletExporter {
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_STARTED,
-				portletDataContext);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext));
 
 			File file = doExportPortletInfoAsFile(
 				portletDataContext, portletId);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_FINISHED,
-				portletDataContext);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext));
 
 			return file;
 		}
 		catch (Throwable t) {
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_FAILED,
-				portletDataContext, t);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				t);
 
 			throw t;
 		}

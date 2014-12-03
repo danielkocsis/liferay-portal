@@ -77,7 +77,9 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.
 					EVENT_STAGED_MODEL_EXPORT_STARTED,
-				portletDataContext, new TransientValue<T>(stagedModel));
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				new TransientValue<T>(stagedModel));
 
 			ManifestSummary manifestSummary =
 				portletDataContext.getManifestSummary();
@@ -101,19 +103,25 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.
 					EVENT_STAGED_MODEL_EXPORT_FINISHED,
-				portletDataContext, new TransientValue<T>(stagedModel));
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				new TransientValue<T>(stagedModel));
 		}
 		catch (PortletDataException pde) {
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_STAGED_MODEL_EXPORT_FAILED,
-				portletDataContext, new TransientValue<T>(stagedModel), pde);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				new TransientValue<T>(stagedModel), pde);
 
 			throw pde;
 		}
 		catch (Throwable t) {
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_STAGED_MODEL_EXPORT_FAILED,
-				portletDataContext, new TransientValue<T>(stagedModel), t);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				new TransientValue<T>(stagedModel), t);
 
 			PortletDataException pde = new PortletDataException(t);
 
@@ -292,7 +300,9 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.
 					EVENT_STAGED_MODEL_IMPORT_STARTED,
-				portletDataContext, new TransientValue<T>(stagedModel));
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				new TransientValue<T>(stagedModel));
 
 			ManifestSummary manifestSummary =
 				portletDataContext.getManifestSummary();
@@ -325,19 +335,25 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.
 					EVENT_STAGED_MODEL_IMPORT_FINISHED,
-				portletDataContext, new TransientValue<T>(stagedModel));
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				new TransientValue<T>(stagedModel));
 		}
 		catch (PortletDataException pde) {
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_STAGED_MODEL_IMPORT_FAILED,
-				portletDataContext, new TransientValue<T>(stagedModel), pde);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				new TransientValue<T>(stagedModel), pde);
 
 			throw pde;
 		}
 		catch (Throwable t) {
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_STAGED_MODEL_IMPORT_FAILED,
-				portletDataContext, new TransientValue<T>(stagedModel), t);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				new TransientValue<T>(stagedModel), t);
 
 			throw new PortletDataException(t);
 		}

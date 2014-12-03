@@ -130,18 +130,22 @@ public class LayoutImporter {
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_LAYOUT_IMPORT_STARTED,
-				portletDataContext);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext));
 
 			doImportLayouts(portletDataContext, userId);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_LAYOUT_IMPORT_FINISHED,
-				portletDataContext);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext));
 		}
 		catch (Throwable t) {
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				ExportImportLifecycleConstants.EVENT_LAYOUT_IMPORT_FAILED,
-				portletDataContext, t);
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				t);
 
 			throw t;
 		}
@@ -677,7 +681,8 @@ public class LayoutImporter {
 
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 					ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_STARTED,
-					portletDataContext);
+					PortletDataContextFactoryUtil.clonePortletDataContext(
+						portletDataContext));
 
 				// Portlet preferences
 
@@ -707,12 +712,15 @@ public class LayoutImporter {
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 					ExportImportLifecycleConstants.
 						EVENT_PORTLET_IMPORT_FINISHED,
-					portletDataContext);
+					PortletDataContextFactoryUtil.clonePortletDataContext(
+						portletDataContext));
 			}
 			catch (Throwable t) {
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 					ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_FAILED,
-					portletDataContext, t);
+					PortletDataContextFactoryUtil.clonePortletDataContext(
+						portletDataContext),
+					t);
 
 				throw t;
 			}
