@@ -234,6 +234,10 @@ public class ExportImportDateUtil {
 				return null;
 			}
 
+			if (portletDataContext.getStartDate() == null) {
+				return portletLastPublishDate;
+			}
+
 			if (portletLastPublishDate.before(
 					portletDataContext.getStartDate())) {
 
