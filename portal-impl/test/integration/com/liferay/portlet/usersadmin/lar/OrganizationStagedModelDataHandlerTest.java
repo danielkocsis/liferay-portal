@@ -45,7 +45,6 @@ import com.liferay.portal.util.test.ServiceContextTestUtil;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -62,16 +61,6 @@ public class OrganizationStagedModelDataHandlerTest
 		new AggregateTestRule(
 			new LiferayIntegrationTestRule(), MainServletTestRule.INSTANCE,
 			TransactionalTestRule.INSTANCE);
-
-	@After
-	@Override
-	public void tearDown() throws Exception {
-		super.tearDown();
-
-		_organization =
-			OrganizationLocalServiceUtil.fetchOrganizationByUuidAndCompanyId(
-				_organization.getUuid(), _organization.getCompanyId());
-	}
 
 	@Override
 	protected StagedModel addStagedModel(

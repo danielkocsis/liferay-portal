@@ -37,6 +37,7 @@ import com.liferay.portal.service.LayoutFriendlyURLLocalServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutPrototypeLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetPrototypeLocalServiceUtil;
+import com.liferay.portal.test.DeleteAfterTestRun;
 import com.liferay.portal.test.LiferayIntegrationTestRule;
 import com.liferay.portal.test.MainServletTestRule;
 import com.liferay.portal.test.TransactionalTestRule;
@@ -51,7 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -68,29 +68,6 @@ public class LayoutSetPrototypeStagedModelDataHandlerTest
 		new AggregateTestRule(
 			new LiferayIntegrationTestRule(), MainServletTestRule.INSTANCE,
 			TransactionalTestRule.INSTANCE);
-
-	@After
-	@Override
-	public void tearDown() throws Exception {
-		super.tearDown();
-
-		_layoutSetPrototype =
-			LayoutSetPrototypeLocalServiceUtil.
-				fetchLayoutSetPrototypeByUuidAndCompanyId(
-					_layoutSetPrototype.getUuid(),
-					_layoutSetPrototype.getCompanyId());
-
-		LayoutSetPrototypeLocalServiceUtil.deleteLayoutSetPrototype(
-			_layoutSetPrototype);
-
-		_layoutPrototype =
-			LayoutPrototypeLocalServiceUtil.
-				fetchLayoutPrototypeByUuidAndCompanyId(
-					_layoutPrototype.getUuid(),
-					_layoutPrototype.getCompanyId());
-
-		LayoutPrototypeLocalServiceUtil.deleteLayoutPrototype(_layoutPrototype);
-	}
 
 	protected void addLayout(Class<?> clazz, Layout layout) throws Exception {
 		List<Layout> layouts = _layouts.get(clazz.getSimpleName());
@@ -413,9 +390,14 @@ public class LayoutSetPrototypeStagedModelDataHandlerTest
 
 	private final Map<String, List<LayoutFriendlyURL>> _layoutFriendlyURLs =
 		new HashMap<String, List<LayoutFriendlyURL>>();
+
+	@DeleteAfterTestRun
 	private LayoutPrototype _layoutPrototype;
+
 	private final Map<String, List<Layout>> _layouts =
 		new HashMap<String, List<Layout>>();
+
+	@DeleteAfterTestRun
 	private LayoutSetPrototype _layoutSetPrototype;
 
 }

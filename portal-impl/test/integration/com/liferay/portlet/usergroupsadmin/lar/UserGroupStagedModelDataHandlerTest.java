@@ -29,7 +29,6 @@ import com.liferay.portal.util.test.UserGroupTestUtil;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Rule;
 
@@ -45,15 +44,6 @@ public class UserGroupStagedModelDataHandlerTest
 		new AggregateTestRule(
 			new LiferayIntegrationTestRule(), MainServletTestRule.INSTANCE,
 			TransactionalTestRule.INSTANCE);
-
-	@After
-	@Override
-	public void tearDown() throws Exception {
-		super.tearDown();
-
-		_userGroup = UserGroupLocalServiceUtil.fetchUserGroupByUuidAndCompanyId(
-			_userGroup.getUuid(), _userGroup.getCompanyId());
-	}
 
 	@Override
 	protected StagedModel addStagedModel(
