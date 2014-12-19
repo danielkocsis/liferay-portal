@@ -665,10 +665,13 @@ public class LayoutSetPrototypePropagationTest
 
 	private int _initialLayoutCount;
 	private int _initialPrototypeLayoutCount;
-	private Layout _layout;
-	private LayoutSetPrototype _layoutSetPrototype;
 
 	@DeleteAfterTestRun
+	private Layout _layout;
+
+	@DeleteAfterTestRun
+	private LayoutSetPrototype _layoutSetPrototype;
+
 	private Group _layoutSetPrototypeGroup;
 
 	@DeleteAfterTestRun
@@ -678,6 +681,8 @@ public class LayoutSetPrototypePropagationTest
 	private Layout _layoutSetPrototypeLayout;
 
 	private String _portletId;
+
+	@DeleteAfterTestRun
 	private Layout _prototypeLayout;
 
 }
