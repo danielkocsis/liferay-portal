@@ -80,9 +80,7 @@ public class RolesAdminPortletDataHandler extends BasePortletDataHandler {
 			portletDataContext.getCompanyId());
 
 		for (Role role : roles) {
-			if (!PortalUtil.isSystemRole(role.getName()) &&
-				!role.isTeam()) {
-
+			if (!role.isSystem() && !role.isTeam()) {
 				RoleLocalServiceUtil.deleteRole(role);
 			}
 		}
