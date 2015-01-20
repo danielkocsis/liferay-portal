@@ -354,9 +354,6 @@ public class LayoutExporter {
 				image = ImageLocalServiceUtil.getImage(
 					layoutSetBranch.getLogoId());
 			}
-			else {
-				image = ImageLocalServiceUtil.getImage(layoutSet.getLogoId());
-			}
 
 			if ((image != null) && (image.getTextObj() != null)) {
 				String logoPath = ExportImportPathUtil.getRootPath(
@@ -378,9 +375,6 @@ public class LayoutExporter {
 
 		if (layoutSetBranch != null) {
 			_themeExporter.exportTheme(portletDataContext, layoutSetBranch);
-		}
-		else {
-			_themeExporter.exportTheme(portletDataContext, layoutSet);
 		}
 
 		if (exportLayoutSetSettings) {
