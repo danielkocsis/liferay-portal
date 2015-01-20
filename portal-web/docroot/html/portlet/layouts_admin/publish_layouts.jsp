@@ -31,6 +31,8 @@ String closeRedirect = ParamUtil.getString(request, "closeRedirect");
 
 String publishConfigurationButtons = ParamUtil.getString(request, "publishConfigurationButtons", "custom");
 
+boolean quickPublish = ParamUtil.getBoolean(request, "quickPublish");
+
 long exportImportConfigurationId = 0;
 
 ExportImportConfiguration exportImportConfiguration = null;
@@ -179,7 +181,7 @@ String tabs2Names = StringPool.BLANK;
 if (cmd.equals("view_processes")) {
 	tabs2Names = "current-and-previous";
 }
-else {
+else if (!quickPublish) {
 	tabs2Names = "new-publication-process,current-and-previous,scheduled";
 }
 %>
@@ -191,7 +193,7 @@ else {
 	param="tabs2"
 	refresh="<%= false %>"
 >
-	<c:if test='<%= !cmd.equals("view_processes") %>'>
+	<c:if test='<%= !cmd.equals("view_processes") && !quickPublish %>'>
 		<liferay-ui:section>
 			<div <%= (!cmd.equals(Constants.ADD) && !cmd.equals(Constants.UPDATE)) ? StringPool.BLANK : "class=\"hide\"" %>>
 				<aui:nav-bar>
@@ -396,7 +398,7 @@ else {
 		</div>
 	</liferay-ui:section>
 
-	<c:if test='<%= !cmd.equals("view_processes") %>'>
+	<c:if test='<%= !cmd.equals("view_processes") && !quickPublish %>'>
 		<liferay-ui:section>
 
 			<%
