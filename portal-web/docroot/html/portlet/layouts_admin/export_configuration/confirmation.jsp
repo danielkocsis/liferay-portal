@@ -135,7 +135,7 @@ boolean quickPublish = ParamUtil.getBoolean(request, "quickPublish");
 			commentsNode: '#<%= PortletDataHandlerKeys.COMMENTS %>',
 			deletionsNode: '#<%= PortletDataHandlerKeys.DELETIONS %>',
 			exportLAR: true,
-			form: document.<portlet:namespace />fm1,
+			form: document.<portlet:namespace />fm2,
 			incompleteProcessMessageNode: '#<portlet:namespace />incompleteProcessMessage',
 			layoutSetSettingsNode: '#<%= PortletDataHandlerKeys.LAYOUT_SET_SETTINGS %>',
 			logoNode: '#<%= PortletDataHandlerKeys.LOGO %>',
