@@ -507,5 +507,9 @@ else if (!quickPublish) {
 		}
 	};
 
-	A.one('#<portlet:namespace />publishConfigurationButtons').delegate('click', clickHandler, 'li a');
+	var publishConfigurationButtons = A.one('#<portlet:namespace />publishConfigurationButtons');
+
+	if (publishConfigurationButtons) {
+		publishConfigurationButtons.delegate('click', clickHandler, 'li a');
+	}
 </aui:script>
