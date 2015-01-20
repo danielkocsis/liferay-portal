@@ -22,15 +22,13 @@ import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.lar.ExportImportClassedModelUtil;
-import com.liferay.portal.kernel.lar.ExportImportPathUtil;
-import com.liferay.portal.kernel.lar.ManifestSummary;
+import com.liferay.portal.kernel.lar.*;
 import com.liferay.portal.kernel.lar.PortletDataContext;
+import com.liferay.portal.kernel.lar.PortletDataException;
 import com.liferay.portal.kernel.lar.PortletDataHandlerControl;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.lar.UserIdStrategy;
+import com.liferay.portal.kernel.lar.manifest.ManifestTreeNode;
 import com.liferay.portal.kernel.lar.xstream.XStreamAliasRegistryUtil;
 import com.liferay.portal.kernel.lar.xstream.XStreamConverter;
 import com.liferay.portal.kernel.lar.xstream.XStreamConverterRegistryUtil;
@@ -95,6 +93,7 @@ import com.thoughtworks.xstream.XStream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -689,6 +688,72 @@ public class PortletDataContextImpl implements PortletDataContext {
 		String path, ClassedModel classedModel, String namespace) {
 
 		return createServiceContext(path, classedModel);
+	}
+
+	@Override
+	public void exportInContext(StagedModel stagedModel)
+		throws com.liferay.portal.kernel.lar.PortletDataException {
+
+		ModelStager modelStager = null;
+
+		String path = ExportImportPathUtil.getModelPath(stagedModel);
+
+		OutputStream outputStream = null;
+
+		try {
+			outputStream = getZipWriter().getOutputStream(path);
+
+			if (stagedModel instanceof AttachedModel) {
+				AttachedModel attachedModel = (AttachedModel)stagedModel;
+
+				outputStream.write(
+					attachedModel.getClassName().getBytes("UTF-8"));
+
+				/*element.addAttribute(
+					"class-name", attachedModel.getClassName());*/
+			}
+			else if (BeanUtil.hasProperty(stagedModel, "className")) {
+				String className = BeanPropertiesUtil.getStringSilent(
+					stagedModel, "className");
+
+				if (className != null) {
+					outputStream.write(className.getBytes("UTF-8"));
+
+					//element.addAttribute("class-name", className);
+				}
+			}
+
+			modelStager.exportStagedModel(stagedModel, outputStream);
+
+			outputStream.flush();
+			outputStream.close();
+		}
+		catch (IOException ioe) {
+			throw new PortletDataException(ioe);
+		}
+
+		/*if (!hasPrimaryKey(String.class, path)) {
+			if (classedModel instanceof AuditedModel) {
+				AuditedModel auditedModel = (AuditedModel)classedModel;
+
+				auditedModel.setUserUuid(auditedModel.getUserUuid());
+			}
+
+			if (isResourceMain(classedModel)) {
+				long classPK = ExportImportClassedModelUtil.getClassPK(
+					classedModel);
+
+				addAssetLinks(clazz, classPK);
+				addAssetTags(clazz, classPK);
+				addExpando(element, path, classedModel, clazz);
+				addLocks(clazz, String.valueOf(classPK));
+				addPermissions(clazz, classPK);
+			}
+
+			_references.add(getReferenceKey(classedModel));
+		}
+
+		addZipEntry(path, classedModel);*/
 	}
 
 	@Override
@@ -1756,6 +1821,24 @@ public class PortletDataContextImpl implements PortletDataContext {
 	}
 
 	@Override
+	public ManifestSummary prepareInContext(StagedModel rootStagedModel)
+		throws PortletDataException {
+
+		ManifestSummary manifestSummary = new ManifestSummary();
+
+		ManifestTreeNode rootManifestTreeNode = new ManifestTreeNode(
+			rootStagedModel);
+
+		prepareInContextChildren(rootStagedModel, rootManifestTreeNode);
+
+		prepareInContextParent(rootStagedModel, rootManifestTreeNode);
+
+		findRootManifestTreeNode(rootManifestTreeNode);
+
+		return manifestSummary;
+	}
+
+	@Override
 	public void putNotUniquePerLayout(String dataKey) {
 		_notUniquePerLayout.add(dataKey);
 	}
@@ -2428,6 +2511,60 @@ public class PortletDataContextImpl implements PortletDataContext {
 		}
 
 		return true;
+	}
+
+	private void findRootManifestTreeNode(ManifestTreeNode manifestTreeNode) {
+		if (!manifestTreeNode.hasParent()) {
+			return;
+		}
+
+		/*List<ManifestTreeNode> parents = manifestTreeNode.getParents();
+
+		for ()*/
+	}
+
+	private void prepareInContextChildren(
+		StagedModel stagedModel, ManifestTreeNode manifestTreeNode) {
+
+		StagedModelRepository stagedModelRepository = null;
+
+		List<StagedModel> childStagedModels =
+			stagedModelRepository.fetchChildStagedModels(stagedModel);
+
+		if (ListUtil.isEmpty(childStagedModels)) {
+			return;
+		}
+
+		for (StagedModel childStagedModel : childStagedModels) {
+			ManifestTreeNode childManifestTreeNode = new ManifestTreeNode(
+				childStagedModel);
+
+			manifestTreeNode.addChild(childManifestTreeNode);
+
+			prepareInContextChildren(childStagedModel, childManifestTreeNode);
+		}
+	}
+
+	private void prepareInContextParent(
+		StagedModel stagedModel, ManifestTreeNode manifestTreeNode) {
+
+		StagedModelRepository stagedModelRepository = null;
+
+		List<StagedModel> parentStagedModels =
+			stagedModelRepository.fetchParentStagedModels(stagedModel);
+
+		if (ListUtil.isEmpty(parentStagedModels)) {
+			return;
+		}
+
+		for (StagedModel parentStagedModel : parentStagedModels) {
+			ManifestTreeNode parentManifestTreeNode = new ManifestTreeNode(
+				parentStagedModel);
+
+			manifestTreeNode.addParent(parentManifestTreeNode);
+
+			prepareInContextParent(parentStagedModel, parentManifestTreeNode);
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

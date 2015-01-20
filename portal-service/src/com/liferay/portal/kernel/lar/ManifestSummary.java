@@ -16,6 +16,7 @@ package com.liferay.portal.kernel.lar;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.lar.manifest.ManifestTreeNode;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LongWrapper;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -331,6 +332,10 @@ public class ManifestSummary implements Serializable {
 		_exportDate = exportDate;
 	}
 
+	public void setRootManifestTreeNode(ManifestTreeNode manifestTreeNode) {
+		_rootManifestTreeNode = manifestTreeNode;
+	}
+
 	@Override
 	public String toString() {
 		StringBundler sb = new StringBundler(5);
@@ -352,5 +357,6 @@ public class ManifestSummary implements Serializable {
 	private Set<String> _manifestSummaryKeys = new HashSet<>();
 	private Map<String, LongWrapper> _modelAdditionCounters = new HashMap<>();
 	private Map<String, LongWrapper> _modelDeletionCounters = new HashMap<>();
+	private ManifestTreeNode _rootManifestTreeNode;
 
 }

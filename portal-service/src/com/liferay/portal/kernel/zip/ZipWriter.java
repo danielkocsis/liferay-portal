@@ -17,6 +17,7 @@ package com.liferay.portal.kernel.zip;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author Brian Wing Shun Chan
@@ -36,6 +37,8 @@ public interface ZipWriter {
 	public byte[] finish() throws IOException;
 
 	public File getFile();
+
+	public OutputStream getOutputStream(String name) throws IOException;
 
 	public String getPath();
 

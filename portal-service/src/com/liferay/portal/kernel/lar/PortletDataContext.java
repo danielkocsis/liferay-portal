@@ -266,6 +266,9 @@ public interface PortletDataContext extends Serializable {
 	public ServiceContext createServiceContext(
 		String path, ClassedModel classedModel, String namespace);
 
+	public void exportInContext(StagedModel stagedModel)
+		throws com.liferay.portal.kernel.lar.PortletDataException;
+
 	public Object fromXML(byte[] bytes);
 
 	public Object fromXML(String xml);
@@ -635,6 +638,9 @@ public interface PortletDataContext extends Serializable {
 	public boolean isStagedModelCounted(StagedModel stagedModel);
 
 	public boolean isWithinDateRange(Date modifiedDate);
+
+	public ManifestSummary prepareInContext(StagedModel rootStagedModel)
+		throws com.liferay.portal.kernel.lar.PortletDataException;
 
 	public void putNotUniquePerLayout(String dataKey);
 

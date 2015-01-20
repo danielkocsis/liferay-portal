@@ -132,6 +132,15 @@ public class ZipWriterImpl implements ZipWriter {
 	}
 
 	@Override
+	public OutputStream getOutputStream(String name) throws IOException {
+		try (OutputStream outputStream = new FileOutputStream(
+				new File(getPath() + StringPool.SLASH + name))) {
+
+			return outputStream;
+		}
+	}
+
+	@Override
 	public String getPath() {
 		return _file.getPath();
 	}
