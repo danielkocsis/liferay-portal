@@ -14,7 +14,13 @@
 
 package com.liferay.portal.kernel.lar.manifest;
 
+import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.PersistedModel;
 import com.liferay.portal.model.StagedModel;
+import com.liferay.portal.service.PersistedModelLocalService;
+import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 
 import java.io.Serializable;
 
@@ -44,25 +50,79 @@ public class ManifestTreeNode {
 		_children.add(manifestTreeNode);
 	}
 
-	public void addParent(ManifestTreeNode manifestTreeNode) {
+	public List<ManifestTreeNode> getChildren() {
+		return _children;
+	}
+
+	public int getLabel() {
+		return _label;
+	}
+
+	public ManifestTreeNode getParent() {
+		return _parent;
+	}
+
+	public StagedModel getStagedModel() {
+		if (Validator.isNull(_className) || Validator.isNull(_classPK)) {
+			return null;
+		}
+
+		PersistedModelLocalService persistedModelLocalService =
+			PersistedModelLocalServiceRegistryUtil.
+				getPersistedModelLocalService(_className);
+
+		PersistedModel persistedModel = null;
+
+		try {
+			persistedModelLocalService.getPersistedModel(_classPK);
+		}
+		catch (Exception e) {
+			return null;
+		}
+
+		if (persistedModel instanceof StagedModel) {
+			return (StagedModel)persistedModel;
+		}
+
+		return null;
+	}
+
+	public boolean hasParent() {
+		return _parent == null;
+	}
+
+	public void setLabel(int label) {
+		_label = label;
+	}
+
+	public void setParent(ManifestTreeNode manifestTreeNode) {
 		if (manifestTreeNode == null) {
 			return;
 		}
 
-		_parents.add(manifestTreeNode);
+		_parent = manifestTreeNode;
 	}
 
-	public List<ManifestTreeNode> getParents() {
-		return _parents;
-	}
+	@Override
+	public String toString() {
+		StringBundler sb = new StringBundler(8);
 
-	public boolean hasParent() {
-		return !_parents.isEmpty();
+		sb.append("ManifestTreeNode {");
+		sb.append(_className);
+		sb.append(StringPool.COLON);
+		sb.append(_classPK);
+		sb.append(StringPool.SEMICOLON);
+		sb.append(" label:");
+		sb.append(_label);
+		sb.append("}");
+
+		return sb.toString();
 	}
 
 	private final List<ManifestTreeNode> _children = new ArrayList<>();
 	private final String _className;
 	private final Serializable _classPK;
-	private final List<ManifestTreeNode> _parents = new ArrayList<>();
+	private int _label;
+	private ManifestTreeNode _parent;
 
 }

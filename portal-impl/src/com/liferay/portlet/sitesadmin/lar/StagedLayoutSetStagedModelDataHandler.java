@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.model.Image;
+import com.liferay.portal.model.Theme;
 import com.liferay.portal.service.ImageLocalServiceUtil;
 import com.liferay.portlet.layoutsadmin.lar.StagedTheme;
 
@@ -80,7 +81,7 @@ public class StagedLayoutSetStagedModelDataHandler
 		}
 
 		StagedTheme stagedTheme = ModelAdapterUtil.adapt(
-			stagedLayoutSet.getTheme(), StagedTheme.class);
+			stagedLayoutSet.getTheme(), Theme.class, StagedTheme.class);
 
 		StagedModelDataHandlerUtil.exportReferenceStagedModel(
 			portletDataContext, stagedLayoutSet, stagedTheme,

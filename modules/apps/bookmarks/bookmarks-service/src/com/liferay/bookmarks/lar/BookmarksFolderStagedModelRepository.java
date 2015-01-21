@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.lar.StagedModelModifiedDateComparator;
 import com.liferay.portal.kernel.lar.StagedModelRepository;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.model.StagedModel;
+import org.osgi.service.component.annotations.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ import java.util.List;
 /**
  * @author Mate Thurzo
  */
+@Component(
+	property = {"model.name=com.liferay.bookmarks.model.BookmarksFolder"})
 public class BookmarksFolderStagedModelRepository
 	implements StagedModelRepository<BookmarksFolder> {
 

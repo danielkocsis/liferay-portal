@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.adapter;
 
+import com.liferay.portal.model.BaseModel;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 
@@ -25,6 +26,14 @@ public class ModelAdapterUtil {
 	public static <T, V> V adapt(
 		T adapteeModel, Class<T> adapteeModelClass,
 		Class<V> adaptedModelClass) {
+
+		return doAdapt(adapteeModel, adapteeModelClass, adaptedModelClass);
+	}
+
+	public static <T extends BaseModel, V> V adapt(
+		T adapteeModel, Class<V> adaptedModelClass) {
+
+		Class<T> adapteeModelClass = (Class<T>)adapteeModel.getModelClass();
 
 		return doAdapt(adapteeModel, adapteeModelClass, adaptedModelClass);
 	}

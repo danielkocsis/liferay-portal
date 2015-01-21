@@ -287,6 +287,10 @@ public class ManifestSummary implements Serializable {
 		return _modelDeletionCounters;
 	}
 
+	public ManifestTreeNode getRootManifestTreeNode() {
+		return _rootManifestTreeNode;
+	}
+
 	public void incrementModelAdditionCount(StagedModelType stagedModelType) {
 		String manifestSummaryKey = stagedModelType.toString();
 

@@ -22,11 +22,17 @@ import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.lar.*;
+import com.liferay.portal.kernel.lar.ExportImportClassedModelUtil;
+import com.liferay.portal.kernel.lar.ExportImportPathUtil;
+import com.liferay.portal.kernel.lar.ManifestSummary;
+import com.liferay.portal.kernel.lar.ModelStager;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataException;
 import com.liferay.portal.kernel.lar.PortletDataHandlerControl;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
+import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
+import com.liferay.portal.kernel.lar.StagedModelRepository;
+import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.lar.UserIdStrategy;
 import com.liferay.portal.kernel.lar.manifest.ManifestTreeNode;
 import com.liferay.portal.kernel.lar.xstream.XStreamAliasRegistryUtil;
@@ -89,6 +95,8 @@ import com.liferay.portlet.expando.service.ExpandoColumnLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.ratings.model.RatingsEntry;
 
+import com.liferay.registry.collections.ServiceTrackerCollections;
+import com.liferay.registry.collections.ServiceTrackerMap;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.IOException;
@@ -1833,7 +1841,9 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 		prepareInContextParent(rootStagedModel, rootManifestTreeNode);
 
-		findRootManifestTreeNode(rootManifestTreeNode);
+		rootManifestTreeNode = findRootManifestTreeNode(rootManifestTreeNode);
+
+		manifestSummary.setRootManifestTreeNode(rootManifestTreeNode);
 
 		return manifestSummary;
 	}
@@ -2513,20 +2523,38 @@ public class PortletDataContextImpl implements PortletDataContext {
 		return true;
 	}
 
-	private void findRootManifestTreeNode(ManifestTreeNode manifestTreeNode) {
-		if (!manifestTreeNode.hasParent()) {
-			return;
+	private ManifestTreeNode findRootManifestTreeNode(
+		ManifestTreeNode manifestTreeNode) {
+
+		while (manifestTreeNode.hasParent()) {
+			manifestTreeNode = manifestTreeNode.getParent();
 		}
 
-		/*List<ManifestTreeNode> parents = manifestTreeNode.getParents();
+		return manifestTreeNode;
+	}
 
-		for ()*/
+	protected StagedModelRepository getStagedModelRepository(
+		Class<?> modelClass) {
+
+		ServiceTrackerMap<String, StagedModelRepository> serviceTrackerMap =
+			ServiceTrackerCollections.singleValueMap(
+				StagedModelRepository.class, "model.name");
+
+		serviceTrackerMap.open();
+
+		try {
+			return serviceTrackerMap.getService(modelClass.getName());
+		}
+		finally {
+			serviceTrackerMap.close();
+		}
 	}
 
 	private void prepareInContextChildren(
 		StagedModel stagedModel, ManifestTreeNode manifestTreeNode) {
 
-		StagedModelRepository stagedModelRepository = null;
+		StagedModelRepository stagedModelRepository = getStagedModelRepository(
+			stagedModel.getModelClass());
 
 		List<StagedModel> childStagedModels =
 			stagedModelRepository.fetchChildStagedModels(stagedModel);
@@ -2548,7 +2576,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 	private void prepareInContextParent(
 		StagedModel stagedModel, ManifestTreeNode manifestTreeNode) {
 
-		StagedModelRepository stagedModelRepository = null;
+		StagedModelRepository stagedModelRepository = getStagedModelRepository(
+			stagedModel.getModelClass());
 
 		List<StagedModel> parentStagedModels =
 			stagedModelRepository.fetchParentStagedModels(stagedModel);
@@ -2561,7 +2590,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			ManifestTreeNode parentManifestTreeNode = new ManifestTreeNode(
 				parentStagedModel);
 
-			manifestTreeNode.addParent(parentManifestTreeNode);
+			manifestTreeNode.setParent(parentManifestTreeNode);
 
 			prepareInContextParent(parentStagedModel, parentManifestTreeNode);
 		}

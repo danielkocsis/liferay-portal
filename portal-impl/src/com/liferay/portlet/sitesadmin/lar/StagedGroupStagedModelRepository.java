@@ -16,6 +16,7 @@ package com.liferay.portlet.sitesadmin.lar;
 
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.StagedModelRepository;
+import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.model.StagedModel;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -28,6 +29,8 @@ import java.util.List;
 /**
  * @author Mate Thurzo
  */
+@OSGiBeanProperties(
+	property = {"model.name=com.liferay.portlet.sitesadmin.lar.StagedGroup"})
 public class StagedGroupStagedModelRepository
 	implements StagedModelRepository<StagedGroup> {
 

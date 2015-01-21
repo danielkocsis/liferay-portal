@@ -42,6 +42,8 @@ import javax.portlet.PortletRequest;
  */
 public class ExportImportConfigurationSettingsMapFactory {
 
+	// for Layout export
+
 	public static Map<String, Serializable> buildSettingsMap(
 		long userId, long groupId, boolean privateLayout, long[] layoutIds,
 		Map<String, String[]> parameterMap, Date startDate, Date endDate,
@@ -51,6 +53,8 @@ public class ExportImportConfigurationSettingsMapFactory {
 			userId, groupId, 0, privateLayout, layoutIds, parameterMap,
 			startDate, endDate, locale, timeZone);
 	}
+
+	// for remote staging publication
 
 	public static Map<String, Serializable> buildSettingsMap(
 		long userId, long sourceGroupId, boolean privateLayout,
@@ -81,46 +85,54 @@ public class ExportImportConfigurationSettingsMapFactory {
 		return settingsMap;
 	}
 
+	// for local staging publication
+
 	public static Map<String, Serializable> buildSettingsMap(
 		long userId, long sourceGroupId, long targetGroupId,
 		boolean privateLayout, long[] layoutIds,
 		Map<String, String[]> parameterMap, Date startDate, Date endDate,
 		Locale locale, TimeZone timeZone) {
 
-		Map<String, Serializable> settingsMap = new HashMap<>();
+		Map<String, Serializable> settingsMap = buildSettingsMap(
+			userId, sourceGroupId, targetGroupId, parameterMap, startDate,
+			endDate, locale, timeZone);
 
-		if (endDate != null) {
-			settingsMap.put("endDate", endDate);
-		}
+		settingsMap.put("privateLayout", privateLayout);
 
 		if (ArrayUtil.isNotEmpty(layoutIds)) {
 			settingsMap.put("layoutIds", layoutIds);
 		}
 
-		settingsMap.put("locale", locale);
+		return settingsMap;
+	}
 
-		if (parameterMap != null) {
-			HashMap<String, String[]> serializableParameterMap = new HashMap<>(
-				parameterMap);
+	// for portlet publication
 
-			settingsMap.put("parameterMap", serializableParameterMap);
-		}
+	public static Map<String, Serializable> buildSettingsMap(
+		long userId, long sourceGroupId, long targetGroupId, long plid,
+		String portletId, Map<String, String[]> parameterMap, Date startDate,
+		Date endDate, Locale locale, TimeZone timeZone) {
 
-		settingsMap.put("privateLayout", privateLayout);
-		settingsMap.put("sourceGroupId", sourceGroupId);
+		Map<String, Serializable> settingsMap = buildSettingsMap(
+			userId, sourceGroupId, targetGroupId, parameterMap, startDate,
+			endDate, locale, timeZone);
 
-		if (startDate != null) {
-			settingsMap.put("startDate", startDate);
-		}
-
-		if (targetGroupId > 0) {
-			settingsMap.put("targetGroupId", targetGroupId);
-		}
-
-		settingsMap.put("timezone", timeZone);
-		settingsMap.put("userId", userId);
+		settingsMap.put("plid", plid);
+		settingsMap.put("portletId", portletId);
 
 		return settingsMap;
+	}
+
+	// for portlet export
+
+	public static Map<String, Serializable> buildSettingsMap(
+		long userId, long groupId, long plid, String portletId,
+		Map<String, String[]> parameterMap, Date startDate, Date endDate,
+		Locale locale, TimeZone timeZone) {
+
+		return buildSettingsMap(
+			userId, groupId, 0, plid, portletId, parameterMap, startDate,
+			endDate, locale, timeZone);
 	}
 
 	public static Map<String, Serializable> buildSettingsMap(
@@ -200,6 +212,42 @@ public class ExportImportConfigurationSettingsMapFactory {
 			parameterMap, remoteAddress, remotePort, remotePathContext,
 			secureConnection, remoteGroupId, remotePrivateLayout, null, null,
 			themeDisplay.getLocale(), themeDisplay.getTimeZone());
+	}
+
+	protected static Map<String, Serializable> buildSettingsMap(
+		long userId, long sourceGroupId, long targetGroupId,
+		Map<String, String[]> parameterMap, Date startDate, Date endDate,
+		Locale locale, TimeZone timeZone) {
+
+		Map<String, Serializable> settingsMap = new HashMap<>();
+
+		if (endDate != null) {
+			settingsMap.put("endDate", endDate);
+		}
+
+		settingsMap.put("locale", locale);
+
+		if (parameterMap != null) {
+			HashMap<String, String[]> serializableParameterMap = new HashMap<>(
+				parameterMap);
+
+			settingsMap.put("parameterMap", serializableParameterMap);
+		}
+
+		settingsMap.put("sourceGroupId", sourceGroupId);
+
+		if (startDate != null) {
+			settingsMap.put("startDate", startDate);
+		}
+
+		if (targetGroupId > 0) {
+			settingsMap.put("targetGroupId", targetGroupId);
+		}
+
+		settingsMap.put("timezone", timeZone);
+		settingsMap.put("userId", userId);
+
+		return settingsMap;
 	}
 
 }
