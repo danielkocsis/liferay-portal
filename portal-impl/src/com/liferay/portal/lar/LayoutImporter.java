@@ -70,6 +70,7 @@ import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.impl.LayoutImpl;
 import com.liferay.portal.security.permission.PermissionCacheUtil;
+import com.liferay.portal.service.GroupLocalService;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutPrototypeLocalServiceUtil;
@@ -1140,7 +1141,12 @@ public class LayoutImporter {
 			long sourceGroupId = GetterUtil.getLong(
 				headerElement.attributeValue("group-id"));
 
-			if (group.isCompany() ^ (sourceCompanyGroupId == sourceGroupId)) {
+			Group sourceGroup = GroupLocalServiceUtil.fetchGroup(
+				sourceGroupId);
+
+			if ((group.isCompany() ^ (sourceCompanyGroupId == sourceGroupId) &&
+				(!group.isStagedRemotely() && sourceGroup.isCompany()))) {
+
 				throw new LARTypeException(
 					"A company site can only be imported to a company site");
 			}
