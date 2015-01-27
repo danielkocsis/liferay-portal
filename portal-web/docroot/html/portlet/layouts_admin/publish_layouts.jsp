@@ -31,8 +31,6 @@ String closeRedirect = ParamUtil.getString(request, "closeRedirect");
 
 String publishConfigurationButtons = ParamUtil.getString(request, "publishConfigurationButtons", "custom");
 
-boolean quickPublish = ParamUtil.getBoolean(request, "quickPublish");
-
 long exportImportConfigurationId = 0;
 
 ExportImportConfiguration exportImportConfiguration = null;
@@ -72,6 +70,8 @@ boolean localPublishing = true;
 if ((liveGroup.isStaged() && liveGroup.isStagedRemotely()) || cmd.equals(Constants.PUBLISH_TO_REMOTE)) {
 	localPublishing = false;
 }
+
+boolean quickPublish = ParamUtil.getBoolean(request, "quickPublish");
 
 String treeId = "liveLayoutsTree";
 
