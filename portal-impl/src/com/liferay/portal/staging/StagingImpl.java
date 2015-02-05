@@ -2093,11 +2093,13 @@ public class StagingImpl implements Staging {
 		ClassName className = ClassNameServiceHttp.fetchClassName(
 			httpPrincipal, String.valueOf(group.getClassNameId()));
 
-		String classNameString = className.getClassName();
+		if (Validator.equals(
+				className.getClassName(), Company.class.getName())) {
 
-		boolean hasClassName = classNameString.equals(Company.class.getName());
+			return true;
+		}
 
-		return hasClassName || group.isCompanyStagingGroup();
+		return false;
 	}
 
 	protected void publishLayouts(
@@ -2369,16 +2371,12 @@ public class StagingImpl implements Staging {
 
 			Group group = GroupLocalServiceUtil.getGroup(groupId);
 
-			String groupUuid = group.getUuid();
-
 			Group remoteGroup = GroupServiceHttp.getGroup(
 				httpPrincipal, remoteGroupId);
 
-			boolean isNotCompanyGroup = group.isCompany() ^
-					isCompanyGroup(remoteGroup, httpPrincipal) ||
-				groupUuid.equals(remoteGroup.getUuid());
+			if (group.isCompany() ^
+				isCompanyGroup(remoteGroup, httpPrincipal)) {
 
-			if (isNotCompanyGroup) {
 				RemoteExportException ree = new RemoteExportException(
 					RemoteExportException.INVALID_GROUP);
 
