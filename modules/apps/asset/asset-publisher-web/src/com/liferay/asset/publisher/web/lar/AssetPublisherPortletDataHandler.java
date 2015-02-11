@@ -69,7 +69,11 @@ import java.util.Map;
 
 import javax.portlet.PortletPreferences;
 
+import javax.servlet.ServletContext;
+
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Julio Camarero
@@ -84,7 +88,8 @@ import org.osgi.service.component.annotations.Component;
 public class AssetPublisherPortletDataHandler
 	extends DefaultConfigurationPortletDataHandler {
 
-	public AssetPublisherPortletDataHandler() {
+	@Activate
+	protected void activate() {
 		setDataLevel(DataLevel.PORTLET_INSTANCE);
 		setPublishToLiveByDefault(true);
 	}
@@ -335,6 +340,10 @@ public class AssetPublisherPortletDataHandler
 			name, new String[] {StringPool.BLANK});
 
 		portletPreferences.setValues(name, values);
+	}
+
+	@Reference(target = "(original.bean=*)", unbind = "-")
+	protected void setServletContext(ServletContext servletContext) {
 	}
 
 	protected void updateExportClassNameIds(
