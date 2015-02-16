@@ -234,6 +234,8 @@ public class ExportImportDateUtil {
 				return null;
 			}
 
+			// This is a valid scenario in case of group level portlets
+
 			if (portletDataContext.getStartDate() == null) {
 				return portletLastPublishDate;
 			}
