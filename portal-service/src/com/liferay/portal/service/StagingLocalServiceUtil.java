@@ -108,13 +108,13 @@ public class StagingLocalServiceUtil {
 		return getService().getBeanIdentifier();
 	}
 
-	public static void publishStagingRequest(long userId,
-		long stagingRequestId, boolean privateLayout,
+	public static com.liferay.portal.kernel.lar.MissingReferences publishStagingRequest(
+		long userId, long stagingRequestId, boolean privateLayout,
 		java.util.Map<java.lang.String, java.lang.String[]> parameterMap)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		getService()
-			.publishStagingRequest(userId, stagingRequestId, privateLayout,
-			parameterMap);
+		return getService()
+				   .publishStagingRequest(userId, stagingRequestId,
+			privateLayout, parameterMap);
 	}
 
 	/**
