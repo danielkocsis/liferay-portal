@@ -384,10 +384,13 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 	}
 
 	@Override
-	public void publishStagingRequest(
+	public MissingReferences publishStagingRequest(
 			long userId, long stagingRequestId, boolean privateLayout,
 			Map<String, String[]> parameterMap)
 		throws PortalException {
+
+		File file = null;
+		MissingReferences missingReferences = null;
 
 		try {
 			ExportImportThreadLocal.setLayoutImportInProcess(true);
@@ -398,13 +401,27 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 			FileEntry stagingRequestFileEntry = getStagingRequestFileEntry(
 				userId, stagingRequestId, folder);
 
+			file = FileUtil.createTempFile("lar");
+
+			FileUtil.write(file, stagingRequestFileEntry.getContentStream());
+
+			layoutLocalService.importLayoutsDataDeletions(
+				userId, folder.getGroupId(), privateLayout, parameterMap, file);
+
+			missingReferences = layoutLocalService.validateImportLayoutsFile(
+				userId, folder.getGroupId(), privateLayout, parameterMap, file);
+
 			layoutLocalService.importLayouts(
-				userId, folder.getGroupId(), privateLayout, parameterMap,
-				stagingRequestFileEntry.getContentStream());
+				userId, folder.getGroupId(), privateLayout, parameterMap, file);
+		}
+		catch (IOException ioe) {
+			throw new SystemException(ioe);
 		}
 		finally {
 			ExportImportThreadLocal.setLayoutImportInProcess(false);
 		}
+
+		return missingReferences;
 	}
 
 	@Override
