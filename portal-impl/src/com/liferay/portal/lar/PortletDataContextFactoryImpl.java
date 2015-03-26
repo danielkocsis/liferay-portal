@@ -88,6 +88,11 @@ public class PortletDataContextFactoryImpl
 		clonePortletDataContext.setUserPersonalSiteGroupId(
 			portletDataContext.getUserPersonalSiteGroupId());
 
+		Map<String, Map<?, ?>> primaryKeysMaps =
+			clonePortletDataContext.getNewPrimaryKeysMaps();
+
+		primaryKeysMaps.putAll(portletDataContext.getNewPrimaryKeysMaps());
+
 		return clonePortletDataContext;
 	}
 
