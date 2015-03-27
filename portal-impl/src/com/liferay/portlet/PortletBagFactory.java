@@ -41,7 +41,6 @@ import com.liferay.portal.kernel.template.TemplateHandler;
 import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyFactory;
@@ -568,9 +567,7 @@ public class PortletBagFactory {
 		ServiceTrackerList<PortletDataHandler> portletDataHandlerInstances =
 			getServiceTrackerList(PortletDataHandler.class, portlet);
 
-		if (ListUtil.isEmpty(portletDataHandlerInstances) &&
-			Validator.isNotNull(portlet.getPortletDataHandlerClass())) {
-
+		if (Validator.isNotNull(portlet.getPortletDataHandlerClass())) {
 			PortletDataHandler portletDataHandlerInstance =
 				(PortletDataHandler)newInstance(
 					PortletDataHandler.class,
