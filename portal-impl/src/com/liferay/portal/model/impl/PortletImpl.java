@@ -15,7 +15,6 @@
 package com.liferay.portal.model.impl;
 
 import com.liferay.portal.kernel.atom.AtomCollectionAdapter;
-import com.liferay.portal.kernel.lar.DefaultConfigurationPortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.lar.StagedModelDataHandler;
 import com.liferay.portal.kernel.log.Log;
@@ -1288,11 +1287,6 @@ public class PortletImpl extends PortletBaseImpl {
 	 */
 	@Override
 	public String getPortletDataHandlerClass() {
-		if (Validator.isNull(_portletDataHandlerClass)) {
-			_portletDataHandlerClass =
-				DefaultConfigurationPortletDataHandler.class.getName();
-		}
-
 		return _portletDataHandlerClass;
 	}
 
@@ -1315,13 +1309,7 @@ public class PortletImpl extends PortletBaseImpl {
 			portletBag.getPortletDataHandlerInstances();
 
 		if (portletDataHandlerInstances.isEmpty()) {
-			PortletDataHandler portletDataHandlerInstance =
-				new DefaultConfigurationPortletDataHandler();
-
-			portletDataHandlerInstances.add(portletDataHandlerInstance);
-
-			setPortletDataHandlerClass(
-				DefaultConfigurationPortletDataHandler.class.getName());
+			return null;
 		}
 
 		return portletDataHandlerInstances.get(0);
