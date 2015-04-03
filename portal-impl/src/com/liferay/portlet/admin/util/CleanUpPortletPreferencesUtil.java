@@ -40,9 +40,36 @@ public class CleanUpPortletPreferencesUtil {
 	public static void cleanUpLayoutRevisionPortletPreferences()
 		throws Exception {
 
+		ActionableDynamicQuery actionableDynamicQuery =
+			getPortletPreferencesActionableDynamicQuery();
+
+		actionableDynamicQuery.performActions();
+	}
+
+	protected static ActionableDynamicQuery
+		getPortletPreferencesActionableDynamicQuery() {
+
 		ActionableDynamicQuery portletPreferencesActionableDynamicQuery =
 			PortletPreferencesLocalServiceUtil.getActionableDynamicQuery();
 
+		portletPreferencesActionableDynamicQuery.setAddCriteriaMethod(
+			new ActionableDynamicQuery.AddCriteriaMethod() {
+
+				@Override
+				public void addCriteria(DynamicQuery dynamicQuery) {
+					Property plidProperty = PropertyFactoryUtil.forName("plid");
+
+					DynamicQuery layoutRevisionDynamicQuery =
+						LayoutRevisionLocalServiceUtil.dynamicQuery();
+
+					layoutRevisionDynamicQuery.setProjection(
+						ProjectionFactoryUtil.property("layoutRevisionId"));
+
+					dynamicQuery.add(
+						plidProperty.in(layoutRevisionDynamicQuery));
+				}
+
+			});
 		portletPreferencesActionableDynamicQuery.setPerformActionMethod(
 			new ActionableDynamicQuery.PerformActionMethod() {
 
@@ -66,8 +93,8 @@ public class CleanUpPortletPreferencesUtil {
 						return;
 					}
 
-					LayoutTypePortlet layoutTypePortlet = (
-						LayoutTypePortlet)layout.getLayoutType();
+					LayoutTypePortlet layoutTypePortlet =
+						(LayoutTypePortlet)layout.getLayoutType();
 
 					List<String> portletIds = layoutTypePortlet.getPortletIds();
 
@@ -89,26 +116,7 @@ public class CleanUpPortletPreferencesUtil {
 
 			});
 
-		portletPreferencesActionableDynamicQuery.setAddCriteriaMethod(
-			new ActionableDynamicQuery.AddCriteriaMethod() {
-
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					Property plidProperty = PropertyFactoryUtil.forName("plid");
-
-					DynamicQuery layoutRevisionDynamicQuery =
-						LayoutRevisionLocalServiceUtil.dynamicQuery();
-
-					layoutRevisionDynamicQuery.setProjection(
-						ProjectionFactoryUtil.property("layoutRevisionId"));
-
-					dynamicQuery.add(
-						plidProperty.in(layoutRevisionDynamicQuery));
-				}
-
-			});
-
-		portletPreferencesActionableDynamicQuery.performActions();
+		return portletPreferencesActionableDynamicQuery;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
