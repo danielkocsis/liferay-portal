@@ -65,7 +65,7 @@ public class PortletPreferencesLocalServiceStagingAdvice
 
 			if (methodName.equals("getPortletPreferences") &&
 				((arguments.length == 2) || (arguments.length == 3) ||
-					(arguments.length == 4))) {
+				 (arguments.length == 4))) {
 
 				return getPortletPreferences(methodInvocation);
 			}
