@@ -89,6 +89,7 @@ public class VerifyPortletPreferencesTest extends BaseVerifyProcessTestCase {
 		Layout layout = LayoutTestUtil.addLayout(_group, false);
 
 		ServiceContext serviceContext = new ServiceContext();
+
 		serviceContext.setUserId(TestPropsValues.getUserId());
 
 		LayoutSetBranch layoutSetBranch =
