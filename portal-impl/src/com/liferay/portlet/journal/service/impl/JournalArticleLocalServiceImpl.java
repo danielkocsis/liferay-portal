@@ -6447,6 +6447,10 @@ public class JournalArticleLocalServiceImpl
 	protected void formatDocumentLibrary(Element dynamicElementElement)
 		throws PortalException {
 
+		if (ExportImportThreadLocal.isImportInProcess()) {
+			return;
+		}
+
 		for (Element dynamicContentElement :
 				dynamicElementElement.elements("dynamic-content")) {
 
