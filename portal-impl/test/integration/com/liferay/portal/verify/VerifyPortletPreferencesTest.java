@@ -17,6 +17,7 @@ package com.liferay.portal.verify;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
+import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Group;
@@ -70,27 +71,22 @@ public class VerifyPortletPreferencesTest extends BaseVerifyProcessTestCase {
 				layoutRevision.getLayoutRevisionId(), "testPortlet",
 				new PortletImpl(), StringPool.BLANK);
 
-		PortletPreferences incorrectPortletPreferences =
-			PortletPreferencesLocalServiceUtil.fetchPortletPreferences(
-				portletPreferences.getPortletPreferencesId());
-
-		Assert.assertNotNull(incorrectPortletPreferences);
+		Assert.assertNotNull(portletPreferences);
 
 		doVerify();
 
-		incorrectPortletPreferences =
+		portletPreferences =
 			PortletPreferencesLocalServiceUtil.fetchPortletPreferences(
 				portletPreferences.getPortletPreferencesId());
 
-		Assert.assertNull(incorrectPortletPreferences);
+		Assert.assertNull(portletPreferences);
 	}
 
 	protected LayoutRevision getLayoutRevision() throws Exception {
 		Layout layout = LayoutTestUtil.addLayout(_group, false);
 
-		ServiceContext serviceContext = new ServiceContext();
-
-		serviceContext.setUserId(TestPropsValues.getUserId());
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext();
 
 		LayoutSetBranch layoutSetBranch =
 			LayoutSetBranchLocalServiceUtil.addLayoutSetBranch(
