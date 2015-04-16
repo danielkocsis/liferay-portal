@@ -72,12 +72,16 @@ public class PortletStagingBackgroundTaskExecutor
 					backgroundTask.getBackgroundTaskId(),
 					exportImportConfiguration));
 
+			ExportImportThreadLocal.setPortletStagingInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PUBLICATION_PORTLET_LOCAL_SUCCEEDED,
 				PROCESS_FLAG_PORTLET_STAGING_IN_PROCESS,
 				exportImportConfiguration);
 		}
 		catch (Throwable t) {
+			ExportImportThreadLocal.setPortletStagingInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PUBLICATION_PORTLET_LOCAL_FAILED,
 				PROCESS_FLAG_PORTLET_STAGING_IN_PROCESS,
@@ -91,9 +95,6 @@ public class PortletStagingBackgroundTaskExecutor
 			}
 
 			throw new SystemException(t);
-		}
-		finally {
-			ExportImportThreadLocal.setPortletStagingInProcess(false);
 		}
 
 		return processMissingReferences(

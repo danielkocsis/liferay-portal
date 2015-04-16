@@ -210,6 +210,8 @@ public class LayoutExporter {
 
 			File file = doExportLayoutsAsFile(portletDataContext, layoutIds);
 
+			ExportImportThreadLocal.setLayoutExportInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_LAYOUT_EXPORT_SUCCEEDED,
 				PROCESS_FLAG_LAYOUT_EXPORT_IN_PROCESS,
@@ -219,6 +221,8 @@ public class LayoutExporter {
 			return file;
 		}
 		catch (Throwable t) {
+			ExportImportThreadLocal.setLayoutExportInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_LAYOUT_EXPORT_FAILED,
 				PROCESS_FLAG_LAYOUT_EXPORT_IN_PROCESS,
@@ -227,9 +231,6 @@ public class LayoutExporter {
 				t);
 
 			throw t;
-		}
-		finally {
-			ExportImportThreadLocal.setLayoutExportInProcess(false);
 		}
 	}
 

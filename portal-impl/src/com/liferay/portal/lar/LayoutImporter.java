@@ -142,6 +142,8 @@ public class LayoutImporter {
 
 			doImportLayouts(portletDataContext, userId);
 
+			ExportImportThreadLocal.setLayoutImportInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_LAYOUT_IMPORT_SUCCEEDED,
 				PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS,
@@ -150,6 +152,8 @@ public class LayoutImporter {
 				userId);
 		}
 		catch (Throwable t) {
+			ExportImportThreadLocal.setLayoutImportInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_LAYOUT_IMPORT_FAILED,
 				PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS,
@@ -160,8 +164,6 @@ public class LayoutImporter {
 			throw t;
 		}
 		finally {
-			ExportImportThreadLocal.setLayoutImportInProcess(false);
-
 			CacheUtil.clearCache();
 			JournalContentUtil.clearCache();
 			PermissionCacheUtil.clearCache();

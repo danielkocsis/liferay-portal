@@ -273,6 +273,8 @@ public class PortletImporter {
 
 			doImportPortletInfo(portletDataContext, userId);
 
+			ExportImportThreadLocal.setPortletImportInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PORTLET_IMPORT_SUCCEEDED,
 				PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS,
@@ -281,6 +283,8 @@ public class PortletImporter {
 				userId);
 		}
 		catch (Throwable t) {
+			ExportImportThreadLocal.setPortletImportInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PORTLET_IMPORT_FAILED,
 				PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS,
@@ -291,8 +295,6 @@ public class PortletImporter {
 			throw t;
 		}
 		finally {
-			ExportImportThreadLocal.setPortletImportInProcess(false);
-
 			CacheUtil.clearCache();
 			JournalContentUtil.clearCache();
 			PermissionCacheUtil.clearCache();
