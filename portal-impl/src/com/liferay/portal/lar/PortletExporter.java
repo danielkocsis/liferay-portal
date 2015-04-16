@@ -14,6 +14,11 @@
 
 package com.liferay.portal.lar;
 
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_FAILED;
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_STARTED;
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_SUCCEEDED;
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS;
+
 import com.liferay.portal.LayoutImportException;
 import com.liferay.portal.NoSuchPortletPreferencesException;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskThreadLocal;
@@ -31,7 +36,6 @@ import com.liferay.portal.kernel.lar.PortletDataException;
 import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.lar.PortletDataHandlerStatusMessageSenderUtil;
-import com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants;
 import com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleManager;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -250,14 +254,16 @@ public class PortletExporter {
 				plid, groupId, portletId, parameterMap, startDate, endDate);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_STARTED,
+				EVENT_PORTLET_EXPORT_STARTED,
+				PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS,
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
 			File file = doExportPortletInfoAsFile(portletDataContext);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_SUCCEEDED,
+				EVENT_PORTLET_EXPORT_SUCCEEDED,
+				PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS,
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
@@ -265,7 +271,8 @@ public class PortletExporter {
 		}
 		catch (Throwable t) {
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_FAILED,
+				EVENT_PORTLET_EXPORT_FAILED,
+				PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS,
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				t);

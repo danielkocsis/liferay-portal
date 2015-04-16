@@ -14,6 +14,11 @@
 
 package com.liferay.portal.lar;
 
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_FAILED;
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_STARTED;
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_SUCCEEDED;
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS;
+
 import com.liferay.portal.LARFileException;
 import com.liferay.portal.LARTypeException;
 import com.liferay.portal.LayoutImportException;
@@ -37,7 +42,6 @@ import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.lar.PortletDataHandlerStatusMessageSenderUtil;
 import com.liferay.portal.kernel.lar.UserIdStrategy;
-import com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants;
 import com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleManager;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -262,21 +266,24 @@ public class PortletImporter {
 				userId, plid, groupId, portletId, parameterMap, file);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_STARTED,
+				EVENT_PORTLET_IMPORT_STARTED,
+				PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS,
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
 			doImportPortletInfo(portletDataContext, userId);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_SUCCEEDED,
+				EVENT_PORTLET_IMPORT_SUCCEEDED,
+				PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS,
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				userId);
 		}
 		catch (Throwable t) {
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_FAILED,
+				EVENT_PORTLET_IMPORT_FAILED,
+				PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS,
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				t);
