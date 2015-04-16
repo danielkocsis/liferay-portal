@@ -94,12 +94,16 @@ public class LayoutStagingBackgroundTaskExecutor
 					exportImportConfiguration, sourceGroupId, targetGroupId,
 					userId));
 
+			ExportImportThreadLocal.setLayoutStagingInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PUBLICATION_LAYOUT_LOCAL_SUCCEEDED,
 				PROCESS_FLAG_LAYOUT_STAGING_IN_PROCESS,
 				exportImportConfiguration);
 		}
 		catch (Throwable t) {
+			ExportImportThreadLocal.setLayoutStagingInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PUBLICATION_LAYOUT_LOCAL_FAILED,
 				PROCESS_FLAG_LAYOUT_STAGING_IN_PROCESS,
@@ -124,9 +128,6 @@ public class LayoutStagingBackgroundTaskExecutor
 			}
 
 			throw new SystemException(t);
-		}
-		finally {
-			ExportImportThreadLocal.setLayoutStagingInProcess(false);
 		}
 
 		return processMissingReferences(

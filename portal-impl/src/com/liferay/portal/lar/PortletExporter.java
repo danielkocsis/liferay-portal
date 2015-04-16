@@ -261,6 +261,8 @@ public class PortletExporter {
 
 			File file = doExportPortletInfoAsFile(portletDataContext);
 
+			ExportImportThreadLocal.setPortletExportInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PORTLET_EXPORT_SUCCEEDED,
 				PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS,
@@ -270,6 +272,8 @@ public class PortletExporter {
 			return file;
 		}
 		catch (Throwable t) {
+			ExportImportThreadLocal.setPortletExportInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PORTLET_EXPORT_FAILED,
 				PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS,
@@ -278,9 +282,6 @@ public class PortletExporter {
 				t);
 
 			throw t;
-		}
-		finally {
-			ExportImportThreadLocal.setPortletExportInProcess(false);
 		}
 	}
 

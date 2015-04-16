@@ -91,12 +91,16 @@ public class LayoutRemoteStagingBackgroundTaskExecutor
 					backgroundTask.getBackgroundTaskId(),
 					exportImportConfiguration));
 
+			ExportImportThreadLocal.setLayoutStagingInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PUBLICATION_LAYOUT_REMOTE_SUCCEEDED,
 				PROCESS_FLAG_LAYOUT_STAGING_IN_PROCESS,
 				exportImportConfiguration);
 		}
 		catch (Throwable t) {
+			ExportImportThreadLocal.setLayoutStagingInProcess(false);
+
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PUBLICATION_LAYOUT_REMOTE_FAILED,
 				PROCESS_FLAG_LAYOUT_STAGING_IN_PROCESS,
@@ -110,9 +114,6 @@ public class LayoutRemoteStagingBackgroundTaskExecutor
 			}
 
 			throw new SystemException(t);
-		}
-		finally {
-			ExportImportThreadLocal.setLayoutStagingInProcess(false);
 		}
 
 		return processMissingReferences(
