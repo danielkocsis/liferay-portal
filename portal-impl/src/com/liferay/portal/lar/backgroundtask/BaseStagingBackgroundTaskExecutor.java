@@ -35,6 +35,7 @@ import com.liferay.portal.service.UserLocalServiceUtil;
 
 import java.io.Serializable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
