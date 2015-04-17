@@ -49,22 +49,17 @@ public class IndexingExportImportLifecycleListener
 			ExportImportLifecycleEvent exportImportLifecycleEvent)
 		throws Exception {
 
-		boolean layoutImportInProcess =
-			exportImportLifecycleEvent.getProcessFlag(
-				ExportImportLifecycleConstants.
-					PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS);
-		boolean portletImportInProcess =
-			exportImportLifecycleEvent.getProcessFlag(
-				ExportImportLifecycleConstants.
-					PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS);
-
 		if (((exportImportLifecycleEvent.getCode() !=
 				ExportImportLifecycleConstants.EVENT_LAYOUT_IMPORT_SUCCEEDED) ||
-			 !layoutImportInProcess) &&
+			 !(exportImportLifecycleEvent.getProcessFlag() ==
+				 ExportImportLifecycleConstants.
+					 PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS)) &&
 			((exportImportLifecycleEvent.getCode() !=
 				ExportImportLifecycleConstants.
 					EVENT_PORTLET_IMPORT_SUCCEEDED) ||
-			 !portletImportInProcess)) {
+			 !(exportImportLifecycleEvent.getProcessFlag() ==
+				 ExportImportLifecycleConstants.
+					 PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS))) {
 
 			return;
 		}
