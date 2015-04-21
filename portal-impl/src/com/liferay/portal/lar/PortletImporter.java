@@ -18,6 +18,7 @@ import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConst
 import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_STARTED;
 import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_SUCCEEDED;
 import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS;
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_PORTLET_STAGING_IN_PROCESS;
 
 import com.liferay.portal.LARFileException;
 import com.liferay.portal.LARTypeException;
@@ -266,8 +267,7 @@ public class PortletImporter {
 				userId, plid, groupId, portletId, parameterMap, file);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_PORTLET_IMPORT_STARTED,
-				PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS,
+				EVENT_PORTLET_IMPORT_STARTED, getProcessFlag(),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
@@ -276,8 +276,7 @@ public class PortletImporter {
 			ExportImportThreadLocal.setPortletImportInProcess(false);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_PORTLET_IMPORT_SUCCEEDED,
-				PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS,
+				EVENT_PORTLET_IMPORT_SUCCEEDED, getProcessFlag(),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				userId);
@@ -286,8 +285,7 @@ public class PortletImporter {
 			ExportImportThreadLocal.setPortletImportInProcess(false);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_PORTLET_IMPORT_FAILED,
-				PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS,
+				EVENT_PORTLET_IMPORT_FAILED, getProcessFlag(),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				t);
@@ -704,6 +702,14 @@ public class PortletImporter {
 		}
 
 		return portletPreferences;
+	}
+
+	protected int getProcessFlag() {
+		if (ExportImportThreadLocal.isPortletStagingInProcess()) {
+			return PROCESS_FLAG_PORTLET_STAGING_IN_PROCESS;
+		}
+
+		return PROCESS_FLAG_PORTLET_IMPORT_IN_PROCESS;
 	}
 
 	protected void importPortletData(
