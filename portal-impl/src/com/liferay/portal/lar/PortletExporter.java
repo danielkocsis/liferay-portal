@@ -18,6 +18,7 @@ import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConst
 import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_STARTED;
 import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_SUCCEEDED;
 import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS;
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_PORTLET_STAGING_IN_PROCESS;
 
 import com.liferay.portal.LayoutImportException;
 import com.liferay.portal.NoSuchPortletPreferencesException;
@@ -254,8 +255,7 @@ public class PortletExporter {
 				plid, groupId, portletId, parameterMap, startDate, endDate);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_PORTLET_EXPORT_STARTED,
-				PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS,
+				EVENT_PORTLET_EXPORT_STARTED, getProcessFlag(),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
@@ -264,8 +264,7 @@ public class PortletExporter {
 			ExportImportThreadLocal.setPortletExportInProcess(false);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_PORTLET_EXPORT_SUCCEEDED,
-				PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS,
+				EVENT_PORTLET_EXPORT_SUCCEEDED, getProcessFlag(),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
@@ -275,8 +274,7 @@ public class PortletExporter {
 			ExportImportThreadLocal.setPortletExportInProcess(false);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_PORTLET_EXPORT_FAILED,
-				PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS,
+				EVENT_PORTLET_EXPORT_FAILED, getProcessFlag(),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				t);
@@ -1178,6 +1176,14 @@ public class PortletExporter {
 		}
 
 		return portletPreferences;
+	}
+
+	protected int getProcessFlag() {
+		if (ExportImportThreadLocal.isPortletStagingInProcess()) {
+			return PROCESS_FLAG_PORTLET_STAGING_IN_PROCESS;
+		}
+
+		return PROCESS_FLAG_PORTLET_EXPORT_IN_PROCESS;
 	}
 
 	private PortletExporter() {

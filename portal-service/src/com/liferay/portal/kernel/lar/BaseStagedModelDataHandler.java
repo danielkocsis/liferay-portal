@@ -581,7 +581,18 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 	}
 
 	protected int getProcessFlag() {
-		if (ExportImportThreadLocal.isLayoutExportInProcess()) {
+
+		// Ordered by precedence
+
+		if (ExportImportThreadLocal.isLayoutStagingInProcess()) {
+			return ExportImportLifecycleConstants.
+				PROCESS_FLAG_LAYOUT_STAGING_IN_PROCESS;
+		}
+		else if (ExportImportThreadLocal.isPortletStagingInProcess()) {
+			return ExportImportLifecycleConstants.
+				PROCESS_FLAG_PORTLET_STAGING_IN_PROCESS;
+		}
+		else if (ExportImportThreadLocal.isLayoutExportInProcess()) {
 			return ExportImportLifecycleConstants.
 				PROCESS_FLAG_LAYOUT_EXPORT_IN_PROCESS;
 		}

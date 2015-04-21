@@ -21,6 +21,7 @@ import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConst
 import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_STARTED;
 import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_IMPORT_SUCCEEDED;
 import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS;
+import static com.liferay.portal.kernel.lar.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_LAYOUT_STAGING_IN_PROCESS;
 
 import com.liferay.portal.LARFileException;
 import com.liferay.portal.LARTypeException;
@@ -135,8 +136,7 @@ public class LayoutImporter {
 				userId, groupId, privateLayout, parameterMap, file);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_LAYOUT_IMPORT_STARTED,
-				PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS,
+				EVENT_LAYOUT_IMPORT_STARTED, getProcessFlag(),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
@@ -145,8 +145,7 @@ public class LayoutImporter {
 			ExportImportThreadLocal.setLayoutImportInProcess(false);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_LAYOUT_IMPORT_SUCCEEDED,
-				PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS,
+				EVENT_LAYOUT_IMPORT_SUCCEEDED, getProcessFlag(),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				userId);
@@ -155,8 +154,7 @@ public class LayoutImporter {
 			ExportImportThreadLocal.setLayoutImportInProcess(false);
 
 			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_LAYOUT_IMPORT_FAILED,
-				PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS,
+				EVENT_LAYOUT_IMPORT_FAILED, getProcessFlag(),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				t);
@@ -734,8 +732,7 @@ public class LayoutImporter {
 
 			try {
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-					EVENT_PORTLET_IMPORT_STARTED,
-					PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS,
+					EVENT_PORTLET_IMPORT_STARTED, getProcessFlag(),
 					PortletDataContextFactoryUtil.clonePortletDataContext(
 						portletDataContext));
 
@@ -763,15 +760,13 @@ public class LayoutImporter {
 				}
 
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-					EVENT_PORTLET_IMPORT_SUCCEEDED,
-					PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS,
+					EVENT_PORTLET_IMPORT_SUCCEEDED, getProcessFlag(),
 					PortletDataContextFactoryUtil.clonePortletDataContext(
 						portletDataContext));
 			}
 			catch (Throwable t) {
 				ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-					EVENT_PORTLET_IMPORT_FAILED,
-					PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS,
+					EVENT_PORTLET_IMPORT_FAILED, getProcessFlag(),
 					PortletDataContextFactoryUtil.clonePortletDataContext(
 						portletDataContext),
 					t);
@@ -937,6 +932,14 @@ public class LayoutImporter {
 		portletDataContext.setPrivateLayout(privateLayout);
 
 		return portletDataContext;
+	}
+
+	protected int getProcessFlag() {
+		if (ExportImportThreadLocal.isLayoutStagingInProcess()) {
+			return PROCESS_FLAG_LAYOUT_STAGING_IN_PROCESS;
+		}
+
+		return PROCESS_FLAG_LAYOUT_IMPORT_IN_PROCESS;
 	}
 
 	protected void importLayout(
