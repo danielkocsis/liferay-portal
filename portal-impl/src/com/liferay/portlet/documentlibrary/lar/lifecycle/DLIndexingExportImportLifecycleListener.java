@@ -83,18 +83,23 @@ public class DLIndexingExportImportLifecycleListener
 				DLFileEntry.class);
 
 		dlFileEntries = ListUtil.filter(
-			dlFileEntries, new PredicateFilter<DLFileEntry>() {
+			dlFileEntries,
+			new PredicateFilter<DLFileEntry>() {
 
-			@Override
-			public boolean filter(DLFileEntry dlFileEntry) {
-				return !dlFileEntryPrimaryKeysMap.containsValue(
-					dlFileEntry.getFileEntryId());
-			}
+				@Override
+				public boolean filter(DLFileEntry dlFileEntry) {
+					return !dlFileEntryPrimaryKeysMap.containsValue(
+						dlFileEntry.getFileEntryId());
+				}
 
-		});
+			});
 
 		Indexer dlFileEntryIndexer = IndexerRegistryUtil.getIndexer(
 			DLFileEntry.class);
+
+		if (dlFileEntryIndexer == null) {
+			return;
+		}
 
 		for (DLFileEntry dlFileEntry : dlFileEntries) {
 			try {
