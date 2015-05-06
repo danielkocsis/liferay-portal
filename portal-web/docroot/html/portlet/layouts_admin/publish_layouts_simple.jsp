@@ -138,8 +138,6 @@ if (exportImportConfiguration.getType() == ExportImportConfigurationConstants.TY
 
 			<aui:button-row>
 				<aui:button type="submit" value="<%= LanguageUtil.get(request, submitLanguageKey) %>" />
-
-				<aui:button type="cancel" />
 			</aui:button-row>
 		</ul>
 	</div>
