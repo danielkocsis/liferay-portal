@@ -41,6 +41,7 @@
 		</property>
 	</bean>
 	<bean id="com.liferay.portal.lar.lifecycle.CacheExportImportLifecycleListener" class="com.liferay.portal.lar.lifecycle.CacheExportImportLifecycleListener" />
+	<bean id="com.liferay.portlet.documentlibrary.lar.DLIndexingExportImportLifecycleListener" class="com.liferay.portlet.documentlibrary.lar.lifecycle.DLIndexingExportImportLifecycleListener" />
 	<bean id="com.liferay.portal.lar.lifecycle.IndexingExportImportLifecycleListener" class="com.liferay.portal.lar.lifecycle.IndexingExportImportLifecycleListener" />
 	<bean id="com.liferay.portal.lar.lifecycle.LoggerExportImportLifecycleListener" class="com.liferay.portal.lar.lifecycle.LoggerExportImportLifecycleListener" />
 	<bean id="com.liferay.portal.model.adapter.builder.StagedGroupModelAdapterBuilder" class="com.liferay.portal.model.adapter.builder.StagedGroupModelAdapterBuilder" />
