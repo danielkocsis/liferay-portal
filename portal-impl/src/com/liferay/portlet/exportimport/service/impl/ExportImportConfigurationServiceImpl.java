@@ -14,30 +14,70 @@
 
 package com.liferay.portlet.exportimport.service.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portal.service.permission.GroupPermissionUtil;
+import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
 import com.liferay.portlet.exportimport.service.base.ExportImportConfigurationServiceBaseImpl;
 
 /**
- * The implementation of the export import configuration remote service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.portlet.exportimport.service.ExportImportConfigurationService} interface.
- *
- * <p>
- * This is a remote service. Methods of this service are expected to have security checks based on the propagated JAAS credentials because this service can be accessed remotely.
- * </p>
- *
  * @author Brian Wing Shun Chan
- * @see ExportImportConfigurationServiceBaseImpl
- * @see com.liferay.portlet.exportimport.service.ExportImportConfigurationServiceUtil
+ * @author Levente Hudák
  */
-@ProviderType
 public class ExportImportConfigurationServiceImpl
 	extends ExportImportConfigurationServiceBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use {@link com.liferay.portlet.exportimport.service.ExportImportConfigurationServiceUtil} to access the export import configuration remote service.
-	 */
+
+	@Override
+	public void deleteExportImportConfiguration(
+			long exportImportConfigurationId)
+		throws PortalException {
+
+		ExportImportConfiguration exportImportConfiguration =
+			exportImportConfigurationLocalService.getExportImportConfiguration(
+				exportImportConfigurationId);
+
+		GroupPermissionUtil.check(
+			getPermissionChecker(), exportImportConfiguration.getGroupId(),
+			ActionKeys.DELETE);
+
+		exportImportConfigurationLocalService.deleteExportImportConfiguration(
+			exportImportConfiguration);
+	}
+
+	@Override
+	public ExportImportConfiguration moveExportImportConfigurationToTrash(
+			long exportImportConfigurationId)
+		throws PortalException {
+
+		ExportImportConfiguration exportImportConfiguration =
+			exportImportConfigurationLocalService.getExportImportConfiguration(
+				exportImportConfigurationId);
+
+		GroupPermissionUtil.check(
+			getPermissionChecker(), exportImportConfiguration.getGroupId(),
+			ActionKeys.DELETE);
+
+		return exportImportConfigurationLocalService.
+			moveExportImportConfigurationToTrash(
+				getUserId(), exportImportConfigurationId);
+	}
+
+	@Override
+	public ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+			long exportImportConfigurationId)
+		throws PortalException {
+
+		ExportImportConfiguration exportImportConfiguration =
+			exportImportConfigurationLocalService.getExportImportConfiguration(
+				exportImportConfigurationId);
+
+		GroupPermissionUtil.check(
+			getPermissionChecker(), exportImportConfiguration.getGroupId(),
+			ActionKeys.DELETE);
+
+		return exportImportConfigurationLocalService.
+			restoreExportImportConfigurationFromTrash(
+				getUserId(), exportImportConfigurationId);
+	}
+
 }

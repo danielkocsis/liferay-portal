@@ -16,23 +16,34 @@ package com.liferay.portlet.exportimport.model.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+
+import java.io.Serializable;
+
+import java.util.Map;
+
 /**
- * The extended model implementation for the ExportImportConfiguration service. Represents a row in the &quot;ExportImportConfiguration&quot; database table, with each column mapped to a property of this class.
- *
- * <p>
- * Helper methods and all application logic should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.portlet.exportimport.model.ExportImportConfiguration} interface.
- * </p>
- *
  * @author Brian Wing Shun Chan
+ * @author Daniel Kocsis
  */
 @ProviderType
 public class ExportImportConfigurationImpl
 	extends ExportImportConfigurationBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. All methods that expect a export import configuration model instance should use the {@link com.liferay.portlet.exportimport.model.ExportImportConfiguration} interface instead.
-	 */
-	public ExportImportConfigurationImpl() {
+
+	@Override
+	public Map<String, Serializable> getSettingsMap() {
+		if (_settingsMap != null) {
+			return _settingsMap;
+		}
+
+		String settings = getSettings();
+
+		_settingsMap = (Map<String, Serializable>)JSONFactoryUtil.deserialize(
+			settings);
+
+		return _settingsMap;
 	}
+
+	private Map<String, Serializable> _settingsMap;
+
 }

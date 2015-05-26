@@ -14,29 +14,53 @@
 
 package com.liferay.portlet.exportimport;
 
-import aQute.bnd.annotation.ProviderType;
-
 import com.liferay.portal.kernel.exception.PortalException;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Raymond Augé
  */
-@ProviderType
 public class RemoteExportException extends PortalException {
 
-	public RemoteExportException() {
+	public static final int BAD_CONNECTION = 1;
+
+	public static final int INVALID_GROUP = 2;
+
+	public static final int NO_GROUP = 3;
+
+	public static final int NO_PERMISSIONS = 5;
+
+	public RemoteExportException(int type) {
+		_type = type;
 	}
 
-	public RemoteExportException(String msg) {
+	public RemoteExportException(int type, String msg) {
 		super(msg);
+
+		_type = type;
 	}
 
-	public RemoteExportException(String msg, Throwable cause) {
-		super(msg, cause);
+	public long getGroupId() {
+		return _groupId;
 	}
 
-	public RemoteExportException(Throwable cause) {
-		super(cause);
+	public int getType() {
+		return _type;
 	}
+
+	public String getURL() {
+		return _url;
+	}
+
+	public void setGroupId(long groupId) {
+		_groupId = groupId;
+	}
+
+	public void setURL(String url) {
+		_url = url;
+	}
+
+	private long _groupId;
+	private final int _type;
+	private String _url;
 
 }
