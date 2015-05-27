@@ -568,8 +568,6 @@
 		<reference package-path="com.liferay.portal" entity="BackgroundTask" />
 		<reference package-path="com.liferay.portal" entity="ClassName" />
 		<reference package-path="com.liferay.portal" entity="Company" />
-		<reference package-path="com.liferay.portal" entity="ExportImport" />
-		<reference package-path="com.liferay.portal" entity="ExportImportConfiguration" />
 		<reference package-path="com.liferay.portal" entity="Layout" />
 		<reference package-path="com.liferay.portal" entity="LayoutPrototype" />
 		<reference package-path="com.liferay.portal" entity="LayoutSet" />
@@ -585,7 +583,6 @@
 		<reference package-path="com.liferay.portal" entity="ResourcePermission" />
 		<reference package-path="com.liferay.portal" entity="ResourceTypePermission" />
 		<reference package-path="com.liferay.portal" entity="Role" />
-		<reference package-path="com.liferay.portal" entity="Staging" />
 		<reference package-path="com.liferay.portal" entity="Subscription" />
 		<reference package-path="com.liferay.portal" entity="Team" />
 		<reference package-path="com.liferay.portal" entity="User" />
@@ -599,6 +596,9 @@
 		<reference package-path="com.liferay.portlet.asset" entity="AssetVocabulary" />
 		<reference package-path="com.liferay.portlet.documentlibrary" entity="DLApp" />
 		<reference package-path="com.liferay.portlet.expando" entity="ExpandoRow" />
+		<reference package-path="com.liferay.portlet.exportimport" entity="ExportImport" />
+		<reference package-path="com.liferay.portlet.exportimport" entity="ExportImportConfiguration" />
+		<reference package-path="com.liferay.portlet.exportimport" entity="Staging" />
 		<reference package-path="com.liferay.portlet.shopping" entity="ShoppingCart" />
 		<reference package-path="com.liferay.portlet.shopping" entity="ShoppingCategory" />
 		<reference package-path="com.liferay.portlet.shopping" entity="ShoppingCoupon" />
@@ -744,7 +744,6 @@
 
 		<reference package-path="com.liferay.portal" entity="BackgroundTask" />
 		<reference package-path="com.liferay.portal" entity="ClassName" />
-		<reference package-path="com.liferay.portal" entity="ExportImportConfiguration" />
 		<reference package-path="com.liferay.portal" entity="Group" />
 		<reference package-path="com.liferay.portal" entity="Image" />
 		<reference package-path="com.liferay.portal" entity="LayoutFriendlyURL" />
@@ -761,6 +760,7 @@
 		<reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
 		<reference package-path="com.liferay.portlet.asset" entity="AssetTag" />
 		<reference package-path="com.liferay.portlet.expando" entity="ExpandoRow" />
+		<reference package-path="com.liferay.portlet.exportimport" entity="ExportImportConfiguration" />
 		<reference package-path="com.liferay.portlet.ratings" entity="RatingsStats" />
 	</entity>
 	<entity name="LayoutBranch" local-service="true" remote-service="true">
@@ -2743,8 +2743,6 @@
 
 		<!-- References -->
 
-		<reference package-path="com.liferay.portal" entity="ExportImport" />
-		<reference package-path="com.liferay.portal" entity="ExportImportConfiguration" />
 		<reference package-path="com.liferay.portal" entity="Group" />
 		<reference package-path="com.liferay.portal" entity="Layout" />
 		<reference package-path="com.liferay.portal" entity="Resource" />
@@ -2752,6 +2750,8 @@
 		<reference package-path="com.liferay.portal" entity="User" />
 		<reference package-path="com.liferay.portal" entity="UserGroupGroupRole" />
 		<reference package-path="com.liferay.portlet.expando" entity="ExpandoRow" />
+		<reference package-path="com.liferay.portlet.exportimport" entity="ExportImport" />
+		<reference package-path="com.liferay.portlet.exportimport" entity="ExportImportConfiguration" />
 	</entity>
 	<entity name="UserGroupGroupRole" local-service="true" remote-service="true">
 
