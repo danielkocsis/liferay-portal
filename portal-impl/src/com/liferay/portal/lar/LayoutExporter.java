@@ -56,6 +56,7 @@ import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
@@ -89,6 +90,7 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
+import com.liferay.portal.util.PropsValues;
 
 import java.io.File;
 
@@ -759,10 +761,29 @@ public class LayoutExporter {
 
 		Group group = GroupLocalServiceUtil.getGroup(groupId);
 
+		ZipWriter zipWriter;
+
+		if (!ExportImportThreadLocal.isStagingInProcess() ||
+			(PropsValues.STAGING_DELETE_TEMP_LAR_ON_FAILURE &&
+			 PropsValues.STAGING_DELETE_TEMP_LAR_ON_SUCCESS)) {
+
+			zipWriter = ZipWriterFactoryUtil.getZipWriter();
+		}
+		else {
+			File file = new File(
+				SystemProperties.get(SystemProperties.TMP_DIR) +
+				StringPool.SLASH + MapUtil.getString(
+					parameterMap, Constants.CMD) +
+				StringPool.DASH + groupId + StringPool.DASH +
+				Time.getShortTimestamp() + ".lar");
+
+			zipWriter = ZipWriterFactoryUtil.getZipWriter(file);
+		}
+
 		PortletDataContext portletDataContext =
 			PortletDataContextFactoryUtil.createExportPortletDataContext(
 				group.getCompanyId(), groupId, parameterMap, startDate, endDate,
-				ZipWriterFactoryUtil.getZipWriter());
+				zipWriter);
 
 		portletDataContext.setPrivateLayout(privateLayout);
 
