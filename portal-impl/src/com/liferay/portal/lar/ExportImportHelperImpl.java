@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.lar.DefaultConfigurationPortletDataHandler;
 import com.liferay.portal.kernel.lar.ExportImportDateUtil;
 import com.liferay.portal.kernel.lar.ExportImportHelper;
 import com.liferay.portal.kernel.lar.ExportImportPathUtil;
+import com.liferay.portal.kernel.lar.ExportImportThreadLocal;
 import com.liferay.portal.kernel.lar.ManifestSummary;
 import com.liferay.portal.kernel.lar.MissingReference;
 import com.liferay.portal.kernel.lar.MissingReferences;
@@ -46,6 +47,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.kernel.util.Digester;
@@ -61,6 +63,7 @@ import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
@@ -70,6 +73,8 @@ import com.liferay.portal.kernel.xml.ElementHandler;
 import com.liferay.portal.kernel.xml.ElementProcessor;
 import com.liferay.portal.kernel.zip.ZipReader;
 import com.liferay.portal.kernel.zip.ZipReaderFactoryUtil;
+import com.liferay.portal.kernel.zip.ZipWriter;
+import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.GroupConstants;
@@ -689,6 +694,25 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 		}
 
 		return new CurrentUserIdStrategy(user);
+	}
+
+	@Override
+	public ZipWriter getZipWriter(
+		long groupId, Map<String, String[]> parameterMap) {
+
+		if (!ExportImportThreadLocal.isStagingInProcess() ||
+			(PropsValues.STAGING_DELETE_TEMP_LAR_ON_FAILURE &&
+			 PropsValues.STAGING_DELETE_TEMP_LAR_ON_SUCCESS)) {
+
+			return ZipWriterFactoryUtil.getZipWriter();
+		}
+
+		File file = new File(
+			SystemProperties.get(SystemProperties.TMP_DIR) + StringPool.SLASH +
+			MapUtil.getString(parameterMap, Constants.CMD) + StringPool.DASH +
+			groupId + StringPool.DASH + Time.getShortTimestamp() + ".lar");
+
+		return ZipWriterFactoryUtil.getZipWriter(file);
 	}
 
 	@Override

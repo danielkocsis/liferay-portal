@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.StagedModel;
@@ -223,6 +224,9 @@ public interface ExportImportHelper {
 
 	public UserIdStrategy getUserIdStrategy(long userId, String userIdStrategy)
 		throws PortalException;
+
+	public ZipWriter getZipWriter(
+		long groupId, Map<String, String[]> parameterMap);
 
 	public boolean isReferenceWithinExportScope(
 		PortletDataContext portletDataContext, StagedModel stagedModel);
