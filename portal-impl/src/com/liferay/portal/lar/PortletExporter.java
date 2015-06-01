@@ -43,7 +43,6 @@ import com.liferay.portal.kernel.lock.Lock;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.CharPool;
-import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -51,7 +50,6 @@ import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
@@ -60,7 +58,6 @@ import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.zip.ZipWriter;
-import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
@@ -81,7 +78,6 @@ import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
-import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLink;
@@ -1145,24 +1141,8 @@ public class PortletExporter {
 
 		Layout layout = LayoutLocalServiceUtil.getLayout(plid);
 
-		ZipWriter zipWriter;
-
-		if (!ExportImportThreadLocal.isStagingInProcess() ||
-			(PropsValues.STAGING_DELETE_TEMP_LAR_ON_FAILURE &&
-			 PropsValues.STAGING_DELETE_TEMP_LAR_ON_SUCCESS)) {
-
-			zipWriter = ZipWriterFactoryUtil.getZipWriter();
-		}
-		else {
-			File file = new File(
-				SystemProperties.get(SystemProperties.TMP_DIR) +
-				StringPool.SLASH + MapUtil.getString(
-					parameterMap, Constants.CMD) +
-				StringPool.DASH + groupId + StringPool.DASH +
-				Time.getShortTimestamp() + ".lar");
-
-			zipWriter = ZipWriterFactoryUtil.getZipWriter(file);
-		}
+		ZipWriter zipWriter = ExportImportHelperUtil.getZipWriter(
+			groupId, parameterMap);
 
 		PortletDataContext portletDataContext =
 			PortletDataContextFactoryUtil.createExportPortletDataContext(

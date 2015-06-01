@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermissio
 import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.StagedModel;
@@ -299,6 +300,12 @@ public class ExportImportHelperUtil {
 
 		return getExportImportHelper().getUserIdStrategy(
 			userId, userIdStrategy);
+	}
+
+	public static ZipWriter getZipWriter(
+		long groupId, Map<String, String[]> parameterMap) {
+
+		return getExportImportHelper().getZipWriter(groupId, parameterMap);
 	}
 
 	public static boolean isReferenceWithinExportScope(
