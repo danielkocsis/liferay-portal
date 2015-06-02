@@ -108,7 +108,7 @@ public class StagingLocalServiceWrapper implements StagingLocalService,
 	@Override
 	public com.liferay.portal.kernel.lar.MissingReferences publishStagingRequest(
 		long userId, long stagingRequestId,
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _stagingLocalService.publishStagingRequest(userId,
 			stagingRequestId, exportImportConfiguration);

@@ -34,14 +34,14 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public java.io.File exportLayoutsAsFile(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.exportLayoutsAsFile(exportImportConfiguration);
 	}
 
 	@Override
 	public long exportLayoutsAsFileInBackground(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.exportLayoutsAsFileInBackground(exportImportConfiguration);
 	}
@@ -55,14 +55,14 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public java.io.File exportPortletInfoAsFile(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.exportPortletInfoAsFile(exportImportConfiguration);
 	}
 
 	@Override
 	public long exportPortletInfoAsFileInBackground(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.exportPortletInfoAsFileInBackground(exportImportConfiguration);
 	}
@@ -79,7 +79,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public void importLayouts(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportService.importLayouts(exportImportConfiguration, file);
@@ -87,7 +87,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public void importLayouts(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportService.importLayouts(exportImportConfiguration,
@@ -96,7 +96,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public long importLayoutsInBackground(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.importLayoutsInBackground(exportImportConfiguration,
@@ -105,7 +105,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public long importLayoutsInBackground(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.importLayoutsInBackground(exportImportConfiguration,
@@ -114,7 +114,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public void importPortletInfo(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportService.importPortletInfo(exportImportConfiguration, file);
@@ -122,7 +122,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public void importPortletInfo(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportService.importPortletInfo(exportImportConfiguration,
@@ -131,7 +131,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public long importPortletInfoInBackground(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.importPortletInfoInBackground(exportImportConfiguration,
@@ -140,7 +140,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public long importPortletInfoInBackground(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.importPortletInfoInBackground(exportImportConfiguration,
@@ -159,7 +159,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public com.liferay.portal.kernel.lar.MissingReferences validateImportLayoutsFile(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.validateImportLayoutsFile(exportImportConfiguration,
@@ -168,7 +168,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public com.liferay.portal.kernel.lar.MissingReferences validateImportLayoutsFile(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.validateImportLayoutsFile(exportImportConfiguration,
@@ -177,7 +177,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public com.liferay.portal.kernel.lar.MissingReferences validateImportPortletInfo(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.validateImportPortletInfo(exportImportConfiguration,
@@ -186,7 +186,7 @@ public class ExportImportServiceWrapper implements ExportImportService,
 
 	@Override
 	public com.liferay.portal.kernel.lar.MissingReferences validateImportPortletInfo(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportService.validateImportPortletInfo(exportImportConfiguration,

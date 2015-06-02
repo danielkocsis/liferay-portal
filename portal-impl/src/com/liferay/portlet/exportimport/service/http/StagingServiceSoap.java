@@ -83,11 +83,11 @@ public class StagingServiceSoap {
 
 	public static com.liferay.portal.kernel.lar.MissingReferences publishStagingRequest(
 		long stagingRequestId,
-		com.liferay.portal.model.ExportImportConfigurationSoap exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfigurationSoap exportImportConfiguration)
 		throws RemoteException {
 		try {
 			com.liferay.portal.kernel.lar.MissingReferences returnValue = StagingServiceUtil.publishStagingRequest(stagingRequestId,
-					com.liferay.portal.model.impl.ExportImportConfigurationModelImpl.toModel(
+					com.liferay.portlet.exportimport.model.impl.ExportImportConfigurationModelImpl.toModel(
 						exportImportConfiguration));
 
 			return returnValue;

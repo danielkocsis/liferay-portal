@@ -56,10 +56,10 @@ public interface ExportImportConfigurationService extends BaseService {
 	*/
 	public java.lang.String getBeanIdentifier();
 
-	public com.liferay.portal.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
 		long exportImportConfigurationId) throws PortalException;
 
-	public com.liferay.portal.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
 		long exportImportConfigurationId) throws PortalException;
 
 	/**

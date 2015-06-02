@@ -84,7 +84,7 @@ public class ExportImportConfigurationServiceHttp {
 		}
 	}
 
-	public static com.liferay.portal.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
 		HttpPrincipal httpPrincipal, long exportImportConfigurationId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		try {
@@ -108,7 +108,7 @@ public class ExportImportConfigurationServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portal.model.ExportImportConfiguration)returnObj;
+			return (com.liferay.portlet.exportimport.model.ExportImportConfiguration)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -117,7 +117,7 @@ public class ExportImportConfigurationServiceHttp {
 		}
 	}
 
-	public static com.liferay.portal.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
 		HttpPrincipal httpPrincipal, long exportImportConfigurationId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		try {
@@ -141,7 +141,7 @@ public class ExportImportConfigurationServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portal.model.ExportImportConfiguration)returnObj;
+			return (com.liferay.portlet.exportimport.model.ExportImportConfiguration)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);

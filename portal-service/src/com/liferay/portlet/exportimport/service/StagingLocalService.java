@@ -87,7 +87,7 @@ public interface StagingLocalService extends BaseLocalService {
 
 	public com.liferay.portal.kernel.lar.MissingReferences publishStagingRequest(
 		long userId, long stagingRequestId,
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws PortalException;
 
 	/**

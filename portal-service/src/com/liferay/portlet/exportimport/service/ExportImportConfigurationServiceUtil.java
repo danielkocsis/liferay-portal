@@ -55,14 +55,14 @@ public class ExportImportConfigurationServiceUtil {
 		return getService().getBeanIdentifier();
 	}
 
-	public static com.liferay.portal.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
 		long exportImportConfigurationId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
 				   .moveExportImportConfigurationToTrash(exportImportConfigurationId);
 	}
 
-	public static com.liferay.portal.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
 		long exportImportConfigurationId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()

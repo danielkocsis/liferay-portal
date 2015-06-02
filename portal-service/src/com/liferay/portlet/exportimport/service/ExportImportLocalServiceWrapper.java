@@ -35,14 +35,14 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public java.io.File exportLayoutsAsFile(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.exportLayoutsAsFile(exportImportConfiguration);
 	}
 
 	@Override
 	public long exportLayoutsAsFileInBackground(long userId,
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.exportLayoutsAsFileInBackground(userId,
 			exportImportConfiguration);
@@ -58,14 +58,14 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public java.io.File exportPortletInfoAsFile(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.exportPortletInfoAsFile(exportImportConfiguration);
 	}
 
 	@Override
 	public long exportPortletInfoAsFileInBackground(long userId,
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration)
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.exportPortletInfoAsFileInBackground(userId,
 			exportImportConfiguration);
@@ -91,7 +91,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public void importLayouts(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportLocalService.importLayouts(exportImportConfiguration, file);
@@ -99,7 +99,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public void importLayouts(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportLocalService.importLayouts(exportImportConfiguration,
@@ -108,7 +108,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public void importLayoutsDataDeletions(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportLocalService.importLayoutsDataDeletions(exportImportConfiguration,
@@ -117,7 +117,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public long importLayoutsInBackground(long userId,
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.importLayoutsInBackground(userId,
@@ -126,7 +126,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public long importLayoutsInBackground(long userId,
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.importLayoutsInBackground(userId,
@@ -151,7 +151,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public void importPortletDataDeletions(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportLocalService.importPortletDataDeletions(exportImportConfiguration,
@@ -160,7 +160,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public void importPortletInfo(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportLocalService.importPortletInfo(exportImportConfiguration,
@@ -169,7 +169,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public void importPortletInfo(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_exportImportLocalService.importPortletInfo(exportImportConfiguration,
@@ -178,7 +178,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public long importPortletInfoInBackground(long userId,
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.importPortletInfoInBackground(userId,
@@ -187,7 +187,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public long importPortletInfoInBackground(long userId,
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.importPortletInfoInBackground(userId,
@@ -222,7 +222,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public com.liferay.portal.kernel.lar.MissingReferences validateImportLayoutsFile(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.validateImportLayoutsFile(exportImportConfiguration,
@@ -231,7 +231,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public com.liferay.portal.kernel.lar.MissingReferences validateImportLayoutsFile(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.validateImportLayoutsFile(exportImportConfiguration,
@@ -240,7 +240,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public com.liferay.portal.kernel.lar.MissingReferences validateImportPortletInfo(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.validateImportPortletInfo(exportImportConfiguration,
@@ -249,7 +249,7 @@ public class ExportImportLocalServiceWrapper implements ExportImportLocalService
 
 	@Override
 	public com.liferay.portal.kernel.lar.MissingReferences validateImportPortletInfo(
-		com.liferay.portal.model.ExportImportConfiguration exportImportConfiguration,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration,
 		java.io.InputStream inputStream)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportLocalService.validateImportPortletInfo(exportImportConfiguration,

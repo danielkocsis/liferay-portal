@@ -77,12 +77,13 @@ public class ExportImportConfigurationServiceSoap {
 		}
 	}
 
-	public static com.liferay.portal.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
+	public static com.liferay.portlet.exportimport.model.ExportImportConfigurationSoap moveExportImportConfigurationToTrash(
 		long exportImportConfigurationId) throws RemoteException {
 		try {
-			com.liferay.portal.model.ExportImportConfiguration returnValue = ExportImportConfigurationServiceUtil.moveExportImportConfigurationToTrash(exportImportConfigurationId);
+			com.liferay.portlet.exportimport.model.ExportImportConfiguration returnValue =
+				ExportImportConfigurationServiceUtil.moveExportImportConfigurationToTrash(exportImportConfigurationId);
 
-			return returnValue;
+			return com.liferay.portlet.exportimport.model.ExportImportConfigurationSoap.toSoapModel(returnValue);
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -91,12 +92,13 @@ public class ExportImportConfigurationServiceSoap {
 		}
 	}
 
-	public static com.liferay.portal.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+	public static com.liferay.portlet.exportimport.model.ExportImportConfigurationSoap restoreExportImportConfigurationFromTrash(
 		long exportImportConfigurationId) throws RemoteException {
 		try {
-			com.liferay.portal.model.ExportImportConfiguration returnValue = ExportImportConfigurationServiceUtil.restoreExportImportConfigurationFromTrash(exportImportConfigurationId);
+			com.liferay.portlet.exportimport.model.ExportImportConfiguration returnValue =
+				ExportImportConfigurationServiceUtil.restoreExportImportConfigurationFromTrash(exportImportConfigurationId);
 
-			return returnValue;
+			return com.liferay.portlet.exportimport.model.ExportImportConfigurationSoap.toSoapModel(returnValue);
 		}
 		catch (Exception e) {
 			_log.error(e, e);

@@ -52,14 +52,14 @@ public class ExportImportConfigurationServiceWrapper
 	}
 
 	@Override
-	public com.liferay.portal.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
 		long exportImportConfigurationId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportConfigurationService.moveExportImportConfigurationToTrash(exportImportConfigurationId);
 	}
 
 	@Override
-	public com.liferay.portal.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
 		long exportImportConfigurationId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _exportImportConfigurationService.restoreExportImportConfigurationFromTrash(exportImportConfigurationId);
