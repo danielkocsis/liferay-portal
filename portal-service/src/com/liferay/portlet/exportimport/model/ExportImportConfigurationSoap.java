@@ -35,6 +35,7 @@ public class ExportImportConfigurationSoap implements Serializable {
 		ExportImportConfiguration model) {
 		ExportImportConfigurationSoap soapModel = new ExportImportConfigurationSoap();
 
+		soapModel.setMvccVersion(model.getMvccVersion());
 		soapModel.setExportImportConfigurationId(model.getExportImportConfigurationId());
 		soapModel.setGroupId(model.getGroupId());
 		soapModel.setCompanyId(model.getCompanyId());
@@ -103,6 +104,14 @@ public class ExportImportConfigurationSoap implements Serializable {
 
 	public void setPrimaryKey(long pk) {
 		setExportImportConfigurationId(pk);
+	}
+
+	public long getMvccVersion() {
+		return _mvccVersion;
+	}
+
+	public void setMvccVersion(long mvccVersion) {
+		_mvccVersion = mvccVersion;
 	}
 
 	public long getExportImportConfigurationId() {
@@ -225,6 +234,7 @@ public class ExportImportConfigurationSoap implements Serializable {
 		_statusDate = statusDate;
 	}
 
+	private long _mvccVersion;
 	private long _exportImportConfigurationId;
 	private long _groupId;
 	private long _companyId;

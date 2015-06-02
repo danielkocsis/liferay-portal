@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.service.BaseLocalService;
 import com.liferay.portal.service.PersistedModelLocalService;
 
@@ -58,6 +59,21 @@ public interface ExportImportConfigurationLocalService extends BaseLocalService,
 	public com.liferay.portlet.exportimport.model.ExportImportConfiguration addExportImportConfiguration(
 		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration);
 
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration addExportImportConfiguration(
+		long userId, long groupId, java.lang.String name,
+		java.lang.String description, int type,
+		java.util.Map<java.lang.String, java.io.Serializable> settingsMap,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws PortalException;
+
+	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.REINDEX)
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration addExportImportConfiguration(
+		long userId, long groupId, java.lang.String name,
+		java.lang.String description, int type,
+		java.util.Map<java.lang.String, java.io.Serializable> settingsMap,
+		int status, com.liferay.portal.service.ServiceContext serviceContext)
+		throws PortalException;
+
 	/**
 	* Creates a new export import configuration with the primary key. Does not add the export import configuration to the database.
 	*
@@ -72,10 +88,13 @@ public interface ExportImportConfigurationLocalService extends BaseLocalService,
 	*
 	* @param exportImportConfiguration the export import configuration
 	* @return the export import configuration that was removed
+	* @throws PortalException
 	*/
 	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.DELETE)
+	@com.liferay.portal.kernel.systemevent.SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public com.liferay.portlet.exportimport.model.ExportImportConfiguration deleteExportImportConfiguration(
-		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration);
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
+		throws PortalException;
 
 	/**
 	* Deletes the export import configuration with the primary key from the database. Also notifies the appropriate model listeners.
@@ -87,6 +106,9 @@ public interface ExportImportConfigurationLocalService extends BaseLocalService,
 	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.DELETE)
 	public com.liferay.portlet.exportimport.model.ExportImportConfiguration deleteExportImportConfiguration(
 		long exportImportConfigurationId) throws PortalException;
+
+	public void deleteExportImportConfigurations(long groupId)
+		throws PortalException;
 
 	/**
 	* @throws PortalException
@@ -186,6 +208,19 @@ public interface ExportImportConfigurationLocalService extends BaseLocalService,
 	public com.liferay.portlet.exportimport.model.ExportImportConfiguration getExportImportConfiguration(
 		long exportImportConfigurationId) throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.portlet.exportimport.model.ExportImportConfiguration> getExportImportConfigurations(
+		long groupId, int type);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.portlet.exportimport.model.ExportImportConfiguration> getExportImportConfigurations(
+		long groupId, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portlet.exportimport.model.ExportImportConfiguration> orderByComparator);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.portlet.exportimport.model.ExportImportConfiguration> getExportImportConfigurations(
+		com.liferay.portal.kernel.search.Hits hits) throws PortalException;
+
 	/**
 	* Returns a range of all the export import configurations.
 	*
@@ -209,10 +244,38 @@ public interface ExportImportConfigurationLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getExportImportConfigurationsCount();
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getExportImportConfigurationsCount(long groupId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getExportImportConfigurationsCount(long groupId, int type);
+
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj) throws PortalException;
+
+	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.REINDEX)
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
+		long userId, long exportImportConfigurationId)
+		throws PortalException;
+
+	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.REINDEX)
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+		long userId, long exportImportConfigurationId)
+		throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.portal.kernel.search.BaseModelSearchResult<com.liferay.portlet.exportimport.model.ExportImportConfiguration> searchExportImportConfigurations(
+		long companyId, long groupId, int type, java.lang.String keywords,
+		int start, int end, com.liferay.portal.kernel.search.Sort sort)
+		throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.portal.kernel.search.BaseModelSearchResult<com.liferay.portlet.exportimport.model.ExportImportConfiguration> searchExportImportConfigurations(
+		long companyId, long groupId, int type, java.lang.String name,
+		java.lang.String description, boolean andSearch, int start, int end,
+		com.liferay.portal.kernel.search.Sort sort) throws PortalException;
 
 	/**
 	* Sets the Spring bean ID for this bean.
@@ -230,4 +293,17 @@ public interface ExportImportConfigurationLocalService extends BaseLocalService,
 	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.REINDEX)
 	public com.liferay.portlet.exportimport.model.ExportImportConfiguration updateExportImportConfiguration(
 		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration);
+
+	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.REINDEX)
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration updateExportImportConfiguration(
+		long userId, long exportImportConfigurationId, java.lang.String name,
+		java.lang.String description,
+		java.util.Map<java.lang.String, java.io.Serializable> settingsMap,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws PortalException;
+
+	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.REINDEX)
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration updateStatus(
+		long userId, long exportImportConfigurationId, int status)
+		throws PortalException;
 }

@@ -79,6 +79,7 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 	 */
 	public static final String TABLE_NAME = "ExportImportConfiguration";
 	public static final Object[][] TABLE_COLUMNS = {
+			{ "mvccVersion", Types.BIGINT },
 			{ "exportImportConfigurationId", Types.BIGINT },
 			{ "groupId", Types.BIGINT },
 			{ "companyId", Types.BIGINT },
@@ -89,13 +90,13 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 			{ "name", Types.VARCHAR },
 			{ "description", Types.VARCHAR },
 			{ "type_", Types.INTEGER },
-			{ "settings_", Types.VARCHAR },
+			{ "settings_", Types.CLOB },
 			{ "status", Types.INTEGER },
 			{ "statusByUserId", Types.BIGINT },
 			{ "statusByUserName", Types.VARCHAR },
 			{ "statusDate", Types.TIMESTAMP }
 		};
-	public static final String TABLE_SQL_CREATE = "create table ExportImportConfiguration (exportImportConfigurationId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,name VARCHAR(75) null,description VARCHAR(75) null,type_ INTEGER,settings_ VARCHAR(75) null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
+	public static final String TABLE_SQL_CREATE = "create table ExportImportConfiguration (mvccVersion LONG default 0,exportImportConfigurationId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,name VARCHAR(200) null,description STRING null,type_ INTEGER,settings_ TEXT null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
 	public static final String TABLE_SQL_DROP = "drop table ExportImportConfiguration";
 	public static final String ORDER_BY_JPQL = " ORDER BY exportImportConfiguration.createDate ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY ExportImportConfiguration.createDate ASC";
@@ -131,6 +132,7 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 
 		ExportImportConfiguration model = new ExportImportConfigurationImpl();
 
+		model.setMvccVersion(soapModel.getMvccVersion());
 		model.setExportImportConfigurationId(soapModel.getExportImportConfigurationId());
 		model.setGroupId(soapModel.getGroupId());
 		model.setCompanyId(soapModel.getCompanyId());
@@ -211,6 +213,7 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
+		attributes.put("mvccVersion", getMvccVersion());
 		attributes.put("exportImportConfigurationId",
 			getExportImportConfigurationId());
 		attributes.put("groupId", getGroupId());
@@ -236,6 +239,12 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
+		Long mvccVersion = (Long)attributes.get("mvccVersion");
+
+		if (mvccVersion != null) {
+			setMvccVersion(mvccVersion);
+		}
+
 		Long exportImportConfigurationId = (Long)attributes.get(
 				"exportImportConfigurationId");
 
@@ -326,6 +335,17 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 		if (statusDate != null) {
 			setStatusDate(statusDate);
 		}
+	}
+
+	@JSON
+	@Override
+	public long getMvccVersion() {
+		return _mvccVersion;
+	}
+
+	@Override
+	public void setMvccVersion(long mvccVersion) {
+		_mvccVersion = mvccVersion;
 	}
 
 	@JSON
@@ -852,6 +872,7 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 	public Object clone() {
 		ExportImportConfigurationImpl exportImportConfigurationImpl = new ExportImportConfigurationImpl();
 
+		exportImportConfigurationImpl.setMvccVersion(getMvccVersion());
 		exportImportConfigurationImpl.setExportImportConfigurationId(getExportImportConfigurationId());
 		exportImportConfigurationImpl.setGroupId(getGroupId());
 		exportImportConfigurationImpl.setCompanyId(getCompanyId());
@@ -953,6 +974,8 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 	public CacheModel<ExportImportConfiguration> toCacheModel() {
 		ExportImportConfigurationCacheModel exportImportConfigurationCacheModel = new ExportImportConfigurationCacheModel();
 
+		exportImportConfigurationCacheModel.mvccVersion = getMvccVersion();
+
 		exportImportConfigurationCacheModel.exportImportConfigurationId = getExportImportConfigurationId();
 
 		exportImportConfigurationCacheModel.groupId = getGroupId();
@@ -1039,9 +1062,11 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(31);
+		StringBundler sb = new StringBundler(33);
 
-		sb.append("{exportImportConfigurationId=");
+		sb.append("{mvccVersion=");
+		sb.append(getMvccVersion());
+		sb.append(", exportImportConfigurationId=");
 		sb.append(getExportImportConfigurationId());
 		sb.append(", groupId=");
 		sb.append(getGroupId());
@@ -1078,13 +1103,17 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(49);
+		StringBundler sb = new StringBundler(52);
 
 		sb.append("<model><model-name>");
 		sb.append(
 			"com.liferay.portlet.exportimport.model.ExportImportConfiguration");
 		sb.append("</model-name>");
 
+		sb.append(
+			"<column><column-name>mvccVersion</column-name><column-value><![CDATA[");
+		sb.append(getMvccVersion());
+		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>exportImportConfigurationId</column-name><column-value><![CDATA[");
 		sb.append(getExportImportConfigurationId());
@@ -1155,6 +1184,7 @@ public class ExportImportConfigurationModelImpl extends BaseModelImpl<ExportImpo
 	private static final Class<?>[] _escapedModelInterfaces = new Class[] {
 			ExportImportConfiguration.class
 		};
+	private long _mvccVersion;
 	private long _exportImportConfigurationId;
 	private long _groupId;
 	private long _originalGroupId;

@@ -46,6 +46,8 @@ public interface ExportImportConfigurationService extends BaseService {
 	 *
 	 * Never modify or reference this interface directly. Always use {@link ExportImportConfigurationServiceUtil} to access the export import configuration remote service. Add custom service methods to {@link com.liferay.portlet.exportimport.service.impl.ExportImportConfigurationServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public void deleteExportImportConfiguration(
+		long exportImportConfigurationId) throws PortalException;
 
 	/**
 	* Returns the Spring bean ID for this bean.
@@ -53,6 +55,12 @@ public interface ExportImportConfigurationService extends BaseService {
 	* @return the Spring bean ID for this bean
 	*/
 	public java.lang.String getBeanIdentifier();
+
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
+		long exportImportConfigurationId) throws PortalException;
+
+	public com.liferay.portlet.exportimport.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+		long exportImportConfigurationId) throws PortalException;
 
 	/**
 	* Sets the Spring bean ID for this bean.

@@ -16,9 +16,16 @@ package com.liferay.portlet.exportimport.service.http;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
+import com.liferay.portlet.exportimport.service.ExportImportServiceUtil;
+
+import java.rmi.RemoteException;
+
 /**
  * Provides the SOAP utility for the
- * {@link com.liferay.portlet.exportimport.service.ExportImportServiceUtil} service utility. The
+ * {@link ExportImportServiceUtil} service utility. The
  * static methods of this class calls the same methods of the service utility.
  * However, the signatures are different because it is difficult for SOAP to
  * support certain types.
@@ -42,9 +49,56 @@ import aQute.bnd.annotation.ProviderType;
  *
  * @author Brian Wing Shun Chan
  * @see ExportImportServiceHttp
- * @see com.liferay.portlet.exportimport.service.ExportImportServiceUtil
+ * @see ExportImportServiceUtil
  * @generated
  */
 @ProviderType
 public class ExportImportServiceSoap {
+	public static long exportLayoutsAsFileInBackground(
+		com.liferay.portlet.exportimport.model.ExportImportConfigurationSoap exportImportConfiguration)
+		throws RemoteException {
+		try {
+			long returnValue = ExportImportServiceUtil.exportLayoutsAsFileInBackground(com.liferay.portlet.exportimport.model.impl.ExportImportConfigurationModelImpl.toModel(
+						exportImportConfiguration));
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static long exportLayoutsAsFileInBackground(
+		long exportImportConfigurationId) throws RemoteException {
+		try {
+			long returnValue = ExportImportServiceUtil.exportLayoutsAsFileInBackground(exportImportConfigurationId);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static long exportPortletInfoAsFileInBackground(
+		com.liferay.portlet.exportimport.model.ExportImportConfigurationSoap exportImportConfiguration)
+		throws RemoteException {
+		try {
+			long returnValue = ExportImportServiceUtil.exportPortletInfoAsFileInBackground(com.liferay.portlet.exportimport.model.impl.ExportImportConfigurationModelImpl.toModel(
+						exportImportConfiguration));
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(ExportImportServiceSoap.class);
 }

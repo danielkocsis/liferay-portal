@@ -16,9 +16,16 @@ package com.liferay.portlet.exportimport.service.http;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
+import com.liferay.portlet.exportimport.service.StagingServiceUtil;
+
+import java.rmi.RemoteException;
+
 /**
  * Provides the SOAP utility for the
- * {@link com.liferay.portlet.exportimport.service.StagingServiceUtil} service utility. The
+ * {@link StagingServiceUtil} service utility. The
  * static methods of this class calls the same methods of the service utility.
  * However, the signatures are different because it is difficult for SOAP to
  * support certain types.
@@ -42,9 +49,68 @@ import aQute.bnd.annotation.ProviderType;
  *
  * @author Brian Wing Shun Chan
  * @see StagingServiceHttp
- * @see com.liferay.portlet.exportimport.service.StagingServiceUtil
+ * @see StagingServiceUtil
  * @generated
  */
 @ProviderType
 public class StagingServiceSoap {
+	public static void cleanUpStagingRequest(long stagingRequestId)
+		throws RemoteException {
+		try {
+			StagingServiceUtil.cleanUpStagingRequest(stagingRequestId);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static long createStagingRequest(long groupId,
+		java.lang.String checksum) throws RemoteException {
+		try {
+			long returnValue = StagingServiceUtil.createStagingRequest(groupId,
+					checksum);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.portal.kernel.lar.MissingReferences publishStagingRequest(
+		long stagingRequestId,
+		com.liferay.portlet.exportimport.model.ExportImportConfigurationSoap exportImportConfiguration)
+		throws RemoteException {
+		try {
+			com.liferay.portal.kernel.lar.MissingReferences returnValue = StagingServiceUtil.publishStagingRequest(stagingRequestId,
+					com.liferay.portlet.exportimport.model.impl.ExportImportConfigurationModelImpl.toModel(
+						exportImportConfiguration));
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static void updateStagingRequest(long stagingRequestId,
+		java.lang.String fileName, byte[] bytes) throws RemoteException {
+		try {
+			StagingServiceUtil.updateStagingRequest(stagingRequestId, fileName,
+				bytes);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(StagingServiceSoap.class);
 }

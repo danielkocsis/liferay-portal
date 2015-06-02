@@ -32,6 +32,18 @@ public class StagingServiceWrapper implements StagingService,
 		_stagingService = stagingService;
 	}
 
+	@Override
+	public void cleanUpStagingRequest(long stagingRequestId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_stagingService.cleanUpStagingRequest(stagingRequestId);
+	}
+
+	@Override
+	public long createStagingRequest(long groupId, java.lang.String checksum)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _stagingService.createStagingRequest(groupId, checksum);
+	}
+
 	/**
 	* Returns the Spring bean ID for this bean.
 	*
@@ -42,6 +54,29 @@ public class StagingServiceWrapper implements StagingService,
 		return _stagingService.getBeanIdentifier();
 	}
 
+	@Override
+	public com.liferay.portal.kernel.lar.MissingReferences publishStagingRequest(
+		long stagingRequestId,
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _stagingService.publishStagingRequest(stagingRequestId,
+			exportImportConfiguration);
+	}
+
+	/**
+	* @throws PortalException
+	* @deprecated As of 7.0.0, with no direct replacement
+	*/
+	@Deprecated
+	@Override
+	public com.liferay.portal.kernel.lar.MissingReferences publishStagingRequest(
+		long stagingRequestId, boolean privateLayout,
+		java.util.Map<java.lang.String, java.lang.String[]> parameterMap)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _stagingService.publishStagingRequest(stagingRequestId,
+			privateLayout, parameterMap);
+	}
+
 	/**
 	* Sets the Spring bean ID for this bean.
 	*
@@ -50,6 +85,27 @@ public class StagingServiceWrapper implements StagingService,
 	@Override
 	public void setBeanIdentifier(java.lang.String beanIdentifier) {
 		_stagingService.setBeanIdentifier(beanIdentifier);
+	}
+
+	@Override
+	public void updateStagingRequest(long stagingRequestId,
+		java.lang.String fileName, byte[] bytes)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_stagingService.updateStagingRequest(stagingRequestId, fileName, bytes);
+	}
+
+	/**
+	* @deprecated As of 7.0.0, replaced by {@link #publishStagingRequest(long,
+	boolean, java.util.Map)}
+	*/
+	@Deprecated
+	@Override
+	public com.liferay.portal.kernel.lar.MissingReferences validateStagingRequest(
+		long stagingRequestId, boolean privateLayout,
+		java.util.Map<java.lang.String, java.lang.String[]> parameterMap)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _stagingService.validateStagingRequest(stagingRequestId,
+			privateLayout, parameterMap);
 	}
 
 	/**

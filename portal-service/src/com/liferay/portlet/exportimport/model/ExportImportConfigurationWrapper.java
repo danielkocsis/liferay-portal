@@ -55,6 +55,7 @@ public class ExportImportConfigurationWrapper
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
+		attributes.put("mvccVersion", getMvccVersion());
 		attributes.put("exportImportConfigurationId",
 			getExportImportConfigurationId());
 		attributes.put("groupId", getGroupId());
@@ -77,6 +78,12 @@ public class ExportImportConfigurationWrapper
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
+		Long mvccVersion = (Long)attributes.get("mvccVersion");
+
+		if (mvccVersion != null) {
+			setMvccVersion(mvccVersion);
+		}
+
 		Long exportImportConfigurationId = (Long)attributes.get(
 				"exportImportConfigurationId");
 
@@ -255,6 +262,16 @@ public class ExportImportConfigurationWrapper
 	}
 
 	/**
+	* Returns the mvcc version of this export import configuration.
+	*
+	* @return the mvcc version of this export import configuration
+	*/
+	@Override
+	public long getMvccVersion() {
+		return _exportImportConfiguration.getMvccVersion();
+	}
+
+	/**
 	* Returns the name of this export import configuration.
 	*
 	* @return the name of this export import configuration
@@ -287,6 +304,11 @@ public class ExportImportConfigurationWrapper
 	@Override
 	public java.lang.String getSettings() {
 		return _exportImportConfiguration.getSettings();
+	}
+
+	@Override
+	public Map<java.lang.String, java.io.Serializable> getSettingsMap() {
+		return _exportImportConfiguration.getSettingsMap();
 	}
 
 	/**
@@ -626,6 +648,16 @@ public class ExportImportConfigurationWrapper
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
 		_exportImportConfiguration.setModifiedDate(modifiedDate);
+	}
+
+	/**
+	* Sets the mvcc version of this export import configuration.
+	*
+	* @param mvccVersion the mvcc version of this export import configuration
+	*/
+	@Override
+	public void setMvccVersion(long mvccVersion) {
+		_exportImportConfiguration.setMvccVersion(mvccVersion);
 	}
 
 	/**

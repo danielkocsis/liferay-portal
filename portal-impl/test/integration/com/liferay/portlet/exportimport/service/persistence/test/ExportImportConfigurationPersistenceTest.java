@@ -114,6 +114,8 @@ public class ExportImportConfigurationPersistenceTest {
 
 		ExportImportConfiguration newExportImportConfiguration = _persistence.create(pk);
 
+		newExportImportConfiguration.setMvccVersion(RandomTestUtil.nextLong());
+
 		newExportImportConfiguration.setGroupId(RandomTestUtil.nextLong());
 
 		newExportImportConfiguration.setCompanyId(RandomTestUtil.nextLong());
@@ -147,6 +149,8 @@ public class ExportImportConfigurationPersistenceTest {
 
 		ExportImportConfiguration existingExportImportConfiguration = _persistence.findByPrimaryKey(newExportImportConfiguration.getPrimaryKey());
 
+		Assert.assertEquals(existingExportImportConfiguration.getMvccVersion(),
+			newExportImportConfiguration.getMvccVersion());
 		Assert.assertEquals(existingExportImportConfiguration.getExportImportConfigurationId(),
 			newExportImportConfiguration.getExportImportConfigurationId());
 		Assert.assertEquals(existingExportImportConfiguration.getGroupId(),
@@ -246,11 +250,12 @@ public class ExportImportConfigurationPersistenceTest {
 
 	protected OrderByComparator<ExportImportConfiguration> getOrderByComparator() {
 		return OrderByComparatorFactoryUtil.create("ExportImportConfiguration",
-			"exportImportConfigurationId", true, "groupId", true, "companyId",
-			true, "userId", true, "userName", true, "createDate", true,
-			"modifiedDate", true, "name", true, "description", true, "type",
-			true, "settings", true, "status", true, "statusByUserId", true,
-			"statusByUserName", true, "statusDate", true);
+			"mvccVersion", true, "exportImportConfigurationId", true,
+			"groupId", true, "companyId", true, "userId", true, "userName",
+			true, "createDate", true, "modifiedDate", true, "name", true,
+			"description", true, "type", true, "settings", true, "status",
+			true, "statusByUserId", true, "statusByUserName", true,
+			"statusDate", true);
 	}
 
 	@Test
@@ -464,6 +469,8 @@ public class ExportImportConfigurationPersistenceTest {
 		long pk = RandomTestUtil.nextLong();
 
 		ExportImportConfiguration exportImportConfiguration = _persistence.create(pk);
+
+		exportImportConfiguration.setMvccVersion(RandomTestUtil.nextLong());
 
 		exportImportConfiguration.setGroupId(RandomTestUtil.nextLong());
 

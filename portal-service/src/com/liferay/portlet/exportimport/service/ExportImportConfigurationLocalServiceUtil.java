@@ -53,6 +53,28 @@ public class ExportImportConfigurationLocalServiceUtil {
 				   .addExportImportConfiguration(exportImportConfiguration);
 	}
 
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration addExportImportConfiguration(
+		long userId, long groupId, java.lang.String name,
+		java.lang.String description, int type,
+		java.util.Map<java.lang.String, java.io.Serializable> settingsMap,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .addExportImportConfiguration(userId, groupId, name,
+			description, type, settingsMap, serviceContext);
+	}
+
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration addExportImportConfiguration(
+		long userId, long groupId, java.lang.String name,
+		java.lang.String description, int type,
+		java.util.Map<java.lang.String, java.io.Serializable> settingsMap,
+		int status, com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .addExportImportConfiguration(userId, groupId, name,
+			description, type, settingsMap, status, serviceContext);
+	}
+
 	/**
 	* Creates a new export import configuration with the primary key. Does not add the export import configuration to the database.
 	*
@@ -70,9 +92,11 @@ public class ExportImportConfigurationLocalServiceUtil {
 	*
 	* @param exportImportConfiguration the export import configuration
 	* @return the export import configuration that was removed
+	* @throws PortalException
 	*/
 	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration deleteExportImportConfiguration(
-		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration) {
+		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration)
+		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
 				   .deleteExportImportConfiguration(exportImportConfiguration);
 	}
@@ -89,6 +113,11 @@ public class ExportImportConfigurationLocalServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
 				   .deleteExportImportConfiguration(exportImportConfigurationId);
+	}
+
+	public static void deleteExportImportConfigurations(long groupId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService().deleteExportImportConfigurations(groupId);
 	}
 
 	/**
@@ -211,6 +240,25 @@ public class ExportImportConfigurationLocalServiceUtil {
 				   .getExportImportConfiguration(exportImportConfigurationId);
 	}
 
+	public static java.util.List<com.liferay.portlet.exportimport.model.ExportImportConfiguration> getExportImportConfigurations(
+		long groupId, int type) {
+		return getService().getExportImportConfigurations(groupId, type);
+	}
+
+	public static java.util.List<com.liferay.portlet.exportimport.model.ExportImportConfiguration> getExportImportConfigurations(
+		long groupId, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portlet.exportimport.model.ExportImportConfiguration> orderByComparator) {
+		return getService()
+				   .getExportImportConfigurations(groupId, type, start, end,
+			orderByComparator);
+	}
+
+	public static java.util.List<com.liferay.portlet.exportimport.model.ExportImportConfiguration> getExportImportConfigurations(
+		com.liferay.portal.kernel.search.Hits hits)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getExportImportConfigurations(hits);
+	}
+
 	/**
 	* Returns a range of all the export import configurations.
 	*
@@ -236,10 +284,53 @@ public class ExportImportConfigurationLocalServiceUtil {
 		return getService().getExportImportConfigurationsCount();
 	}
 
+	public static int getExportImportConfigurationsCount(long groupId) {
+		return getService().getExportImportConfigurationsCount(groupId);
+	}
+
+	public static int getExportImportConfigurationsCount(long groupId, int type) {
+		return getService().getExportImportConfigurationsCount(groupId, type);
+	}
+
 	public static com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getPersistedModel(primaryKeyObj);
+	}
+
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
+		long userId, long exportImportConfigurationId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .moveExportImportConfigurationToTrash(userId,
+			exportImportConfigurationId);
+	}
+
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+		long userId, long exportImportConfigurationId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .restoreExportImportConfigurationFromTrash(userId,
+			exportImportConfigurationId);
+	}
+
+	public static com.liferay.portal.kernel.search.BaseModelSearchResult<com.liferay.portlet.exportimport.model.ExportImportConfiguration> searchExportImportConfigurations(
+		long companyId, long groupId, int type, java.lang.String keywords,
+		int start, int end, com.liferay.portal.kernel.search.Sort sort)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .searchExportImportConfigurations(companyId, groupId, type,
+			keywords, start, end, sort);
+	}
+
+	public static com.liferay.portal.kernel.search.BaseModelSearchResult<com.liferay.portlet.exportimport.model.ExportImportConfiguration> searchExportImportConfigurations(
+		long companyId, long groupId, int type, java.lang.String name,
+		java.lang.String description, boolean andSearch, int start, int end,
+		com.liferay.portal.kernel.search.Sort sort)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .searchExportImportConfigurations(companyId, groupId, type,
+			name, description, andSearch, start, end, sort);
 	}
 
 	/**
@@ -261,6 +352,25 @@ public class ExportImportConfigurationLocalServiceUtil {
 		com.liferay.portlet.exportimport.model.ExportImportConfiguration exportImportConfiguration) {
 		return getService()
 				   .updateExportImportConfiguration(exportImportConfiguration);
+	}
+
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration updateExportImportConfiguration(
+		long userId, long exportImportConfigurationId, java.lang.String name,
+		java.lang.String description,
+		java.util.Map<java.lang.String, java.io.Serializable> settingsMap,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .updateExportImportConfiguration(userId,
+			exportImportConfigurationId, name, description, settingsMap,
+			serviceContext);
+	}
+
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration updateStatus(
+		long userId, long exportImportConfigurationId, int status)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .updateStatus(userId, exportImportConfigurationId, status);
 	}
 
 	public static ExportImportConfigurationLocalService getService() {

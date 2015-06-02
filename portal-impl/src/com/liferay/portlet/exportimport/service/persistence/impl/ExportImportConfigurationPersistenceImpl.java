@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.MVCCModel;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
@@ -3054,6 +3055,7 @@ public class ExportImportConfigurationPersistenceImpl
 		exportImportConfigurationImpl.setNew(exportImportConfiguration.isNew());
 		exportImportConfigurationImpl.setPrimaryKey(exportImportConfiguration.getPrimaryKey());
 
+		exportImportConfigurationImpl.setMvccVersion(exportImportConfiguration.getMvccVersion());
 		exportImportConfigurationImpl.setExportImportConfigurationId(exportImportConfiguration.getExportImportConfigurationId());
 		exportImportConfigurationImpl.setGroupId(exportImportConfiguration.getGroupId());
 		exportImportConfigurationImpl.setCompanyId(exportImportConfiguration.getCompanyId());
@@ -3475,10 +3477,22 @@ public class ExportImportConfigurationPersistenceImpl
 		};
 
 	private static final CacheModel<ExportImportConfiguration> _nullExportImportConfigurationCacheModel =
-		new CacheModel<ExportImportConfiguration>() {
-			@Override
-			public ExportImportConfiguration toEntityModel() {
-				return _nullExportImportConfiguration;
-			}
-		};
+		new NullCacheModel();
+
+	private static class NullCacheModel implements CacheModel<ExportImportConfiguration>,
+		MVCCModel {
+		@Override
+		public long getMvccVersion() {
+			return -1;
+		}
+
+		@Override
+		public void setMvccVersion(long mvccVersion) {
+		}
+
+		@Override
+		public ExportImportConfiguration toEntityModel() {
+			return _nullExportImportConfiguration;
+		}
+	}
 }

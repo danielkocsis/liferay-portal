@@ -40,6 +40,11 @@ public class ExportImportConfigurationServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to {@link com.liferay.portlet.exportimport.service.impl.ExportImportConfigurationServiceImpl} and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static void deleteExportImportConfiguration(
+		long exportImportConfigurationId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService().deleteExportImportConfiguration(exportImportConfigurationId);
+	}
 
 	/**
 	* Returns the Spring bean ID for this bean.
@@ -48,6 +53,20 @@ public class ExportImportConfigurationServiceUtil {
 	*/
 	public static java.lang.String getBeanIdentifier() {
 		return getService().getBeanIdentifier();
+	}
+
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration moveExportImportConfigurationToTrash(
+		long exportImportConfigurationId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .moveExportImportConfigurationToTrash(exportImportConfigurationId);
+	}
+
+	public static com.liferay.portlet.exportimport.model.ExportImportConfiguration restoreExportImportConfigurationFromTrash(
+		long exportImportConfigurationId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .restoreExportImportConfigurationFromTrash(exportImportConfigurationId);
 	}
 
 	/**

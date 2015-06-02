@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.MVCCModel;
 
 import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
 
@@ -39,7 +40,7 @@ import java.util.Date;
  */
 @ProviderType
 public class ExportImportConfigurationCacheModel implements CacheModel<ExportImportConfiguration>,
-	Externalizable {
+	Externalizable, MVCCModel {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -52,7 +53,8 @@ public class ExportImportConfigurationCacheModel implements CacheModel<ExportImp
 
 		ExportImportConfigurationCacheModel exportImportConfigurationCacheModel = (ExportImportConfigurationCacheModel)obj;
 
-		if (exportImportConfigurationId == exportImportConfigurationCacheModel.exportImportConfigurationId) {
+		if ((exportImportConfigurationId == exportImportConfigurationCacheModel.exportImportConfigurationId) &&
+				(mvccVersion == exportImportConfigurationCacheModel.mvccVersion)) {
 			return true;
 		}
 
@@ -61,14 +63,28 @@ public class ExportImportConfigurationCacheModel implements CacheModel<ExportImp
 
 	@Override
 	public int hashCode() {
-		return HashUtil.hash(0, exportImportConfigurationId);
+		int hashCode = HashUtil.hash(0, exportImportConfigurationId);
+
+		return HashUtil.hash(hashCode, mvccVersion);
+	}
+
+	@Override
+	public long getMvccVersion() {
+		return mvccVersion;
+	}
+
+	@Override
+	public void setMvccVersion(long mvccVersion) {
+		this.mvccVersion = mvccVersion;
 	}
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(31);
+		StringBundler sb = new StringBundler(33);
 
-		sb.append("{exportImportConfigurationId=");
+		sb.append("{mvccVersion=");
+		sb.append(mvccVersion);
+		sb.append(", exportImportConfigurationId=");
 		sb.append(exportImportConfigurationId);
 		sb.append(", groupId=");
 		sb.append(groupId);
@@ -107,6 +123,7 @@ public class ExportImportConfigurationCacheModel implements CacheModel<ExportImp
 	public ExportImportConfiguration toEntityModel() {
 		ExportImportConfigurationImpl exportImportConfigurationImpl = new ExportImportConfigurationImpl();
 
+		exportImportConfigurationImpl.setMvccVersion(mvccVersion);
 		exportImportConfigurationImpl.setExportImportConfigurationId(exportImportConfigurationId);
 		exportImportConfigurationImpl.setGroupId(groupId);
 		exportImportConfigurationImpl.setCompanyId(companyId);
@@ -180,6 +197,7 @@ public class ExportImportConfigurationCacheModel implements CacheModel<ExportImp
 
 	@Override
 	public void readExternal(ObjectInput objectInput) throws IOException {
+		mvccVersion = objectInput.readLong();
 		exportImportConfigurationId = objectInput.readLong();
 		groupId = objectInput.readLong();
 		companyId = objectInput.readLong();
@@ -200,6 +218,7 @@ public class ExportImportConfigurationCacheModel implements CacheModel<ExportImp
 	@Override
 	public void writeExternal(ObjectOutput objectOutput)
 		throws IOException {
+		objectOutput.writeLong(mvccVersion);
 		objectOutput.writeLong(exportImportConfigurationId);
 		objectOutput.writeLong(groupId);
 		objectOutput.writeLong(companyId);
@@ -251,6 +270,7 @@ public class ExportImportConfigurationCacheModel implements CacheModel<ExportImp
 		objectOutput.writeLong(statusDate);
 	}
 
+	public long mvccVersion;
 	public long exportImportConfigurationId;
 	public long groupId;
 	public long companyId;
