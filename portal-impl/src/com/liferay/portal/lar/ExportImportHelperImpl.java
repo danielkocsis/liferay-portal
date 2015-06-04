@@ -47,7 +47,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
-import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.kernel.util.Digester;
@@ -492,6 +491,18 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 		return getLayoutIds(getLayoutIdMap(portletRequest), targetGroupId);
 	}
 
+	@Override
+	public ZipWriter getLayoutSetZipWriter(long groupId) {
+		StringBundler sb = new StringBundler(4);
+
+		sb.append(groupId);
+		sb.append(StringPool.DASH);
+		sb.append(Time.getShortTimestamp());
+		sb.append(".lar");
+
+		return getZipWriter(sb.toString());
+	}
+
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link
 	 *             #getManifestSummary(PortletDataContext)}
@@ -649,6 +660,18 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 	}
 
 	@Override
+	public ZipWriter getPortletZipWriter(String portletId) {
+		StringBundler sb = new StringBundler(4);
+
+		sb.append(portletId);
+		sb.append(StringPool.DASH);
+		sb.append(Time.getShortTimestamp());
+		sb.append(".lar");
+
+		return getZipWriter(sb.toString());
+	}
+
+	@Override
 	public String getSelectedLayoutsJSON(
 		long groupId, boolean privateLayout, String selectedNodes) {
 
@@ -694,25 +717,6 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 		}
 
 		return new CurrentUserIdStrategy(user);
-	}
-
-	@Override
-	public ZipWriter getZipWriter(
-		long groupId, Map<String, String[]> parameterMap) {
-
-		if (!ExportImportThreadLocal.isStagingInProcess() ||
-			(PropsValues.STAGING_DELETE_TEMP_LAR_ON_FAILURE &&
-			 PropsValues.STAGING_DELETE_TEMP_LAR_ON_SUCCESS)) {
-
-			return ZipWriterFactoryUtil.getZipWriter();
-		}
-
-		File file = new File(
-			SystemProperties.get(SystemProperties.TMP_DIR) + StringPool.SLASH +
-			MapUtil.getString(parameterMap, Constants.CMD) + StringPool.DASH +
-			groupId + StringPool.DASH + Time.getShortTimestamp() + ".lar");
-
-		return ZipWriterFactoryUtil.getZipWriter(file);
 	}
 
 	@Override
@@ -2417,6 +2421,21 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 			importCurPortletUserPreferences);
 
 		return importPortletSetupMap;
+	}
+
+	protected ZipWriter getZipWriter(String fileName) {
+		if (!ExportImportThreadLocal.isStagingInProcess() ||
+			(PropsValues.STAGING_DELETE_TEMP_LAR_ON_FAILURE &&
+			 PropsValues.STAGING_DELETE_TEMP_LAR_ON_SUCCESS)) {
+
+			return ZipWriterFactoryUtil.getZipWriter();
+		}
+
+		String path =
+			SystemProperties.get(SystemProperties.TMP_DIR) + StringPool.SLASH +
+				fileName;
+
+		return ZipWriterFactoryUtil.getZipWriter(new File(path));
 	}
 
 	protected boolean populateLayoutsJSON(

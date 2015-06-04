@@ -232,6 +232,10 @@ public class ExportImportHelperUtil {
 			portletRequest, targetGroupId);
 	}
 
+	public static ZipWriter getLayoutSetZipWriter(long groupId) {
+		return getExportImportHelper().getLayoutSetZipWriter(groupId);
+	}
+
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link
 	 *             #getManifestSummary(PortletDataContext)}
@@ -279,6 +283,10 @@ public class ExportImportHelperUtil {
 			portletDataContext, stagedModelType);
 	}
 
+	public static ZipWriter getPortletZipWriter(String portletId) {
+		return getExportImportHelper().getPortletZipWriter(portletId);
+	}
+
 	public static String getSelectedLayoutsJSON(
 		long groupId, boolean privateLayout, String selectedNodes) {
 
@@ -300,12 +308,6 @@ public class ExportImportHelperUtil {
 
 		return getExportImportHelper().getUserIdStrategy(
 			userId, userIdStrategy);
-	}
-
-	public static ZipWriter getZipWriter(
-		long groupId, Map<String, String[]> parameterMap) {
-
-		return getExportImportHelper().getZipWriter(groupId, parameterMap);
 	}
 
 	public static boolean isReferenceWithinExportScope(

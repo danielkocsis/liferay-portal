@@ -188,6 +188,8 @@ public interface ExportImportHelper {
 			PortletRequest portletRequest, long targetGroupId)
 		throws PortalException;
 
+	public ZipWriter getLayoutSetZipWriter(long groupId);
+
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link
 	 *             #getManifestSummary(PortletDataContext)}
@@ -215,6 +217,8 @@ public interface ExportImportHelper {
 			final StagedModelType stagedModelType)
 		throws PortalException;
 
+	public ZipWriter getPortletZipWriter(String portletId);
+
 	public String getSelectedLayoutsJSON(
 		long groupId, boolean privateLayout, String selectedNodes);
 
@@ -224,9 +228,6 @@ public interface ExportImportHelper {
 
 	public UserIdStrategy getUserIdStrategy(long userId, String userIdStrategy)
 		throws PortalException;
-
-	public ZipWriter getZipWriter(
-		long groupId, Map<String, String[]> parameterMap);
 
 	public boolean isReferenceWithinExportScope(
 		PortletDataContext portletDataContext, StagedModel stagedModel);
