@@ -758,8 +758,8 @@ public class LayoutExporter {
 
 		Group group = GroupLocalServiceUtil.getGroup(groupId);
 
-		ZipWriter zipWriter = ExportImportHelperUtil.getZipWriter(
-			groupId, parameterMap);
+		ZipWriter zipWriter = ExportImportHelperUtil.getLayoutSetZipWriter(
+			groupId);
 
 		PortletDataContext portletDataContext =
 			PortletDataContextFactoryUtil.createExportPortletDataContext(

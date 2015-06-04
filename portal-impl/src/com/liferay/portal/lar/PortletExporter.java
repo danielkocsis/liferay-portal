@@ -1141,8 +1141,8 @@ public class PortletExporter {
 
 		Layout layout = LayoutLocalServiceUtil.getLayout(plid);
 
-		ZipWriter zipWriter = ExportImportHelperUtil.getZipWriter(
-			groupId, parameterMap);
+		ZipWriter zipWriter = ExportImportHelperUtil.getPortletZipWriter(
+			portletId);
 
 		PortletDataContext portletDataContext =
 			PortletDataContextFactoryUtil.createExportPortletDataContext(
