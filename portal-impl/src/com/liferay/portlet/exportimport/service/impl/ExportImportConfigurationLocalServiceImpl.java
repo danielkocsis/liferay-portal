@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.service.impl;
+package com.liferay.portlet.exportimport.service.impl;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -37,7 +37,7 @@ import com.liferay.portal.model.ExportImportConfiguration;
 import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.base.ExportImportConfigurationLocalServiceBaseImpl;
+import com.liferay.portlet.exportimport.service.base.ExportImportConfigurationLocalServiceBaseImpl;
 import com.liferay.portlet.trash.model.TrashEntry;
 
 import java.io.Serializable;

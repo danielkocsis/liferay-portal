@@ -12,13 +12,13 @@
  * details.
  */
 
-package com.liferay.portal.service.impl;
+package com.liferay.portlet.exportimport.service.impl;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.model.ExportImportConfiguration;
 import com.liferay.portal.security.permission.ActionKeys;
-import com.liferay.portal.service.base.ExportImportConfigurationServiceBaseImpl;
 import com.liferay.portal.service.permission.GroupPermissionUtil;
+import com.liferay.portlet.exportimport.service.base.ExportImportConfigurationServiceBaseImpl;
 
 /**
  * @author Brian Wing Shun Chan

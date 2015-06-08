@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.service.impl;
+package com.liferay.portlet.exportimport.service.impl;
 
 import com.liferay.portal.LARFileNameException;
 import com.liferay.portal.LocaleException;
@@ -37,9 +37,9 @@ import com.liferay.portal.lar.backgroundtask.PortletImportBackgroundTaskExecutor
 import com.liferay.portal.model.BackgroundTask;
 import com.liferay.portal.model.ExportImportConfiguration;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.base.ExportImportLocalServiceBaseImpl;
 import com.liferay.portlet.documentlibrary.util.DLValidatorUtil;
 import com.liferay.portlet.dynamicdatamapping.StructureDuplicateStructureKeyException;
+import com.liferay.portlet.exportimport.service.base.ExportImportLocalServiceBaseImpl;
 
 import java.io.File;
 import java.io.IOException;

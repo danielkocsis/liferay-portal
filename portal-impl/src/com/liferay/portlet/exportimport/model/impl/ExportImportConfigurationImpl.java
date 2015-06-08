@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.model.impl;
+package com.liferay.portlet.exportimport.model.impl;
 
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 

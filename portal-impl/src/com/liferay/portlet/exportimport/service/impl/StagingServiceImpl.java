@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.service.impl;
+package com.liferay.portlet.exportimport.service.impl;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.lar.MissingReferences;
@@ -20,8 +20,8 @@ import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.model.ExportImportConfiguration;
 import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.security.permission.ActionKeys;
-import com.liferay.portal.service.base.StagingServiceBaseImpl;
 import com.liferay.portal.service.permission.GroupPermissionUtil;
+import com.liferay.portlet.exportimport.service.base.StagingServiceBaseImpl;
 
 import java.util.Map;
 

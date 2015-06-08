@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.service.impl;
+package com.liferay.portlet.exportimport.service.impl;
 
 import com.liferay.portal.NoSuchGroupException;
 import com.liferay.portal.RemoteExportException;
@@ -56,7 +56,6 @@ import com.liferay.portal.security.auth.RemoteAuthException;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.base.StagingLocalServiceBaseImpl;
 import com.liferay.portal.service.http.GroupServiceHttp;
 import com.liferay.portal.staging.StagingAdvicesThreadLocal;
 import com.liferay.portal.util.PortalUtil;
@@ -64,6 +63,7 @@ import com.liferay.portlet.documentlibrary.NoSuchFileEntryException;
 import com.liferay.portlet.documentlibrary.NoSuchFolderException;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.util.comparator.RepositoryModelTitleComparator;
+import com.liferay.portlet.exportimport.service.base.StagingLocalServiceBaseImpl;
 
 import java.io.File;
 import java.io.FileOutputStream;
