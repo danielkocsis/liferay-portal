@@ -429,4 +429,11 @@
 	<bean id="com.liferay.portlet.trash.service.persistence.TrashEntryPersistence" class="com.liferay.portlet.trash.service.persistence.impl.TrashEntryPersistenceImpl" parent="basePersistence" />
 	<bean id="com.liferay.portlet.trash.service.TrashVersionLocalService" class="com.liferay.portlet.trash.service.impl.TrashVersionLocalServiceImpl" />
 	<bean id="com.liferay.portlet.trash.service.persistence.TrashVersionPersistence" class="com.liferay.portlet.trash.service.persistence.impl.TrashVersionPersistenceImpl" parent="basePersistence" />
+	<bean id="com.liferay.portlet.exportimport.service.ExportImportLocalService" class="com.liferay.portlet.exportimport.service.impl.ExportImportLocalServiceImpl" />
+	<bean id="com.liferay.portlet.exportimport.service.ExportImportService" class="com.liferay.portlet.exportimport.service.impl.ExportImportServiceImpl" />
+	<bean id="com.liferay.portlet.exportimport.service.ExportImportConfigurationLocalService" class="com.liferay.portlet.exportimport.service.impl.ExportImportConfigurationLocalServiceImpl" />
+	<bean id="com.liferay.portlet.exportimport.service.ExportImportConfigurationService" class="com.liferay.portlet.exportimport.service.impl.ExportImportConfigurationServiceImpl" />
+	<bean id="com.liferay.portlet.exportimport.service.persistence.ExportImportConfigurationPersistence" class="com.liferay.portlet.exportimport.service.persistence.impl.ExportImportConfigurationPersistenceImpl" parent="basePersistence" />
+	<bean id="com.liferay.portlet.exportimport.service.StagingLocalService" class="com.liferay.portlet.exportimport.service.impl.StagingLocalServiceImpl" />
+	<bean id="com.liferay.portlet.exportimport.service.StagingService" class="com.liferay.portlet.exportimport.service.impl.StagingServiceImpl" />
 </beans>

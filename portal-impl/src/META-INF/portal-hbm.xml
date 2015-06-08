@@ -158,6 +158,9 @@
 	<import class="com.liferay.portlet.softwarecatalog.model.SCProductVersion" />
 	<import class="com.liferay.portlet.trash.model.TrashEntry" />
 	<import class="com.liferay.portlet.trash.model.TrashVersion" />
+	<import class="com.liferay.portlet.exportimport.model.ExportImport" />
+	<import class="com.liferay.portlet.exportimport.model.ExportImportConfiguration" />
+	<import class="com.liferay.portlet.exportimport.model.Staging" />
 	<class name="com.liferay.counter.model.impl.CounterImpl" table="Counter">
 		<id name="name" type="java.lang.String">
 			<generator class="assigned" />
@@ -2543,5 +2546,25 @@
 		<property name="classPK" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="typeSettings" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="status" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+	</class>
+	<class name="com.liferay.portlet.exportimport.model.impl.ExportImportConfigurationImpl" table="ExportImportConfiguration" dynamic-update="true">
+		<id name="exportImportConfigurationId" type="long">
+			<generator class="assigned" />
+		</id>
+		<version name="mvccVersion" type="long" access="com.liferay.portal.dao.orm.hibernate.PrivatePropertyAccessor" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="createDate" type="org.hibernate.type.TimestampType" />
+		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
+		<property name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="type" type="com.liferay.portal.dao.orm.hibernate.IntegerType" column="type_" />
+		<property name="settings" type="com.liferay.portal.dao.orm.hibernate.StringType" column="settings_" />
+		<property name="status" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="statusByUserId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="statusByUserName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="statusDate" type="org.hibernate.type.TimestampType" />
 	</class>
 </hibernate-mapping>
