@@ -44,6 +44,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Mate Thurzo
  */
+@Component(service = ExportImportLifecycleListener.class)
 public class IndexingExportImportLifecycleListener
 	implements ExportImportLifecycleListener {
 

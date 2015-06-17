@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.Summary;
-import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 
@@ -29,10 +28,12 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Mate Thurzo
  */
-@OSGiBeanProperties
+@Component(immediate = true, service = Indexer.class)
 public class PortletDataContextIndexer extends BaseIndexer {
 
 	public static final String CLASS_NAME = PortletDataContext.class.getName();

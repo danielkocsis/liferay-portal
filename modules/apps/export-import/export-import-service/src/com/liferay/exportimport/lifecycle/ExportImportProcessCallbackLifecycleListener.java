@@ -25,9 +25,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Daniel Kocsis
  */
+@Component(service = ExportImportLifecycleListener.class)
 public class ExportImportProcessCallbackLifecycleListener
 	extends BaseProcessExportImportLifecycleListener {
 

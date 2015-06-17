@@ -16,6 +16,7 @@ package com.liferay.exportimport.trash;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.trash.BaseTrashHandler;
+import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.trash.TrashRenderer;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.security.permission.PermissionChecker;
@@ -34,6 +35,12 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Levente Hudák
  */
+@Component(
+	property = {
+		"model.class.name=com.liferay.portlet.exportimport.model.ExportImportConfiguration"
+	},
+	service = TrashHandler.class
+)
 public class ExportImportConfigurationTrashHandler extends BaseTrashHandler {
 
 	@Override

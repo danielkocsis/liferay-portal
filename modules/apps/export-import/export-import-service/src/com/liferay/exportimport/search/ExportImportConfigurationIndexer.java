@@ -22,11 +22,11 @@ import com.liferay.portal.kernel.search.BaseIndexer;
 import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchEngineUtil;
 import com.liferay.portal.kernel.search.Summary;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
-import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -45,21 +45,18 @@ import java.util.TimeZone;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Mate Thurzo
  * @author Akos Thurzo
  */
-@OSGiBeanProperties
+@Component(immediate = true, service = Indexer.class)
 public class ExportImportConfigurationIndexer extends BaseIndexer {
 
 	public static final String CLASS_NAME =
 		ExportImportConfiguration.class.getName();
-
-	public ExportImportConfigurationIndexer() {
-		setCommitImmediately(true);
-	}
 
 	@Override
 	public String getClassName() {
@@ -97,6 +94,11 @@ public class ExportImportConfigurationIndexer extends BaseIndexer {
 		addSearchTerm(
 			searchQuery, searchContext, "exportImportConfigurationId", false);
 		addSearchTerm(searchQuery, searchContext, Field.NAME, true);
+	}
+
+	@Activate
+	protected void activate() {
+		setCommitImmediately(true);
 	}
 
 	@Override

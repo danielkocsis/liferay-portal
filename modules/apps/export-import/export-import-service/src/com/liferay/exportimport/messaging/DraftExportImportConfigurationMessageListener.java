@@ -21,9 +21,13 @@ import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.messaging.BaseMessageListener;
+import com.liferay.portal.kernel.messaging.BaseSchedulerEntryMessageListener;
 import com.liferay.portal.kernel.messaging.Message;
+import com.liferay.portal.kernel.scheduler.SchedulerEntry;
+import com.liferay.portal.kernel.scheduler.TimeUnit;
+import com.liferay.portal.kernel.scheduler.TriggerType;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
 import com.liferay.portlet.exportimport.service.ExportImportConfigurationLocalServiceUtil;
@@ -36,8 +40,21 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Levente Hudák
  */
+@Component(
+	property = {"javax.portlet.name=" + PortletKeys.EXPORT_IMPORT},
+	service = SchedulerEntry.class
+)
 public class DraftExportImportConfigurationMessageListener
-	extends BaseMessageListener {
+	extends BaseSchedulerEntryMessageListener {
+
+	@Activate
+	protected void activate() {
+		schedulerEntry.setTimeUnit(TimeUnit.HOUR);
+		schedulerEntry.setTriggerType(TriggerType.SIMPLE);
+		schedulerEntry.setTriggerValue(
+			PropsValues.
+				STAGING_DRAFT_EXPORT_IMPORT_CONFIGURATION_CHECK_INTERVAL);
+	}
 
 	@Override
 	protected void doReceive(Message message) throws PortalException {
