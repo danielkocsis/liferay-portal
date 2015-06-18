@@ -14,7 +14,12 @@
 
 package com.liferay.portlet.exportimport.lifecycle;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceTracker;
 
 import java.io.Serializable;
 
@@ -36,18 +41,39 @@ public class ExportImportLifecycleEventFactoryUtil {
 		PortalRuntimePermission.checkGetBeanProperty(
 			ExportImportLifecycleEventFactoryUtil.class);
 
-		return _exportImportLifecycleEventFactory;
+		ExportImportLifecycleEventFactory exportImportLifecycleEventFactory =
+			_instance._serviceTracker.getService();
+
+		if (exportImportLifecycleEventFactory == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"ExportImportLifecycleEventFactoryUtil has not been" +
+						" initialized");
+			}
+
+			return null;
+		}
+
+		return exportImportLifecycleEventFactory;
 	}
 
-	public void setExportImportLifecycleEventFactory(
-		ExportImportLifecycleEventFactory exportImportLifecycleEventFactory) {
+	private ExportImportLifecycleEventFactoryUtil() {
+		Registry registry = RegistryUtil.getRegistry();
 
-		PortalRuntimePermission.checkSetBeanProperty(getClass());
+		_serviceTracker = registry.trackServices(
+			ExportImportLifecycleEventFactory.class);
 
-		_exportImportLifecycleEventFactory = exportImportLifecycleEventFactory;
+		_serviceTracker.open();
 	}
 
-	private static ExportImportLifecycleEventFactory
-		_exportImportLifecycleEventFactory;
+	private static final Log _log = LogFactoryUtil.getLog(
+		ExportImportLifecycleEventFactoryUtil.class);
+
+	private static final ExportImportLifecycleEventFactoryUtil _instance =
+		new ExportImportLifecycleEventFactoryUtil();
+
+	private final ServiceTracker
+		<ExportImportLifecycleEventFactory, ExportImportLifecycleEventFactory>
+			_serviceTracker;
 
 }

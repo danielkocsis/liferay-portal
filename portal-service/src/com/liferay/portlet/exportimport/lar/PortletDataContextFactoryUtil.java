@@ -16,10 +16,15 @@ package com.liferay.portlet.exportimport.lar;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 import com.liferay.portal.kernel.zip.ZipReader;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceTracker;
 
 import java.util.Date;
 import java.util.Map;
@@ -75,17 +80,37 @@ public class PortletDataContextFactoryUtil {
 		PortalRuntimePermission.checkGetBeanProperty(
 			PortletDataContextFactoryUtil.class);
 
-		return _portletDataContextFactory;
+		PortletDataContextFactory portletDataContextFactory =
+			_instance._serviceTracker.getService();
+
+		if (portletDataContextFactory == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"PortletDataContextFactoryUtil has not been initialized");
+			}
+
+			return null;
+		}
+
+		return portletDataContextFactory;
 	}
 
-	public void setPortletDataContextFactory(
-		PortletDataContextFactory portletDataContextFactory) {
+	private PortletDataContextFactoryUtil() {
+		Registry registry = RegistryUtil.getRegistry();
 
-		PortalRuntimePermission.checkSetBeanProperty(getClass());
+		_serviceTracker = registry.trackServices(
+			PortletDataContextFactory.class);
 
-		_portletDataContextFactory = portletDataContextFactory;
+		_serviceTracker.open();
 	}
 
-	private static PortletDataContextFactory _portletDataContextFactory;
+	private static final Log _log = LogFactoryUtil.getLog(
+		PortletDataContextFactoryUtil.class);
+
+	private static final PortletDataContextFactoryUtil _instance =
+		new PortletDataContextFactoryUtil();
+
+	private final ServiceTracker
+		<PortletDataContextFactory, PortletDataContextFactory> _serviceTracker;
 
 }

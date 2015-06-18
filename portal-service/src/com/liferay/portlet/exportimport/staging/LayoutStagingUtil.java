@@ -14,6 +14,8 @@
 
 package com.liferay.portlet.exportimport.staging;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
@@ -22,6 +24,9 @@ import com.liferay.portal.model.LayoutSet;
 import com.liferay.portal.model.LayoutSetBranch;
 import com.liferay.portal.model.LayoutSetStagingHandler;
 import com.liferay.portal.model.LayoutStagingHandler;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceTracker;
 
 /**
  * @author Raymond Augé
@@ -45,7 +50,17 @@ public class LayoutStagingUtil {
 	public static LayoutStaging getLayoutStaging() {
 		PortalRuntimePermission.checkGetBeanProperty(LayoutStagingUtil.class);
 
-		return _layoutStaging;
+		LayoutStaging layoutStaging = _instance._serviceTracker.getService();
+
+		if (layoutStaging == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("LayoutStagingUtil has not been initialized");
+			}
+
+			return null;
+		}
+
+		return layoutStaging;
 	}
 
 	public static LayoutStagingHandler getLayoutStagingHandler(Layout layout) {
@@ -62,12 +77,19 @@ public class LayoutStagingUtil {
 		return getLayoutStaging().isBranchingLayoutSet(group, privateLayout);
 	}
 
-	public void setLayoutStaging(LayoutStaging layoutStaging) {
-		PortalRuntimePermission.checkSetBeanProperty(getClass());
+	private LayoutStagingUtil() {
+		Registry registry = RegistryUtil.getRegistry();
 
-		_layoutStaging = layoutStaging;
+		_serviceTracker = registry.trackServices(LayoutStaging.class);
+
+		_serviceTracker.open();
 	}
 
-	private static LayoutStaging _layoutStaging;
+	private static final Log _log = LogFactoryUtil.getLog(
+		LayoutStagingUtil.class);
+
+	private static final LayoutStagingUtil _instance = new LayoutStagingUtil();
+
+	private final ServiceTracker<LayoutStaging, LayoutStaging> _serviceTracker;
 
 }

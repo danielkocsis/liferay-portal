@@ -14,9 +14,14 @@
 
 package com.liferay.portlet.exportimport.staging.permission;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.security.permission.PermissionChecker;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceTracker;
 
 /**
  * @author Jorge Ferrer
@@ -27,7 +32,18 @@ public class StagingPermissionUtil {
 		PortalRuntimePermission.checkGetBeanProperty(
 			StagingPermissionUtil.class);
 
-		return _stagingPermission;
+		StagingPermission stagingPermission =
+			_instance._serviceTracker.getService();
+
+		if (stagingPermission == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("StagingPermissionUtil has not been initialized");
+			}
+
+			return null;
+		}
+
+		return stagingPermission;
 	}
 
 	public static Boolean hasPermission(
@@ -47,12 +63,21 @@ public class StagingPermissionUtil {
 			actionId);
 	}
 
-	public void setStagingPermission(StagingPermission stagingPermission) {
-		PortalRuntimePermission.checkSetBeanProperty(getClass());
+	private StagingPermissionUtil() {
+		Registry registry = RegistryUtil.getRegistry();
 
-		_stagingPermission = stagingPermission;
+		_serviceTracker = registry.trackServices(StagingPermission.class);
+
+		_serviceTracker.open();
 	}
 
-	private static StagingPermission _stagingPermission;
+	private static final Log _log = LogFactoryUtil.getLog(
+		StagingPermissionUtil.class);
+
+	private static final StagingPermissionUtil _instance =
+		new StagingPermissionUtil();
+
+	private final ServiceTracker<StagingPermission, StagingPermission>
+		_serviceTracker;
 
 }

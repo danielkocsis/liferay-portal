@@ -140,6 +140,8 @@ import java.util.regex.Pattern;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
+import org.osgi.service.component.annotations.Component;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -149,6 +151,7 @@ import org.xml.sax.XMLReader;
  * @author Julio Camarero
  * @author Mate Thurzo
  */
+@Component(immediate = true)
 public class ExportImportHelperImpl implements ExportImportHelper {
 
 	@Override

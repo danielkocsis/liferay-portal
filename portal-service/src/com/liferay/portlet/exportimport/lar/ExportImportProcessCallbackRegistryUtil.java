@@ -14,6 +14,13 @@
 
 package com.liferay.portlet.exportimport.lar;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceTracker;
+
 import java.util.concurrent.Callable;
 
 /**
@@ -21,19 +28,50 @@ import java.util.concurrent.Callable;
  */
 public class ExportImportProcessCallbackRegistryUtil {
 
-	public static void registerCallback(Callable<?> callable) {
-		_exportImportProcessCommitCallbackRegistry.registerCallback(callable);
-	}
+	public static ExportImportProcessCallbackRegistry
+		getExportImportProcessCallbackRegistry() {
 
-	public void setExportImportProcessCallbackRegistry(
+		PortalRuntimePermission.checkGetBeanProperty(
+			ExportImportProcessCallbackRegistryUtil.class);
+
 		ExportImportProcessCallbackRegistry
-			exportImportProcessCallbackRegistry) {
+			exportImportProcessCallbackRegistry =
+				_instance._serviceTracker.getService();
 
-		_exportImportProcessCommitCallbackRegistry =
-			exportImportProcessCallbackRegistry;
+		if (exportImportProcessCallbackRegistry == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"ExportImportProcessCallbackRegistryUtil has not been " +
+						"initialized");
+			}
+
+			return null;
+		}
+
+		return exportImportProcessCallbackRegistry;
 	}
 
-	private static ExportImportProcessCallbackRegistry
-		_exportImportProcessCommitCallbackRegistry;
+	public static void registerCallback(Callable<?> callable) {
+		getExportImportProcessCallbackRegistry().registerCallback(callable);
+	}
+
+	private ExportImportProcessCallbackRegistryUtil() {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceTracker = registry.trackServices(
+			ExportImportProcessCallbackRegistry.class);
+
+		_serviceTracker.open();
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ExportImportProcessCallbackRegistryUtil.class);
+
+	private static final ExportImportProcessCallbackRegistryUtil _instance =
+		new ExportImportProcessCallbackRegistryUtil();
+
+	private final ServiceTracker
+		<ExportImportProcessCallbackRegistry,
+			ExportImportProcessCallbackRegistry> _serviceTracker;
 
 }
