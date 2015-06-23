@@ -8,4 +8,9 @@ Export-Package:\
 	com.liferay.exportimport.search,\
 	com.liferay.exportimport.staging,\
 	com.liferay.exportimport.trash
-Include-Resource: classes
+Import-Package: *;resolution:=optional
+Include-Resource:\
+	classes,\
+	@${app.server.lib.portal.dir}/xstream.jar!/com/thoughtworks/xstream/XStream.class,\
+	@${app.server.lib.portal.dir}/xstream.jar!/com/thoughtworks/xstream/core/ClassLoaderReference.class,\
+	@${app.server.lib.portal.dir}/xstream.jar!/com/thoughtworks/xstream/io/xml/XppDriver.class

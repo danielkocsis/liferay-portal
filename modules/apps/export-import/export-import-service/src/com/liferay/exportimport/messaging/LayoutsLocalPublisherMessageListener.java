@@ -15,9 +15,7 @@
 package com.liferay.exportimport.messaging;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.Message;
-import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.MessageStatus;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -30,9 +28,9 @@ import java.io.Serializable;
 
 import java.util.Map;
 
-import org.osgi.service.component.annotations.Activate;
+import javax.servlet.ServletContext;
+
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -40,23 +38,13 @@ import org.osgi.service.component.annotations.Reference;
  * @author Raymond Augé
  * @author Daniel Kocsis
  */
-@Component(immediate = true, service = MessageListener.class)
+@Component(
+	immediate = true,
+	property = {"destination.name=liferay/layouts_local_publisher"},
+	service = MessageListener.class
+)
 public class LayoutsLocalPublisherMessageListener
 	extends BasePublisherMessageListener {
-
-	@Activate
-	protected void activate() {
-		_messageBus.registerMessageListener(
-			DestinationNames.LAYOUTS_LOCAL_PUBLISHER, this);
-
-		setDestinationName("liferay/message_bus/message_status");
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		_messageBus.unregisterMessageListener(
-			DestinationNames.LAYOUTS_LOCAL_PUBLISHER, this);
-	}
 
 	@Override
 	protected void doReceive(Message message, MessageStatus messageStatus)
@@ -96,11 +84,8 @@ public class LayoutsLocalPublisherMessageListener
 		}
 	}
 
-	@Reference
-	protected void setMessageBus(MessageBus messageBus) {
-		_messageBus = messageBus;
+	@Reference(target = "(original.bean=*)", unbind = "-")
+	protected void setServletContext(ServletContext servletContext) {
 	}
-
-	private MessageBus _messageBus;
 
 }
