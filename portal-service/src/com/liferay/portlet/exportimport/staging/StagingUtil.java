@@ -19,6 +19,8 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.workflow.WorkflowTask;
@@ -32,6 +34,9 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.exportimport.lar.MissingReference;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceTracker;
 
 import java.io.Serializable;
 
@@ -361,7 +366,17 @@ public class StagingUtil {
 	public static Staging getStaging() {
 		PortalRuntimePermission.checkGetBeanProperty(StagingUtil.class);
 
-		return _staging;
+		Staging staging = _instance._serviceTracker.getService();
+
+		if (staging == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("StagingUtil has not been initialized");
+			}
+
+			return null;
+		}
+
+		return staging;
 	}
 
 	public static Group getStagingGroup(long groupId) {
@@ -728,12 +743,18 @@ public class StagingUtil {
 			remoteGroupId);
 	}
 
-	public void setStaging(Staging staging) {
-		PortalRuntimePermission.checkSetBeanProperty(getClass());
+	private StagingUtil() {
+		Registry registry = RegistryUtil.getRegistry();
 
-		_staging = staging;
+		_serviceTracker = registry.trackServices(Staging.class);
+
+		_serviceTracker.open();
 	}
 
-	private static Staging _staging;
+	private static final Log _log = LogFactoryUtil.getLog(StagingUtil.class);
+
+	private static final StagingUtil _instance = new StagingUtil();
+
+	private final ServiceTracker<Staging, Staging> _serviceTracker;
 
 }

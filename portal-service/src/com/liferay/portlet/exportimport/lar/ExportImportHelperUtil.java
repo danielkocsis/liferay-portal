@@ -17,6 +17,8 @@ package com.liferay.portlet.exportimport.lar;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 import com.liferay.portal.kernel.util.DateRange;
@@ -27,6 +29,9 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceTracker;
 
 import java.io.File;
 
@@ -102,7 +107,18 @@ public class ExportImportHelperUtil {
 		PortalRuntimePermission.checkGetBeanProperty(
 			ExportImportHelperUtil.class);
 
-		return _exportImportHelper;
+		ExportImportHelper exportImportHelper =
+			_instance._serviceTracker.getService();
+
+		if (exportImportHelper == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("ExportImportHelperUtil has not been initialized");
+			}
+
+			return null;
+		}
+
+		return exportImportHelper;
 	}
 
 	/**
@@ -590,12 +606,21 @@ public class ExportImportHelperUtil {
 		getExportImportHelper().writeManifestSummary(document, manifestSummary);
 	}
 
-	public void setExportImportHelper(ExportImportHelper exportImportHelper) {
-		PortalRuntimePermission.checkSetBeanProperty(getClass());
+	private ExportImportHelperUtil() {
+		Registry registry = RegistryUtil.getRegistry();
 
-		_exportImportHelper = exportImportHelper;
+		_serviceTracker = registry.trackServices(ExportImportHelper.class);
+
+		_serviceTracker.open();
 	}
 
-	private static ExportImportHelper _exportImportHelper;
+	private static final Log _log = LogFactoryUtil.getLog(
+		ExportImportHelperUtil.class);
+
+	private static final ExportImportHelperUtil _instance =
+		new ExportImportHelperUtil();
+
+	private final ServiceTracker<ExportImportHelper, ExportImportHelper>
+		_serviceTracker;
 
 }

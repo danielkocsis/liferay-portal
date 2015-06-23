@@ -1,0 +1,16 @@
+Bundle-Name: Liferay Export Import Service
+Bundle-SymbolicName:  com.liferay.exportimport.service
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.exportimport.lar,\
+	com.liferay.exportimport.lifecycle,\
+	com.liferay.exportimport.messaging,\
+	com.liferay.exportimport.search,\
+	com.liferay.exportimport.staging,\
+	com.liferay.exportimport.trash
+Import-Package: *;resolution:=optional
+Include-Resource:\
+	classes,\
+	@${app.server.lib.portal.dir}/xstream.jar!/com/thoughtworks/xstream/XStream.class,\
+	@${app.server.lib.portal.dir}/xstream.jar!/com/thoughtworks/xstream/core/ClassLoaderReference.class,\
+	@${app.server.lib.portal.dir}/xstream.jar!/com/thoughtworks/xstream/io/xml/XppDriver.class
