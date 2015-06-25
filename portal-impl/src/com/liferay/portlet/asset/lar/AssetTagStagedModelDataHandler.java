@@ -121,11 +121,13 @@ public class AssetTagStagedModelDataHandler
 			portletDataContext, assetTag);
 
 		AssetTag existingAssetTag = fetchStagedModelByUuidAndGroupId(
-			assetTag.getName(), portletDataContext.getScopeGroupId());
+			assetTag.getUuid(), portletDataContext.getScopeGroupId());
 
 		AssetTag importedAssetTag = null;
 
 		if (existingAssetTag == null) {
+			serviceContext.setUuid(assetTag.getUuid());
+
 			importedAssetTag = AssetTagLocalServiceUtil.addTag(
 				userId, portletDataContext.getScopeGroupId(),
 				assetTag.getName(), serviceContext);
