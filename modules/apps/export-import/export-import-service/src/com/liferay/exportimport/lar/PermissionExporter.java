@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portlet.exportimport.lar;
+package com.liferay.exportimport.lar;
 
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -29,6 +29,8 @@ import com.liferay.portal.security.permission.ResourceActionsUtil;
 import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
+import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
 
 import java.util.List;
 import java.util.Map;
