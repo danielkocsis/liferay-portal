@@ -23,6 +23,9 @@ import static com.liferay.portlet.exportimport.lifecycle.ExportImportLifecycleCo
 import static com.liferay.portlet.exportimport.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_LAYOUT_EXPORT_IN_PROCESS;
 import static com.liferay.portlet.exportimport.lifecycle.ExportImportLifecycleConstants.PROCESS_FLAG_LAYOUT_STAGING_IN_PROCESS;
 
+import com.liferay.exportimport.lar.DeletionSystemEventExporter;
+import com.liferay.exportimport.lar.PermissionExporter;
+import com.liferay.exportimport.lar.ThemeExporter;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -72,6 +75,21 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
+import com.liferay.portlet.exportimport.controller.ExportController;
+import com.liferay.portlet.exportimport.controller.ExportImportController;
+import com.liferay.portlet.exportimport.lar.ExportImportDateUtil;
+import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
+import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
+import com.liferay.portlet.exportimport.lar.ExportImportProcessCallbackRegistryUtil;
+import com.liferay.portlet.exportimport.lar.ExportImportThreadLocal;
+import com.liferay.portlet.exportimport.lar.ManifestSummary;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.PortletDataContextFactoryUtil;
+import com.liferay.portlet.exportimport.lar.PortletDataHandler;
+import com.liferay.portlet.exportimport.lar.PortletDataHandlerKeys;
+import com.liferay.portlet.exportimport.lar.PortletDataHandlerStatusMessageSenderUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 import com.liferay.portlet.exportimport.lifecycle.ExportImportLifecycleManager;
 import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
 import com.liferay.portlet.exportimport.staging.LayoutStagingUtil;
@@ -80,7 +98,6 @@ import com.liferay.portlet.exportimport.xstream.XStreamAliasRegistryUtil;
 import java.io.File;
 import java.io.Serializable;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -89,6 +106,10 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.time.StopWatch;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Brian Wing Shun Chan
@@ -102,15 +123,67 @@ import org.apache.commons.lang.time.StopWatch;
  * @author Douglas Wong
  * @author Mate Thurzo
  */
-public class LayoutExporter {
+@Component(
+	immediate = true,
+	property = {"model.class.name=com.liferay.portal.model.Layout"},
+	service = {ExportImportController.class, LayoutExportController.class}
+)
+public class LayoutExportController implements ExportController {
 
-	public static List<Portlet> getDataSiteLevelPortlets(long companyId)
+	@Override
+	public File export(ExportImportConfiguration exportImportConfiguration)
+		throws Exception {
+
+		PortletDataContext portletDataContext = null;
+
+		try {
+			ExportImportThreadLocal.setLayoutExportInProcess(true);
+
+			Map<String, Serializable> settingsMap =
+				exportImportConfiguration.getSettingsMap();
+
+			long[] layoutIds = GetterUtil.getLongValues(
+				settingsMap.get("layoutIds"));
+
+			portletDataContext = getPortletDataContext(
+				exportImportConfiguration);
+
+			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
+				EVENT_LAYOUT_EXPORT_STARTED, getProcessFlag(),
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext));
+
+			File file = doExport(portletDataContext, layoutIds);
+
+			ExportImportThreadLocal.setLayoutExportInProcess(false);
+
+			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
+				EVENT_LAYOUT_EXPORT_SUCCEEDED, getProcessFlag(),
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext));
+
+			return file;
+		}
+		catch (Throwable t) {
+			ExportImportThreadLocal.setLayoutExportInProcess(false);
+
+			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
+				EVENT_LAYOUT_EXPORT_FAILED, getProcessFlag(),
+				PortletDataContextFactoryUtil.clonePortletDataContext(
+					portletDataContext),
+				t);
+
+			throw t;
+		}
+	}
+
+	public List<Portlet> getDataSiteLevelPortlets(long companyId)
 		throws Exception {
 
 		return getDataSiteLevelPortlets(companyId, false);
 	}
 
-	public static List<Portlet> getDataSiteLevelPortlets(
+	public List<Portlet> getDataSiteLevelPortlets(
 			long companyId, boolean excludeDataAlwaysStaged)
 		throws Exception {
 
@@ -142,94 +215,12 @@ public class LayoutExporter {
 		return portlets;
 	}
 
-	public static LayoutExporter getInstance() {
-		return _instance;
+	@Activate
+	protected void activate() {
+		XStreamAliasRegistryUtil.register(LayoutImpl.class, "Layout");
 	}
 
-	/**
-	 * @deprecated As of 7.0.0, with no direct replacement
-	 */
-	@Deprecated
-	public static List<Portlet> getPortletDataHandlerPortlets(
-			long groupId, List<Layout> layouts)
-		throws Exception {
-
-		return Collections.emptyList();
-	}
-
-	/**
-	 * @deprecated As of 7.0.0, with no direct replacement
-	 */
-	@Deprecated
-	public byte[] exportLayouts(
-			long groupId, boolean privateLayout, long[] layoutIds,
-			Map<String, String[]> parameterMap, Date startDate, Date endDate)
-		throws Exception {
-
-		return new byte[0];
-	}
-
-	public File exportLayoutsAsFile(
-			ExportImportConfiguration exportImportConfiguration)
-		throws Exception {
-
-		PortletDataContext portletDataContext = null;
-
-		try {
-			ExportImportThreadLocal.setLayoutExportInProcess(true);
-
-			Map<String, Serializable> settingsMap =
-				exportImportConfiguration.getSettingsMap();
-
-			long[] layoutIds = GetterUtil.getLongValues(
-				settingsMap.get("layoutIds"));
-
-			portletDataContext = getPortletDataContext(
-				exportImportConfiguration);
-
-			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_LAYOUT_EXPORT_STARTED, getProcessFlag(),
-				PortletDataContextFactoryUtil.clonePortletDataContext(
-					portletDataContext));
-
-			File file = doExportLayoutsAsFile(portletDataContext, layoutIds);
-
-			ExportImportThreadLocal.setLayoutExportInProcess(false);
-
-			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_LAYOUT_EXPORT_SUCCEEDED, getProcessFlag(),
-				PortletDataContextFactoryUtil.clonePortletDataContext(
-					portletDataContext));
-
-			return file;
-		}
-		catch (Throwable t) {
-			ExportImportThreadLocal.setLayoutExportInProcess(false);
-
-			ExportImportLifecycleManager.fireExportImportLifecycleEvent(
-				EVENT_LAYOUT_EXPORT_FAILED, getProcessFlag(),
-				PortletDataContextFactoryUtil.clonePortletDataContext(
-					portletDataContext),
-				t);
-
-			throw t;
-		}
-	}
-
-	/**
-	 * @deprecated As of 7.0.0, replaced by {@link
-	 *             #exportLayoutsAsFile(ExportImportConfiguration)}
-	 */
-	@Deprecated
-	public File exportLayoutsAsFile(
-			long groupId, boolean privateLayout, long[] layoutIds,
-			Map<String, String[]> parameterMap, Date startDate, Date endDate)
-		throws Exception {
-
-		return null;
-	}
-
-	protected File doExportLayoutsAsFile(
+	protected File doExport(
 			PortletDataContext portletDataContext, long[] layoutIds)
 		throws Exception {
 
@@ -561,7 +552,7 @@ public class LayoutExporter {
 					PortletDataContextFactoryUtil.clonePortletDataContext(
 						portletDataContext));
 
-				_portletExporter.exportPortlet(
+				_portletExportController.exportPortlet(
 					portletDataContext, layout, portletsElement,
 					exportPermissions,
 					exportPortletControlsMap.get(
@@ -572,7 +563,7 @@ public class LayoutExporter {
 						PortletDataHandlerKeys.PORTLET_SETUP),
 					exportPortletControlsMap.get(
 						PortletDataHandlerKeys.PORTLET_USER_PREFERENCES));
-				_portletExporter.exportService(
+				_portletExportController.exportService(
 					portletDataContext, servicesElement,
 					exportPortletControlsMap.get(
 						PortletDataHandlerKeys.PORTLET_SETUP));
@@ -595,9 +586,9 @@ public class LayoutExporter {
 
 		portletDataContext.setScopeGroupId(previousScopeGroupId);
 
-		_portletExporter.exportAssetLinks(portletDataContext);
-		_portletExporter.exportExpandoTables(portletDataContext);
-		_portletExporter.exportLocks(portletDataContext);
+		_portletExportController.exportAssetLinks(portletDataContext);
+		_portletExportController.exportExpandoTables(portletDataContext);
+		_portletExportController.exportLocks(portletDataContext);
 
 		_deletionSystemEventExporter.exportDeletionSystemEvents(
 			portletDataContext);
@@ -786,20 +777,21 @@ public class LayoutExporter {
 		return PROCESS_FLAG_LAYOUT_EXPORT_IN_PROCESS;
 	}
 
-	private LayoutExporter() {
-		XStreamAliasRegistryUtil.register(LayoutImpl.class, "Layout");
+	@Reference(unbind = "-")
+	protected void setPortletExportController(
+		PortletExportController portletExportController) {
+
+		_portletExportController = portletExportController;
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(LayoutExporter.class);
-
-	private static final LayoutExporter _instance = new LayoutExporter();
+	private static final Log _log = LogFactoryUtil.getLog(
+		LayoutExportController.class);
 
 	private final DeletionSystemEventExporter _deletionSystemEventExporter =
 		DeletionSystemEventExporter.getInstance();
 	private final PermissionExporter _permissionExporter =
 		PermissionExporter.getInstance();
-	private final PortletExporter _portletExporter =
-		PortletExporter.getInstance();
+	private PortletExportController _portletExportController;
 	private final ThemeExporter _themeExporter = ThemeExporter.getInstance();
 
 	private class UpdateLayoutSetLastPublishDateCallable
