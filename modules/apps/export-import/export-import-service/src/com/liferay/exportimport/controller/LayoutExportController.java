@@ -70,7 +70,6 @@ import com.liferay.portal.service.LayoutRevisionLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetBranchLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetPrototypeLocalServiceUtil;
-import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.UserLocalServiceUtil;
@@ -99,7 +98,6 @@ import java.io.File;
 import java.io.Serializable;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,44 +173,6 @@ public class LayoutExportController implements ExportController {
 
 			throw t;
 		}
-	}
-
-	public List<Portlet> getDataSiteLevelPortlets(long companyId)
-		throws Exception {
-
-		return getDataSiteLevelPortlets(companyId, false);
-	}
-
-	public List<Portlet> getDataSiteLevelPortlets(
-			long companyId, boolean excludeDataAlwaysStaged)
-		throws Exception {
-
-		List<Portlet> portlets = PortletLocalServiceUtil.getPortlets(companyId);
-
-		Iterator<Portlet> itr = portlets.iterator();
-
-		while (itr.hasNext()) {
-			Portlet portlet = itr.next();
-
-			if (!portlet.isActive()) {
-				itr.remove();
-
-				continue;
-			}
-
-			PortletDataHandler portletDataHandler =
-				portlet.getPortletDataHandlerInstance();
-
-			if ((portletDataHandler == null) ||
-				!portletDataHandler.isDataSiteLevel() ||
-				(excludeDataAlwaysStaged &&
-				 portletDataHandler.isDataAlwaysStaged())) {
-
-				itr.remove();
-			}
-		}
-
-		return portlets;
 	}
 
 	@Activate
@@ -404,7 +364,9 @@ public class LayoutExportController implements ExportController {
 
 		// Collect data portlets
 
-		for (Portlet portlet : getDataSiteLevelPortlets(companyId)) {
+		for (Portlet portlet :
+				ExportImportHelperUtil.getDataSiteLevelPortlets(companyId)) {
+
 			String portletId = portlet.getRootPortletId();
 
 			if (ExportImportThreadLocal.isStagingInProcess() &&
