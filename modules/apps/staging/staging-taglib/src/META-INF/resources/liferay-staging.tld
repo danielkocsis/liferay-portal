@@ -11,7 +11,7 @@
 	<uri>http://liferay.com/tld/staging</uri>
 	<tag>
 		<name>configuration-header</name>
-		<tag-class>com.liferay.taglib.staging.ConfigurationHeaderTag</tag-class>
+		<tag-class>com.liferay.staging.taglib.ConfigurationHeaderTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>exportImportConfiguration</name>
@@ -28,7 +28,7 @@
 	</tag>
 	<tag>
 		<name>content</name>
-		<tag-class>com.liferay.taglib.staging.ContentTag</tag-class>
+		<tag-class>com.liferay.staging.taglib.ContentTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>cmd</name>
@@ -56,8 +56,8 @@
 	</tag>
 	<tag>
 		<name>defineObjects</name>
-		<tag-class>com.liferay.taglib.staging.DefineObjectsTag</tag-class>
-		<tei-class>com.liferay.taglib.staging.DefineObjectsTei</tei-class>
+		<tag-class>com.liferay.staging.taglib.DefineObjectsTag</tag-class>
+		<tei-class>com.liferay.staging.taglib.DefineObjectsTei</tei-class>
 		<body-content>empty</body-content>
 		<attribute>
 			<name>portletId</name>
@@ -68,7 +68,7 @@
 	</tag>
 	<tag>
 		<name>deletions</name>
-		<tag-class>com.liferay.taglib.staging.DeletionsTag</tag-class>
+		<tag-class>com.liferay.staging.taglib.DeletionsTag</tag-class>
 		<body-content>empty</body-content>
 		<attribute>
 			<name>cmd</name>
@@ -85,7 +85,7 @@
 	</tag>
 	<tag>
 		<name>menu</name>
-		<tag-class>com.liferay.taglib.staging.MenuTag</tag-class>
+		<tag-class>com.liferay.staging.taglib.MenuTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>cssClass</name>
@@ -138,7 +138,7 @@
 	</tag>
 	<tag>
 		<name>portlet-list</name>
-		<tag-class>com.liferay.taglib.staging.PortletListTag</tag-class>
+		<tag-class>com.liferay.staging.taglib.PortletListTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>dateRange</name>
