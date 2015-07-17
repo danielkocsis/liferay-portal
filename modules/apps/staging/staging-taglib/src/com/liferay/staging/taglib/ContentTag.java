@@ -12,13 +12,10 @@
  * details.
  */
 
-package com.liferay.taglib.staging;
+package com.liferay.staging.taglib;
 
-import com.liferay.portal.kernel.util.DateRange;
-import com.liferay.portal.model.Portlet;
 import com.liferay.taglib.util.IncludeTag;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,10 +23,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Levente Hudák
  */
-public class PortletListTag extends IncludeTag {
+public class ContentTag extends IncludeTag {
 
-	public void setDateRange(DateRange dateRange) {
-		_dateRange = dateRange;
+	public void setCmd(String cmd) {
+		_cmd = cmd;
 	}
 
 	public void setDisableInputs(boolean disableInputs) {
@@ -40,20 +37,15 @@ public class PortletListTag extends IncludeTag {
 		_parameterMap = parameterMap;
 	}
 
-	public void setPortlets(List<Portlet> portlets) {
-		_portlets = portlets;
-	}
-
 	public void setType(String type) {
 		_type = type;
 	}
 
 	@Override
 	protected void cleanUp() {
-		_dateRange = null;
+		_cmd = null;
 		_disableInputs = false;
 		_parameterMap = null;
-		_portlets = null;
 		_type = null;
 	}
 
@@ -64,24 +56,22 @@ public class PortletListTag extends IncludeTag {
 
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
+		request.setAttribute("liferay-staging:content:cmd", _cmd);
 		request.setAttribute(
-			"liferay-staging:portlet-list:dateRange", _dateRange);
+			"liferay-staging:content:disableInputs", _disableInputs);
 		request.setAttribute(
-			"liferay-staging:portlet-list:disableInputs", _disableInputs);
+			"liferay-staging:content:parameterMap", _parameterMap);
 		request.setAttribute(
-			"liferay-staging:portlet-list:parameterMap", _parameterMap);
-		request.setAttribute(
-			"liferay-staging:portlet-list:portlets", _portlets);
-		request.setAttribute("liferay-staging:portlet-list:type", _type);
+			"liferay-staging:content:renderRequest",
+			pageContext.getAttribute("renderRequest"));
+		request.setAttribute("liferay-staging:content:type", _type);
 	}
 
-	private static final String _PAGE =
-		"/html/taglib/staging/portlet_list/page.jsp";
+	private static final String _PAGE = "/html/taglib/staging/content/page.jsp";
 
-	private DateRange _dateRange;
+	private String _cmd;
 	private boolean _disableInputs;
 	private Map<String, String[]> _parameterMap;
-	private List<Portlet> _portlets;
 	private String _type;
 
 }

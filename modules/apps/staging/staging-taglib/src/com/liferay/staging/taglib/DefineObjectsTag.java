@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.taglib.staging;
+package com.liferay.staging.taglib;
 
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
