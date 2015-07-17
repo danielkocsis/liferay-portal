@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="/html/taglib/staging/portlet_list/init.jsp" %>
+<%@ include file="/taglib/portlet_list/init.jsp" %>
 
 <ul class="portlet-list">
 
@@ -86,7 +86,7 @@
 
 									<aui:field-wrapper label='<%= ArrayUtil.isNotEmpty(metadataControls) ? "content" : StringPool.BLANK %>'>
 										<ul class="lfr-tree list-unstyled">
-											<liferay-util:include page="/html/taglib/staging/portlet_list/render_controls.jsp" />
+											<liferay-util:include page="/taglib/portlet_list/render_controls.jsp" servletContext="<%= application %>" />
 										</ul>
 									</aui:field-wrapper>
 
@@ -103,7 +103,7 @@
 
 									<aui:field-wrapper label='<%= ArrayUtil.isNotEmpty(metadataControls) ? "content" : StringPool.BLANK %>'>
 										<ul class="lfr-tree list-unstyled">
-											<liferay-util:include page="/html/taglib/staging/portlet_list/render_controls.jsp" />
+											<liferay-util:include page="/taglib/portlet_list/render_controls.jsp" servletContext="<%= application %>" />
 										</ul>
 									</aui:field-wrapper>
 
@@ -129,7 +129,7 @@
 
 										<aui:field-wrapper label="content-metadata">
 											<ul class="lfr-tree list-unstyled">
-												<liferay-util:include page="/html/taglib/staging/portlet_list/render_controls.jsp" />
+												<liferay-util:include page="/taglib/portlet_list/render_controls.jsp" servletContext="<%= application %>" />
 											</ul>
 										</aui:field-wrapper>
 
