@@ -13,10 +13,17 @@
  * details.
  */
 --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<%@ include file="/html/taglib/init.jsp" %>
+<%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
+taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %>
 
-<%@ page import="com.liferay.portlet.exportimport.model.ExportImportConfiguration" %>
+<%@ page import="com.liferay.portal.kernel.portlet.LiferayPortletRequest" %><%@
+page import="com.liferay.portal.kernel.servlet.SessionMessages" %><%@
+page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
+page import="com.liferay.portlet.exportimport.model.ExportImportConfiguration" %>
+
+<liferay-theme:defineObjects />
 
 <%
 ExportImportConfiguration exportImportConfiguration = (ExportImportConfiguration)request.getAttribute("liferay-staging:configuration-header:exportImportConfiguration");

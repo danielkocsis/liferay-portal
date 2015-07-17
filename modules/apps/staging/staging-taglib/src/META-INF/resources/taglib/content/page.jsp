@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="/html/taglib/staging/content/init.jsp" %>
+<%@ include file="/taglib/content/init.jsp" %>
 
 <c:if test="<%= !dataSiteLevelPortlets.isEmpty() %>">
 	<aui:fieldset cssClass="options-group" label="content">

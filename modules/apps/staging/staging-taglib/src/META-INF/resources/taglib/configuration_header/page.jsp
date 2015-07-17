@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="/html/taglib/staging/configuration_header/init.jsp" %>
+<%@ include file="/taglib/configuration_header/init.jsp" %>
 
 <aui:fieldset cssClass="options-group" label="<%= label %>">
 	<c:choose>
