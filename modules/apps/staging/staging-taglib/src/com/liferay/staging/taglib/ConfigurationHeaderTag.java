@@ -12,8 +12,9 @@
  * details.
  */
 
-package com.liferay.taglib.staging;
+package com.liferay.staging.taglib;
 
+import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,20 +22,22 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Levente Hudák
  */
-public class DeletionsTag extends IncludeTag {
+public class ConfigurationHeaderTag extends IncludeTag {
 
-	public void setCmd(String cmd) {
-		_cmd = cmd;
+	public void setExportImportConfiguration(
+		ExportImportConfiguration exportImportConfiguration) {
+
+		_exportImportConfiguration = exportImportConfiguration;
 	}
 
-	public void setDisableInputs(boolean disableInputs) {
-		_disableInputs = disableInputs;
+	public void setLabel(String label) {
+		_label = label;
 	}
 
 	@Override
 	protected void cleanUp() {
-		_cmd = null;
-		_disableInputs = false;
+		_exportImportConfiguration = null;
+		_label = null;
 	}
 
 	@Override
@@ -44,15 +47,20 @@ public class DeletionsTag extends IncludeTag {
 
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
-		request.setAttribute("liferay-staging:deletions:cmd", _cmd);
 		request.setAttribute(
-			"liferay-staging:deletions:disableInputs", _disableInputs);
+			"liferay-staging:configuration-header:exportImportConfiguration",
+			_exportImportConfiguration);
+		request.setAttribute(
+			"liferay-staging:configuration-header:label", _label);
+		request.setAttribute(
+			"liferay-staging:configuration-header:liferayPortletRequest",
+			pageContext.getAttribute("liferayPortletRequest"));
 	}
 
 	private static final String _PAGE =
-		"/html/taglib/staging/deletions/page.jsp";
+		"/html/taglib/staging/configuration_header/page.jsp";
 
-	private String _cmd;
-	private boolean _disableInputs;
+	private ExportImportConfiguration _exportImportConfiguration;
+	private String _label;
 
 }

@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.taglib.staging;
+package com.liferay.staging.taglib;
 
 import com.liferay.taglib.util.IncludeTag;
 
