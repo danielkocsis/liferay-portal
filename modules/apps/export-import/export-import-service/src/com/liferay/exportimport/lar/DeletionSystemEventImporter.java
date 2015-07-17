@@ -22,16 +22,16 @@ import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.ElementHandler;
 import com.liferay.portal.kernel.xml.ElementProcessor;
 import com.liferay.portal.security.xml.SecureXMLFactoryProviderUtil;
-
-import java.io.StringReader;
-
-import java.util.Set;
-
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.PortletDataHandlerKeys;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
 import com.liferay.portlet.exportimport.lar.StagedModelType;
+
+import java.io.StringReader;
+
+import java.util.Set;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
