@@ -12,20 +12,22 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.lar;
+package com.liferay.mobile.device.rules.lar;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.mobile.device.rules.util.test.MDRTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Sync;
+import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.lar.test.BaseStagedModelDataHandlerTestCase;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.MainServletTestRule;
 import com.liferay.portlet.mobiledevicerules.model.MDRRule;
 import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup;
 import com.liferay.portlet.mobiledevicerules.service.MDRRuleGroupLocalServiceUtil;
 import com.liferay.portlet.mobiledevicerules.service.MDRRuleLocalServiceUtil;
-import com.liferay.portlet.mobiledevicerules.util.test.MDRTestUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,10 +36,13 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.runner.RunWith;
 
 /**
  * @author Mate Thurzo
  */
+@RunWith(Arquillian.class)
+@Sync
 public class MDRRuleStagedModelDataHandlerTest
 	extends BaseStagedModelDataHandlerTestCase {
 
@@ -45,7 +50,8 @@ public class MDRRuleStagedModelDataHandlerTest
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
 		new AggregateTestRule(
-			new LiferayIntegrationTestRule(), MainServletTestRule.INSTANCE,
+			new LiferayIntegrationTestRule(),
+			SynchronousDestinationTestRule.INSTANCE,
 			TransactionalTestRule.INSTANCE);
 
 	@Override
