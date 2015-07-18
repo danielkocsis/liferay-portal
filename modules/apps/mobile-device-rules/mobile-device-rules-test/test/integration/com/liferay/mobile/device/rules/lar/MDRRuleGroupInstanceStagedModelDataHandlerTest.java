@@ -12,8 +12,10 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.lar;
+package com.liferay.mobile.device.rules.lar;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.mobile.device.rules.util.test.MDRTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
@@ -30,7 +32,6 @@ import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup;
 import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroupInstance;
 import com.liferay.portlet.mobiledevicerules.service.MDRRuleGroupInstanceLocalServiceUtil;
 import com.liferay.portlet.mobiledevicerules.service.MDRRuleGroupLocalServiceUtil;
-import com.liferay.portlet.mobiledevicerules.util.test.MDRTestUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,10 +40,12 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.runner.RunWith;
 
 /**
  * @author Mate Thurzo
  */
+@RunWith(Arquillian.class)
 public class MDRRuleGroupInstanceStagedModelDataHandlerTest
 	extends BaseStagedModelDataHandlerTestCase {
 
