@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.util.test;
+package com.liferay.mobile.device.rules.util.test;
 
 import com.liferay.portal.kernel.mobile.device.rulegroup.ActionHandlerManagerUtil;
 import com.liferay.portal.kernel.mobile.device.rulegroup.RuleGroupProcessorUtil;
