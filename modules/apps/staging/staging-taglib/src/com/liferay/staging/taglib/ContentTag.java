@@ -14,11 +14,13 @@
 
 package com.liferay.staging.taglib;
 
+import com.liferay.staging.taglib.util.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author Levente Hudák
@@ -31,6 +33,13 @@ public class ContentTag extends IncludeTag {
 
 	public void setDisableInputs(boolean disableInputs) {
 		_disableInputs = disableInputs;
+	}
+
+	@Override
+	public void setPageContext(PageContext pageContext) {
+		super.setPageContext(pageContext);
+
+		servletContext = ServletContextUtil.getServletContext();
 	}
 
 	public void setParameterMap(Map<String, String[]> parameterMap) {
@@ -67,7 +76,7 @@ public class ContentTag extends IncludeTag {
 		request.setAttribute("liferay-staging:content:type", _type);
 	}
 
-	private static final String _PAGE = "/html/taglib/staging/content/page.jsp";
+	private static final String _PAGE = "/taglib/content/page.jsp";
 
 	private String _cmd;
 	private boolean _disableInputs;

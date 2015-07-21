@@ -15,9 +15,11 @@
 package com.liferay.staging.taglib;
 
 import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
+import com.liferay.staging.taglib.util.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author Levente Hudák
@@ -32,6 +34,13 @@ public class ConfigurationHeaderTag extends IncludeTag {
 
 	public void setLabel(String label) {
 		_label = label;
+	}
+
+	@Override
+	public void setPageContext(PageContext pageContext) {
+		super.setPageContext(pageContext);
+
+		servletContext = ServletContextUtil.getServletContext();
 	}
 
 	@Override
@@ -57,8 +66,7 @@ public class ConfigurationHeaderTag extends IncludeTag {
 			pageContext.getAttribute("liferayPortletRequest"));
 	}
 
-	private static final String _PAGE =
-		"/html/taglib/staging/configuration_header/page.jsp";
+	private static final String _PAGE = "/taglib/configuration_header/page.jsp";
 
 	private ExportImportConfiguration _exportImportConfiguration;
 	private String _label;
