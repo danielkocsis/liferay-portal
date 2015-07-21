@@ -16,12 +16,14 @@ package com.liferay.staging.taglib;
 
 import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.model.Portlet;
+import com.liferay.staging.taglib.util.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author Levente Hudák
@@ -34,6 +36,13 @@ public class PortletListTag extends IncludeTag {
 
 	public void setDisableInputs(boolean disableInputs) {
 		_disableInputs = disableInputs;
+	}
+
+	@Override
+	public void setPageContext(PageContext pageContext) {
+		super.setPageContext(pageContext);
+
+		servletContext = ServletContextUtil.getServletContext();
 	}
 
 	public void setParameterMap(Map<String, String[]> parameterMap) {
@@ -75,8 +84,7 @@ public class PortletListTag extends IncludeTag {
 		request.setAttribute("liferay-staging:portlet-list:type", _type);
 	}
 
-	private static final String _PAGE =
-		"/html/taglib/staging/portlet_list/page.jsp";
+	private static final String _PAGE = "/taglib/portlet_list/page.jsp";
 
 	private DateRange _dateRange;
 	private boolean _disableInputs;

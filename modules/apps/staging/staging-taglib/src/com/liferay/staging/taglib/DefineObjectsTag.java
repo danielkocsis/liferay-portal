@@ -23,9 +23,11 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.exportimport.staging.StagingUtil;
+import com.liferay.staging.taglib.util.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author Levente Hudák
@@ -109,6 +111,13 @@ public class DefineObjectsTag extends IncludeTag {
 		}
 
 		return SKIP_BODY;
+	}
+
+	@Override
+	public void setPageContext(PageContext pageContext) {
+		super.setPageContext(pageContext);
+
+		servletContext = ServletContextUtil.getServletContext();
 	}
 
 	@Override

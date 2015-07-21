@@ -14,9 +14,11 @@
 
 package com.liferay.staging.taglib;
 
+import com.liferay.staging.taglib.util.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author Levente Hudák
@@ -29,6 +31,13 @@ public class DeletionsTag extends IncludeTag {
 
 	public void setDisableInputs(boolean disableInputs) {
 		_disableInputs = disableInputs;
+	}
+
+	@Override
+	public void setPageContext(PageContext pageContext) {
+		super.setPageContext(pageContext);
+
+		servletContext = ServletContextUtil.getServletContext();
 	}
 
 	@Override
@@ -49,8 +58,7 @@ public class DeletionsTag extends IncludeTag {
 			"liferay-staging:deletions:disableInputs", _disableInputs);
 	}
 
-	private static final String _PAGE =
-		"/html/taglib/staging/deletions/page.jsp";
+	private static final String _PAGE = "/taglib/deletions/page.jsp";
 
 	private String _cmd;
 	private boolean _disableInputs;

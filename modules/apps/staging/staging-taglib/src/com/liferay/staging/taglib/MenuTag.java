@@ -14,9 +14,11 @@
 
 package com.liferay.staging.taglib;
 
+import com.liferay.staging.taglib.util.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author Brian Wing Shun Chan
@@ -45,6 +47,13 @@ public class MenuTag extends IncludeTag {
 
 	public void setOnlyActions(boolean onlyActions) {
 		_onlyActions = onlyActions;
+	}
+
+	@Override
+	public void setPageContext(PageContext pageContext) {
+		super.setPageContext(pageContext);
+
+		servletContext = ServletContextUtil.getServletContext();
 	}
 
 	public void setSelPlid(long selPlid) {
@@ -91,7 +100,7 @@ public class MenuTag extends IncludeTag {
 			String.valueOf(_showManageBranches));
 	}
 
-	private static final String _PAGE = "/html/taglib/staging/menu/page.jsp";
+	private static final String _PAGE = "/taglib/menu/page.jsp";
 
 	private String _cssClass;
 	private boolean _extended = true;
