@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portlet.usersadmin.lar;
+package com.liferay.users.admin.lar;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.MapUtil;
