@@ -24,13 +24,17 @@ import com.liferay.portal.service.WebsiteLocalServiceUtil;
 import com.liferay.portlet.exportimport.lar.BaseStagedModelDataHandler;
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author David Mendez Gonzalez
  */
+@Component(immediate = true, service = StagedModelDataHandler.class)
 public class WebsiteStagedModelDataHandler
 	extends BaseStagedModelDataHandler<Website> {
 
