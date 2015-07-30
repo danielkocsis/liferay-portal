@@ -12,21 +12,21 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.model.impl;
+package com.liferay.mobile.device.rules.model.impl;
 
 import com.liferay.portal.kernel.util.UnicodeProperties;
 
 /**
  * @author Edward C. Han
  */
-public class MDRActionImpl extends MDRActionBaseImpl {
+public class MDRRuleImpl extends MDRRuleBaseImpl {
 
 	@Override
 	public UnicodeProperties getTypeSettingsProperties() {
 		if (_typeSettingsProperties == null) {
 			_typeSettingsProperties = new UnicodeProperties(true);
 
-			_typeSettingsProperties.fastLoad(super.getTypeSettings());
+			_typeSettingsProperties.fastLoad(getTypeSettings());
 		}
 
 		return _typeSettingsProperties;
