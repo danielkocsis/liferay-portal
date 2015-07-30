@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.staging.taglib.util;
+package com.liferay.staging.taglib.servlet;
 
 import javax.servlet.ServletContext;
 

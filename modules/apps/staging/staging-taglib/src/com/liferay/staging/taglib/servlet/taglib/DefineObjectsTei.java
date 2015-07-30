@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.staging.taglib;
+package com.liferay.staging.taglib.servlet.taglib;
 
 import com.liferay.portal.model.Group;
 

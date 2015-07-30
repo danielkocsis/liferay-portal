@@ -12,11 +12,11 @@
  * details.
  */
 
-package com.liferay.staging.taglib;
+package com.liferay.staging.taglib.servlet.taglib;
 
 import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.model.Portlet;
-import com.liferay.staging.taglib.util.ServletContextUtil;
+import com.liferay.staging.taglib.servlet.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import java.util.List;

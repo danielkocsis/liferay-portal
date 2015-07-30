@@ -12,12 +12,10 @@
  * details.
  */
 
-package com.liferay.staging.taglib;
+package com.liferay.staging.taglib.servlet.taglib;
 
-import com.liferay.staging.taglib.util.ServletContextUtil;
+import com.liferay.staging.taglib.servlet.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
-
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
@@ -25,7 +23,7 @@ import javax.servlet.jsp.PageContext;
 /**
  * @author Levente Hudák
  */
-public class ContentTag extends IncludeTag {
+public class DeletionsTag extends IncludeTag {
 
 	public void setCmd(String cmd) {
 		_cmd = cmd;
@@ -42,20 +40,10 @@ public class ContentTag extends IncludeTag {
 		servletContext = ServletContextUtil.getServletContext();
 	}
 
-	public void setParameterMap(Map<String, String[]> parameterMap) {
-		_parameterMap = parameterMap;
-	}
-
-	public void setType(String type) {
-		_type = type;
-	}
-
 	@Override
 	protected void cleanUp() {
 		_cmd = null;
 		_disableInputs = false;
-		_parameterMap = null;
-		_type = null;
 	}
 
 	@Override
@@ -65,22 +53,14 @@ public class ContentTag extends IncludeTag {
 
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
-		request.setAttribute("liferay-staging:content:cmd", _cmd);
+		request.setAttribute("liferay-staging:deletions:cmd", _cmd);
 		request.setAttribute(
-			"liferay-staging:content:disableInputs", _disableInputs);
-		request.setAttribute(
-			"liferay-staging:content:parameterMap", _parameterMap);
-		request.setAttribute(
-			"liferay-staging:content:renderRequest",
-			pageContext.getAttribute("renderRequest"));
-		request.setAttribute("liferay-staging:content:type", _type);
+			"liferay-staging:deletions:disableInputs", _disableInputs);
 	}
 
-	private static final String _PAGE = "/taglib/content/page.jsp";
+	private static final String _PAGE = "/taglib/deletions/page.jsp";
 
 	private String _cmd;
 	private boolean _disableInputs;
-	private Map<String, String[]> _parameterMap;
-	private String _type;
 
 }

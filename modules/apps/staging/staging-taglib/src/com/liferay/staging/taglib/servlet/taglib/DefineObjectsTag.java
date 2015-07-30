@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.staging.taglib;
+package com.liferay.staging.taglib.servlet.taglib;
 
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -23,7 +23,7 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.exportimport.staging.StagingUtil;
-import com.liferay.staging.taglib.util.ServletContextUtil;
+import com.liferay.staging.taglib.servlet.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;

@@ -12,11 +12,12 @@
  * details.
  */
 
-package com.liferay.staging.taglib;
+package com.liferay.staging.taglib.servlet.taglib;
 
-import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
-import com.liferay.staging.taglib.util.ServletContextUtil;
+import com.liferay.staging.taglib.servlet.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
+
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
@@ -24,16 +25,14 @@ import javax.servlet.jsp.PageContext;
 /**
  * @author Levente Hudák
  */
-public class ConfigurationHeaderTag extends IncludeTag {
+public class ContentTag extends IncludeTag {
 
-	public void setExportImportConfiguration(
-		ExportImportConfiguration exportImportConfiguration) {
-
-		_exportImportConfiguration = exportImportConfiguration;
+	public void setCmd(String cmd) {
+		_cmd = cmd;
 	}
 
-	public void setLabel(String label) {
-		_label = label;
+	public void setDisableInputs(boolean disableInputs) {
+		_disableInputs = disableInputs;
 	}
 
 	@Override
@@ -43,10 +42,20 @@ public class ConfigurationHeaderTag extends IncludeTag {
 		servletContext = ServletContextUtil.getServletContext();
 	}
 
+	public void setParameterMap(Map<String, String[]> parameterMap) {
+		_parameterMap = parameterMap;
+	}
+
+	public void setType(String type) {
+		_type = type;
+	}
+
 	@Override
 	protected void cleanUp() {
-		_exportImportConfiguration = null;
-		_label = null;
+		_cmd = null;
+		_disableInputs = false;
+		_parameterMap = null;
+		_type = null;
 	}
 
 	@Override
@@ -56,19 +65,22 @@ public class ConfigurationHeaderTag extends IncludeTag {
 
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
+		request.setAttribute("liferay-staging:content:cmd", _cmd);
 		request.setAttribute(
-			"liferay-staging:configuration-header:exportImportConfiguration",
-			_exportImportConfiguration);
+			"liferay-staging:content:disableInputs", _disableInputs);
 		request.setAttribute(
-			"liferay-staging:configuration-header:label", _label);
+			"liferay-staging:content:parameterMap", _parameterMap);
 		request.setAttribute(
-			"liferay-staging:configuration-header:liferayPortletRequest",
-			pageContext.getAttribute("liferayPortletRequest"));
+			"liferay-staging:content:renderRequest",
+			pageContext.getAttribute("renderRequest"));
+		request.setAttribute("liferay-staging:content:type", _type);
 	}
 
-	private static final String _PAGE = "/taglib/configuration_header/page.jsp";
+	private static final String _PAGE = "/taglib/content/page.jsp";
 
-	private ExportImportConfiguration _exportImportConfiguration;
-	private String _label;
+	private String _cmd;
+	private boolean _disableInputs;
+	private Map<String, String[]> _parameterMap;
+	private String _type;
 
 }
