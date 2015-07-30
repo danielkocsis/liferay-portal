@@ -12,8 +12,14 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.service.impl;
+package com.liferay.mobile.device.rules.service.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.mobile.device.rules.exception.DuplicateRuleGroupInstanceException;
+import com.liferay.mobile.device.rules.model.MDRRuleGroupInstance;
+import com.liferay.mobile.device.rules.service.base.MDRRuleGroupInstanceLocalServiceBaseImpl;
+import com.liferay.mobile.device.rules.util.comparator.RuleGroupInstancePriorityComparator;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
@@ -22,16 +28,13 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.mobiledevicerules.DuplicateRuleGroupInstanceException;
-import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroupInstance;
-import com.liferay.portlet.mobiledevicerules.service.base.MDRRuleGroupInstanceLocalServiceBaseImpl;
-import com.liferay.portlet.mobiledevicerules.util.RuleGroupInstancePriorityComparator;
 
 import java.util.List;
 
 /**
  * @author Edward C. Han
  */
+@ProviderType
 public class MDRRuleGroupInstanceLocalServiceImpl
 	extends MDRRuleGroupInstanceLocalServiceBaseImpl {
 

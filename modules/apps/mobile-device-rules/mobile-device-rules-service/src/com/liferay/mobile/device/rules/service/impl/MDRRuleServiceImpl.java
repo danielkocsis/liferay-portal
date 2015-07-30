@@ -12,17 +12,19 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.service.impl;
+package com.liferay.mobile.device.rules.service.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.mobile.device.rules.model.MDRRule;
+import com.liferay.mobile.device.rules.service.base.MDRRuleServiceBaseImpl;
+import com.liferay.mobile.device.rules.service.permission.MDRRuleGroupPermission;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceMode;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.mobiledevicerules.model.MDRRule;
-import com.liferay.portlet.mobiledevicerules.service.base.MDRRuleServiceBaseImpl;
-import com.liferay.portlet.mobiledevicerules.service.permission.MDRRuleGroupPermissionUtil;
 
 import java.util.Locale;
 import java.util.Map;
@@ -30,6 +32,7 @@ import java.util.Map;
 /**
  * @author Edward C. Han
  */
+@ProviderType
 public class MDRRuleServiceImpl extends MDRRuleServiceBaseImpl {
 
 	@Override
@@ -39,7 +42,7 @@ public class MDRRuleServiceImpl extends MDRRuleServiceBaseImpl {
 			String typeSettings, ServiceContext serviceContext)
 		throws PortalException {
 
-		MDRRuleGroupPermissionUtil.check(
+		MDRRuleGroupPermission.check(
 			getPermissionChecker(), ruleGroupId, ActionKeys.UPDATE);
 
 		return mdrRuleLocalService.addRule(
@@ -55,7 +58,7 @@ public class MDRRuleServiceImpl extends MDRRuleServiceBaseImpl {
 			UnicodeProperties typeSettings, ServiceContext serviceContext)
 		throws PortalException {
 
-		MDRRuleGroupPermissionUtil.check(
+		MDRRuleGroupPermission.check(
 			getPermissionChecker(), ruleGroupId, ActionKeys.UPDATE);
 
 		return mdrRuleLocalService.addRule(
@@ -67,7 +70,7 @@ public class MDRRuleServiceImpl extends MDRRuleServiceBaseImpl {
 	public void deleteRule(long ruleId) throws PortalException {
 		MDRRule rule = mdrRulePersistence.findByPrimaryKey(ruleId);
 
-		MDRRuleGroupPermissionUtil.check(
+		MDRRuleGroupPermission.check(
 			getPermissionChecker(), rule.getRuleGroupId(), ActionKeys.UPDATE);
 
 		mdrRuleLocalService.deleteRule(rule);
@@ -78,7 +81,7 @@ public class MDRRuleServiceImpl extends MDRRuleServiceBaseImpl {
 		MDRRule rule = mdrRuleLocalService.fetchRule(ruleId);
 
 		if (rule != null) {
-			MDRRuleGroupPermissionUtil.check(
+			MDRRuleGroupPermission.check(
 				getPermissionChecker(), rule.getRuleGroupId(), ActionKeys.VIEW);
 		}
 
@@ -89,7 +92,7 @@ public class MDRRuleServiceImpl extends MDRRuleServiceBaseImpl {
 	public MDRRule getRule(long ruleId) throws PortalException {
 		MDRRule rule = mdrRulePersistence.findByPrimaryKey(ruleId);
 
-		MDRRuleGroupPermissionUtil.check(
+		MDRRuleGroupPermission.check(
 			getPermissionChecker(), rule.getRuleGroupId(), ActionKeys.VIEW);
 
 		return rule;
@@ -104,7 +107,7 @@ public class MDRRuleServiceImpl extends MDRRuleServiceBaseImpl {
 
 		MDRRule rule = mdrRulePersistence.findByPrimaryKey(ruleId);
 
-		MDRRuleGroupPermissionUtil.check(
+		MDRRuleGroupPermission.check(
 			getPermissionChecker(), rule.getRuleGroupId(), ActionKeys.UPDATE);
 
 		return mdrRuleLocalService.updateRule(
@@ -122,7 +125,7 @@ public class MDRRuleServiceImpl extends MDRRuleServiceBaseImpl {
 
 		MDRRule rule = mdrRulePersistence.findByPrimaryKey(ruleId);
 
-		MDRRuleGroupPermissionUtil.check(
+		MDRRuleGroupPermission.check(
 			getPermissionChecker(), rule.getRuleGroupId(), ActionKeys.UPDATE);
 
 		return mdrRuleLocalService.updateRule(

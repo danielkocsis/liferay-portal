@@ -12,15 +12,17 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.service.impl;
+package com.liferay.mobile.device.rules.service.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.mobile.device.rules.model.MDRAction;
+import com.liferay.mobile.device.rules.service.base.MDRActionServiceBaseImpl;
+import com.liferay.mobile.device.rules.service.permission.MDRRuleGroupInstancePermission;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.mobiledevicerules.model.MDRAction;
-import com.liferay.portlet.mobiledevicerules.service.base.MDRActionServiceBaseImpl;
-import com.liferay.portlet.mobiledevicerules.service.permission.MDRRuleGroupInstancePermissionUtil;
 
 import java.util.Locale;
 import java.util.Map;
@@ -28,6 +30,7 @@ import java.util.Map;
 /**
  * @author Edward C. Han
  */
+@ProviderType
 public class MDRActionServiceImpl extends MDRActionServiceBaseImpl {
 
 	@Override
@@ -37,7 +40,7 @@ public class MDRActionServiceImpl extends MDRActionServiceBaseImpl {
 			String typeSettings, ServiceContext serviceContext)
 		throws PortalException {
 
-		MDRRuleGroupInstancePermissionUtil.check(
+		MDRRuleGroupInstancePermission.check(
 			getPermissionChecker(), ruleGroupInstanceId, ActionKeys.UPDATE);
 
 		return mdrActionLocalService.addAction(
@@ -53,7 +56,7 @@ public class MDRActionServiceImpl extends MDRActionServiceBaseImpl {
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		MDRRuleGroupInstancePermissionUtil.check(
+		MDRRuleGroupInstancePermission.check(
 			getPermissionChecker(), ruleGroupInstanceId, ActionKeys.UPDATE);
 
 		return mdrActionLocalService.addAction(
@@ -65,7 +68,7 @@ public class MDRActionServiceImpl extends MDRActionServiceBaseImpl {
 	public void deleteAction(long actionId) throws PortalException {
 		MDRAction action = mdrActionPersistence.findByPrimaryKey(actionId);
 
-		MDRRuleGroupInstancePermissionUtil.check(
+		MDRRuleGroupInstancePermission.check(
 			getPermissionChecker(), action.getRuleGroupInstanceId(),
 			ActionKeys.UPDATE);
 
@@ -77,7 +80,7 @@ public class MDRActionServiceImpl extends MDRActionServiceBaseImpl {
 		MDRAction action = mdrActionLocalService.fetchAction(actionId);
 
 		if (action != null) {
-			MDRRuleGroupInstancePermissionUtil.check(
+			MDRRuleGroupInstancePermission.check(
 				getPermissionChecker(), action.getRuleGroupInstanceId(),
 				ActionKeys.VIEW);
 		}
@@ -89,7 +92,7 @@ public class MDRActionServiceImpl extends MDRActionServiceBaseImpl {
 	public MDRAction getAction(long actionId) throws PortalException {
 		MDRAction action = mdrActionPersistence.findByPrimaryKey(actionId);
 
-		MDRRuleGroupInstancePermissionUtil.check(
+		MDRRuleGroupInstancePermission.check(
 			getPermissionChecker(), action.getRuleGroupInstanceId(),
 			ActionKeys.VIEW);
 
@@ -105,7 +108,7 @@ public class MDRActionServiceImpl extends MDRActionServiceBaseImpl {
 
 		MDRAction action = mdrActionPersistence.findByPrimaryKey(actionId);
 
-		MDRRuleGroupInstancePermissionUtil.check(
+		MDRRuleGroupInstancePermission.check(
 			getPermissionChecker(), action.getRuleGroupInstanceId(),
 			ActionKeys.UPDATE);
 
@@ -124,7 +127,7 @@ public class MDRActionServiceImpl extends MDRActionServiceBaseImpl {
 
 		MDRAction action = mdrActionPersistence.findByPrimaryKey(actionId);
 
-		MDRRuleGroupInstancePermissionUtil.check(
+		MDRRuleGroupInstancePermission.check(
 			getPermissionChecker(), action.getRuleGroupInstanceId(),
 			ActionKeys.UPDATE);
 

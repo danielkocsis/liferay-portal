@@ -12,17 +12,19 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.service.impl;
+package com.liferay.mobile.device.rules.service.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.mobile.device.rules.model.MDRRule;
+import com.liferay.mobile.device.rules.model.MDRRuleGroup;
+import com.liferay.mobile.device.rules.service.base.MDRRuleLocalServiceBaseImpl;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.mobiledevicerules.model.MDRRule;
-import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup;
-import com.liferay.portlet.mobiledevicerules.service.base.MDRRuleLocalServiceBaseImpl;
 
 import java.util.Date;
 import java.util.List;
@@ -32,6 +34,7 @@ import java.util.Map;
 /**
  * @author Edward C. Han
  */
+@ProviderType
 public class MDRRuleLocalServiceImpl extends MDRRuleLocalServiceBaseImpl {
 
 	@Override

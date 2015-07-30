@@ -12,24 +12,27 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.service.impl;
+package com.liferay.mobile.device.rules.service.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.mobile.device.rules.model.MDRRuleGroupInstance;
+import com.liferay.mobile.device.rules.service.base.MDRRuleGroupInstanceServiceBaseImpl;
+import com.liferay.mobile.device.rules.service.permission.MDRPermission;
+import com.liferay.mobile.device.rules.service.permission.MDRRuleGroupInstancePermission;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutSet;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroupInstance;
-import com.liferay.portlet.mobiledevicerules.service.base.MDRRuleGroupInstanceServiceBaseImpl;
-import com.liferay.portlet.mobiledevicerules.service.permission.MDRPermissionUtil;
-import com.liferay.portlet.mobiledevicerules.service.permission.MDRRuleGroupInstancePermissionUtil;
 
 import java.util.List;
 
 /**
  * @author Edward C. Han
  */
+@ProviderType
 public class MDRRuleGroupInstanceServiceImpl
 	extends MDRRuleGroupInstanceServiceBaseImpl {
 
@@ -39,7 +42,7 @@ public class MDRRuleGroupInstanceServiceImpl
 			int priority, ServiceContext serviceContext)
 		throws PortalException {
 
-		MDRPermissionUtil.check(
+		MDRPermission.check(
 			getPermissionChecker(), groupId,
 			ActionKeys.ADD_RULE_GROUP_INSTANCE);
 
@@ -53,7 +56,7 @@ public class MDRRuleGroupInstanceServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		MDRPermissionUtil.check(
+		MDRPermission.check(
 			getPermissionChecker(), groupId,
 			ActionKeys.ADD_RULE_GROUP_INSTANCE);
 
@@ -69,7 +72,7 @@ public class MDRRuleGroupInstanceServiceImpl
 			mdrRuleGroupInstancePersistence.findByPrimaryKey(
 				ruleGroupInstanceId);
 
-		MDRRuleGroupInstancePermissionUtil.check(
+		MDRRuleGroupInstancePermission.check(
 			getPermissionChecker(), ruleGroupInstance, ActionKeys.DELETE);
 
 		mdrRuleGroupInstanceLocalService.deleteRuleGroupInstance(
@@ -106,7 +109,7 @@ public class MDRRuleGroupInstanceServiceImpl
 			mdrRuleGroupInstancePersistence.findByPrimaryKey(
 				ruleGroupInstanceId);
 
-		MDRRuleGroupInstancePermissionUtil.check(
+		MDRRuleGroupInstancePermission.check(
 			getPermissionChecker(), ruleGroupInstance.getRuleGroupInstanceId(),
 			ActionKeys.UPDATE);
 
