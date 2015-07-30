@@ -12,10 +12,10 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.util;
+package com.liferay.mobile.device.rules.util.comparator;
 
+import com.liferay.mobile.device.rules.model.MDRRuleGroupInstance;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroupInstance;
 
 /**
  * @author Edward Han
