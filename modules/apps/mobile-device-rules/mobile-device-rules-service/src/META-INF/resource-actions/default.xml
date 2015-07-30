@@ -3,7 +3,7 @@
 
 <resource-action-mapping>
 	<model-resource>
-		<model-name>com.liferay.portlet.mobiledevicerules</model-name>
+		<model-name>com.liferay.portlet.mobile.device.rules</model-name>
 		<portlet-ref>
 			<portlet-name>com_liferay_mobile_device_rules_web_portlet_MDRPortlet</portlet-name>
 		</portlet-ref>
@@ -26,7 +26,7 @@
 		</permissions>
 	</model-resource>
 	<model-resource portal="true">
-		<model-name>com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup</model-name>
+		<model-name>com.liferay.mobile.device.rules.model.MDRRuleGroup</model-name>
 		<portlet-ref>
 			<portlet-name>com_liferay_mobile_device_rules_web_portlet_MDRPortlet</portlet-name>
 		</portlet-ref>
@@ -48,7 +48,7 @@
 		</permissions>
 	</model-resource>
 	<model-resource>
-		<model-name>com.liferay.portlet.mobiledevicerules.model.MDRRuleGroupInstance</model-name>
+		<model-name>com.liferay.mobile.device.rules.model.MDRRuleGroupInstance</model-name>
 		<portlet-ref>
 			<portlet-name>com_liferay_mobile_device_rules_web_portlet_MDRPortlet</portlet-name>
 		</portlet-ref>
