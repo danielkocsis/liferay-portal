@@ -12,10 +12,10 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.model.impl;
+package com.liferay.mobile.device.rules.model.impl;
 
-import com.liferay.portlet.mobiledevicerules.model.MDRRule;
-import com.liferay.portlet.mobiledevicerules.service.MDRRuleLocalServiceUtil;
+import com.liferay.mobile.device.rules.model.MDRRule;
+import com.liferay.mobile.device.rules.service.MDRRuleLocalServiceUtil;
 
 import java.util.Collections;
 import java.util.List;
