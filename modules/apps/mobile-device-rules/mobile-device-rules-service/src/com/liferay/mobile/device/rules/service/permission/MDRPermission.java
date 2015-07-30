@@ -12,41 +12,45 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.service.permission;
+package com.liferay.mobile.device.rules.service.permission;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
+import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.security.permission.PermissionChecker;
+import com.liferay.portal.util.PortletKeys;
+import com.liferay.portlet.exportimport.staging.permission.StagingPermissionUtil;
 
 /**
  * @author Edward Han
  */
-public class MDRPermissionUtil {
+public class MDRPermission {
+
+	public static final String RESOURCE_NAME =
+		"com.liferay.mobile.device.rules";
 
 	public static void check(
 			PermissionChecker permissionChecker, long groupId, String actionId)
 		throws PortalException {
 
-		getMDRPermission().check(permissionChecker, groupId, actionId);
+		if (!contains(permissionChecker, groupId, actionId)) {
+			throw new PrincipalException.MustHavePermission(
+				permissionChecker, RESOURCE_NAME, groupId, actionId);
+		}
 	}
 
 	public static boolean contains(
 		PermissionChecker permissionChecker, long groupId, String actionId) {
 
-		return getMDRPermission().contains(
-			permissionChecker, groupId, actionId);
+		Boolean hasPermission = StagingPermissionUtil.hasPermission(
+			permissionChecker, groupId, RESOURCE_NAME, groupId,
+			PortletKeys.MOBILE_DEVICE_RULES, actionId);
+
+		if (hasPermission != null) {
+			return hasPermission.booleanValue();
+		}
+
+		return permissionChecker.hasPermission(
+			groupId, RESOURCE_NAME, groupId, actionId);
 	}
-
-	public static MDRPermission getMDRPermission() {
-		return _mdrPermission;
-	}
-
-	public void setMDRPermission(MDRPermission mdrPermission) {
-		PortalRuntimePermission.checkSetBeanProperty(getClass());
-
-		_mdrPermission = mdrPermission;
-	}
-
-	private static MDRPermission _mdrPermission;
 
 }

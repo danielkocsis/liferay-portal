@@ -12,23 +12,29 @@
  * details.
  */
 
-package com.liferay.portlet.mobiledevicerules.service.permission;
+package com.liferay.mobile.device.rules.service.permission;
 
+import com.liferay.mobile.device.rules.model.MDRRuleGroup;
+import com.liferay.mobile.device.rules.service.MDRRuleGroupLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.security.auth.PrincipalException;
+import com.liferay.portal.security.permission.BaseModelPermissionChecker;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.exportimport.staging.permission.StagingPermissionUtil;
-import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup;
-import com.liferay.portlet.mobiledevicerules.service.MDRRuleGroupLocalServiceUtil;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Michael C. Han
  */
-public class MDRRuleGroupPermissionImpl implements MDRRuleGroupPermission {
+@Component(
+	property = {"model.class.name=com.liferay.mobile.device.rules.model.MDRRuleGroup"},
+	service = BaseModelPermissionChecker.class
+)
+public class MDRRuleGroupPermission implements BaseModelPermissionChecker {
 
-	@Override
-	public void check(
+	public static void check(
 			PermissionChecker permissionChecker, long ruleGroupId,
 			String actionId)
 		throws PortalException {
@@ -40,8 +46,7 @@ public class MDRRuleGroupPermissionImpl implements MDRRuleGroupPermission {
 		}
 	}
 
-	@Override
-	public void check(
+	public static void check(
 			PermissionChecker permissionChecker, MDRRuleGroup ruleGroup,
 			String actionId)
 		throws PortalException {
@@ -53,8 +58,7 @@ public class MDRRuleGroupPermissionImpl implements MDRRuleGroupPermission {
 		}
 	}
 
-	@Override
-	public boolean contains(
+	public static boolean contains(
 			PermissionChecker permissionChecker, long ruleGroupId,
 			String actionId)
 		throws PortalException {
@@ -65,8 +69,7 @@ public class MDRRuleGroupPermissionImpl implements MDRRuleGroupPermission {
 		return contains(permissionChecker, ruleGroup, actionId);
 	}
 
-	@Override
-	public boolean contains(
+	public static boolean contains(
 		PermissionChecker permissionChecker, MDRRuleGroup ruleGroup,
 		String actionId) {
 
@@ -82,6 +85,15 @@ public class MDRRuleGroupPermissionImpl implements MDRRuleGroupPermission {
 		return permissionChecker.hasPermission(
 			ruleGroup.getGroupId(), MDRRuleGroup.class.getName(),
 			ruleGroup.getRuleGroupId(), actionId);
+	}
+
+	@Override
+	public void checkBaseModel(
+			PermissionChecker permissionChecker, long groupId, long primaryKey,
+			String actionId)
+		throws PortalException {
+
+		check(permissionChecker, primaryKey, actionId);
 	}
 
 }
