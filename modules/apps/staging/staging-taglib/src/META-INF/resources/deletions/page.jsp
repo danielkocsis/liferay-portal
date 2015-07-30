@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="/taglib/deletions/init.jsp" %>
+<%@ include file="/deletions/init.jsp" %>
 
 <c:if test="<%= cmd.equals(Constants.PUBLISH) || cmd.equals(Constants.IMPORT) %>">
 	<aui:fieldset cssClass="options-group" label="deletions">

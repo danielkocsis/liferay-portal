@@ -100,7 +100,7 @@ public class MenuTag extends IncludeTag {
 			String.valueOf(_showManageBranches));
 	}
 
-	private static final String _PAGE = "/taglib/menu/page.jsp";
+	private static final String _PAGE = "/menu/page.jsp";
 
 	private String _cssClass;
 	private boolean _extended = true;

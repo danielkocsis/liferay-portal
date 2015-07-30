@@ -58,7 +58,7 @@ public class DeletionsTag extends IncludeTag {
 			"liferay-staging:deletions:disableInputs", _disableInputs);
 	}
 
-	private static final String _PAGE = "/taglib/deletions/page.jsp";
+	private static final String _PAGE = "/deletions/page.jsp";
 
 	private String _cmd;
 	private boolean _disableInputs;

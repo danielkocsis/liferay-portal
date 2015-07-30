@@ -76,7 +76,7 @@ public class ContentTag extends IncludeTag {
 		request.setAttribute("liferay-staging:content:type", _type);
 	}
 
-	private static final String _PAGE = "/taglib/content/page.jsp";
+	private static final String _PAGE = "/content/page.jsp";
 
 	private String _cmd;
 	private boolean _disableInputs;

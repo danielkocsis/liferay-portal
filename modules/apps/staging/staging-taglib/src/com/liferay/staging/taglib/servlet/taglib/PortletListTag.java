@@ -84,7 +84,7 @@ public class PortletListTag extends IncludeTag {
 		request.setAttribute("liferay-staging:portlet-list:type", _type);
 	}
 
-	private static final String _PAGE = "/taglib/portlet_list/page.jsp";
+	private static final String _PAGE = "/portlet_list/page.jsp";
 
 	private DateRange _dateRange;
 	private boolean _disableInputs;

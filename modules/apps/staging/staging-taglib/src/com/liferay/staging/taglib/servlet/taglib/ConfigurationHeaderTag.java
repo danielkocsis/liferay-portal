@@ -66,7 +66,7 @@ public class ConfigurationHeaderTag extends IncludeTag {
 			pageContext.getAttribute("liferayPortletRequest"));
 	}
 
-	private static final String _PAGE = "/taglib/configuration_header/page.jsp";
+	private static final String _PAGE = "/configuration_header/page.jsp";
 
 	private ExportImportConfiguration _exportImportConfiguration;
 	private String _label;

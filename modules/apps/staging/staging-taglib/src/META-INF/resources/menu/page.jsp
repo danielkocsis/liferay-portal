@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="/taglib/menu/init.jsp" %>
+<%@ include file="/menu/init.jsp" %>
 
 <%
 String cssClass = "staging-icon-menu " + GetterUtil.getString((String)request.getAttribute("liferay-staging:menu:cssClass"));
@@ -72,14 +72,14 @@ String publishMessage = LanguageUtil.get(request, publishDialogTitle);
 <c:if test="<%= stagingGroup != null %>">
 	<c:choose>
 		<c:when test="<%= onlyActions %>">
-			<%@ include file="/taglib/menu/staging_actions.jspf" %>
+			<%@ include file="/menu/staging_actions.jspf" %>
 		</c:when>
 		<c:otherwise>
 			<aui:nav-bar>
 				<aui:nav cssClass="navbar-nav">
 					<aui:nav-item dropdown="<%= true %>" label="staging">
 						<aui:nav-item cssClass="<%= cssClass %>" label="<%= extended ? message : StringPool.BLANK %>">
-							<%@ include file="/taglib/menu/staging_actions.jspf" %>
+							<%@ include file="/menu/staging_actions.jspf" %>
 						</aui:nav-item>
 					</aui:nav-item>
 				</aui:nav>
