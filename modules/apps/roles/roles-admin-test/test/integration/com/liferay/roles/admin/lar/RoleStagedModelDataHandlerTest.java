@@ -14,6 +14,7 @@
 
 package com.liferay.roles.admin.lar;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RoleTestUtil;
@@ -31,10 +32,12 @@ import java.util.Map;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.runner.RunWith;
 
 /**
  * @author David Mendez Gonzalez
  */
+@RunWith(Arquillian.class)
 public class RoleStagedModelDataHandlerTest
 	extends BaseStagedModelDataHandlerTestCase {
 

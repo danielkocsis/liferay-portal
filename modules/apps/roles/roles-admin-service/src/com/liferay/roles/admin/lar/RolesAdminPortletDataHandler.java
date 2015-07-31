@@ -40,9 +40,11 @@ import com.liferay.portlet.exportimport.xstream.XStreamAliasRegistryUtil;
 import java.util.List;
 
 import javax.portlet.PortletPreferences;
+import javax.servlet.ServletContext;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Michael C. Han
@@ -210,6 +212,10 @@ public class RolesAdminPortletDataHandler extends BasePortletDataHandler {
 			});
 
 		return actionableDynamicQuery;
+	}
+
+	@Reference(target = "(original.bean=*)", unbind = "-")
+	protected void setServletContext(ServletContext servletContext) {
 	}
 
 }
