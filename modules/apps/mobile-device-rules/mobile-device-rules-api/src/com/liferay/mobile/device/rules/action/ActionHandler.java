@@ -12,14 +12,12 @@
  * details.
  */
 
-package com.liferay.portal.kernel.mobile.device.rulegroup;
+package com.liferay.mobile.device.rules.action;
 
+import com.liferay.mobile.device.rules.model.MDRAction;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.mobile.device.rulegroup.action.ActionHandler;
-import com.liferay.portlet.mobiledevicerules.model.MDRAction;
 
 import java.util.Collection;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,21 +25,15 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author Edward Han
  */
-public interface ActionHandlerManager {
+public interface ActionHandler {
 
-	public void applyActions(
-			List<MDRAction> mdrActions, HttpServletRequest request,
+	public void applyAction(
+			MDRAction mdrAction, HttpServletRequest request,
 			HttpServletResponse response)
 		throws PortalException;
 
-	public ActionHandler getActionHandler(String actionType);
+	public Collection<String> getPropertyNames();
 
-	public Collection<ActionHandler> getActionHandlers();
-
-	public Collection<String> getActionHandlerTypes();
-
-	public void registerActionHandler(ActionHandler actionHandler);
-
-	public ActionHandler unregisterActionHandler(String actionType);
+	public String getType();
 
 }
