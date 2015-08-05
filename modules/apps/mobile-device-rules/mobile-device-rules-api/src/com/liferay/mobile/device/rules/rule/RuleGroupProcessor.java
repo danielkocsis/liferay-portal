@@ -12,22 +12,28 @@
  * details.
  */
 
-package com.liferay.portal.kernel.mobile.device.rulegroup.rule;
+package com.liferay.mobile.device.rules.rule;
 
+import com.liferay.mobile.device.rules.model.MDRRuleGroupInstance;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portlet.mobiledevicerules.model.MDRRule;
 
 import java.util.Collection;
 
 /**
  * @author Edward Han
  */
-public interface RuleHandler {
+public interface RuleGroupProcessor {
 
-	public boolean evaluateRule(MDRRule mdrRule, ThemeDisplay themeDisplay);
+	public MDRRuleGroupInstance evaluateRuleGroups(ThemeDisplay themeDisplay);
 
-	public Collection<String> getPropertyNames();
+	public RuleHandler getRuleHandler(String ruleType);
 
-	public String getType();
+	public Collection<RuleHandler> getRuleHandlers();
+
+	public Collection<String> getRuleHandlerTypes();
+
+	public void registerRuleHandler(RuleHandler ruleHandler);
+
+	public RuleHandler unregisterRuleHandler(String ruleType);
 
 }
