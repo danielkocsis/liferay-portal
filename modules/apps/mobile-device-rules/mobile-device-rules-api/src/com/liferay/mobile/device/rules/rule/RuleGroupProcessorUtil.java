@@ -12,12 +12,11 @@
  * details.
  */
 
-package com.liferay.portal.kernel.mobile.device.rulegroup;
+package com.liferay.mobile.device.rules.rule;
 
-import com.liferay.portal.kernel.mobile.device.rulegroup.rule.RuleHandler;
+import com.liferay.mobile.device.rules.model.MDRRuleGroupInstance;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroupInstance;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceTracker;

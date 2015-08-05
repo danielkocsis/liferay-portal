@@ -12,28 +12,22 @@
  * details.
  */
 
-package com.liferay.portal.kernel.mobile.device.rulegroup.rule;
+package com.liferay.mobile.device.rules.rule;
 
-import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.mobile.device.rules.model.MDRRule;
+import com.liferay.portal.theme.ThemeDisplay;
+
+import java.util.Collection;
 
 /**
  * @author Edward Han
  */
-public class UnknownRuleHandlerException extends PortalException {
+public interface RuleHandler {
 
-	public UnknownRuleHandlerException() {
-	}
+	public boolean evaluateRule(MDRRule mdrRule, ThemeDisplay themeDisplay);
 
-	public UnknownRuleHandlerException(String msg) {
-		super(msg);
-	}
+	public Collection<String> getPropertyNames();
 
-	public UnknownRuleHandlerException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
-
-	public UnknownRuleHandlerException(Throwable cause) {
-		super(cause);
-	}
+	public String getType();
 
 }
