@@ -33,6 +33,7 @@ page import="com.liferay.mobile.device.rules.service.MDRActionLocalServiceUtil" 
 page import="com.liferay.mobile.device.rules.service.MDRRuleGroupInstanceServiceUtil" %><%@
 page import="com.liferay.mobile.device.rules.service.MDRRuleGroupLocalServiceUtil" %><%@
 page import="com.liferay.mobile.device.rules.service.permission.MDRPermission" %><%@
+page import="com.liferay.mobile.device.rules.service.permission.MDRRuleGroupInstancePermission" %><%@
 page import="com.liferay.mobile.device.rules.util.comparator.RuleGroupInstancePriorityComparator" %><%@
 page import="com.liferay.portal.ImageTypeException" %><%@
 page import="com.liferay.portal.LayoutFriendlyURLException" %><%@
