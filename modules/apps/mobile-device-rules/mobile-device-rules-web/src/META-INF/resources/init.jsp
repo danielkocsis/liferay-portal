@@ -25,7 +25,9 @@ taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
 taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
-<%@ page import="com.liferay.mobile.device.rules.exception.ActionTypeException" %><%@
+<%@ page import="com.liferay.mobile.device.rules.action.ActionHandler" %><%@
+page import="com.liferay.mobile.device.rules.action.ActionHandlerManagerUtil" %><%@
+page import="com.liferay.mobile.device.rules.exception.ActionTypeException" %><%@
 page import="com.liferay.mobile.device.rules.exception.NoSuchActionException" %><%@
 page import="com.liferay.mobile.device.rules.exception.NoSuchRuleException" %><%@
 page import="com.liferay.mobile.device.rules.exception.NoSuchRuleGroupException" %><%@
@@ -34,6 +36,8 @@ page import="com.liferay.mobile.device.rules.model.MDRAction" %><%@
 page import="com.liferay.mobile.device.rules.model.MDRRule" %><%@
 page import="com.liferay.mobile.device.rules.model.MDRRuleGroup" %><%@
 page import="com.liferay.mobile.device.rules.model.MDRRuleGroupInstance" %><%@
+page import="com.liferay.mobile.device.rules.rule.RuleGroupProcessorUtil" %><%@
+page import="com.liferay.mobile.device.rules.rule.UnknownRuleHandlerException" %><%@
 page import="com.liferay.mobile.device.rules.rule.group.rule.SimpleRuleHandler" %><%@
 page import="com.liferay.mobile.device.rules.service.MDRActionLocalServiceUtil" %><%@
 page import="com.liferay.mobile.device.rules.service.MDRRuleGroupInstanceLocalServiceUtil" %><%@
@@ -57,10 +61,6 @@ page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
 page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil" %><%@
 page import="com.liferay.portal.kernel.mobile.device.DeviceDetectionUtil" %><%@
 page import="com.liferay.portal.kernel.mobile.device.VersionableName" %><%@
-page import="com.liferay.portal.kernel.mobile.device.rulegroup.ActionHandlerManagerUtil" %><%@
-page import="com.liferay.portal.kernel.mobile.device.rulegroup.RuleGroupProcessorUtil" %><%@
-page import="com.liferay.portal.kernel.mobile.device.rulegroup.action.ActionHandler" %><%@
-page import="com.liferay.portal.kernel.mobile.device.rulegroup.rule.UnknownRuleHandlerException" %><%@
 page import="com.liferay.portal.kernel.plugin.PluginPackage" %><%@
 page import="com.liferay.portal.kernel.portlet.LiferayWindowState" %><%@
 page import="com.liferay.portal.kernel.util.Constants" %><%@
