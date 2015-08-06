@@ -15,6 +15,7 @@
 package com.liferay.mobile.device.rules.events;
 
 import com.liferay.mobile.device.rules.action.ActionHandlerManagerUtil;
+import com.liferay.mobile.device.rules.internal.MDRRuleGroupInstanceImpl;
 import com.liferay.mobile.device.rules.model.MDRAction;
 import com.liferay.mobile.device.rules.model.MDRRuleGroupInstance;
 import com.liferay.mobile.device.rules.rule.RuleGroupProcessorUtil;
@@ -111,7 +112,8 @@ public class MobileDeviceRulesServicePreAction extends Action {
 			return;
 		}
 
-		themeDisplay.setMDRRuleGroupInstance(mdrRuleGroupInstance);
+		themeDisplay.setMDRRuleGroupInstance(
+			new MDRRuleGroupInstanceImpl(mdrRuleGroupInstance));
 
 		if (mdrRuleGroupInstance == null) {
 			return;
