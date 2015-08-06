@@ -626,17 +626,23 @@ public class BaseExportImportContentProcessor
 					}
 				}
 
+				boolean privateLayout = false;
+
 				if (url.startsWith(PRIVATE_GROUP_SERVLET_MAPPING)) {
 					urlSB.append(DATA_HANDLER_PRIVATE_GROUP_SERVLET_MAPPING);
 
 					url = url.substring(
 						PRIVATE_GROUP_SERVLET_MAPPING.length() - 1);
+
+					privateLayout = true;
 				}
 				else if (url.startsWith(PRIVATE_USER_SERVLET_MAPPING)) {
 					urlSB.append(DATA_HANDLER_PRIVATE_USER_SERVLET_MAPPING);
 
 					url = url.substring(
 						PRIVATE_USER_SERVLET_MAPPING.length() - 1);
+
+					privateLayout = true;
 				}
 				else if (url.startsWith(PUBLIC_GROUP_SERVLET_MAPPING)) {
 					urlSB.append(DATA_HANDLER_PUBLIC_SERVLET_MAPPING);
@@ -668,7 +674,7 @@ public class BaseExportImportContentProcessor
 						continue;
 					}
 
-					boolean privateLayout = layoutSet.isPrivateLayout();
+					privateLayout = layoutSet.isPrivateLayout();
 
 					LayoutFriendlyURL layoutFriendlyUrl =
 						LayoutFriendlyURLLocalServiceUtil.
@@ -707,6 +713,16 @@ public class BaseExportImportContentProcessor
 
 					url = url.substring(groupFriendlyURL.length());
 				}
+
+				Element entityElement = portletDataContext.getExportDataElement(
+					entityStagedModel);
+
+				Layout layout = LayoutLocalServiceUtil.fetchLayoutByFriendlyURL(
+					group.getGroupId(), privateLayout, url);
+
+				portletDataContext.addReferenceElement(
+					entityStagedModel, entityElement, layout,
+					PortletDataContext.REFERENCE_TYPE_DEPENDENCY, true);
 			}
 			finally {
 				if (urlSB.length() > 0) {
