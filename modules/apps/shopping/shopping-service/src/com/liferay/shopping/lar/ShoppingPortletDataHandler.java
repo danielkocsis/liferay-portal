@@ -15,11 +15,22 @@
 package com.liferay.shopping.lar;
 
 import com.liferay.portlet.exportimport.lar.BasePortletDataHandler;
+import com.liferay.portlet.exportimport.lar.PortletDataHandler;
 import com.liferay.shopping.constants.ShoppingConstants;
+import com.liferay.shopping.constants.ShoppingPortletKeys;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Iván Zaera
  */
+@Component(
+	property = {
+		"javax.portlet.name=" + ShoppingPortletKeys.SHOPPING,
+		"javax.portlet.name=" + ShoppingPortletKeys.SHOPPING_ADMIN
+	},
+	service = PortletDataHandler.class
+)
 public class ShoppingPortletDataHandler extends BasePortletDataHandler {
 
 	@Override
