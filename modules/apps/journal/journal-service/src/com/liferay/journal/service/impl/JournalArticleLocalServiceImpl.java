@@ -14,6 +14,7 @@
 
 package com.liferay.journal.service.impl;
 
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
 import com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
 import com.liferay.dynamic.data.mapping.exception.StorageFieldNameException;
 import com.liferay.dynamic.data.mapping.exception.StorageFieldRequiredException;
@@ -30,6 +31,8 @@ import com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
 import com.liferay.dynamic.data.mapping.storage.Fields;
 import com.liferay.dynamic.data.mapping.util.DDMXMLUtil;
+import com.liferay.exportimport.api.ExportImportContentProcessor;
+import com.liferay.exportimport.api.ExportImportContentProcessorRegistryUtil;
 import com.liferay.journal.configuration.JournalGroupServiceConfiguration;
 import com.liferay.journal.configuration.JournalServiceConfigurationValues;
 import com.liferay.journal.constants.JournalConstants;
@@ -59,6 +62,8 @@ import com.liferay.journal.util.comparator.ArticleIDComparator;
 import com.liferay.journal.util.comparator.ArticleVersionComparator;
 import com.liferay.journal.util.impl.JournalUtil;
 import com.liferay.portal.LocaleException;
+import com.liferay.portal.NoSuchImageException;
+import com.liferay.portal.NoSuchLayoutException;
 import com.liferay.portal.kernel.comment.CommentManagerUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -133,6 +138,7 @@ import com.liferay.portal.kernel.xml.XPath;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Image;
+import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
@@ -352,6 +358,10 @@ public class JournalArticleLocalServiceImpl
 			version, titleMap, content, ddmStructureKey, ddmTemplateKey,
 			expirationDate, smallImage, smallImageURL, smallImageFile,
 			smallImageBytes, serviceContext);
+
+		validateReferences(
+			groupId, ddmStructureKey, ddmTemplateKey, layoutUuid, smallImage,
+			smallImageURL, smallImageBytes, content);
 
 		serviceContext.setAttribute("articleId", articleId);
 
@@ -5230,6 +5240,10 @@ public class JournalArticleLocalServiceImpl
 			smallImage, smallImageURL, smallImageFile, smallImageBytes,
 			serviceContext);
 
+		validateReferences(
+			groupId, ddmStructureKey, ddmTemplateKey, layoutUuid, smallImage,
+			smallImageURL, smallImageBytes, content);
+
 		if (addNewVersion) {
 			long id = counterLocalService.increment();
 
@@ -6003,6 +6017,54 @@ public class JournalArticleLocalServiceImpl
 
 		updateDDMTemplateKey(
 			groupId, classNameId, oldDDMTemplateKey, newDDMTemplateKey);
+	}
+
+	public void validateReferences(
+			long groupId, String ddmStructureKey, String ddmTemplateKey,
+			String layoutUuid, boolean smallImage, String smallImageURL,
+			byte[] smallImageBytes, String content)
+		throws PortalException {
+
+		long classNameId = PortalUtil.getClassNameId(
+			JournalArticle.class.getName());
+
+		DDMStructure ddmStructure = ddmStructureLocalService.fetchStructure(
+			groupId, classNameId, ddmStructureKey, true);
+
+		if (ddmStructure == null) {
+			throw new NoSuchStructureException();
+		}
+
+		classNameId = PortalUtil.getClassNameId(DDMStructure.class.getName());
+
+		DDMTemplate ddmTemplate = ddmTemplateLocalService.fetchTemplate(
+			groupId, classNameId, ddmTemplateKey, true);
+
+		if (ddmTemplate == null) {
+			throw new NoSuchTemplateException();
+		}
+
+		if (Validator.isNotNull(layoutUuid)) {
+			Layout layout = JournalUtil.getArticleLayout(layoutUuid, groupId);
+
+			if (layout == null) {
+				throw new NoSuchLayoutException(
+					JournalArticleConstants.DISPLAY_PAGE);
+			}
+		}
+
+		if (smallImage && Validator.isNull(smallImageURL) &&
+			ArrayUtil.isEmpty(smallImageBytes)) {
+
+			throw new NoSuchImageException();
+		}
+
+		ExportImportContentProcessor exportImportContentProcessor =
+			ExportImportContentProcessorRegistryUtil.
+				getExportImportContentProcessor(JournalArticle.class.getName());
+
+		exportImportContentProcessor.validateContentReferences(
+			groupId, content);
 	}
 
 	protected String buildArticleURL(
