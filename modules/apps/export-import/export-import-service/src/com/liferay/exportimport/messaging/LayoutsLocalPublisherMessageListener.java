@@ -45,6 +45,10 @@ import org.osgi.service.component.annotations.Reference;
 public class LayoutsLocalPublisherMessageListener
 	extends BasePublisherMessageListener {
 
+	public LayoutsLocalPublisherMessageListener() {
+		super("liferay/message_bus/message_status");
+	}
+
 	@Override
 	protected void doReceive(Message message, MessageStatus messageStatus)
 		throws PortalException {
