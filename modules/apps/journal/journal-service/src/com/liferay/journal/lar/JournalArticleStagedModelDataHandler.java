@@ -18,6 +18,8 @@ import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.exportimport.api.ExportImportContentProcessor;
+import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleConstants;
 import com.liferay.journal.model.JournalArticleImage;
@@ -49,8 +51,6 @@ import com.liferay.portal.service.ImageLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.exportimport.lar.BaseStagedModelDataHandler;
-import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.PortletDataException;
@@ -338,13 +338,16 @@ public class JournalArticleStagedModelDataHandler
 				PortletDataContext.REFERENCE_TYPE_DEPENDENCY, true);
 		}
 
+		ExportImportContentProcessor exportImportContentProcessor =
+			getExportImportContentProcessor(JournalArticle.class);
+
 		if (article.isSmallImage()) {
 			Image smallImage = ImageLocalServiceUtil.fetchImage(
 				article.getSmallImageId());
 
 			if (Validator.isNotNull(article.getSmallImageURL())) {
 				String smallImageURL =
-					ExportImportHelperUtil.replaceExportContentReferences(
+					exportImportContentProcessor.replaceExportContentReferences(
 						portletDataContext, article,
 						article.getSmallImageURL() + StringPool.SPACE, true,
 						false);
@@ -378,11 +381,12 @@ public class JournalArticleStagedModelDataHandler
 
 		article.setStatusByUserUuid(article.getStatusByUserUuid());
 
-		String content = ExportImportHelperUtil.replaceExportContentReferences(
-			portletDataContext, article, article.getContent(),
-			portletDataContext.getBooleanParameter(
-				"journal", "referenced-content"),
-			false);
+		String content =
+			exportImportContentProcessor.replaceExportContentReferences(
+				portletDataContext, article, article.getContent(),
+				portletDataContext.getBooleanParameter(
+					"journal", "referenced-content"),
+				false);
 
 		article.setContent(content);
 
@@ -453,7 +457,10 @@ public class JournalArticleStagedModelDataHandler
 
 		String content = article.getContent();
 
-		content = ExportImportHelperUtil.replaceImportContentReferences(
+		ExportImportContentProcessor exportImportContentProcessor =
+			getExportImportContentProcessor(JournalArticle.class);
+
+		content = exportImportContentProcessor.replaceImportContentReferences(
 			portletDataContext, article, content);
 
 		article.setContent(content);
@@ -582,9 +589,10 @@ public class JournalArticleStagedModelDataHandler
 
 				if (Validator.isNotNull(article.getSmallImageURL())) {
 					String smallImageURL =
-						ExportImportHelperUtil.replaceImportContentReferences(
-							portletDataContext, article,
-							article.getSmallImageURL());
+						exportImportContentProcessor.
+							replaceImportContentReferences(
+								portletDataContext, article,
+								article.getSmallImageURL());
 
 					article.setSmallImageURL(smallImageURL);
 				}

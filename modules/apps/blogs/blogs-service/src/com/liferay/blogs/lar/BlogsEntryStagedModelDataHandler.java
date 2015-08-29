@@ -14,6 +14,8 @@
 
 package com.liferay.blogs.lar;
 
+import com.liferay.exportimport.api.ExportImportContentProcessor;
+import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -37,8 +39,6 @@ import com.liferay.portlet.blogs.model.BlogsEntry;
 import com.liferay.portlet.blogs.service.BlogsEntryLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.lar.FileEntryUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
-import com.liferay.portlet.exportimport.lar.BaseStagedModelDataHandler;
-import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandler;
@@ -112,15 +112,19 @@ public class BlogsEntryStagedModelDataHandler
 
 		Element entryElement = portletDataContext.getExportDataElement(entry);
 
+		ExportImportContentProcessor exportImportContentProcessor =
+			getExportImportContentProcessor(BlogsEntry.class);
+
 		if (entry.isSmallImage()) {
 			Image smallImage = ImageLocalServiceUtil.fetchImage(
 				entry.getSmallImageId());
 
 			if (Validator.isNotNull(entry.getSmallImageURL())) {
 				String smallImageURL =
-					ExportImportHelperUtil.replaceExportContentReferences(
+					exportImportContentProcessor.replaceExportContentReferences(
 						portletDataContext, entry,
-						entry.getSmallImageURL() + StringPool.SPACE, true);
+						entry.getSmallImageURL() + StringPool.SPACE, true,
+						true);
 
 				entry.setSmallImageURL(smallImageURL);
 			}
@@ -148,10 +152,12 @@ public class BlogsEntryStagedModelDataHandler
 				PortletDataContext.REFERENCE_TYPE_WEAK);
 		}
 
-		String content = ExportImportHelperUtil.replaceExportContentReferences(
-			portletDataContext, entry, entry.getContent(),
-			portletDataContext.getBooleanParameter(
-				"blogs", "referenced-content"));
+		String content =
+			exportImportContentProcessor.replaceExportContentReferences(
+				portletDataContext, entry, entry.getContent(),
+				portletDataContext.getBooleanParameter(
+					"blogs", "referenced-content"),
+				true);
 
 		entry.setContent(content);
 
@@ -169,8 +175,12 @@ public class BlogsEntryStagedModelDataHandler
 		Element entryElement =
 			portletDataContext.getImportDataStagedModelElement(entry);
 
-		String content = ExportImportHelperUtil.replaceImportContentReferences(
-			portletDataContext, entry, entry.getContent());
+		ExportImportContentProcessor exportImportContentProcessor =
+			getExportImportContentProcessor(BlogsEntry.class);
+
+		String content =
+			exportImportContentProcessor.replaceImportContentReferences(
+				portletDataContext, entry, entry.getContent());
 
 		entry.setContent(content);
 
@@ -203,7 +213,7 @@ public class BlogsEntryStagedModelDataHandler
 
 			if (Validator.isNotNull(entry.getSmallImageURL())) {
 				String smallImageURL =
-					ExportImportHelperUtil.replaceImportContentReferences(
+					exportImportContentProcessor.replaceImportContentReferences(
 						portletDataContext, entry, entry.getSmallImageURL());
 
 				entry.setSmallImageURL(smallImageURL);

@@ -21,12 +21,12 @@ import com.liferay.calendar.notification.NotificationTemplateType;
 import com.liferay.calendar.notification.NotificationType;
 import com.liferay.calendar.service.CalendarLocalServiceUtil;
 import com.liferay.calendar.service.CalendarNotificationTemplateLocalServiceUtil;
+import com.liferay.exportimport.api.ExportImportContentProcessor;
+import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.exportimport.lar.BaseStagedModelDataHandler;
-import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandler;
@@ -109,11 +109,16 @@ public class CalendarNotificationTemplateStagedModelDataHandler
 			portletDataContext, calendarNotificationTemplate, calendar,
 			PortletDataContext.REFERENCE_TYPE_STRONG);
 
-		String body = ExportImportHelperUtil.replaceExportContentReferences(
-			portletDataContext, calendarNotificationTemplate,
-			calendarNotificationTemplate.getBody(),
-			portletDataContext.getBooleanParameter(
-				"calendar", "referenced-content"));
+		ExportImportContentProcessor exportImportContentProcessor =
+			getExportImportContentProcessor(CalendarNotificationTemplate.class);
+
+		String body =
+			exportImportContentProcessor.replaceExportContentReferences(
+				portletDataContext, calendarNotificationTemplate,
+				calendarNotificationTemplate.getBody(),
+				portletDataContext.getBooleanParameter(
+					"calendar", "referenced-content"),
+				true);
 
 		calendarNotificationTemplate.setBody(body);
 
@@ -156,9 +161,13 @@ public class CalendarNotificationTemplateStagedModelDataHandler
 		CalendarNotificationTemplate importedCalendarNotificationTemplate =
 			null;
 
-		String body = ExportImportHelperUtil.replaceImportContentReferences(
-			portletDataContext, calendarNotificationTemplate,
-			calendarNotificationTemplate.getBody());
+		ExportImportContentProcessor exportImportContentProcessor =
+			getExportImportContentProcessor(CalendarNotificationTemplate.class);
+
+		String body =
+			exportImportContentProcessor.replaceImportContentReferences(
+				portletDataContext, calendarNotificationTemplate,
+				calendarNotificationTemplate.getBody());
 
 		if (portletDataContext.isDataStrategyMirror()) {
 			CalendarNotificationTemplate existingCalendarNotificationTemplate =
