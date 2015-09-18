@@ -460,15 +460,15 @@ public class JournalPortletDataHandler extends BasePortletDataHandler {
 		getDDMStructureDefaultValuesActionableDynamicQuery(
 			PortletDataContext portletDataContext) {
 
-		ExportActionableDynamicQuery actionableDynamicQuery =
+		ExportActionableDynamicQuery exportActionableDynamicQuery =
 			JournalArticleLocalServiceUtil.getExportActionableDynamicQuery(
 				portletDataContext);
 
-		actionableDynamicQuery.setStagedModelType(
+		exportActionableDynamicQuery.setStagedModelType(
 			new StagedModelType(
 				JournalArticle.class.getName(), DDMStructure.class.getName()));
 
-		return actionableDynamicQuery;
+		return exportActionableDynamicQuery;
 	}
 
 	protected ActionableDynamicQuery getDDMTemplateActionableDynamicQuery(
