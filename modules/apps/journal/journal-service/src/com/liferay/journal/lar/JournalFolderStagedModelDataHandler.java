@@ -17,12 +17,10 @@ package com.liferay.journal.lar;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
+import com.liferay.exportimport.stagedmodel.repository.StagedModelRepository;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.model.JournalFolderConstants;
 import com.liferay.journal.service.JournalFolderLocalService;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -32,7 +30,6 @@ import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandler;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
-import com.liferay.portlet.exportimport.lar.StagedModelModifiedDateComparator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,40 +46,6 @@ public class JournalFolderStagedModelDataHandler
 	extends BaseStagedModelDataHandler<JournalFolder> {
 
 	public static final String[] CLASS_NAMES = {JournalFolder.class.getName()};
-
-	@Override
-	public void deleteStagedModel(JournalFolder folder) throws PortalException {
-		_journalFolderLocalService.deleteFolder(folder);
-	}
-
-	@Override
-	public void deleteStagedModel(
-			String uuid, long groupId, String className, String extraData)
-		throws PortalException {
-
-		JournalFolder folder = fetchStagedModelByUuidAndGroupId(uuid, groupId);
-
-		if (folder != null) {
-			deleteStagedModel(folder);
-		}
-	}
-
-	@Override
-	public JournalFolder fetchStagedModelByUuidAndGroupId(
-		String uuid, long groupId) {
-
-		return _journalFolderLocalService.fetchJournalFolderByUuidAndGroupId(
-			uuid, groupId);
-	}
-
-	@Override
-	public List<JournalFolder> fetchStagedModelsByUuidAndCompanyId(
-		String uuid, long companyId) {
-
-		return _journalFolderLocalService.getJournalFoldersByUuidAndCompanyId(
-			uuid, companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
-			new StagedModelModifiedDateComparator<JournalFolder>());
-	}
 
 	@Override
 	public String[] getClassNames() {
@@ -166,28 +129,6 @@ public class JournalFolderStagedModelDataHandler
 		portletDataContext.importClassedModel(folder, importedFolder);
 	}
 
-	@Override
-	protected void doRestoreStagedModel(
-			PortletDataContext portletDataContext, JournalFolder folder)
-		throws Exception {
-
-		long userId = portletDataContext.getUserId(folder.getUserUuid());
-
-		JournalFolder existingFolder = fetchStagedModelByUuidAndGroupId(
-			folder.getUuid(), portletDataContext.getScopeGroupId());
-
-		if ((existingFolder == null) || !existingFolder.isInTrash()) {
-			return;
-		}
-
-		TrashHandler trashHandler = existingFolder.getTrashHandler();
-
-		if (trashHandler.isRestorable(existingFolder.getFolderId())) {
-			trashHandler.restoreTrashEntry(
-				userId, existingFolder.getFolderId());
-		}
-	}
-
 	protected void exportFolderDDMStructures(
 			PortletDataContext portletDataContext, JournalFolder folder)
 		throws Exception {
@@ -208,6 +149,11 @@ public class JournalFolderStagedModelDataHandler
 				portletDataContext, folder, ddmStructure,
 				PortletDataContext.REFERENCE_TYPE_STRONG);
 		}
+	}
+
+	@Override
+	protected StagedModelRepository<JournalFolder> getStagedModelRepository() {
+		return _stagedModelRepository;
 	}
 
 	protected void importFolderDDMStructures(
@@ -263,6 +209,17 @@ public class JournalFolderStagedModelDataHandler
 		_journalFolderLocalService = journalFolderLocalService;
 	}
 
+	@Reference(
+		target = "(model.class.name=com.liferay.journal.model.JournalFolder)",
+		unbind = "-"
+	)
+	protected void setStagedModelRepository(
+		StagedModelRepository<JournalFolder> stagedModelRepository) {
+
+		_stagedModelRepository = stagedModelRepository;
+	}
+
 	private JournalFolderLocalService _journalFolderLocalService;
+	private StagedModelRepository<JournalFolder> _stagedModelRepository;
 
 }
