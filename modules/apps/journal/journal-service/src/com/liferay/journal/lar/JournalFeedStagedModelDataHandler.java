@@ -19,13 +19,12 @@ import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
 import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
+import com.liferay.exportimport.repository.StagedModelRepository;
 import com.liferay.journal.exception.FeedTargetLayoutFriendlyUrlException;
 import com.liferay.journal.exportimport.content.processor.JournalFeedExportImportContentProcessor;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalFeed;
 import com.liferay.journal.service.JournalFeedLocalService;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -39,9 +38,7 @@ import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandler;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
-import com.liferay.portlet.exportimport.lar.StagedModelModifiedDateComparator;
 
-import java.util.List;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
@@ -55,40 +52,6 @@ public class JournalFeedStagedModelDataHandler
 	extends BaseStagedModelDataHandler<JournalFeed> {
 
 	public static final String[] CLASS_NAMES = {JournalFeed.class.getName()};
-
-	@Override
-	public void deleteStagedModel(JournalFeed feed) throws PortalException {
-		_journalFeedLocalService.deleteFeed(feed);
-	}
-
-	@Override
-	public void deleteStagedModel(
-			String uuid, long groupId, String className, String extraData)
-		throws PortalException {
-
-		JournalFeed feed = fetchStagedModelByUuidAndGroupId(uuid, groupId);
-
-		if (feed != null) {
-			deleteStagedModel(feed);
-		}
-	}
-
-	@Override
-	public JournalFeed fetchStagedModelByUuidAndGroupId(
-		String uuid, long groupId) {
-
-		return _journalFeedLocalService.fetchJournalFeedByUuidAndGroupId(
-			uuid, groupId);
-	}
-
-	@Override
-	public List<JournalFeed> fetchStagedModelsByUuidAndCompanyId(
-		String uuid, long companyId) {
-
-		return _journalFeedLocalService.getJournalFeedsByUuidAndCompanyId(
-			uuid, companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
-			new StagedModelModifiedDateComparator<JournalFeed>());
-	}
 
 	@Override
 	public String[] getClassNames() {
@@ -309,6 +272,11 @@ public class JournalFeedStagedModelDataHandler
 		}
 	}
 
+	@Override
+	protected StagedModelRepository<JournalFeed> getStagedModelRepository() {
+		return _stagedModelRepository;
+	}
+
 	@Reference
 	protected void setDDMStructureLocalService(
 		DDMStructureLocalService ddmStructureLocalService) {
@@ -339,6 +307,16 @@ public class JournalFeedStagedModelDataHandler
 		_journalFeedLocalService = journalFeedLocalService;
 	}
 
+	@Reference(
+		target = "(model.class.name=com.liferay.journal.model.JournalFeed)",
+		unbind = "-"
+	)
+	protected void setStagedModelRepository(
+		StagedModelRepository<JournalFeed> stagedModelRepository) {
+
+		_stagedModelRepository = stagedModelRepository;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		JournalFeedStagedModelDataHandler.class);
 
@@ -347,5 +325,6 @@ public class JournalFeedStagedModelDataHandler
 	private JournalFeedExportImportContentProcessor
 		_journalFeedExportImportContentProcessor;
 	private JournalFeedLocalService _journalFeedLocalService;
+	private StagedModelRepository<JournalFeed> _stagedModelRepository;
 
 }
