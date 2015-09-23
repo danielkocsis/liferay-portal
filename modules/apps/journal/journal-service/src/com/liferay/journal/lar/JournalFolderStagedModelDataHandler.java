@@ -17,25 +17,18 @@ package com.liferay.journal.lar;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
+import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.model.JournalFolderConstants;
 import com.liferay.journal.service.JournalFolderLocalService;
-import com.liferay.journal.service.persistence.JournalFolderUtil;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Element;
-import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandler;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
-import com.liferay.portlet.exportimport.lar.StagedModelModifiedDateComparator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,40 +45,6 @@ public class JournalFolderStagedModelDataHandler
 	extends BaseStagedModelDataHandler<JournalFolder> {
 
 	public static final String[] CLASS_NAMES = {JournalFolder.class.getName()};
-
-	@Override
-	public void deleteStagedModel(JournalFolder folder) throws PortalException {
-		_journalFolderLocalService.deleteFolder(folder);
-	}
-
-	@Override
-	public void deleteStagedModel(
-			String uuid, long groupId, String className, String extraData)
-		throws PortalException {
-
-		JournalFolder folder = fetchStagedModelByUuidAndGroupId(uuid, groupId);
-
-		if (folder != null) {
-			deleteStagedModel(folder);
-		}
-	}
-
-	@Override
-	public JournalFolder fetchStagedModelByUuidAndGroupId(
-		String uuid, long groupId) {
-
-		return _journalFolderLocalService.fetchJournalFolderByUuidAndGroupId(
-			uuid, groupId);
-	}
-
-	@Override
-	public List<JournalFolder> fetchStagedModelsByUuidAndCompanyId(
-		String uuid, long companyId) {
-
-		return _journalFolderLocalService.getJournalFoldersByUuidAndCompanyId(
-			uuid, companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
-			new StagedModelModifiedDateComparator<JournalFolder>());
-	}
 
 	@Override
 	public String[] getClassNames() {
@@ -123,8 +82,6 @@ public class JournalFolderStagedModelDataHandler
 			PortletDataContext portletDataContext, JournalFolder folder)
 		throws Exception {
 
-		long userId = portletDataContext.getUserId(folder.getUserUuid());
-
 		Map<Long, Long> folderIds =
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				JournalFolder.class);
@@ -132,72 +89,28 @@ public class JournalFolderStagedModelDataHandler
 		long parentFolderId = MapUtil.getLong(
 			folderIds, folder.getParentFolderId(), folder.getParentFolderId());
 
-		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			folder);
+		JournalFolder importedFolder = (JournalFolder)folder.clone();
 
-		JournalFolder importedFolder = null;
+		importedFolder.setGroupId(portletDataContext.getScopeGroupId());
+		importedFolder.setParentFolderId(parentFolderId);
 
-		long groupId = portletDataContext.getScopeGroupId();
+		JournalFolder existingFolder = fetchStagedModelByUuidAndGroupId(
+			folder.getUuid(), portletDataContext.getScopeGroupId());
 
-		if (portletDataContext.isDataStrategyMirror()) {
-			JournalFolder existingFolder = fetchStagedModelByUuidAndGroupId(
-				folder.getUuid(), groupId);
-
-			if (existingFolder == null) {
-				String name = getFolderName(
-					null, groupId, parentFolderId, folder.getName(), 2);
-
-				serviceContext.setUuid(folder.getUuid());
-
-				importedFolder = _journalFolderLocalService.addFolder(
-					userId, groupId, parentFolderId, name,
-					folder.getDescription(), serviceContext);
-			}
-			else {
-				String name = getFolderName(
-					folder.getUuid(), groupId, parentFolderId, folder.getName(),
-					2);
-
-				importedFolder = _journalFolderLocalService.updateFolder(
-					userId, serviceContext.getScopeGroupId(),
-					existingFolder.getFolderId(), parentFolderId, name,
-					folder.getDescription(), false, serviceContext);
-			}
+		if (existingFolder == null) {
+			importedFolder = _stagedModelRepository.addStagedModel(
+				portletDataContext, importedFolder);
 		}
 		else {
-			String name = getFolderName(
-				null, groupId, parentFolderId, folder.getName(), 2);
+			importedFolder.setFolderId(existingFolder.getFolderId());
 
-			importedFolder = _journalFolderLocalService.addFolder(
-				userId, groupId, parentFolderId, name, folder.getDescription(),
-				serviceContext);
+			importedFolder = _stagedModelRepository.addStagedModel(
+				portletDataContext, folder);
 		}
 
 		importFolderDDMStructures(portletDataContext, folder, importedFolder);
 
 		portletDataContext.importClassedModel(folder, importedFolder);
-	}
-
-	@Override
-	protected void doRestoreStagedModel(
-			PortletDataContext portletDataContext, JournalFolder folder)
-		throws Exception {
-
-		long userId = portletDataContext.getUserId(folder.getUserUuid());
-
-		JournalFolder existingFolder = fetchStagedModelByUuidAndGroupId(
-			folder.getUuid(), portletDataContext.getScopeGroupId());
-
-		if ((existingFolder == null) || !existingFolder.isInTrash()) {
-			return;
-		}
-
-		TrashHandler trashHandler = existingFolder.getTrashHandler();
-
-		if (trashHandler.isRestorable(existingFolder.getFolderId())) {
-			trashHandler.restoreTrashEntry(
-				userId, existingFolder.getFolderId());
-		}
 	}
 
 	protected void exportFolderDDMStructures(
@@ -222,25 +135,9 @@ public class JournalFolderStagedModelDataHandler
 		}
 	}
 
-	protected String getFolderName(
-			String uuid, long groupId, long parentFolderId, String name,
-			int count)
-		throws Exception {
-
-		JournalFolder folder = JournalFolderUtil.fetchByG_P_N(
-			groupId, parentFolderId, name);
-
-		if (folder == null) {
-			return name;
-		}
-
-		if (Validator.isNotNull(uuid) && uuid.equals(folder.getUuid())) {
-			return name;
-		}
-
-		name = StringUtil.appendParentheticalSuffix(name, count);
-
-		return getFolderName(uuid, groupId, parentFolderId, name, ++count);
+	@Override
+	protected StagedModelRepository<JournalFolder> getStagedModelRepository() {
+		return _stagedModelRepository;
 	}
 
 	protected void importFolderDDMStructures(
@@ -296,6 +193,17 @@ public class JournalFolderStagedModelDataHandler
 		_journalFolderLocalService = journalFolderLocalService;
 	}
 
+	@Reference(
+		target = "(model.class.name=com.liferay.journal.model.JournalFolder)",
+		unbind = "-"
+	)
+	protected void setStagedModelRepository(
+		StagedModelRepository<JournalFolder> stagedModelRepository) {
+
+		_stagedModelRepository = stagedModelRepository;
+	}
+
 	private JournalFolderLocalService _journalFolderLocalService;
+	private StagedModelRepository<JournalFolder> _stagedModelRepository;
 
 }
