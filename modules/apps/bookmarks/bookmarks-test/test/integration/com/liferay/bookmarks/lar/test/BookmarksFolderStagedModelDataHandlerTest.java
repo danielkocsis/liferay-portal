@@ -114,6 +114,11 @@ public class BookmarksFolderStagedModelDataHandlerTest
 	}
 
 	@Override
+	protected boolean supportLastPublishDateUpdate() {
+		return true;
+	}
+
+	@Override
 	protected void validateImport(
 			Map<String, List<StagedModel>> dependentStagedModelsMap,
 			Group group)
