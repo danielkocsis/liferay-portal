@@ -249,9 +249,9 @@ public class DDMStructureStagedModelDataHandler
 			structureElement.addAttribute("preloaded", "true");
 		}
 
-		exportForm(portletDataContext, structure, structureElement);
+		exportDDMForm(portletDataContext, structure, structureElement);
 
-		exportFormLayout(portletDataContext, structure, structureElement);
+		exportDDMFormLayout(portletDataContext, structure, structureElement);
 
 		portletDataContext.addClassedModel(
 			structureElement, ExportImportPathUtil.getModelPath(structure),
@@ -285,8 +285,10 @@ public class DDMStructureStagedModelDataHandler
 		Element structureElement = portletDataContext.getImportDataElement(
 			structure);
 
-		DDMForm form = loadForm(portletDataContext, structureElement);
-		DDMFormLayout formLayout = loadFormLayout(
+		DDMForm ddmForm = getImportDDMForm(
+			portletDataContext, structureElement);
+
+		DDMFormLayout ddmFormLayout = getImportDDMFormLayout(
 			portletDataContext, structureElement);
 
 		if (portletDataContext.isDataStrategyMirror()) {
@@ -308,7 +310,7 @@ public class DDMStructureStagedModelDataHandler
 					userId, portletDataContext.getScopeGroupId(),
 					parentStructureId, structure.getClassNameId(),
 					structure.getStructureKey(), structure.getNameMap(),
-					structure.getDescriptionMap(), form, formLayout,
+					structure.getDescriptionMap(), ddmForm, ddmFormLayout,
 					structure.getStorageType(), structure.getType(),
 					serviceContext);
 			}
@@ -317,7 +319,7 @@ public class DDMStructureStagedModelDataHandler
 					DDMStructureLocalServiceUtil.updateStructure(
 						userId, existingStructure.getStructureId(),
 						parentStructureId, structure.getNameMap(),
-						structure.getDescriptionMap(), form, formLayout,
+						structure.getDescriptionMap(), ddmForm, ddmFormLayout,
 						serviceContext);
 			}
 			else {
@@ -335,7 +337,7 @@ public class DDMStructureStagedModelDataHandler
 			importedStructure = DDMStructureLocalServiceUtil.addStructure(
 				userId, portletDataContext.getScopeGroupId(), parentStructureId,
 				structure.getClassNameId(), null, structure.getNameMap(),
-				structure.getDescriptionMap(), form, formLayout,
+				structure.getDescriptionMap(), ddmForm, ddmFormLayout,
 				structure.getStorageType(), structure.getType(),
 				serviceContext);
 		}
@@ -346,19 +348,19 @@ public class DDMStructureStagedModelDataHandler
 			structure.getStructureKey(), importedStructure.getStructureKey());
 	}
 
-	protected void exportForm(
+	protected void exportDDMForm(
 		PortletDataContext portletDataContext, DDMStructure structure,
 		Element structureElement) {
 
-		String formPath = ExportImportPathUtil.getModelPath(
-			structure, "form.json");
+		String ddmFormPath = ExportImportPathUtil.getModelPath(
+			structure, "ddm-form.json");
 
-		structureElement.addAttribute("form-path", formPath);
+		structureElement.addAttribute("ddm-form-path", ddmFormPath);
 
-		portletDataContext.addZipEntry(formPath, structure.getDefinition());
+		portletDataContext.addZipEntry(ddmFormPath, structure.getDefinition());
 	}
 
-	protected void exportFormLayout(
+	protected void exportDDMFormLayout(
 			PortletDataContext portletDataContext, DDMStructure structure,
 			Element structureElement)
 		throws PortalException {
@@ -370,13 +372,14 @@ public class DDMStructureStagedModelDataHandler
 				getStructureLayoutByStructureVersionId(
 					structureVersion.getStructureVersionId());
 
-		String formLayoutPath = ExportImportPathUtil.getModelPath(
-			structure, "form-layout.json");
+		String ddmFormLayoutPath = ExportImportPathUtil.getModelPath(
+			structure, "ddm-form-layout.json");
 
-		structureElement.addAttribute("form-layout-path", formLayoutPath);
+		structureElement.addAttribute(
+			"ddm-form-layout-path", ddmFormLayoutPath);
 
 		portletDataContext.addZipEntry(
-			formLayoutPath, structureLayout.getDefinition());
+			ddmFormLayoutPath, structureLayout.getDefinition());
 	}
 
 	protected DDMStructure fetchExistingStructure(
@@ -394,6 +397,32 @@ public class DDMStructureStagedModelDataHandler
 		}
 
 		return existingStructure;
+	}
+
+	protected DDMForm getImportDDMForm(
+			PortletDataContext portletDataContext, Element structureElement)
+		throws PortalException {
+
+		String ddmFormPath = structureElement.attributeValue("ddm-form-path");
+
+		String serializedDDMForm = portletDataContext.getZipEntryAsString(
+			ddmFormPath);
+
+		return DDMFormJSONDeserializerUtil.deserialize(serializedDDMForm);
+	}
+
+	protected DDMFormLayout getImportDDMFormLayout(
+			PortletDataContext portletDataContext, Element structureElement)
+		throws PortalException {
+
+		String ddmFormLayoutPath = structureElement.attributeValue(
+			"ddm-form-layout-path");
+
+		String serializedDDMFormLayout = portletDataContext.getZipEntryAsString(
+			ddmFormLayoutPath);
+
+		return DDMFormLayoutJSONDeserializerUtil.deserialize(
+			serializedDDMFormLayout);
 	}
 
 	protected boolean isModifiedStructure(
@@ -443,28 +472,6 @@ public class DDMStructureStagedModelDataHandler
 		}
 
 		return false;
-	}
-
-	protected DDMForm loadForm(
-			PortletDataContext portletDataContext, Element structureElement)
-		throws PortalException {
-
-		String formPath = structureElement.attributeValue("form-path");
-		String formJson = portletDataContext.getZipEntryAsString(formPath);
-
-		return DDMFormJSONDeserializerUtil.deserialize(formJson);
-	}
-
-	protected DDMFormLayout loadFormLayout(
-			PortletDataContext portletDataContext, Element structureElement)
-		throws PortalException {
-
-		String formLayoutPath = structureElement.attributeValue(
-			"form-layout-path");
-		String formLayoutJson = portletDataContext.getZipEntryAsString(
-			formLayoutPath);
-
-		return DDMFormLayoutJSONDeserializerUtil.deserialize(formLayoutJson);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
