@@ -127,13 +127,13 @@ public class DDLRecordStagedModelDataHandler
 		long recordSetId = MapUtil.getLong(
 			recordSetIds, record.getRecordSetId(), record.getRecordSetId());
 
-		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			record);
-
 		Element recordElement = portletDataContext.getImportDataElement(record);
 
 		DDMFormValues ddmFormValues = getImportDDMFormValues(
 			portletDataContext, recordElement, recordSetId);
+
+		ServiceContext serviceContext = portletDataContext.createServiceContext(
+			record);
 
 		DDLRecord importedRecord = null;
 

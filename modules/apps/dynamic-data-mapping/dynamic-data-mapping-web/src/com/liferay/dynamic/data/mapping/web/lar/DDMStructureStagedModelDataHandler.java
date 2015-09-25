@@ -277,11 +277,6 @@ public class DDMStructureStagedModelDataHandler
 			(Map<String, String>)portletDataContext.getNewPrimaryKeysMap(
 				DDMStructure.class + ".ddmStructureKey");
 
-		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			structure);
-
-		DDMStructure importedStructure = null;
-
 		Element structureElement = portletDataContext.getImportDataElement(
 			structure);
 
@@ -290,6 +285,11 @@ public class DDMStructureStagedModelDataHandler
 
 		DDMFormLayout ddmFormLayout = getImportDDMFormLayout(
 			portletDataContext, structureElement);
+
+		ServiceContext serviceContext = portletDataContext.createServiceContext(
+			structure);
+
+		DDMStructure importedStructure = null;
 
 		if (portletDataContext.isDataStrategyMirror()) {
 			Element element =
