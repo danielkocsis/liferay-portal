@@ -102,7 +102,6 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 		ServiceContextThreadLocal.popServiceContext();
 	}
 
-	@Ignore
 	@Test
 	public void testCleanStagedModelDataHandler() throws Exception {
 
