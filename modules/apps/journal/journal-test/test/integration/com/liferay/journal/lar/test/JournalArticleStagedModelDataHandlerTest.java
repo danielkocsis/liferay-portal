@@ -256,6 +256,11 @@ public class JournalArticleStagedModelDataHandlerTest
 		return true;
 	}
 
+	@Override
+	protected boolean supportLastPublishDateUpdate() {
+		return true;
+	}
+
 	protected void validateCompanyDependenciesImport(
 			Map<String, List<StagedModel>> dependentStagedModelsMap,
 			Group group)
