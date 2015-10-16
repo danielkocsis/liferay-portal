@@ -146,7 +146,7 @@ else {
 
 			portletURL.setParameter("closeRedirect", layoutURL);
 			%>
-
+			
 			<liferay-ui:icon
 				cssClass="submit-link"
 				iconCssClass="icon-random"
@@ -201,8 +201,8 @@ else {
 				taglibURL = "javascript:Liferay.fire('" + liferayPortletResponse.getNamespace() + "submit', {incomplete: " + layoutRevision.isIncomplete() + ", publishURL: '" + publishURL + "', currentURL: '" + currentURL + "'}); void(0);";
 			}
 			%>
-
-			<c:if test="<%= Validator.isNotNull(taglibURL) %>">
+			
+			<c:if test="<%=Validator.isNotNull(taglibURL) %>">
 				<a href="<%= taglibURL %>" id="submitLink">
 					<liferay-ui:message key="<%= label %>" />
 				</a>
