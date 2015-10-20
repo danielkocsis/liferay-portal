@@ -35,7 +35,7 @@ import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.exportimport.lar.MissingReference;
 import com.liferay.portlet.exportimport.lar.MissingReferences;
-import com.liferay.portlet.exportimport.staging.StagingUtil;
+import com.liferay.portlet.exportimport.staging.StagingJSONHelperUtil;
 
 import java.io.File;
 import java.io.Serializable;
@@ -151,8 +151,9 @@ public abstract class BaseStagingBackgroundTaskExecutor
 			BackgroundTask backgroundTask =
 				BackgroundTaskManagerUtil.fetchBackgroundTask(backgroundTaskId);
 
-			JSONArray jsonArray = StagingUtil.getWarningMessagesJSONArray(
-				getLocale(backgroundTask), weakMissingReferences);
+			JSONArray jsonArray =
+				StagingJSONHelperUtil.getWarningMessagesJSONArray(
+					getLocale(backgroundTask), weakMissingReferences);
 
 			backgroundTaskResult.setStatusMessage(jsonArray.toString());
 		}
