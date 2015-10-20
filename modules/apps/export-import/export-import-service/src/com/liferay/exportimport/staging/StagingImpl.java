@@ -90,7 +90,6 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portal.util.SessionClicks;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.PortalPreferences;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
@@ -1024,10 +1023,23 @@ public class StagingImpl implements Staging {
 	public long getRecentLayoutSetBranchId(
 		HttpServletRequest request, long layoutSetId) {
 
-		return GetterUtil.getLong(
-			SessionClicks.get(
-				request, Staging.class.getName(),
-				getRecentLayoutSetBranchIdKey(layoutSetId)));
+		PortalPreferences portalPreferences =
+			PortletPreferencesFactoryUtil.getPortalPreferences(request);
+
+		try {
+			return getRecentLayoutAttribute(
+				portalPreferences, getRecentLayoutSetBranchIdKey(layoutSetId));
+		}
+		catch (JSONException jsone) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to get recent layout set branch ID layout set " +
+						layoutSetId,
+					jsone);
+			}
+		}
+
+		return 0;
 	}
 
 	@Override
@@ -1646,10 +1658,25 @@ public class StagingImpl implements Staging {
 	public void setRecentLayoutSetBranchId(
 		HttpServletRequest request, long layoutSetId, long layoutSetBranchId) {
 
-		SessionClicks.put(
-			request, Staging.class.getName(),
-			getRecentLayoutSetBranchIdKey(layoutSetId),
-			String.valueOf(layoutSetBranchId));
+		PortalPreferences portalPreferences =
+			PortletPreferencesFactoryUtil.getPortalPreferences(request);
+
+		try {
+			setRecentLayoutAttribute(
+				portalPreferences, getRecentLayoutSetBranchIdKey(layoutSetId),
+				layoutSetBranchId);
+
+			ProxiedLayoutsThreadLocal.clearProxiedLayouts();
+		}
+		catch (JSONException jsone) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to set recent layout set branch ID with layout " +
+						"set " + layoutSetId + " and layout set branch " +
+							layoutSetBranchId,
+					jsone);
+			}
+		}
 	}
 
 	@Override
