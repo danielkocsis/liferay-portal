@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -81,6 +82,25 @@ public class JSONObjectImpl implements JSONObject {
 		catch (Exception e) {
 			throw new JSONException(e);
 		}
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == this) {
+			return true;
+		}
+
+		if (!(object instanceof JSONObject)) {
+			return false;
+		}
+
+		JSONObject jsonObject = (JSONObject)object;
+
+		if (!Validator.equals(toString(), jsonObject.toString())) {
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -162,6 +182,11 @@ public class JSONObjectImpl implements JSONObject {
 	@Override
 	public boolean has(String key) {
 		return _jsonObject.has(key);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashUtil.hash(0, toString());
 	}
 
 	@Override
