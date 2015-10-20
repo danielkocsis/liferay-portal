@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.IOException;
@@ -50,6 +51,21 @@ public class JSONArrayImpl implements JSONArray {
 		catch (Exception e) {
 			throw new JSONException(e);
 		}
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == this) {
+			return true;
+		}
+
+		if (!(object instanceof JSONArray)) {
+			return false;
+		}
+
+		JSONArray jsonArray = (JSONArray)object;
+
+		return Validator.equals(toString(), jsonArray.toString());
 	}
 
 	@Override
@@ -101,6 +117,11 @@ public class JSONArrayImpl implements JSONArray {
 	@Override
 	public String getString(int index) {
 		return _jsonArray.optString(index);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashUtil.hash(0, toString());
 	}
 
 	@Override
