@@ -283,6 +283,12 @@ public class StagingUtil {
 			remoteGroupId, serviceContext);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             StagingJSONHelper#getErrorMessagesJSONArray(
+	 *             Locale, Map<String, MissingReference>)}
+	 */
+	@Deprecated
 	public static JSONArray getErrorMessagesJSONArray(
 		Locale locale, Map<String, MissingReference> missingReferences) {
 
@@ -303,6 +309,12 @@ public class StagingUtil {
 			locale, missingReferences, contextMap);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             StagingJSONHelper#getExceptionMessagesJSONObject(
+	 *             Locale, Exception, ExportImportConfiguration)}
+	 */
+	@Deprecated
 	public static JSONObject getExceptionMessagesJSONObject(
 		Locale locale, Exception e,
 		ExportImportConfiguration exportImportConfiguration) {
@@ -406,6 +418,12 @@ public class StagingUtil {
 		return _staging.getStagingParameters(PortletRequest);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             StagingJSONHelper#getWarningMessagesJSONArray(
+	 *             Locale, Map<String, MissingReference>)}
+	 */
+	@Deprecated
 	public static JSONArray getWarningMessagesJSONArray(
 		Locale locale, Map<String, MissingReference> missingReferences) {
 
