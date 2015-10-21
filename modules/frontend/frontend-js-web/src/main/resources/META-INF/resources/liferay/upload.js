@@ -80,7 +80,7 @@ AUI.add(
 
 						'<ul class="error-list-items">',
 							'<tpl for="warningMessages">',
-								'<li>{[ LString.escapeHTML(values.type) ]} <strong>({size})</strong>:',
+								'<li>{[ LString.escapeHTML(values.errorMessage) ]} <strong>({size})</strong>:',
 									'<tpl if="info">',
 										'<span class="error-info"">{[ LString.escapeHTML(values.info) ]}</span>',
 									'</tpl>',

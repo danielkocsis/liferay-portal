@@ -17,6 +17,8 @@ package com.liferay.exportimport.staging;
 import com.liferay.portal.LayoutPrototypeException;
 import com.liferay.portal.LocaleException;
 import com.liferay.portal.PortletIdException;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTaskDetailsItemJSONObject;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTaskJSONTransformer;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -40,6 +42,7 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.documentlibrary.DuplicateFileEntryException;
+import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.FileExtensionException;
 import com.liferay.portlet.documentlibrary.FileNameException;
 import com.liferay.portlet.documentlibrary.FileSizeException;
@@ -56,6 +59,7 @@ import com.liferay.portlet.exportimport.lar.StagedModelType;
 import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
 import com.liferay.portlet.exportimport.staging.StagingJSONHelper;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -75,26 +79,24 @@ public class StagingJSONHelperImpl implements StagingJSONHelper {
 	public JSONArray getErrorMessagesJSONArray(
 		Locale locale, Map<String, MissingReference> missingReferences) {
 
-		JSONArray errorMessagesJSONArray = JSONFactoryUtil.createJSONArray();
+		List<BackgroundTaskDetailsItemJSONObject>
+			backgroundTaskDetailsItemJSONObjects = new ArrayList<>();
 
 		for (String missingReferenceDisplayName : missingReferences.keySet()) {
 			MissingReference missingReference = missingReferences.get(
 				missingReferenceDisplayName);
 
-			JSONObject errorMessageJSONObject =
-				JSONFactoryUtil.createJSONObject();
-
 			String className = missingReference.getClassName();
 			Map<String, String> referrers = missingReference.getReferrers();
 
+			String info = StringPool.BLANK;
+
 			if (className.equals(StagedTheme.class.getName())) {
-				errorMessageJSONObject.put(
-					"info",
-					LanguageUtil.format(
-						locale,
-						"the-referenced-theme-x-is-not-deployed-in-the-" +
-							"current-environment",
-						missingReference.getClassPK(), false));
+				info = LanguageUtil.format(
+					locale,
+					"the-referenced-theme-x-is-not-deployed-in-the-" +
+						"current-environment",
+					missingReference.getClassPK(), false);
 			}
 			else if (referrers.size() == 1) {
 				Set<Map.Entry<String, String>> referrerDisplayNames =
@@ -113,55 +115,49 @@ public class StagingJSONHelperImpl implements StagingJSONHelper {
 						referrerDisplayName, locale);
 				}
 
-				errorMessageJSONObject.put(
-					"info",
-					LanguageUtil.format(
-						locale, "referenced-by-a-x-x",
-						new String[] {
-							ResourceActionsUtil.getModelResource(
-								locale, referrerClassName),
-							referrerDisplayName
-						}, false));
+				info = LanguageUtil.format(
+					locale, "referenced-by-a-x-x",
+					new String[] {
+						ResourceActionsUtil.getModelResource(
+							locale, referrerClassName),
+						referrerDisplayName
+					}, false);
 			}
 			else {
-				errorMessageJSONObject.put(
-					"info",
-					LanguageUtil.format(
-						locale, "referenced-by-x-elements", referrers.size(),
-						true));
+				info = LanguageUtil.format(
+					locale, "referenced-by-x-elements", referrers.size(), true);
 			}
-
-			errorMessageJSONObject.put("name", missingReferenceDisplayName);
 
 			Group group = GroupLocalServiceUtil.fetchGroup(
 				missingReference.getGroupId());
 
+			String errorMessage = ResourceActionsUtil.getModelResource(
+				locale, missingReference.getClassName());
+
 			if (group != null) {
-				errorMessageJSONObject.put(
-					"site",
+				errorMessage += StringPool.SPACE +
 					LanguageUtil.format(
 						locale, "in-site-x", missingReference.getGroupId(),
-						false));
+						false);
 			}
 
-			errorMessageJSONObject.put(
-				"type",
-				ResourceActionsUtil.getModelResource(
-					locale, missingReference.getClassName()));
+			BackgroundTaskDetailsItemJSONObject
+				backgroundTaskDetailsItemJSONObject =
+					new BackgroundTaskDetailsItemJSONObject(
+						errorMessage, missingReferenceDisplayName, info);
 
-			errorMessagesJSONArray.put(errorMessageJSONObject);
+			backgroundTaskDetailsItemJSONObjects.add(
+				backgroundTaskDetailsItemJSONObject);
 		}
 
-		return errorMessagesJSONArray;
+		return BackgroundTaskJSONTransformer.toJSONArray(
+			backgroundTaskDetailsItemJSONObjects);
 	}
 
 	@Override
 	public JSONObject getExceptionMessagesJSONObject(
 		Locale locale, Exception e,
 		ExportImportConfiguration exportImportConfiguration) {
-
-		JSONObject exceptionMessagesJSONObject =
-			JSONFactoryUtil.createJSONObject();
 
 		String errorMessage = StringPool.BLANK;
 		JSONArray errorMessagesJSONArray = null;
@@ -262,28 +258,26 @@ public class StagingJSONHelperImpl implements StagingJSONHelper {
 				lpe.getMissingLayoutPrototypes();
 
 			for (Tuple missingLayoutPrototype : missingLayoutPrototypes) {
-				JSONObject errorMessageJSONObject =
-					JSONFactoryUtil.createJSONObject();
-
 				String layoutPrototypeUuid =
 					(String)missingLayoutPrototype.getObject(1);
-
-				errorMessageJSONObject.put("info", layoutPrototypeUuid);
 
 				String layoutPrototypeName =
 					(String)missingLayoutPrototype.getObject(2);
 
-				errorMessageJSONObject.put("name", layoutPrototypeName);
-
 				String layoutPrototypeClassName =
 					(String)missingLayoutPrototype.getObject(0);
 
-				errorMessageJSONObject.put(
-					"type",
-					ResourceActionsUtil.getModelResource(
-						locale, layoutPrototypeClassName));
+				String modelResource = ResourceActionsUtil.getModelResource(
+					locale, layoutPrototypeClassName);
 
-				errorMessagesJSONArray.put(errorMessageJSONObject);
+				BackgroundTaskDetailsItemJSONObject
+					backgroundTaskDetailsItemJSONObject =
+					new BackgroundTaskDetailsItemJSONObject(
+						modelResource, layoutPrototypeName,
+						layoutPrototypeUuid);
+
+				errorMessagesJSONArray.put(
+					backgroundTaskDetailsItemJSONObject.toJSONObject());
 			}
 
 			errorType = ServletResponseConstants.SC_FILE_CUSTOM_EXCEPTION;
@@ -417,6 +411,9 @@ public class StagingJSONHelperImpl implements StagingJSONHelper {
 			errorType = ServletResponseConstants.SC_FILE_CUSTOM_EXCEPTION;
 		}
 
+		JSONObject exceptionMessagesJSONObject =
+			JSONFactoryUtil.createJSONObject();
+
 		exceptionMessagesJSONObject.put("message", errorMessage);
 
 		if ((errorMessagesJSONArray != null) &&
@@ -442,41 +439,43 @@ public class StagingJSONHelperImpl implements StagingJSONHelper {
 	public JSONArray getWarningMessagesJSONArray(
 		Locale locale, Map<String, MissingReference> missingReferences) {
 
-		JSONArray warningMessagesJSONArray = JSONFactoryUtil.createJSONArray();
+		List<BackgroundTaskDetailsItemJSONObject>
+			backgroundTaskDetailsItemJSONObjects = new ArrayList<>();
 
 		for (String missingReferenceReferrerClassName :
-				missingReferences.keySet()) {
+			missingReferences.keySet()) {
 
 			MissingReference missingReference = missingReferences.get(
 				missingReferenceReferrerClassName);
 
 			Map<String, String> referrers = missingReference.getReferrers();
 
-			JSONObject errorMessageJSONObject =
-				JSONFactoryUtil.createJSONObject();
+			String info = StringPool.BLANK;
 
 			if (Validator.isNotNull(missingReference.getClassName())) {
-				errorMessageJSONObject.put(
-					"info",
-					LanguageUtil.format(
-						locale,
-						"the-original-x-does-not-exist-in-the-current-" +
-							"environment",
-						ResourceActionsUtil.getModelResource(
-							locale, missingReference.getClassName()),
-						false));
+				info = LanguageUtil.format(
+					locale,
+					"the-original-x-does-not-exist-in-the-current-" +
+						"environment",
+					ResourceActionsUtil.getModelResource(
+						locale, missingReference.getClassName()),
+					false);
 			}
 
-			errorMessageJSONObject.put("size", referrers.size());
-			errorMessageJSONObject.put(
-				"type",
-				ResourceActionsUtil.getModelResource(
-					locale, missingReferenceReferrerClassName));
+			String errorMessage = ResourceActionsUtil.getModelResource(
+				locale, missingReferenceReferrerClassName);
 
-			warningMessagesJSONArray.put(errorMessageJSONObject);
+			BackgroundTaskDetailsItemJSONObject
+				backgroundTaskDisplayDetailsItem =
+					new BackgroundTaskDetailsItemJSONObject(
+						errorMessage, String.valueOf(referrers.size()), info);
+
+			backgroundTaskDetailsItemJSONObjects.add(
+				backgroundTaskDisplayDetailsItem);
 		}
 
-		return warningMessagesJSONArray;
+		return BackgroundTaskJSONTransformer.toJSONArray(
+			backgroundTaskDetailsItemJSONObjects);
 	}
 
 }

@@ -54,75 +54,76 @@ catch (Exception e) {
 					</c:otherwise>
 				</c:choose>
 
-			<span class="error-message"><%= HtmlUtil.escape(jsonObject.getString("message")) %></span>
-
 			<%
+			List<BackgroundTaskDetailsSectionJSONObject> sections = new ArrayList<>(2);
+
 			JSONArray messageListItemsJSONArray = jsonObject.getJSONArray("messageListItems");
+
+			if (messageListItemsJSONArray == null) {
+				messageListItemsJSONArray = JSONFactoryUtil.createJSONArray();
+			}
+
+			sections.add(new BackgroundTaskDetailsSectionJSONObject(jsonObject.getString("message"), messageListItemsJSONArray));
+
+			JSONArray warningMessagesJSONArray = jsonObject.getJSONArray("warningMessages");
+
+			if ((warningMessagesJSONArray != null) && (warningMessagesJSONArray.length() > 0)) {
+				String warningMessage = ((messageListItemsJSONArray != null) && (messageListItemsJSONArray.length() > 0)) ? "consider-that-the-following-data-would-not-have-been-published-either" : "the-following-data-has-not-been-published";
+
+				sections.add(new BackgroundTaskDetailsSectionJSONObject(warningMessage, warningMessagesJSONArray));
+			}
+
+			JSONArray sectionsJSONArray = BackgroundTaskJSONTransformer.toJSONArray(sections);
 			%>
 
-			<c:if test="<%= (messageListItemsJSONArray != null) && (messageListItemsJSONArray.length() > 0) %>">
-				<ul class="error-list-items">
+			<c:if test="<%= (sectionsJSONArray != null) && (sectionsJSONArray.length() > 0) %>">
+
+				<%
+				for (int i = 0; i < sectionsJSONArray.length(); i++) {
+					JSONObject detailsItemJSONObject = sectionsJSONArray.getJSONObject(i);
+				%>
+
+					<span class="error-message">
+						<%= HtmlUtil.escape(detailsItemJSONObject.getString("message")) %>
+					</span>
+
+					<ul class="error-list-items">
 
 					<%
-					for (int i = 0; i < messageListItemsJSONArray.length(); i++) {
-						JSONObject messageListItemJSONArray = messageListItemsJSONArray.getJSONObject(i);
-
-						String info = messageListItemJSONArray.getString("info");
+					JSONArray itemsListJSONArray = detailsItemJSONObject.getJSONArray("itemsList");
 					%>
 
+					<c:if test="<%= itemsListJSONArray != null %>">
+
+						<%
+						for (int j = 0; j < itemsListJSONArray.length(); j++) {
+							JSONObject itemsListJSONObject = itemsListJSONArray.getJSONObject(j);
+
+							String info = itemsListJSONObject.getString("info");
+						%>
+
 						<li>
-							<%= messageListItemJSONArray.getString("type") %>
+							<%= itemsListJSONObject.getString("errorMessage") %>:
 
-							<%= messageListItemJSONArray.getString("site") %>:
-
-							<strong><%= HtmlUtil.escape(messageListItemJSONArray.getString("name")) %></strong>
+							<strong><%= HtmlUtil.escape(itemsListJSONObject.getString("errorStrongMessage")) %></strong>
 
 							<c:if test="<%= Validator.isNotNull(info) %>">
-								<span class="error-info">(<%= HtmlUtil.escape(messageListItemJSONArray.getString("info")) %>)</span>
+								<span class="error-info">(<%= HtmlUtil.escape(info) %>)</span>
 							</c:if>
 						</li>
 
-					<%
-					}
-					%>
+						<%
+						}
+						%>
 
+					</c:if>
 				</ul>
+
+				<%
+				}
+				%>
+
 			</c:if>
 		</div>
-
-		<%
-		JSONArray warningMessagesJSONArray = jsonObject.getJSONArray("warningMessages");
-		%>
-
-		<c:if test="<%= (warningMessagesJSONArray != null) && (warningMessagesJSONArray.length() > 0) %>">
-			<div class="alert upload-error">
-				<span class="error-message"><liferay-ui:message key='<%= ((messageListItemsJSONArray != null) && (messageListItemsJSONArray.length() > 0)) ? "consider-that-the-following-data-would-not-have-been-published-either" : "the-following-data-has-not-been-published" %>' /></span>
-
-				<ul class="error-list-items">
-
-					<%
-					for (int i = 0; i < warningMessagesJSONArray.length(); i++) {
-						JSONObject warningMessageJSONArray = warningMessagesJSONArray.getJSONObject(i);
-
-						String info = warningMessageJSONArray.getString("info");
-					%>
-
-						<li>
-							<%= warningMessageJSONArray.getString("type") %>:
-
-							<strong><%= warningMessageJSONArray.getString("size") %></strong>
-
-							<c:if test="<%= Validator.isNotNull(info) %>">
-								<span class="error-info">(<%= HtmlUtil.escape(warningMessageJSONArray.getString("info")) %>)</span>
-							</c:if>
-						</li>
-
-					<%
-					}
-					%>
-
-				</ul>
-			</div>
-		</c:if>
 	</c:otherwise>
 </c:choose>
