@@ -14,26 +14,33 @@
 
 package com.liferay.portal.kernel.backgroundtask;
 
+import com.liferay.portal.kernel.json.JSONObject;
+
+import java.io.Serializable;
+
+import java.util.Locale;
+
 /**
- * @author Michael C. Han
+ * @author Andrew Betts
  */
-public interface BackgroundTaskExecutor {
+public interface BackgroundTaskDisplay extends Serializable {
 
-	public BackgroundTaskExecutor clone();
+	public JSONObject getDetailsJSONObject();
 
-	public BackgroundTaskResult execute(BackgroundTask backgroundTask)
-		throws Exception;
+	public JSONObject getDetailsJSONObject(Locale locale);
 
-	public BackgroundTaskDisplay getBackgroundTaskDisplay(
-		BackgroundTask backgroundTask);
+	public String getMessage();
 
-	public BackgroundTaskStatusMessageTranslator
-		getBackgroundTaskStatusMessageTranslator();
+	public String getMessage(Locale locale);
 
-	public int getIsolationLevel();
+	public int getPercentage();
 
-	public String handleException(BackgroundTask backgroundTask, Exception e);
+	public boolean hasBackgroundTaskStatus();
 
-	public boolean isSerial();
+	public boolean hasDetails();
+
+	public boolean hasMessage();
+
+	public boolean hasPercentage();
 
 }
