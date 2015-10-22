@@ -16,13 +16,6 @@
 
 <%@ include file="/html/portlet/init.jsp" %>
 
-<%@ page import="com.liferay.portal.NoSuchBackgroundTaskException" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTask" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskDetailsSectionJSONObject" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskJSONTransformer" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatus" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatusRegistryUtil" %>
+<%@ page import="com.liferay.portal.NoSuchBackgroundTaskException" %>
 
 <%@ include file="/html/portlet/background_task/init-ext.jsp" %>
