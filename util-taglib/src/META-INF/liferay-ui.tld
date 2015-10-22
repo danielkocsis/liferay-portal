@@ -971,6 +971,21 @@
 		</attribute>
 	</tag>
 	<tag>
+		<name>background-task-status</name>
+		<tag-class>com.liferay.taglib.ui.BackgroundTaskStatusTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>backgroundTaskId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>taskDetailsOnly</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
 		<name>breadcrumb</name>
 		<tag-class>com.liferay.taglib.ui.BreadcrumbTag</tag-class>
 		<body-content>JSP</body-content>

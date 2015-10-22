@@ -16,4 +16,10 @@
 
 <%@ include file="/init.jsp" %>
 
-<%@ include file="/html/portlet/background_task/background_task_status.jsp" %>
+<%
+ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
+
+BackgroundTask backgroundTask = (BackgroundTask)row.getObject();
+%>
+
+<liferay-ui:background-task-status backgroundTaskId="<%= backgroundTask.getBackgroundTaskId() %>" />
