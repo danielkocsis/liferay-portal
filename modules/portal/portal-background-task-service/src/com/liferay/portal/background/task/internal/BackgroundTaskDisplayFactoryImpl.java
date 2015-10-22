@@ -43,7 +43,14 @@ public class BackgroundTaskDisplayFactoryImpl
 			_backgroundTaskExecutorRegistry.getBackgroundTaskExecutor(
 				backgroundTask.getTaskExecutorClassName());
 
-		return backgroundTaskExecutor.getBackgroundTaskDisplay(backgroundTask);
+		BackgroundTaskDisplay backgroundTaskDisplay =
+			backgroundTaskExecutor.getBackgroundTaskDisplay(backgroundTask);
+
+		if (backgroundTaskDisplay == null) {
+			return new DummyBackgroundTaskDisplay(backgroundTask);
+		}
+
+		return backgroundTaskDisplay;
 	}
 
 	@Override
