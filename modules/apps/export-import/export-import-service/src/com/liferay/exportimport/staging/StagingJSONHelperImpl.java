@@ -42,7 +42,6 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.documentlibrary.DuplicateFileEntryException;
-import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.FileExtensionException;
 import com.liferay.portlet.documentlibrary.FileNameException;
 import com.liferay.portlet.documentlibrary.FileSizeException;
@@ -272,9 +271,9 @@ public class StagingJSONHelperImpl implements StagingJSONHelper {
 
 				BackgroundTaskDetailsItemJSONObject
 					backgroundTaskDetailsItemJSONObject =
-					new BackgroundTaskDetailsItemJSONObject(
-						modelResource, layoutPrototypeName,
-						layoutPrototypeUuid);
+						new BackgroundTaskDetailsItemJSONObject(
+							modelResource, layoutPrototypeName,
+							layoutPrototypeUuid);
 
 				errorMessagesJSONArray.put(
 					backgroundTaskDetailsItemJSONObject.toJSONObject());
@@ -443,7 +442,7 @@ public class StagingJSONHelperImpl implements StagingJSONHelper {
 			backgroundTaskDetailsItemJSONObjects = new ArrayList<>();
 
 		for (String missingReferenceReferrerClassName :
-			missingReferences.keySet()) {
+				missingReferences.keySet()) {
 
 			MissingReference missingReference = missingReferences.get(
 				missingReferenceReferrerClassName);
