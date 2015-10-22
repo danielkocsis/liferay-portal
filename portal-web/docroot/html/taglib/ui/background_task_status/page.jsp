@@ -23,6 +23,7 @@
 		</strong>
 
 		<c:if test="<%= backgroundTask.isInProgress() %>">
+
 			<%
 			BackgroundTaskStatus backgroundTaskStatus = BackgroundTaskStatusRegistryUtil.getBackgroundTaskStatus(backgroundTask.getBackgroundTaskId());
 			%>
