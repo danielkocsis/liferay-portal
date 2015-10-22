@@ -18,15 +18,15 @@
 
 <%@ page import="com.liferay.portal.kernel.backgroundtask.BackgroundTask" %><%@
 page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskDetailsSectionJSONObject" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskJSONTransformer" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatus" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatusRegistryUtil" %>
+page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskDisplay" %><%@
+page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskDisplayFactoryUtil" %><%@
+page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil" %>
 
 <%
 long backgroundTaskId = GetterUtil.getLong(request.getAttribute("liferay-ui:backgroundTaskStatus:backgroundTaskId"));
 boolean taskDetailsOnly = GetterUtil.getBoolean(request.getAttribute("liferay-ui:backgroundTaskStatus:taskDetailsOnly"));
 
 BackgroundTask backgroundTask = BackgroundTaskManagerUtil.getBackgroundTask(backgroundTaskId);
+
+BackgroundTaskDisplay backgroundTaskDisplay = BackgroundTaskDisplayFactoryUtil.getBackgroundTaskDisplay(backgroundTaskId);
 %>
