@@ -46,6 +46,10 @@ public class BackgroundTaskConstants {
 
 	public static final int STATUS_FAILED = 2;
 
+	public static final int PERCENTAGE_MAX = 100;
+
+	public static final int PERCENTAGE_NONE = -1;
+
 	public static final int STATUS_IN_PROGRESS = 1;
 
 	public static final int STATUS_NEW = 0;

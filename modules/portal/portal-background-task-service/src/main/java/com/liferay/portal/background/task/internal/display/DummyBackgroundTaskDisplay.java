@@ -12,11 +12,11 @@
  * details.
  */
 
-package com.liferay.portal.background.task.internal;
+package com.liferay.portal.background.task.internal.display;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskDetailsJSONObject;
-import com.liferay.portal.kernel.backgroundtask.BaseBackgroundTaskDisplay;
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskDetailsJSONObject;
+import com.liferay.portal.kernel.backgroundtask.display.BaseBackgroundTaskDisplay;
 
 /**
  * @author Andrew Betts

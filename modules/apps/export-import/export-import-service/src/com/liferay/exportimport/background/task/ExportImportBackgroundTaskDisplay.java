@@ -15,10 +15,11 @@
 package com.liferay.exportimport.background.task;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskDetailsJSONObject;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskDetailsSectionJSONObject;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants;
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskDetailsJSONObject;
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskDetailsSectionJSONObject;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatus;
-import com.liferay.portal.kernel.backgroundtask.BaseBackgroundTaskDisplay;
+import com.liferay.portal.kernel.backgroundtask.display.BaseBackgroundTaskDisplay;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -56,7 +57,7 @@ public class ExportImportBackgroundTaskDisplay
 
 		BackgroundTaskStatus backgroundTaskStatus = getBackgroundTaskStatus();
 
-		_percentage = PERCENTAGE_NONE;
+		_percentage = BackgroundTaskConstants.PERCENTAGE_NONE;
 
 		if (backgroundTaskStatus == null) {
 			_allProgressBarCountersTotal = 0;
@@ -105,14 +106,14 @@ public class ExportImportBackgroundTaskDisplay
 
 	@Override
 	public int getPercentage() {
-		if (_percentage > PERCENTAGE_NONE) {
+		if (_percentage > BackgroundTaskConstants.PERCENTAGE_NONE) {
 			return _percentage;
 		}
 
-		_percentage = PERCENTAGE_MAX;
+		_percentage = BackgroundTaskConstants.PERCENTAGE_MAX;
 
 		if (_allProgressBarCountersTotal > 0) {
-			int base = PERCENTAGE_MAX;
+			int base = BackgroundTaskConstants.PERCENTAGE_MAX;
 
 			if (_phase.equals(Constants.EXPORT) &&
 				!Validator.equals(_cmd, Constants.PUBLISH_TO_REMOTE)) {
@@ -141,7 +142,7 @@ public class ExportImportBackgroundTaskDisplay
 	public boolean hasPercentage() {
 		if ((_allProgressBarCountersTotal > 0) &&
 			(!Validator.equals(_cmd, Constants.PUBLISH_TO_REMOTE) ||
-			 (getPercentage() < PERCENTAGE_MAX))) {
+			 (getPercentage() < BackgroundTaskConstants.PERCENTAGE_MAX))) {
 
 			return true;
 		}
@@ -262,7 +263,7 @@ public class ExportImportBackgroundTaskDisplay
 
 	protected boolean hasRemoteMessage() {
 		if (Validator.equals(_cmd, Constants.PUBLISH_TO_REMOTE) &&
-			(getPercentage() == PERCENTAGE_MAX)) {
+			(getPercentage() == BackgroundTaskConstants.PERCENTAGE_MAX)) {
 
 			return true;
 		}

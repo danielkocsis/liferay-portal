@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.kernel.backgroundtask;
+package com.liferay.portal.kernel.backgroundtask.display;
 
 import com.liferay.portal.kernel.json.JSONObject;
 

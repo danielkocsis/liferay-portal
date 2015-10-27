@@ -12,11 +12,11 @@
  * details.
  */
 
-package com.liferay.portal.background.task.internal;
+package com.liferay.portal.background.task.internal.display;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskDisplay;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskDisplayFactory;
+import com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay;
+import com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplayFactory;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutorRegistry;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskManager;
@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Andrew Betts
  */
-@Component(immediate = true, service = BackgroundTaskDisplayFactory.class)
+@Component(immediate = true)
 public class BackgroundTaskDisplayFactoryImpl
 	implements BackgroundTaskDisplayFactory {
 

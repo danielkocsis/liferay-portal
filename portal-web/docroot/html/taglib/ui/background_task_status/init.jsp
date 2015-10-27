@@ -18,8 +18,8 @@
 
 <%@ page import="com.liferay.portal.kernel.backgroundtask.BackgroundTask" %><%@
 page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskDisplay" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskDisplayFactoryUtil" %><%@
+page import="com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay" %><%@
+page import="com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplayFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil" %>
 
 <%

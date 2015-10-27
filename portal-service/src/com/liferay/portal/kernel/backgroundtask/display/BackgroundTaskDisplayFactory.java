@@ -12,20 +12,21 @@
  * details.
  */
 
-package com.liferay.portal.kernel.backgroundtask;
+package com.liferay.portal.kernel.backgroundtask.display;
 
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONSerializable;
-
-import java.util.Locale;
+import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 
 /**
-* @author Andrew Betts
-*/
-public interface BackgroundTaskJSONObject extends JSONSerializable {
+ * @author Andrew Betts
+ */
+@ProviderType
+public interface BackgroundTaskDisplayFactory {
 
-	public JSONObject toJSONObject();
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		BackgroundTask backgroundTask);
 
-	public JSONObject toJSONObject(Locale locale);
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		long backgroundTaskId);
 
 }

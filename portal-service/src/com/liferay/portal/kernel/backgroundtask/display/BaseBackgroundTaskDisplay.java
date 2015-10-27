@@ -12,8 +12,12 @@
  * details.
  */
 
-package com.liferay.portal.kernel.backgroundtask;
+package com.liferay.portal.kernel.backgroundtask.display;
 
+import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskDetailsJSONObject;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatus;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatusRegistryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -122,10 +126,6 @@ public abstract class BaseBackgroundTaskDisplay
 		return GetterUtil.getString(
 			_backgroundTaskStatus.getAttribute(attributeKey));
 	}
-
-	protected static final int PERCENTAGE_MAX = 100;
-
-	protected static final int PERCENTAGE_NONE = -1;
 
 	private final BackgroundTask _backgroundTask;
 	private final BackgroundTaskStatus _backgroundTaskStatus;
