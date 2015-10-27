@@ -15,8 +15,8 @@
 package com.liferay.portal.search.internal.background.task;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskDetailsJSONObject;
-import com.liferay.portal.kernel.backgroundtask.BaseBackgroundTaskDisplay;
+import com.liferay.portal.kernel.backgroundtask.display.BaseBackgroundTaskDisplay;
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskDetailsJSONObject;
 
 /**
  * @author Andrew Betts

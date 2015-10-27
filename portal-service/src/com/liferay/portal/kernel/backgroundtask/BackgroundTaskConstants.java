@@ -42,6 +42,10 @@ public class BackgroundTaskConstants {
 
 	public static final String LABEL_SUCCESSFUL = "successful";
 
+	public static final int PERCENTAGE_MAX = 100;
+
+	public static final int PERCENTAGE_NONE = -1;
+
 	public static final int STATUS_CANCELLED = 5;
 
 	public static final int STATUS_FAILED = 2;

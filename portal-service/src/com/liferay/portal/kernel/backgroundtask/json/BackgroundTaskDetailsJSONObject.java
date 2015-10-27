@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.kernel.backgroundtask;
+package com.liferay.portal.kernel.backgroundtask.json;
 
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -20,26 +20,29 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
 * @author Andrew Betts
 */
-public class BackgroundTaskDetailsItemJSONObject
+public class BackgroundTaskDetailsJSONObject
 	implements BackgroundTaskJSONObject {
 
-	public BackgroundTaskDetailsItemJSONObject(JSONObject jsonObject) {
-		_errorMessage = jsonObject.getString("errorMessage");
-		_errorStrongMessage = jsonObject.getString("errorStrongMessage");
-		_info = jsonObject.getString("info");
+	public BackgroundTaskDetailsJSONObject(JSONObject jsonObject) {
+		_header = jsonObject.getString("header");
+		_sections = BackgroundTaskJSONTransformer.sectionsFromJSONArray(
+			jsonObject.getJSONArray("sections"));
+		_status = jsonObject.getInt("status");
 	}
 
-	public BackgroundTaskDetailsItemJSONObject(
-		String errorMessage, String errorStrongMessage, String info) {
+	public BackgroundTaskDetailsJSONObject(
+		String header, List<BackgroundTaskDetailsSectionJSONObject> sections,
+		int status) {
 
-		_errorMessage = errorMessage;
-		_errorStrongMessage = errorStrongMessage;
-		_info = info;
+		_header = header;
+		_sections = sections;
+		_status = status;
 	}
 
 	@Override
@@ -48,22 +51,17 @@ public class BackgroundTaskDetailsItemJSONObject
 			return true;
 		}
 
-		if (!(object instanceof BackgroundTaskDetailsItemJSONObject)) {
+		if (!(object instanceof BackgroundTaskDetailsJSONObject)) {
 			return false;
 		}
 
-		BackgroundTaskDetailsItemJSONObject
-			backgroundTaskDetailsItemJSONObject =
-				(BackgroundTaskDetailsItemJSONObject)object;
+		BackgroundTaskDetailsJSONObject backgroundTaskDetailsJSONObject =
+			(BackgroundTaskDetailsJSONObject)object;
 
 		if (!Validator.equals(
-				_errorMessage,
-				backgroundTaskDetailsItemJSONObject._errorMessage) ||
-			!Validator.equals(
-				_errorStrongMessage,
-				backgroundTaskDetailsItemJSONObject._errorStrongMessage) ||
-			!Validator.equals(
-				_info, backgroundTaskDetailsItemJSONObject._info)) {
+				_header, backgroundTaskDetailsJSONObject._header) ||
+			!_sections.equals(backgroundTaskDetailsJSONObject._sections) ||
+			(_status != backgroundTaskDetailsJSONObject._status)) {
 
 			return false;
 		}
@@ -73,33 +71,33 @@ public class BackgroundTaskDetailsItemJSONObject
 
 	@Override
 	public int hashCode() {
-		int hash = HashUtil.hash(0, _errorMessage);
+		int hash = HashUtil.hash(0, _header);
 
-		hash = HashUtil.hash(hash, _errorStrongMessage);
+		hash = HashUtil.hash(hash, _sections);
 
-		return HashUtil.hash(hash, _info);
+		return HashUtil.hash(hash, _status);
 	}
 
 	@Override
 	public JSONObject toJSONObject() {
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
-		jsonObject.put("errorMessage", _errorMessage);
-		jsonObject.put("errorStrongMessage", _errorStrongMessage);
-		jsonObject.put("info", _info);
+		jsonObject.put("header", _header);
+		jsonObject.put(
+			"sections", BackgroundTaskJSONTransformer.toJSONArray(_sections));
+		jsonObject.put("status", _status);
 
 		return jsonObject;
 	}
 
-	@Override
 	public JSONObject toJSONObject(Locale locale) {
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
-		jsonObject.put("errorMessage", LanguageUtil.get(locale, _errorMessage));
+		jsonObject.put("header", LanguageUtil.get(locale, _header));
 		jsonObject.put(
-			"errorStrongMessage",
-			LanguageUtil.get(locale, _errorStrongMessage));
-		jsonObject.put("info", LanguageUtil.get(locale, _info));
+			"sections",
+			BackgroundTaskJSONTransformer.toJSONArray(_sections, locale));
+		jsonObject.put("status", _status);
 
 		return jsonObject;
 	}
@@ -116,8 +114,8 @@ public class BackgroundTaskDetailsItemJSONObject
 		return toJSONString();
 	}
 
-	private final String _errorMessage;
-	private final String _errorStrongMessage;
-	private final String _info;
+	private final String _header;
+	private final List<BackgroundTaskDetailsSectionJSONObject> _sections;
+	private final int _status;
 
 }

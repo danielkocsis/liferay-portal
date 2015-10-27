@@ -12,20 +12,35 @@
  * details.
  */
 
-package com.liferay.portal.kernel.backgroundtask;
+package com.liferay.portal.kernel.backgroundtask.display;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONSerializable;
+
+import java.io.Serializable;
 
 import java.util.Locale;
 
 /**
-* @author Andrew Betts
-*/
-public interface BackgroundTaskJSONObject extends JSONSerializable {
+ * @author Andrew Betts
+ */
+public interface BackgroundTaskDisplay extends Serializable {
 
-	public JSONObject toJSONObject();
+	public JSONObject getDetailsJSONObject();
 
-	public JSONObject toJSONObject(Locale locale);
+	public JSONObject getDetailsJSONObject(Locale locale);
+
+	public String getMessage();
+
+	public String getMessage(Locale locale);
+
+	public int getPercentage();
+
+	public boolean hasBackgroundTaskStatus();
+
+	public boolean hasDetails();
+
+	public boolean hasMessage();
+
+	public boolean hasPercentage();
 
 }

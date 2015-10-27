@@ -14,6 +14,9 @@
 
 package com.liferay.portal.kernel.backgroundtask;
 
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskDetailsItemJSONObject;
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskDetailsSectionJSONObject;
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskJSONTransformer;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;

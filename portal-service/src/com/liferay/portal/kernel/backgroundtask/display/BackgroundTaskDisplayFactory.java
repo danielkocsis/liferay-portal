@@ -12,35 +12,22 @@
  * details.
  */
 
-package com.liferay.portal.kernel.backgroundtask;
+package com.liferay.portal.kernel.backgroundtask.display;
 
-import com.liferay.portal.kernel.json.JSONObject;
+import aQute.bnd.annotation.ProviderType;
 
-import java.io.Serializable;
-
-import java.util.Locale;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 
 /**
  * @author Andrew Betts
  */
-public interface BackgroundTaskDisplay extends Serializable {
+@ProviderType
+public interface BackgroundTaskDisplayFactory {
 
-	public JSONObject getDetailsJSONObject();
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		BackgroundTask backgroundTask);
 
-	public JSONObject getDetailsJSONObject(Locale locale);
-
-	public String getMessage();
-
-	public String getMessage(Locale locale);
-
-	public int getPercentage();
-
-	public boolean hasBackgroundTaskStatus();
-
-	public boolean hasDetails();
-
-	public boolean hasMessage();
-
-	public boolean hasPercentage();
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		long backgroundTaskId);
 
 }

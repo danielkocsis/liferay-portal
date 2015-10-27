@@ -14,6 +14,8 @@
 
 package com.liferay.portal.kernel.backgroundtask;
 
+import com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay;
+
 /**
  * @author Michael C. Han
  */
