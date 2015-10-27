@@ -27,14 +27,19 @@ public class BackgroundTaskStatusTag extends IncludeTag {
 		_backgroundTaskId = backgroundTaskId;
 	}
 
-	public void setTaskDetailsOnly(boolean taskDetailsOnly) {
-		_taskDetailsOnly = taskDetailsOnly;
+	public void setShowDetails(boolean showDetails) {
+		_showDetails = showDetails;
+	}
+
+	public void setShowProgressBar(boolean showProgressBar) {
+		_showProgressBar = showProgressBar;
 	}
 
 	@Override
 	protected void cleanUp() {
 		_backgroundTaskId = 0;
-		_taskDetailsOnly = false;
+		_showDetails = false;
+		_showProgressBar = false;
 	}
 
 	@Override
@@ -48,8 +53,12 @@ public class BackgroundTaskStatusTag extends IncludeTag {
 			"liferay-ui:backgroundTaskStatus:backgroundTaskId",
 			_backgroundTaskId);
 		request.setAttribute(
-			"liferay-ui:backgroundTaskStatus:taskDetailsOnly",
-			_taskDetailsOnly
+			"liferay-ui:backgroundTaskStatus:showDetails",
+			_showDetails
+		);
+		request.setAttribute(
+			"liferay-ui:backgroundTaskStatus:showProgressBar",
+			_showProgressBar
 		);
 	}
 
@@ -57,6 +66,7 @@ public class BackgroundTaskStatusTag extends IncludeTag {
 		"/html/taglib/ui/background_task_status/page.jsp";
 
 	private long _backgroundTaskId;
-	private boolean _taskDetailsOnly;
+	private boolean _showDetails;
+	private boolean _showProgressBar;
 
 }

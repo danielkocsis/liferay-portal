@@ -18,13 +18,14 @@
 
 <%@ page import="com.liferay.portal.kernel.backgroundtask.BackgroundTask" %><%@
 page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskDisplay" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskDisplayFactoryUtil" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil" %>
+page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil" %><%@
+page import="com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay" %><%@
+page import="com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplayFactoryUtil" %>
 
 <%
 long backgroundTaskId = GetterUtil.getLong(request.getAttribute("liferay-ui:backgroundTaskStatus:backgroundTaskId"));
-boolean taskDetailsOnly = GetterUtil.getBoolean(request.getAttribute("liferay-ui:backgroundTaskStatus:taskDetailsOnly"));
+boolean showDetails = GetterUtil.getBoolean(request.getAttribute("liferay-ui:backgroundTaskStatus:showDetails"));
+boolean showProgress = GetterUtil.getBoolean(request.getAttribute("liferay-ui:backgroundTaskStatus:showProgress"));
 
 BackgroundTask backgroundTask = BackgroundTaskManagerUtil.getBackgroundTask(backgroundTaskId);
 

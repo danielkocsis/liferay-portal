@@ -980,7 +980,12 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>taskDetailsOnly</name>
+			<name>showDetails</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>showProgress</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

@@ -76,7 +76,7 @@ BackgroundTask lastCompletedInitialPublicationBackgroundTask = BackgroundTaskMan
 			/>
 		</div>
 
-		<liferay-ui:background-task-status backgroundTaskId="<%= lastCompletedInitialPublicationBackgroundTask.getBackgroundTaskId() %>" taskDetailsOnly="<%= true %>" />
+		<liferay-ui:background-task-status backgroundTaskId="<%= lastCompletedInitialPublicationBackgroundTask.getBackgroundTaskId() %>" showDetails="<%= true %>" showProgress="<%= false %>" />
 	</c:if>
 
 	<c:if test="<%= stagedLocally && (BackgroundTaskManagerUtil.getBackgroundTasksCount(liveGroupId, BackgroundTaskExecutorNames.LAYOUT_STAGING_BACKGROUND_TASK_EXECUTOR, false) > 0) %>">

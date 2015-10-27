@@ -22,4 +22,4 @@ ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_
 BackgroundTask backgroundTask = (BackgroundTask)row.getObject();
 %>
 
-<liferay-ui:background-task-status backgroundTaskId="<%= backgroundTask.getBackgroundTaskId() %>" />
+<liferay-ui:background-task-status backgroundTaskId="<%= backgroundTask.getBackgroundTaskId() %>" showDetails="<%= true %>" showProgress="<%= true %>" />

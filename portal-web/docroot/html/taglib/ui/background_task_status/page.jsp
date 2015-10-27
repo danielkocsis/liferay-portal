@@ -16,14 +16,14 @@
 
 <%@ include file="/html/taglib/ui/background_task_status/init.jsp" %>
 
-<c:choose>
-	<c:when test="<%= !taskDetailsOnly %>">
-		<strong class="background-task-status-<%= BackgroundTaskConstants.getStatusLabel(backgroundTask.getStatus()) %> <%= BackgroundTaskConstants.getStatusCssClass(backgroundTask.getStatus()) %> label">
-			<liferay-ui:message key="<%= backgroundTask.getStatusLabel() %>" />
-		</strong>
+<div class="background-task-progress-container">
+	<strong class="background-task-status-<%= BackgroundTaskConstants.getStatusLabel(backgroundTask.getStatus()) %> <%= BackgroundTaskConstants.getStatusCssClass(backgroundTask.getStatus()) %> label">
+		<liferay-ui:message key="<%= backgroundTask.getStatusLabel() %>" />
+	</strong>
 
-		<c:if test="<%= backgroundTask.isInProgress() %>">
-			<c:if test="<%= backgroundTaskDisplay.hasBackgroundTaskStatus() %>">
+	<c:if test="<%= backgroundTask.isInProgress() %>">
+		<c:if test="<%= backgroundTaskDisplay.hasBackgroundTaskStatus() %>">
+			<c:if test="<%= showProgress %>">
 				<div class="active progress progress-striped">
 				<c:choose>
 					<c:when test="<%= backgroundTaskDisplay.hasPercentage() %>">
@@ -41,29 +41,28 @@
 					</c:otherwise>
 				</c:choose>
 				</div>
+			</c:if>
 
-				<c:if test="<%= backgroundTaskDisplay.hasMessage() %>">
-					<div class="progress-current-item">
-						<liferay-ui:message key="<%= backgroundTaskDisplay.getMessage(locale) %>" localizeKey="<%= false %>" />
-					</div>
-				</c:if>
+			<c:if test="<%= backgroundTaskDisplay.hasMessage() %>">
+				<div class="progress-current-item">
+					<liferay-ui:message key="<%= backgroundTaskDisplay.getMessage(locale) %>" localizeKey="<%= false %>" />
+				</div>
 			</c:if>
 		</c:if>
+	</c:if>
 
-		<c:if test="<%= Validator.isNotNull(backgroundTask.getStatusMessage()) %>">
+	<c:if test="<%= Validator.isNotNull(backgroundTask.getStatusMessage()) %>">
 
-			<%
-			long[] expandedBackgroundTaskIds = StringUtil.split(GetterUtil.getString(SessionClicks.get(request, "com.liferay.exportimport.web_backgroundTaskIds", null)), 0L);
-			%>
+		<%
+		long[] expandedBackgroundTaskIds = StringUtil.split(GetterUtil.getString(SessionClicks.get(request, "background-task-status-tag-backgroundTaskIds", null)), 0L);
+		%>
 
+		<c:if test="<%= showDetails %>">
 			<a class="details-link toggler-header-<%= ArrayUtil.contains(expandedBackgroundTaskIds, backgroundTask.getBackgroundTaskId()) ? "expanded" : "collapsed" %>" data-persist-id="<%= backgroundTask.getBackgroundTaskId() %>" href="#"><liferay-ui:message key="details" /></a>
 
 			<div class="background-task-status-message toggler-content-<%= ArrayUtil.contains(expandedBackgroundTaskIds, backgroundTask.getBackgroundTaskId()) ? "expanded" : "collapsed" %>">
 				<%@ include file="/html/taglib/ui/background_task_status/background_task_details.jspf" %>
 			</div>
 		</c:if>
-	</c:when>
-	<c:otherwise>
-		<%@ include file="/html/taglib/ui/background_task_status/background_task_details.jspf" %>
-	</c:otherwise>
-</c:choose>
+	</c:if>
+</div>
