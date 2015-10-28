@@ -12,13 +12,13 @@
  * details.
  */
 
-package com.liferay.exportimport.staging;
+package com.liferay.exportimport.staging.json;
 
 import com.liferay.portal.LayoutPrototypeException;
 import com.liferay.portal.LocaleException;
 import com.liferay.portal.PortletIdException;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskDetailsItemJSONObject;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskJSONTransformer;
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskDetailsItemJSONObject;
+import com.liferay.portal.kernel.backgroundtask.json.BackgroundTaskJSONTransformer;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -56,7 +56,7 @@ import com.liferay.portlet.exportimport.lar.PortletDataException;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
 import com.liferay.portlet.exportimport.lar.StagedModelType;
 import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
-import com.liferay.portlet.exportimport.staging.StagingJSONHelper;
+import com.liferay.portlet.exportimport.staging.json.StagingJSONHelper;
 
 import java.util.ArrayList;
 import java.util.Iterator;
