@@ -50,7 +50,7 @@ public class BackgroundTaskJSONTransformerTest {
 		Assert.assertEquals(
 			itemsList,
 			BackgroundTaskJSONTransformer.itemsListFromJSONArray(
-				JSONFactoryUtil.createJSONArray(_ITEM_LIST_JSONARRAY)));
+				JSONFactoryUtil.createJSONArray(_ITEM_LIST_JSON_ARRAY)));
 	}
 
 	@Test
@@ -61,18 +61,18 @@ public class BackgroundTaskJSONTransformerTest {
 		sections.add(
 			new BackgroundTaskDetailsSectionJSONObject(
 				"message",
-				JSONFactoryUtil.createJSONArray(_ITEM_LIST_JSONARRAY)));
+				JSONFactoryUtil.createJSONArray(_ITEM_LIST_JSON_ARRAY)));
 
 		Assert.assertEquals(
 			sections,
 			BackgroundTaskJSONTransformer.sectionsFromJSONArray(
-				JSONFactoryUtil.createJSONArray(_SECTIONS_JSONARRAY)));
+				JSONFactoryUtil.createJSONArray(_SECTIONS_JSON_ARRAY)));
 	}
 
 	@Test
 	public void testToJSONArrayFromItemsList() throws Exception {
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray(
-			_ITEM_LIST_JSONARRAY);
+			_ITEM_LIST_JSON_ARRAY);
 
 		List<BackgroundTaskDetailsItemJSONObject> itemsList = new ArrayList<>(
 			jsonArray.length());
@@ -90,7 +90,7 @@ public class BackgroundTaskJSONTransformerTest {
 	@Test
 	public void testToJSONArrayFromSections() throws Exception {
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray(
-			_SECTIONS_JSONARRAY);
+			_SECTIONS_JSON_ARRAY);
 
 		List<BackgroundTaskDetailsSectionJSONObject> sections = new ArrayList<>(
 			jsonArray.length());
@@ -105,12 +105,12 @@ public class BackgroundTaskJSONTransformerTest {
 			jsonArray, BackgroundTaskJSONTransformer.toJSONArray(sections));
 	}
 
-	private static final String _ITEM_LIST_JSONARRAY =
+	private static final String _ITEM_LIST_JSON_ARRAY =
 		"[ { errorMessage : \"error message\", errorStrongMessage : " +
 			"\"error strong message\", info : \"information\" } ]";
 
-	private static final String _SECTIONS_JSONARRAY =
-		"[ { message : \"message\", itemsList : " + _ITEM_LIST_JSONARRAY +
+	private static final String _SECTIONS_JSON_ARRAY =
+		"[ { message : \"message\", itemsList : " + _ITEM_LIST_JSON_ARRAY +
 			" } ]";
 
 }

@@ -41,15 +41,16 @@ catch (Exception e) {
 
 				<c:choose>
 					<c:when test="<%= exported && !validated %>">
-						<liferay-ui:message key="the-publication-process-did-not-start-due-to-validation-errors" /></h4>
+						<liferay-ui:message key="the-publication-process-did-not-start-due-to-validation-errors" />
 					</c:when>
 					<c:otherwise>
-						<liferay-ui:message key="an-unexpected-error-occurred-with-the-publication-process.-please-check-your-portal-and-publishing-configuration" /></h4>
+						<liferay-ui:message key="an-unexpected-error-occurred-with-the-publication-process.-please-check-your-portal-and-publishing-configuration" />
 					</c:otherwise>
 				</c:choose>
+			</h4>
 
 			<%
-			List<BackgroundTaskDetailsSectionJSONObject> sections = new ArrayList<BackgroundTaskDetailsSectionJSONObject>(2);
+			List<BackgroundTaskDetailsSectionJSONObject> sections = new ArrayList<>(2);
 
 			JSONArray messageListItemsJSONArray = jsonObject.getJSONArray("messageListItems");
 
@@ -77,11 +78,11 @@ catch (Exception e) {
 					JSONObject detailsItemJSONObject = sectionsJSONArray.getJSONObject(i);
 				%>
 
-					<span class="error-message">
-						<%= HtmlUtil.escape(detailsItemJSONObject.getString("message")) %>
-					</span>
+				<span class="error-message">
+					<%= HtmlUtil.escape(detailsItemJSONObject.getString("message")) %>
+				</span>
 
-					<ul class="error-list-items">
+				<ul class="error-list-items">
 
 					<%
 					JSONArray itemsListJSONArray = detailsItemJSONObject.getJSONArray("itemsList");

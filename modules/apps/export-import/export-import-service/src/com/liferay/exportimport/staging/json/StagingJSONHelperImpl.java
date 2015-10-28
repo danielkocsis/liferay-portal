@@ -201,12 +201,11 @@ public class StagingJSONHelperImpl implements StagingJSONHelper {
 				((exportImportConfiguration.getType() ==
 					ExportImportConfigurationConstants.
 						TYPE_PUBLISH_LAYOUT_LOCAL) ||
-					(exportImportConfiguration.getType() ==
-						ExportImportConfigurationConstants.
-							TYPE_PUBLISH_LAYOUT_REMOTE) ||
-					(exportImportConfiguration.getType() ==
-						ExportImportConfigurationConstants.
-							TYPE_PUBLISH_PORTLET))) {
+				 (exportImportConfiguration.getType() ==
+					ExportImportConfigurationConstants.
+						TYPE_PUBLISH_LAYOUT_REMOTE) ||
+				 (exportImportConfiguration.getType() ==
+					ExportImportConfigurationConstants.TYPE_PUBLISH_PORTLET))) {
 
 				errorMessage = LanguageUtil.get(
 					locale,
@@ -306,12 +305,11 @@ public class StagingJSONHelperImpl implements StagingJSONHelper {
 				((exportImportConfiguration.getType() ==
 					ExportImportConfigurationConstants.
 						TYPE_PUBLISH_LAYOUT_LOCAL) ||
-					(exportImportConfiguration.getType() ==
-						ExportImportConfigurationConstants.
-							TYPE_PUBLISH_LAYOUT_REMOTE) ||
-					(exportImportConfiguration.getType() ==
-						ExportImportConfigurationConstants.
-							TYPE_PUBLISH_PORTLET))) {
+				 (exportImportConfiguration.getType() ==
+					ExportImportConfigurationConstants.
+						TYPE_PUBLISH_LAYOUT_REMOTE) ||
+				 (exportImportConfiguration.getType() ==
+					ExportImportConfigurationConstants.TYPE_PUBLISH_PORTLET))) {
 
 				errorMessage = LanguageUtil.get(
 					locale,
