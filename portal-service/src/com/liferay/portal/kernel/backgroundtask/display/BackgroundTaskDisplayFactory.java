@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -12,14 +11,23 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
---%>
 
-<%@ include file="/init.jsp" %>
+package com.liferay.portal.kernel.backgroundtask.display;
 
-<%
-ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
+import aQute.bnd.annotation.ProviderType;
 
-BackgroundTask backgroundTask = (BackgroundTask)row.getObject();
-%>
+import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 
-<liferay-ui:background-task-status backgroundTaskId="<%= backgroundTask.getBackgroundTaskId() %>" showDetails="<%= true %>" showProgress="<%= true %>" />
+/**
+ * @author Andrew Betts
+ */
+@ProviderType
+public interface BackgroundTaskDisplayFactory {
+
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		BackgroundTask backgroundTask);
+
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		long backgroundTaskId);
+
+}

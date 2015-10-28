@@ -16,13 +16,14 @@ package com.liferay.exportimport.background.task;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BaseBackgroundTaskExecutor;
+import com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionAttribute;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
 import com.liferay.portlet.exportimport.service.ExportImportConfigurationLocalServiceUtil;
-import com.liferay.portlet.exportimport.staging.StagingUtil;
+import com.liferay.portlet.exportimport.staging.StagingJSONHelperUtil;
 
 import java.io.Serializable;
 
@@ -40,10 +41,18 @@ public abstract class BaseExportImportBackgroundTaskExecutor
 	}
 
 	@Override
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		BackgroundTask backgroundTask) {
+
+		return new ExportImportBackgroundTaskDisplay(backgroundTask);
+	}
+
+	@Override
 	public String handleException(BackgroundTask backgroundTask, Exception e) {
-		JSONObject jsonObject = StagingUtil.getExceptionMessagesJSONObject(
-			getLocale(backgroundTask), e,
-			getExportImportConfiguration(backgroundTask));
+		JSONObject jsonObject =
+			StagingJSONHelperUtil.getExceptionMessagesJSONObject(
+				getLocale(backgroundTask), e,
+				getExportImportConfiguration(backgroundTask));
 
 		return jsonObject.toString();
 	}

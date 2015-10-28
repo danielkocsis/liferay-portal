@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -12,14 +11,21 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
---%>
 
-<%@ include file="/init.jsp" %>
+package com.liferay.portal.kernel.backgroundtask.json;
 
-<%
-ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONSerializable;
 
-BackgroundTask backgroundTask = (BackgroundTask)row.getObject();
-%>
+import java.util.Locale;
 
-<liferay-ui:background-task-status backgroundTaskId="<%= backgroundTask.getBackgroundTaskId() %>" showDetails="<%= true %>" showProgress="<%= true %>" />
+/**
+* @author Andrew Betts
+*/
+public interface BackgroundTaskJSONObject extends JSONSerializable {
+
+	public JSONObject toJSONObject();
+
+	public JSONObject toJSONObject(Locale locale);
+
+}
