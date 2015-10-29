@@ -29,6 +29,10 @@ public interface BackgroundTaskDisplay extends Serializable {
 
 	public JSONObject getDetailsJSONObject(Locale locale);
 
+	public String getDetailsBody();
+
+	public String getDetailsBody(Locale locale);
+
 	public String getMessage();
 
 	public String getMessage(Locale locale);

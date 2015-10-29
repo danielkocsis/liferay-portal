@@ -17,14 +17,28 @@ package com.liferay.portal.kernel.backgroundtask.display;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatus;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatusRegistryUtil;
-import com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay;
+import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.template.Template;
+import com.liferay.portal.kernel.template.TemplateConstants;
+import com.liferay.portal.kernel.template.TemplateException;
+import com.liferay.portal.kernel.template.TemplateManager;
+import com.liferay.portal.kernel.template.TemplateManagerUtil;
+import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.log.Log;
 
+import java.io.Writer;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Andrew Betts
@@ -47,11 +61,65 @@ public abstract class BaseBackgroundTaskDisplay
 
 	@Override
 	public JSONObject getDetailsJSONObject(Locale locale) {
-		BackgroundTaskDetailsJSONObject details = createDetails(
-			_backgroundTask);
+		JSONObject jsonObject = null;
 
-		return details.toJSONObject(locale);
+		try {
+			jsonObject = JSONFactoryUtil.createJSONObject(
+				_backgroundTask.getStatusMessage());
+		}
+		catch (JSONException e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
+
+		if (jsonObject != null) {
+			jsonObject = translateJSON(jsonObject, locale);
+		}
+
+		return jsonObject;
 	}
+
+	public String getDetailsBody() {
+		return getDetailsBody(LocaleUtil.getDefault());
+	}
+
+	public String getDetailsBody(Locale locale) {
+		TemplateManager templateManager =
+			TemplateManagerUtil.getTemplateManager(
+				TemplateConstants.LANG_TYPE_FTL);
+
+		Template template = templateManager.getTemplate(
+			getTemplateResource(), true);
+
+		JSONObject jsonObject = getDetailsJSONObject(locale);
+
+		template.put("backgroundTask", _backgroundTask);
+		template.put("backgroundTaskStatus", _backgroundTaskStatus);
+		template.put("backgroundTaskDisplay", this);
+		template.put("jsonObject", jsonObject);
+
+		template.putAll(getTemplateVars());
+
+		Writer writer = new UnsyncStringWriter();
+
+		try {
+			template.processTemplate(writer);
+		}
+		catch (TemplateException te) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(te, te);
+			}
+
+			return "";
+		}
+
+		return writer.toString();
+	}
+
+	protected abstract Map<String,?> getTemplateVars();
+
+	protected abstract TemplateResource getTemplateResource();
 
 	@Override
 	public String getMessage() {
@@ -77,7 +145,7 @@ public abstract class BaseBackgroundTaskDisplay
 
 	@Override
 	public boolean hasDetails() {
-		if (createDetails(_backgroundTask) != null) {
+		if (Validator.isNotNull(_backgroundTask.getStatusMessage())) {
 			return true;
 		}
 
@@ -102,9 +170,6 @@ public abstract class BaseBackgroundTaskDisplay
 		return false;
 	}
 
-	protected abstract BackgroundTaskDetailsJSONObject createDetails(
-		BackgroundTask backgroundTask);
-
 	protected abstract String createMessageKey();
 
 	protected BackgroundTask getBackgroundTask() {
@@ -127,9 +192,62 @@ public abstract class BaseBackgroundTaskDisplay
 			_backgroundTaskStatus.getAttribute(attributeKey));
 	}
 
+	protected JSONObject translateJSON(JSONObject jsonObject, Locale locale) {
+		JSONObject translatedJSON = JSONFactoryUtil.createJSONObject();
+
+		Iterator<String> itr = jsonObject.keys();
+
+		while (itr.hasNext()) {
+			String key = itr.next();
+
+			Object obj = jsonObject.get(key);
+
+			if (obj instanceof JSONObject) {
+				translatedJSON.put(key, translateJSON((JSONObject)obj, locale));
+			}
+			else if (obj instanceof JSONArray) {
+				translatedJSON.put(key, translateJSON((JSONArray) obj, locale));
+			}
+			else if (obj instanceof String) {
+				translatedJSON.put(key, LanguageUtil.get(locale, (String)obj));
+			}
+			else  {
+				translatedJSON.put(key, obj);
+			}
+		}
+
+		return translatedJSON;
+	}
+
+	protected JSONArray translateJSON(JSONArray jsonArray, Locale locale) {
+		JSONArray translatedJSON = JSONFactoryUtil.createJSONArray();
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			Object obj = jsonArray.get(i);
+
+			if (obj instanceof JSONObject) {
+				translatedJSON.put(translateJSON((JSONObject) obj, locale));
+			}
+			else if (obj instanceof JSONArray) {
+				translatedJSON.put(translateJSON((JSONArray) obj, locale));
+			}
+			else if (obj instanceof String) {
+				translatedJSON.put(LanguageUtil.get(locale, (String)obj));
+			}
+			else  {
+				translatedJSON.put(obj);
+			}
+		}
+
+		return translatedJSON;
+	}
+
 	protected static final int PERCENTAGE_MAX = 100;
 
 	protected static final int PERCENTAGE_NONE = -1;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		BaseBackgroundTaskDisplay.class);
 
 	private final BackgroundTask _backgroundTask;
 	private final BackgroundTaskStatus _backgroundTaskStatus;

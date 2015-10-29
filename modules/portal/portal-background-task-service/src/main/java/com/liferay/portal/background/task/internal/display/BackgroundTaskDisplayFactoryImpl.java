@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.background.task.internal;
+package main.java.com.liferay.portal.background.task.internal.display;
 
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay;
@@ -53,6 +53,7 @@ public class BackgroundTaskDisplayFactoryImpl
 		BackgroundTask backgroundTask =
 			_backgroundTaskManager.fetchBackgroundTask(backgroundTaskId);
 
+		System.out.println("backgroundtask " + backgroundTask);
 		return getBackgroundTaskDisplay(backgroundTask);
 	}
 

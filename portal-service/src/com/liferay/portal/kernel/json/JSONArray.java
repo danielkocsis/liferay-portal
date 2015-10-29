@@ -20,7 +20,9 @@ import java.io.Writer;
 /**
  * @author Brian Wing Shun Chan
  */
-public interface JSONArray extends Externalizable {
+public interface JSONArray extends Externalizable, Iterable {
+
+	public Object get(int index);
 
 	public boolean getBoolean(int index);
 
@@ -41,6 +43,8 @@ public interface JSONArray extends Externalizable {
 	public String join(String separator) throws JSONException;
 
 	public int length();
+
+	public JSONArray put(Object value);
 
 	public JSONArray put(boolean value);
 
