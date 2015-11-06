@@ -1195,6 +1195,22 @@ public class LayoutImportController implements ImportController {
 		}
 	}
 
+	protected boolean siblingLayoutHasSamePriority(Layout layout) {
+		List<Layout> siblingLayouts = _layoutLocalService.getLayouts(
+			layout.getGroupId(), layout.getPrivateLayout(),
+			layout.getParentLayoutId());
+
+		for (Layout siblingLayout : siblingLayouts) {
+			if ((layout.getPlid() != siblingLayout.getPlid()) &&
+				(layout.getPriority() == siblingLayout.getPriority())) {
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	protected boolean siblingLayoutIsSkipped(
 		Element layoutElement, Map<Long, List<String>> siblingActionsMap) {
 
@@ -1211,16 +1227,15 @@ public class LayoutImportController implements ImportController {
 	}
 
 	protected void updateLayoutPriorities(
-		PortletDataContext portletDataContext, List<Element> layoutElements,
-		boolean privateLayout) {
+			PortletDataContext portletDataContext, List<Element> layoutElements,
+			boolean privateLayout)
+		throws PortalException {
 
 		Map<Long, Layout> layouts =
 			(Map<Long, Layout>)portletDataContext.getNewPrimaryKeysMap(
 				Layout.class + ".layout");
 
 		Map<Long, Integer> layoutPriorities = new HashMap<>();
-
-		int maxPriority = Integer.MIN_VALUE;
 
 		Map<Long, List<String>> siblingActionsMap = new HashMap<>();
 
@@ -1271,25 +1286,41 @@ public class LayoutImportController implements ImportController {
 					layoutElement.attributeValue("layout-priority"));
 
 				layoutPriorities.put(layout.getPlid(), layoutPriority);
-
-				if (maxPriority < layoutPriority) {
-					maxPriority = layoutPriority;
-				}
 			}
 		}
 
-		List<Layout> layoutSetLayouts = _layoutLocalService.getLayouts(
-			portletDataContext.getGroupId(), privateLayout);
+		Set<Long> parentPlids = new HashSet<>();
 
-		for (Layout layout : layoutSetLayouts) {
-			if (layoutPriorities.containsKey(layout.getPlid())) {
-				layout.setPriority(layoutPriorities.get(layout.getPlid()));
-			}
-			else {
-				layout.setPriority(++maxPriority);
-			}
+		for (long plid : layoutPriorities.keySet()) {
+			Layout layout = _layoutLocalService.fetchLayout(plid);
+
+			layout.setPriority(layoutPriorities.get(plid));
 
 			_layoutLocalService.updateLayout(layout);
+
+			parentPlids.add(layout.getParentPlid());
+		}
+
+		for (long parentPlid : parentPlids) {
+			List<Layout> siblingLayouts = _layoutLocalService.getLayouts(
+				portletDataContext.getGroupId(), privateLayout, parentPlid);
+
+			for (Layout layout : siblingLayouts) {
+				Set<Long> plids = layoutPriorities.keySet();
+
+				if (!plids.contains(layout.getPlid())) {
+					if (siblingLayoutHasSamePriority(layout)) {
+						do {
+							int priority = layout.getPriority();
+
+							layout.setPriority(++priority);
+						}
+						while (siblingLayoutHasSamePriority(layout));
+
+						_layoutLocalService.updateLayout(layout);
+					}
+				}
+			}
 		}
 	}
 
