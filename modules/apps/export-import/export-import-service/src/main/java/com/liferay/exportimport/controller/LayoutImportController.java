@@ -1291,7 +1291,9 @@ public class LayoutImportController implements ImportController {
 
 		Set<Long> parentPlids = new HashSet<>();
 
-		for (long plid : layoutPriorities.keySet()) {
+		Set<Long> updatedPlids = layoutPriorities.keySet();
+
+		for (long plid : updatedPlids) {
 			Layout layout = _layoutLocalService.fetchLayout(plid);
 
 			layout.setPriority(layoutPriorities.get(plid));
@@ -1306,9 +1308,7 @@ public class LayoutImportController implements ImportController {
 				portletDataContext.getGroupId(), privateLayout, parentPlid);
 
 			for (Layout layout : siblingLayouts) {
-				Set<Long> plids = layoutPriorities.keySet();
-
-				if (!plids.contains(layout.getPlid())) {
+				if (!updatedPlids.contains(layout.getPlid())) {
 					if (siblingLayoutHasSamePriority(layout)) {
 						do {
 							int priority = layout.getPriority();
