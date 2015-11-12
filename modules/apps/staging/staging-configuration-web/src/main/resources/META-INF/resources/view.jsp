@@ -77,9 +77,13 @@ BackgroundTask lastCompletedInitialPublicationBackgroundTask = BackgroundTaskMan
 				/>
 			</div>
 
-			<liferay-util:include page="/publish_process_message_task_details.jsp" servletContext="<%= application %>">
-				<liferay-util:param name="backgroundTaskId" value="<%= String.valueOf(lastCompletedInitialPublicationBackgroundTask.getBackgroundTaskId()) %>" />
-			</liferay-util:include>
+			<liferay-ui:background-task-status backgroundTaskId="<%= lastCompletedInitialPublicationBackgroundTask.getBackgroundTaskId() %>">
+
+				<c:if test="<%= Validator.isNotNull(lastCompletedInitialPublicationBackgroundTask.getStatusMessage()) %>">
+					<liferay-ui:background-task-status-message/>
+				</c:if>
+
+			</liferay-ui:background-task-status>
 		</c:if>
 
 		<c:if test="<%= stagedLocally && (BackgroundTaskManagerUtil.getBackgroundTasksCount(liveGroupId, BackgroundTaskExecutorNames.LAYOUT_STAGING_BACKGROUND_TASK_EXECUTOR, false) > 0) %>">
