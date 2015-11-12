@@ -124,6 +124,10 @@ public class ExportImportBackgroundTaskDisplay
 
 	@Override
 	public boolean hasMessage() {
+		if (!hasBackgroundTaskStatus()) {
+			return false;
+		}
+
 		if (hasRemoteMessage() || hasStagedModelMessage()) {
 			return true;
 		}
@@ -133,6 +137,10 @@ public class ExportImportBackgroundTaskDisplay
 
 	@Override
 	public boolean hasPercentage() {
+		if (!hasBackgroundTaskStatus()) {
+			return false;
+		}
+
 		if ((_allProgressBarCountersTotal > 0) &&
 			(!Validator.equals(_cmd, Constants.PUBLISH_TO_REMOTE) ||
 			 (getPercentage() < PERCENTAGE_MAX))) {
