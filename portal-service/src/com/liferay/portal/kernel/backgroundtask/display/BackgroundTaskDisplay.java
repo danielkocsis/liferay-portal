@@ -33,8 +33,6 @@ public interface BackgroundTaskDisplay extends Serializable {
 
 	public int getPercentage();
 
-	public boolean hasBackgroundTaskStatus();
-
 	public boolean hasDetails();
 
 	public boolean hasMessage();
