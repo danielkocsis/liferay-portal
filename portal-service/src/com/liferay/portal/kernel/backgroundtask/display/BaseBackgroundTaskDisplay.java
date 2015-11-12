@@ -184,6 +184,54 @@ public abstract class BaseBackgroundTaskDisplay
 		return false;
 	}
 
+	protected JSONArray translateJSON(JSONArray jsonArray, Locale locale) {
+		JSONArray translatedJSON = JSONFactoryUtil.createJSONArray();
+
+		for (Object obj : jsonArray) {
+			if (obj instanceof JSONObject) {
+				translatedJSON.put(translateJSON((JSONObject)obj, locale));
+			}
+			else if (obj instanceof JSONArray) {
+				translatedJSON.put(translateJSON((JSONArray)obj, locale));
+			}
+			else if (obj instanceof String) {
+				translatedJSON.put(LanguageUtil.get(locale, (String)obj));
+			}
+			else {
+				translatedJSON.put(obj);
+			}
+		}
+
+		return translatedJSON;
+	}
+
+	protected JSONObject translateJSON(JSONObject jsonObject, Locale locale) {
+		JSONObject translatedJSON = JSONFactoryUtil.createJSONObject();
+
+		Iterator<String> itr = jsonObject.keys();
+
+		while (itr.hasNext()) {
+			String key = itr.next();
+
+			Object obj = jsonObject.get(key);
+
+			if (obj instanceof JSONObject) {
+				translatedJSON.put(key, translateJSON((JSONObject)obj, locale));
+			}
+			else if (obj instanceof JSONArray) {
+				translatedJSON.put(key, translateJSON((JSONArray)obj, locale));
+			}
+			else if (obj instanceof String) {
+				translatedJSON.put(key, LanguageUtil.get(locale, (String)obj));
+			}
+			else {
+				translatedJSON.put(key, obj);
+			}
+		}
+
+		return translatedJSON;
+	}
+
 	protected static final int PERCENTAGE_MAX = 100;
 
 	protected static final int PERCENTAGE_NONE = -1;
