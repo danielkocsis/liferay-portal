@@ -23,21 +23,17 @@ import java.util.Locale;
  */
 public interface BackgroundTaskDisplay extends Serializable {
 
-	public String getDetailsBody();
-
-	public String getDetailsBody(Locale locale);
-
-	public String getMessage();
-
-	public String getMessage(Locale locale);
-
 	public int getPercentage();
 
-	public boolean hasBackgroundTaskStatus();
+	public int getStatus();
 
-	public boolean hasDetails();
+	public String getStatusLabel();
 
-	public boolean hasMessage();
+	public String getStatusLabel(Locale locale);
+
+	public String getStatusMessage();
+
+	public String getStatusMessage(Locale locale);
 
 	public boolean hasPercentage();
 
