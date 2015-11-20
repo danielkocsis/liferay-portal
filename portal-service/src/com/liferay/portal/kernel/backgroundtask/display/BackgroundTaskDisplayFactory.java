@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -12,12 +11,23 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
---%>
 
-<%@ include file="/init.jsp" %>
+package com.liferay.portal.kernel.backgroundtask.display;
 
-<liferay-ui:error exception="<%= LARFileSizeException.class %>">
-	<liferay-ui:message arguments="<%= TextFormatter.formatStorageSize(PrefsPropsUtil.getLong(PropsKeys.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE), locale) %>" key="please-enter-a-file-with-a-valid-file-size-no-larger-than-x" translateArguments="<%= false %>" />
-</liferay-ui:error>
+import aQute.bnd.annotation.ProviderType;
 
-<liferay-ui:error-principal />
+import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
+
+/**
+ * @author Andrew Betts
+ */
+@ProviderType
+public interface BackgroundTaskDisplayFactory {
+
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		BackgroundTask backgroundTask);
+
+	public BackgroundTaskDisplay getBackgroundTaskDisplay(
+		long backgroundTaskId);
+
+}
