@@ -22,14 +22,15 @@ ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_
 BackgroundTask backgroundTask = (BackgroundTask)row.getObject();
 %>
 
-<liferay-ui:background-task-status backgroundTaskId="<%=backgroundTask.getBackgroundTaskId()%>" >
+<liferay-ui:background-task-status backgroundTaskId="<%= backgroundTask.getBackgroundTaskId() %>">
 
-	<c:if test="<%= backgroundTask.isInProgress() %>" >
+	<c:if test="<%= backgroundTask.isInProgress() %>">
 		<liferay-ui:background-task-status-progress-bar/>
 	</c:if>
 
 	<c:choose>
 		<c:when test="<%= Validator.isNotNull(backgroundTask.getStatusMessage()) %>">
+
 			<%
 			long[] expandedBackgroundTaskIds = StringUtil.split(GetterUtil.getString(SessionClicks.get(request, "com.liferay.exportimport.web_backgroundTaskIds", null)), 0L);
 			%>
