@@ -19,8 +19,8 @@
 <%
 GroupDisplayContextHelper groupDisplayContextHelper = new GroupDisplayContextHelper(request);
 
-Group liveGroup = groupDisplayContextHelper.getLiveGroup();
-long liveGroupId = groupDisplayContextHelper.getLiveGroupId();
+liveGroup = groupDisplayContextHelper.getLiveGroup();
+liveGroupId = groupDisplayContextHelper.getLiveGroupId();
 UnicodeProperties liveGroupTypeSettings = liveGroup.getTypeSettingsProperties();
 
 LayoutSet privateLayoutSet = LayoutSetLocalServiceUtil.getLayoutSet(liveGroup.getGroupId(), true);
@@ -30,15 +30,14 @@ boolean liveGroupRemoteStaging = liveGroup.hasRemoteStagingGroup() && PropsValue
 boolean stagedLocally = liveGroup.isStaged() && !liveGroup.isStagedRemotely();
 boolean stagedRemotely = liveGroup.isStaged() && !stagedLocally;
 
-Group stagingGroup = null;
-long stagingGroupId = 0L;
-
 if (stagedLocally) {
 	stagingGroup = liveGroup.getStagingGroup();
 	stagingGroupId = stagingGroup.getGroupId();
 }
 
 BackgroundTask lastCompletedInitialPublicationBackgroundTask = BackgroundTaskManagerUtil.fetchFirstBackgroundTask(liveGroupId, BackgroundTaskExecutorNames.LAYOUT_STAGING_BACKGROUND_TASK_EXECUTOR, true, new BackgroundTaskCreateDateComparator(false));
+
+boolean disableStagingOptions = GetterUtil.getBoolean(SessionMessages.get(liferayPortletRequest, portletDisplay.getId() + "disableStagingOptions"), false);
 %>
 
 <div class="container-fluid-1280">
@@ -54,7 +53,7 @@ BackgroundTask lastCompletedInitialPublicationBackgroundTask = BackgroundTaskMan
 	</portlet:actionURL>
 
 	<aui:form action="<%= editStagingConfigurationURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveGroup();" %>'>
-		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+		<aui:input name="redirect" type="hidden" value="<%= editStagingConfigurationURL %>" />
 		<aui:input name="groupId" type="hidden" value="<%= liveGroupId %>" />
 		<aui:input name="liveGroupId" type="hidden" value="<%= liveGroupId %>" />
 		<aui:input name="stagingGroupId" type="hidden" value="<%= stagingGroupId %>" />
@@ -153,17 +152,26 @@ BackgroundTask lastCompletedInitialPublicationBackgroundTask = BackgroundTaskMan
 					<liferay-ui:message key="<%= se.getMessage() %>" />
 				</liferay-ui:error>
 
-				<aui:fieldset label="staging-type">
-					<div id="<portlet:namespace />stagingTypes">
-						<aui:input checked="<%= !liveGroup.isStaged() %>" id="none" label="none" name="stagingType" type="radio" value="<%= StagingConstants.TYPE_NOT_STAGED %>" />
+				<c:choose>
+					<c:when test="<%= !disableStagingOptions %>">
+						<aui:fieldset label="staging-type">
+							<div id="<portlet:namespace />stagingTypes">
+								<aui:input checked="<%= !liveGroup.isStaged() %>" id="none" label="none" name="stagingType" type="radio" value="<%= StagingConstants.TYPE_NOT_STAGED %>" />
 
-						<c:if test="<%= !liveGroupRemoteStaging %>">
-							<aui:input checked="<%= stagedLocally %>" helpMessage="staging-type-local" id="local" label="local-live" name="stagingType" type="radio" value="<%= StagingConstants.TYPE_LOCAL_STAGING %>" />
-						</c:if>
+								<c:if test="<%= !liveGroupRemoteStaging %>">
+									<aui:input checked="<%= stagedLocally %>" helpMessage="staging-type-local" id="local" label="local-live" name="stagingType" type="radio" value="<%= StagingConstants.TYPE_LOCAL_STAGING %>" />
+								</c:if>
 
-						<aui:input checked="<%= stagedRemotely %>" helpMessage="staging-type-remote" id="remote" label="remote-live" name="stagingType" type="radio" value="<%= StagingConstants.TYPE_REMOTE_STAGING %>" />
-					</div>
-				</aui:fieldset>
+								<aui:input checked="<%= stagedRemotely %>" helpMessage="staging-type-remote" id="remote" label="remote-live" name="stagingType" type="radio" value="<%= StagingConstants.TYPE_REMOTE_STAGING %>" />
+							</div>
+						</aui:fieldset>
+					</c:when>
+					<c:otherwise>
+						<div class="alert alert-warning">
+							<liferay-ui:message key="staging-has-been-disabled.-please-close-this-window-in-order-to-go-to-the-live-site" />
+						</div>
+					</c:otherwise>
+				</c:choose>
 
 				<%
 				boolean showRemoteOptions = stagedRemotely;
@@ -274,7 +282,7 @@ BackgroundTask lastCompletedInitialPublicationBackgroundTask = BackgroundTaskMan
 			</c:otherwise>
 		</c:choose>
 
-		<c:if test="<%= !privateLayoutSet.isLayoutSetPrototypeLinkActive() && !publicLayoutSet.isLayoutSetPrototypeLinkActive() %>">
+		<c:if test="<%= !privateLayoutSet.isLayoutSetPrototypeLinkActive() && !publicLayoutSet.isLayoutSetPrototypeLinkActive() && !disableStagingOptions %>">
 			<aui:button-row>
 				<aui:button cssClass="btn-primary" type="submit" />
 			</aui:button-row>
