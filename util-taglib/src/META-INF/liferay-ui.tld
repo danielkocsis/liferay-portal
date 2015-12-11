@@ -1030,6 +1030,26 @@
 		</attribute>
 	</tag>
 	<tag>
+		<name>background-task-status</name>
+		<tag-class>com.liferay.taglib.ui.BackgroundTaskStatusTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>backgroundTaskId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
+		<name>background-task-status-progress-bar</name>
+		<tag-class>com.liferay.taglib.ui.BackgroundTaskStatusProgressBarTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	<tag>
+		<name>background-task-status-message</name>
+		<tag-class>com.liferay.taglib.ui.BackgroundTaskStatusMessageTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	<tag>
 		<name>breadcrumb</name>
 		<tag-class>com.liferay.taglib.ui.BreadcrumbTag</tag-class>
 		<body-content>JSP</body-content>
