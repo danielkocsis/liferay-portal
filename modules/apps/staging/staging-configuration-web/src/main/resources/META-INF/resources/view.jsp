@@ -52,8 +52,12 @@ boolean disableStagingOptions = GetterUtil.getBoolean(SessionMessages.get(lifera
 		<portlet:param name="mvcPath" value="/view.jsp" />
 	</portlet:actionURL>
 
+	<portlet:renderURL var="redirectURL">
+		<portlet:param name="mvcRenderCommandName" value="staging" />
+	</portlet:renderURL>
+
 	<aui:form action="<%= editStagingConfigurationURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveGroup();" %>'>
-		<aui:input name="redirect" type="hidden" value="<%= editStagingConfigurationURL %>" />
+		<aui:input name="redirect" type="hidden" value="<%= redirectURL %>" />
 		<aui:input name="groupId" type="hidden" value="<%= liveGroupId %>" />
 		<aui:input name="liveGroupId" type="hidden" value="<%= liveGroupId %>" />
 		<aui:input name="stagingGroupId" type="hidden" value="<%= stagingGroupId %>" />
