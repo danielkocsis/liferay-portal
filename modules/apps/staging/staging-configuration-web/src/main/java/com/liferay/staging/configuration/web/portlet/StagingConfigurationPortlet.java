@@ -105,8 +105,8 @@ public class StagingConfigurationPortlet extends MVCPortlet {
 
 	public void editStagingConfiguration(
 			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws IOException, PortalException, WindowStateException,
-			PortletModeException {
+		throws IOException, PortalException, PortletModeException,
+			WindowStateException {
 
 		hideDefaultSuccessMessage(actionRequest);
 
@@ -210,13 +210,6 @@ public class StagingConfigurationPortlet extends MVCPortlet {
 		actionRequest.setAttribute(WebKeys.REDIRECT, redirect);
 
 		sendRedirect(actionRequest, actionResponse);
-	}
-
-	protected void hideDefaultSuccessMessage(PortletRequest portletRequest) {
-		SessionMessages.add(
-			portletRequest,
-			PortalUtil.getPortletId(portletRequest) +
-				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_SUCCESS_MESSAGE);
 	}
 
 	@Reference

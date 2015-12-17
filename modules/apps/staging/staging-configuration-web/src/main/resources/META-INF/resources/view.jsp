@@ -305,13 +305,13 @@ boolean disableStagingOptions = GetterUtil.getBoolean(SessionMessages.get(lifera
 
 			<c:choose>
 				<c:when test="<%= liveGroup.isStaged() && !liveGroup.isStagedRemotely() %>">
-					oldValue = 1;
+					oldValue = <%= StagingConstants.TYPE_LOCAL_STAGING %>;
 				</c:when>
 				<c:when test="<%= liveGroup.isStaged() && liveGroup.isStagedRemotely() %>">
-					oldValue = 2;
+					oldValue = <%= StagingConstants.TYPE_REMOTE_STAGING %>;
 				</c:when>
 				<c:otherwise>
-					oldValue = 0;
+					oldValue = <%= StagingConstants.TYPE_NOT_STAGED %>;
 				</c:otherwise>
 			</c:choose>
 
@@ -320,13 +320,13 @@ boolean disableStagingOptions = GetterUtil.getBoolean(SessionMessages.get(lifera
 			if (stagingTypeEl.length && (currentValue != oldValue)) {
 				ok = false;
 
-				if (currentValue == 0) {
+				if (currentValue == <%= StagingConstants.TYPE_NOT_STAGED %>) {
 					ok = confirm('<%= UnicodeLanguageUtil.format(request, "are-you-sure-you-want-to-deactivate-staging-for-x", liveGroup.getDescriptiveName(locale), false) %>');
 				}
-				else if (currentValue == 1) {
+				else if (currentValue == <%= StagingConstants.TYPE_LOCAL_STAGING %>) {
 					ok = confirm('<%= UnicodeLanguageUtil.format(request, "are-you-sure-you-want-to-activate-local-staging-for-x", liveGroup.getDescriptiveName(locale), false) %>');
 				}
-				else if (currentValue == 2) {
+				else if (currentValue == <%= StagingConstants.TYPE_REMOTE_STAGING %>) {
 					ok = confirm('<%= UnicodeLanguageUtil.format(request, "are-you-sure-you-want-to-activate-remote-staging-for-x", liveGroup.getDescriptiveName(locale), false) %>');
 				}
 			}
