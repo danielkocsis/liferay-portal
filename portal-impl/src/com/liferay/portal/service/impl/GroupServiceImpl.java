@@ -18,14 +18,21 @@ import com.liferay.portal.NoSuchGroupException;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.Http;
+import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.GroupConstants;
+import com.liferay.portal.model.LayoutSet;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.User;
@@ -43,6 +50,8 @@ import com.liferay.portal.service.permission.PortalPermissionUtil;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.service.permission.RolePermissionUtil;
 import com.liferay.portal.service.permission.UserPermissionUtil;
+import com.liferay.portal.util.PortalUtil;
+import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetTag;
@@ -340,6 +349,40 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 			getPermissionChecker(), group, ActionKeys.VIEW);
 
 		return group;
+	}
+
+	/**
+	 * Returns the display URL of the group.
+	 *
+	 * @param  groupId the primary key of the group
+	 * @param  privateLayout whether the layout set is private to the group
+	 * @param  secureConnection whether the generate URL uses secure connection
+	 * @return the display URL o the group
+	 */
+	@Override
+	public String getGroupDisplayURL(
+			long groupId, boolean privateLayout, boolean secureConnection)
+		throws PortalException {
+
+		Group group = groupLocalService.getGroup(groupId);
+
+		GroupPermissionUtil.check(
+			getPermissionChecker(), group, ActionKeys.VIEW);
+
+		if (!privateLayout && (group.getPublicLayoutsPageCount() > 0)) {
+			return getGroupDisplayURL(
+				group.getPublicLayoutSet(), secureConnection);
+		}
+		else if (privateLayout && (group.getPrivateLayoutsPageCount() > 0)) {
+			return getGroupDisplayURL(
+				group.getPrivateLayoutSet(), secureConnection);
+		}
+
+		GroupPermissionUtil.check(
+			getPermissionChecker(), group, ActionKeys.UPDATE);
+
+		return PortalUtil.getControlPanelFullURL(
+			groupId, PortletKeys.LAYOUTS_ADMIN, null);
 	}
 
 	/**
@@ -1164,6 +1207,81 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 		return filteredGroups;
 	}
 
+	protected String getCanonicalDomain(
+		String virtualHostname, String portalDomain) {
+
+		if (Validator.isBlank(portalDomain) ||
+			StringUtil.equalsIgnoreCase(portalDomain, "localhost") ||
+			!StringUtil.equalsIgnoreCase(virtualHostname, "localhost")) {
+
+			return virtualHostname;
+		}
+
+		int pos = portalDomain.indexOf(CharPool.COLON);
+
+		if (pos == -1) {
+			return portalDomain;
+		}
+
+		return portalDomain.substring(0, pos);
+	}
+
+	protected String getGroupDisplayURL(
+			LayoutSet layoutSet, boolean secureConnection)
+		throws PortalException {
+
+		Company company = companyLocalService.getCompany(
+			layoutSet.getCompanyId());
+
+		String portalURL = PortalUtil.getPortalURL(
+			company.getVirtualHostname(),
+			PortalUtil.getPortalServerPort(secureConnection), secureConnection);
+
+		String pathContext = PortalUtil.getPathContext();
+
+		String virtualHostname = PortalUtil.getVirtualHostname(layoutSet);
+
+		if (Validator.isNotNull(virtualHostname) &&
+			!StringUtil.equalsIgnoreCase(virtualHostname, "localhost")) {
+
+			String portalDomain = HttpUtil.getDomain(portalURL);
+
+			virtualHostname = getCanonicalDomain(virtualHostname, portalDomain);
+
+			virtualHostname = PortalUtil.getPortalURL(
+				virtualHostname, Http.HTTP_PORT, secureConnection);
+
+			if (virtualHostname.contains(portalDomain)) {
+				return virtualHostname.concat(pathContext);
+			}
+		}
+
+		Group group = layoutSet.getGroup();
+
+		String friendlyURL = null;
+
+		if (layoutSet.isPrivateLayout()) {
+			if (group.isUser()) {
+				friendlyURL = _PRIVATE_USER_SERVLET_MAPPING;
+			}
+			else {
+				friendlyURL = _PRIVATE_GROUP_SERVLET_MAPPING;
+			}
+		}
+		else {
+			friendlyURL = _PUBLIC_GROUP_SERVLET_MAPPING;
+		}
+
+		StringBundler sb = new StringBundler(4);
+
+		sb.append(portalURL);
+		sb.append(pathContext);
+		sb.append(friendlyURL);
+		sb.append(group.getFriendlyURL());
+
+		return sb.toString();
+	}
+
 	protected Map<Locale, String> getLocalizationMap(String value) {
 		Map<Locale, String> map = new HashMap<>();
 
@@ -1171,5 +1289,14 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 
 		return map;
 	}
+
+	private static final String _PRIVATE_GROUP_SERVLET_MAPPING =
+		PropsValues.LAYOUT_FRIENDLY_URL_PRIVATE_GROUP_SERVLET_MAPPING;
+
+	private static final String _PRIVATE_USER_SERVLET_MAPPING =
+		PropsValues.LAYOUT_FRIENDLY_URL_PRIVATE_USER_SERVLET_MAPPING;
+
+	private static final String _PUBLIC_GROUP_SERVLET_MAPPING =
+		PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING;
 
 }
