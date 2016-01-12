@@ -15,6 +15,7 @@ Export-Package:\
 	com.liferay.exportimport.xstream
 Include-Resource:\
 	classes,\
+	src/main/java/com/liferay/exportimport/background/task/display/dependencies/export_import_background_task_details.ftl,\
 	@../../../../util-java/util-java.jar!/com/liferay/util/xml/DocUtil.class
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Data Management
