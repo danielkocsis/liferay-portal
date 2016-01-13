@@ -81,13 +81,11 @@ boolean disableStagingOptions = GetterUtil.getBoolean(SessionMessages.get(lifera
 			</div>
 
 			<liferay-ui:background-task-status backgroundTaskId="<%= lastCompletedInitialPublicationBackgroundTask.getBackgroundTaskId() %>">
-
 				<liferay-ui:background-task-status-label/>
 
 				<c:if test="<%= Validator.isNotNull(lastCompletedInitialPublicationBackgroundTask.getStatusMessage()) %>">
 					<liferay-ui:background-task-status-message/>
 				</c:if>
-
 			</liferay-ui:background-task-status>
 		</c:if>
 
