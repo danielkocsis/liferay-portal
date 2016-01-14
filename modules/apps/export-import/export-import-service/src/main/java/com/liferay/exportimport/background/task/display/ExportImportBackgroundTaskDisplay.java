@@ -17,8 +17,6 @@ package com.liferay.exportimport.background.task.display;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.display.BaseBackgroundTaskDisplay;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.template.TemplateResource;
-import com.liferay.portal.kernel.template.URLTemplateResource;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -26,6 +24,9 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.permission.ResourceActionsUtil;
+import com.liferay.portlet.exportimport.configuration.ExportImportConfigurationConstants;
+import com.liferay.portlet.exportimport.model.ExportImportConfiguration;
+import com.liferay.portlet.exportimport.service.ExportImportConfigurationLocalServiceUtil;
 
 import java.io.Serializable;
 
@@ -45,7 +46,9 @@ public class ExportImportBackgroundTaskDisplay
 		Map<String, Serializable> taskContextMap =
 			backgroundTask.getTaskContextMap();
 
-		_cmd = MapUtil.getString(taskContextMap, Constants.CMD);
+		_exportImportConfiguration = getExportImportConfiguration(
+			backgroundTask);
+		_processType = _exportImportConfiguration.getType();
 		_percentage = PERCENTAGE_NONE;
 
 		if (backgroundTaskStatus == null) {
@@ -96,7 +99,9 @@ public class ExportImportBackgroundTaskDisplay
 			int base = PERCENTAGE_MAX;
 
 			if (_phase.equals(Constants.EXPORT) &&
-				!Validator.equals(_cmd, Constants.PUBLISH_TO_REMOTE)) {
+				(_processType ==
+					ExportImportConfigurationConstants.
+						TYPE_PUBLISH_LAYOUT_REMOTE)) {
 
 				base = _EXPORT_PHASE_MAX_PERCENTAGE;
 			}
@@ -129,13 +134,28 @@ public class ExportImportBackgroundTaskDisplay
 		}
 
 		if ((_allProgressBarCountersTotal > PERCENTAGE_MIN) &&
-			(!Validator.equals(_cmd, Constants.PUBLISH_TO_REMOTE) ||
+			((_processType ==
+				ExportImportConfigurationConstants.
+					TYPE_PUBLISH_LAYOUT_REMOTE) ||
 			 (getPercentage() < PERCENTAGE_MAX))) {
 
 			return true;
 		}
 
 		return false;
+	}
+
+	protected ExportImportConfiguration getExportImportConfiguration(
+		BackgroundTask backgroundTask) {
+
+		Map<String, Serializable> taskContextMap =
+			backgroundTask.getTaskContextMap();
+
+		long exportImportConfigurationId = MapUtil.getLong(
+			taskContextMap, "exportImportConfigurationId");
+
+		return ExportImportConfigurationLocalServiceUtil.
+			fetchExportImportConfiguration(exportImportConfigurationId);
 	}
 
 	@Override
@@ -174,11 +194,17 @@ public class ExportImportBackgroundTaskDisplay
 		else if (hasStagedModelMessage()) {
 			_messageKey = "exporting";
 
-			if (Validator.equals(_cmd, Constants.IMPORT)) {
+			if (_processType ==
+					ExportImportConfigurationConstants.TYPE_IMPORT_LAYOUT) {
+
 				_messageKey = "importing";
 			}
-			else if (Validator.equals(_cmd, Constants.PUBLISH_TO_LIVE) ||
-					 Validator.equals(_cmd, Constants.PUBLISH_TO_REMOTE)) {
+			else if ((_processType ==
+						ExportImportConfigurationConstants.
+							TYPE_PUBLISH_LAYOUT_REMOTE) ||
+					 (_processType ==
+						 ExportImportConfigurationConstants.
+							 TYPE_PUBLISH_LAYOUT_LOCAL)) {
 
 				_messageKey = "publishing";
 			}
@@ -205,7 +231,9 @@ public class ExportImportBackgroundTaskDisplay
 	}
 
 	protected boolean hasRemoteMessage() {
-		if (Validator.equals(_cmd, Constants.PUBLISH_TO_REMOTE) &&
+		if ((_processType ==
+				ExportImportConfigurationConstants.
+					TYPE_PUBLISH_LAYOUT_REMOTE) &&
 			(getPercentage() == PERCENTAGE_MAX)) {
 
 			return true;
@@ -230,11 +258,12 @@ public class ExportImportBackgroundTaskDisplay
 	private static final int _EXPORT_PHASE_MAX_PERCENTAGE = 50;
 
 	private final long _allProgressBarCountersTotal;
-	private final String _cmd;
 	private final long _currentProgressBarCountersTotal;
+	private final ExportImportConfiguration _exportImportConfiguration;
 	private String _messageKey;
 	private int _percentage;
 	private final String _phase;
+	private final int _processType;
 	private final String _stagedModelName;
 	private final String _stagedModelType;
 
