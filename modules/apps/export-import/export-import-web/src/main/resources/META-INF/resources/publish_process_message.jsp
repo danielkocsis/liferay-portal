@@ -23,7 +23,7 @@ BackgroundTask backgroundTask = (BackgroundTask)row.getObject();
 %>
 
 <liferay-ui:background-task-status backgroundTaskId="<%= backgroundTask.getBackgroundTaskId() %>">
-	<liferay-ui:backround-task-status-label/>
+	<liferay-ui:background-task-status-label/>
 
 	<c:if test="<%= backgroundTask.isInProgress() %>">
 		<liferay-ui:background-task-status-progress-bar/>
@@ -46,5 +46,4 @@ BackgroundTask backgroundTask = (BackgroundTask)row.getObject();
 			<liferay-ui:background-task-status-message/>
 		</c:otherwise>
 	</c:choose>
-
 </liferay-ui:background-task-status>

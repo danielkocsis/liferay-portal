@@ -24,11 +24,19 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
 
 /**
  * @author Andrew Betts
  */
 public class BackgroundTaskStatusTag extends IncludeTag {
+
+	@Override
+	public int doStartTag() throws JspException {
+		setAttributeNamespace(_ATTRIBUTE_NAMESPACE);
+
+		return super.doStartTag();
+	}
 
 	public BackgroundTask getBackgroundTask() {
 		return _backgroundTask;
@@ -88,15 +96,14 @@ public class BackgroundTaskStatusTag extends IncludeTag {
 					_backgroundTaskId);
 		}
 
-		request.setAttribute(
-			"liferay-ui:backgroundTaskStatus:backgroundTask", _backgroundTask);
-		request.setAttribute(
-			"liferay-ui:backgroundTaskStatus:backgroundTaskDisplay",
-			_backgroundTaskDisplay);
-		request.setAttribute(
-			"liferay-ui:backgroundTaskStatus:backgroundTaskId",
-			_backgroundTaskId);
+		setNamespacedAttribute(request, "backgroundTask", _backgroundTask);
+		setNamespacedAttribute(
+			request, "backgroundTaskDisplay", _backgroundTaskDisplay);
+		setNamespacedAttribute(request, "backgroundTaskId", _backgroundTaskId);
 	}
+
+	private static final String _ATTRIBUTE_NAMESPACE =
+		"liferay-ui:backgroundTaskStatus:";
 
 	private static final boolean _CLEAN_UP_SET_ATTRIBUTES = true;
 
