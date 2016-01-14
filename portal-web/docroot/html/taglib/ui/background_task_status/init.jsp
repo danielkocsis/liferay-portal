@@ -15,15 +15,3 @@
 --%>
 
 <%@ include file="/html/taglib/init.jsp" %>
-
-<%@ page import="com.liferay.portal.kernel.backgroundtask.BackgroundTask" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants" %><%@
-page import="com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay" %>
-
-<%
-long backgroundTaskId = GetterUtil.getLong(request.getAttribute("liferay-ui:backgroundTaskStatus:backgroundTaskId"));
-
-BackgroundTask backgroundTask = (BackgroundTask)request.getAttribute("liferay-ui:backgroundTaskStatus:backgroundTask");
-
-BackgroundTaskDisplay backgroundTaskDisplay = (BackgroundTaskDisplay)request.getAttribute("liferay-ui:backgroundTaskStatus:backgroundTaskDisplay");
-%>

@@ -14,7 +14,11 @@
  */
 --%>
 
-<%@ include file="/html/taglib/ui/background_task_status/init.jsp" %>
+<%@ include file="/html/taglib/ui/background_task_status_message/init.jsp" %>
+
+<%
+BackgroundTaskDisplay backgroundTaskDisplay = (BackgroundTaskDisplay)request.getAttribute("liferay-ui:backgroundTaskStatus:backgroundTaskDisplay");
+%>
 
 <div class="progress-current-item">
 	<liferay-ui:message key="<%= backgroundTaskDisplay.getStatusMessage(locale) %>" localizeKey="<%= false %>" />

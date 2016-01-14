@@ -14,22 +14,22 @@
  */
 --%>
 
-<%@ include file="/html/taglib/ui/background_task_status/init.jsp" %>
+<%@ include file="/html/taglib/ui/background_task_status_progress_bar/init.jsp" %>
 
-<div class="active progress progress-striped">
-	<c:choose>
-		<c:when test="<%= backgroundTaskDisplay.hasPercentage() %>">
+<%
+BackgroundTaskDisplay backgroundTaskDisplay = (BackgroundTaskDisplay)request.getAttribute("liferay-ui:backgroundTaskStatus:backgroundTaskDisplay");
 
-			<%
-			int percentage = backgroundTaskDisplay.getPercentage();
-			%>
+int percentage = 100;
 
-			<div class="progress-bar" style="width: <%= percentage %>%;">
-				<%= percentage + StringPool.PERCENT %>
-			</div>
-		</c:when>
-		<c:otherwise>
-			<div class="progress-bar" style="width: 100%;">
-		</c:otherwise>
-	</c:choose>
+if (backgroundTaskDisplay.hasPercentage()) {
+	percentage = backgroundTaskDisplay.getPercentage();
+}
+%>
+
+<div class="progress">
+	<div aria-valuemax="100" aria-valuemin="0" aria-valuenow="<%= percentage %>" class="active progress-bar progress-bar-striped" role="progressbar" style="width: <%= percentage %>%;">
+		<c:if test="<%= backgroundTaskDisplay.hasPercentage() %>">
+			<%= percentage + StringPool.PERCENT %>
+		</c:if>
+	</div>
 </div>

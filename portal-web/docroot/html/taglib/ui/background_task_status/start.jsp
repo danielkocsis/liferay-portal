@@ -16,4 +16,8 @@
 
 <%@ include file="/html/taglib/ui/background_task_status/init.jsp" %>
 
+<%
+long backgroundTaskId = GetterUtil.getLong(request.getAttribute("liferay-ui:backgroundTaskStatus:backgroundTaskId"));
+%>
+
 <div class="background-task-status-container-<%= backgroundTaskId %>">

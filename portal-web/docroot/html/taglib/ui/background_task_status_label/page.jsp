@@ -14,7 +14,11 @@
  */
 --%>
 
-<%@ include file="/html/taglib/ui/background_task_status/init.jsp" %>
+<%@ include file="/html/taglib/ui/background_task_status_label/init.jsp" %>
+
+<%
+BackgroundTask backgroundTask = (BackgroundTask)request.getAttribute("liferay-ui:backgroundTaskStatus:backgroundTask");
+%>
 
 <strong class="background-task-status-<%= BackgroundTaskConstants.getStatusLabel(backgroundTask.getStatus()) %> <%= BackgroundTaskConstants.getStatusCssClass(backgroundTask.getStatus()) %> label">
 	<liferay-ui:message key="<%= backgroundTask.getStatusLabel() %>" />
