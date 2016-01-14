@@ -138,6 +138,11 @@ public class ExportImportBackgroundTaskDisplay
 		return false;
 	}
 
+	@Override
+	protected String getMessageTemplate() {
+		return _DETIALS_TEMPLATE;
+	}
+
 	protected String getStagedModelMessage(Locale locale) {
 		StringBundler sb = new StringBundler(8);
 
@@ -180,16 +185,6 @@ public class ExportImportBackgroundTaskDisplay
 		}
 
 		return _messageKey;
-	}
-
-	@Override
-	protected TemplateResource getTemplateResource() {
-		Class<?> clazz = getClass();
-
-		ClassLoader classLoader = clazz.getClassLoader();
-
-		return new URLTemplateResource(
-			_DETIALS_TEMPLATE, classLoader.getResource(_DETIALS_TEMPLATE));
 	}
 
 	@Override

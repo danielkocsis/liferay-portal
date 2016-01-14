@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.template.ClassLoaderTemplateResource;
 import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
@@ -79,9 +80,15 @@ public abstract class BaseBackgroundTaskDisplay
 
 	@Override
 	public String getStatusMessage(Locale locale) {
-		TemplateResource templateResource = getTemplateResource();
+		TemplateResource templateResource = getTemplateResource(
+			getMessageTemplate());
 
 		if (templateResource == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to load template resource " + getMessageTemplate());
+			}
+
 			return StringPool.BLANK;
 		}
 
@@ -136,6 +143,8 @@ public abstract class BaseBackgroundTaskDisplay
 			backgroundTaskStatus.getAttribute(attributeKey));
 	}
 
+	protected abstract String getMessageTemplate();
+
 	protected JSONObject getStatusMessageJSONObject(Locale locale) {
 		JSONObject jsonObject = null;
 
@@ -154,7 +163,18 @@ public abstract class BaseBackgroundTaskDisplay
 
 	protected abstract String getStatusMessageKey();
 
-	protected abstract TemplateResource getTemplateResource();
+	protected TemplateResource getTemplateResource(String resource) {
+		Class<?> clazz = getClass();
+
+		ClassLoader classLoader = clazz.getClassLoader();
+
+		if (classLoader.getResource(resource) == null) {
+			return null;
+		}
+
+		return new ClassLoaderTemplateResource(
+			clazz.getClassLoader(), resource);
+	}
 
 	protected abstract Map<String, Object> getTemplateVars();
 
