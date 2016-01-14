@@ -98,6 +98,7 @@ public abstract class BaseBackgroundTaskDisplay
 
 		Template template = templateManager.getTemplate(templateResource, true);
 
+		template.put("locale", locale);
 		template.put("backgroundTask", backgroundTask);
 		template.put("backgroundTaskDisplay", this);
 		template.put("backgroundTaskStatus", backgroundTaskStatus);
