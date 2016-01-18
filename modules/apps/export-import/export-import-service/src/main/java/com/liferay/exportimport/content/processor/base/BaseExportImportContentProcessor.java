@@ -115,7 +115,7 @@ public class BaseExportImportContentProcessor
 
 		validateDLReferences(groupId, content);
 		validateLayoutReferences(groupId, content);
-		validateLinksToLayoutsReferences(groupId, content);
+		validateLinksToLayoutsReferences(content);
 	}
 
 	protected void deleteTimestampParameters(StringBuilder sb, int beginPos) {
@@ -1203,28 +1203,22 @@ public class BaseExportImportContentProcessor
 		}
 	}
 
-	protected void validateLinksToLayoutsReferences(
-			long groupId, String content)
+	protected void validateLinksToLayoutsReferences(String content)
 		throws PortalException {
 
 		Matcher matcher = exportLinksToLayoutPattern.matcher(content);
 
 		while (matcher.find()) {
-			long layoutId = GetterUtil.getLong(matcher.group(1));
+			long groupId = GetterUtil.getLong(matcher.group(5));
 
 			String type = matcher.group(2);
 
 			boolean privateLayout = type.startsWith("private");
 
+			long layoutId = GetterUtil.getLong(matcher.group(1));
+
 			Layout layout = LayoutLocalServiceUtil.fetchLayout(
 				groupId, privateLayout, layoutId);
-
-			if (layout == null) {
-				groupId = GetterUtil.getLong(matcher.group(5));
-
-				layout = LayoutLocalServiceUtil.fetchLayout(
-					groupId, privateLayout, layoutId);
-			}
 
 			if (layout == null) {
 				throw new NoSuchLayoutException();
