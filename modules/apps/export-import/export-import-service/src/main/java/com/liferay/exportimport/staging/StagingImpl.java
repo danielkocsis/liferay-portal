@@ -2552,8 +2552,7 @@ public class StagingImpl implements Staging {
 		User user = permissionChecker.getUser();
 
 		String remoteURL = buildRemoteURL(
-			remoteAddress, remotePort, remotePathContext, secureConnection,
-			GroupConstants.DEFAULT_LIVE_GROUP_ID, false);
+			remoteAddress, remotePort, remotePathContext, secureConnection);
 
 		HttpPrincipal httpPrincipal = new HttpPrincipal(
 			remoteURL, user.getLogin(), user.getPassword(),
