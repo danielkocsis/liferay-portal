@@ -49,6 +49,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -2541,6 +2542,10 @@ public class StagingImpl implements Staging {
 			throw roe;
 		}
 
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
 		PermissionChecker permissionChecker =
 			PermissionThreadLocal.getPermissionChecker();
 
@@ -2555,6 +2560,8 @@ public class StagingImpl implements Staging {
 			user.getPasswordEncrypted());
 
 		try {
+			currentThread.setContextClassLoader(
+				PortalClassLoaderUtil.getClassLoader());
 
 			// Ping the remote host and verify that the remote group exists in
 			// the same company as the remote user
@@ -2610,6 +2617,9 @@ public class StagingImpl implements Staging {
 			ree.setURL(remoteURL);
 
 			throw ree;
+		}
+		finally {
+			currentThread.setContextClassLoader(contextClassLoader);
 		}
 	}
 
