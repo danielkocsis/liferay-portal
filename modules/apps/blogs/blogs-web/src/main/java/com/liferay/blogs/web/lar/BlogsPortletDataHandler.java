@@ -15,12 +15,12 @@
 package com.liferay.blogs.web.lar;
 
 import com.liferay.blogs.web.constants.BlogsPortletKeys;
-import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
+import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.blogs.constants.BlogsConstants;
 import com.liferay.portlet.blogs.model.BlogsEntry;
-import com.liferay.portlet.blogs.service.BlogsEntryLocalService;
 import com.liferay.portlet.blogs.service.BlogsStatsUserLocalService;
 import com.liferay.portlet.blogs.service.permission.BlogsPermission;
 import com.liferay.portlet.exportimport.lar.BasePortletDataHandler;
@@ -95,8 +95,7 @@ public class BlogsPortletDataHandler extends BasePortletDataHandler {
 			return portletPreferences;
 		}
 
-		_blogsEntryLocalService.deleteEntries(
-			portletDataContext.getScopeGroupId());
+		_blogsEntryStagedModelRepository.deleteStagedModels(portletDataContext);
 
 		_blogsStatsUserLocalService.deleteStatsUserByGroupId(
 			portletDataContext.getScopeGroupId());
@@ -121,8 +120,8 @@ public class BlogsPortletDataHandler extends BasePortletDataHandler {
 		rootElement.addAttribute(
 			"group-id", String.valueOf(portletDataContext.getScopeGroupId()));
 
-		ActionableDynamicQuery actionableDynamicQuery =
-			_blogsEntryLocalService.getExportActionableDynamicQuery(
+		ExportActionableDynamicQuery actionableDynamicQuery =
+			_blogsEntryStagedModelRepository.getExportActionableDynamicQuery(
 				portletDataContext);
 
 		actionableDynamicQuery.performActions();
@@ -162,18 +161,22 @@ public class BlogsPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
-		ActionableDynamicQuery actionableDynamicQuery =
-			_blogsEntryLocalService.getExportActionableDynamicQuery(
+		ExportActionableDynamicQuery actionableDynamicQuery =
+			_blogsEntryStagedModelRepository.getExportActionableDynamicQuery(
 				portletDataContext);
 
 		actionableDynamicQuery.performCount();
 	}
 
-	@Reference(unbind = "-")
-	protected void setBlogsEntryLocalService(
-		BlogsEntryLocalService blogsEntryLocalService) {
+	@Reference(
+		target =
+			"(model.class.name=com.liferay.portlet.blogs.model.BlogsEntry)",
+		unbind = "-"
+	)
+	protected void setBlogsEntryStagedModelRepository(
+		StagedModelRepository<BlogsEntry> blogsEntryStagedModelRepository) {
 
-		_blogsEntryLocalService = blogsEntryLocalService;
+		_blogsEntryStagedModelRepository = blogsEntryStagedModelRepository;
 	}
 
 	@Reference(unbind = "-")
@@ -183,7 +186,7 @@ public class BlogsPortletDataHandler extends BasePortletDataHandler {
 		_blogsStatsUserLocalService = blogsStatsUserLocalService;
 	}
 
-	private BlogsEntryLocalService _blogsEntryLocalService;
+	private StagedModelRepository<BlogsEntry> _blogsEntryStagedModelRepository;
 	private BlogsStatsUserLocalService _blogsStatsUserLocalService;
 
 }
