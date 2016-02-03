@@ -918,6 +918,41 @@ public class AssetPublisherExportImportTest
 		testSortByAssetVocabulary(true);
 	}
 
+	@Test
+	public void testStagingGroupScopeId() throws Exception {
+		Map<String, String[]> preferenceMap = new HashMap<>();
+
+		Group liveGroup = GroupTestUtil.addGroup();
+
+		GroupTestUtil.enableLocalStaging(liveGroup);
+
+		Group stagingGroup = liveGroup.getStagingGroup();
+
+		preferenceMap.put(
+			"scopeIds",
+			new String[] {
+				AssetPublisherUtil.SCOPE_ID_GROUP_PREFIX +
+					stagingGroup.getGroupId()
+			});
+
+		try {
+			ExportImportThreadLocal.setLayoutStagingInProcess(true);
+
+			PortletPreferences portletPreferences =
+				getImportedPortletPreferences(preferenceMap);
+
+			Assert.assertEquals(
+				AssetPublisherUtil.SCOPE_ID_GROUP_PREFIX +
+					liveGroup.getGroupId(),
+				portletPreferences.getValue("scopeIds", null));
+			Assert.assertEquals(
+				null, portletPreferences.getValue("scopeId", null));
+		}
+		finally {
+			ExportImportThreadLocal.setLayoutStagingInProcess(false);
+		}
+	}
+
 	protected List<AssetEntry> addAssetEntries(
 			Group group, int count, List<AssetEntry> assetEntries,
 			ServiceContext serviceContext)
