@@ -19,6 +19,7 @@ import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalService;
 import com.liferay.dynamic.data.lists.service.permission.DDLPermission;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataException;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
@@ -98,12 +99,22 @@ public class DDLDisplayExportImportPortletPreferencesProcessor
 		DDLRecordSet recordSet = _ddlRecordSetLocalService.fetchRecordSet(
 			recordSetId);
 
-		if (recordSet == null) {
-			return portletPreferences;
+		if (recordSet != null) {
+			StagedModelDataHandlerUtil.exportReferenceStagedModel(
+				portletDataContext, portletId, recordSet);
 		}
 
-		StagedModelDataHandlerUtil.exportReferenceStagedModel(
-			portletDataContext, portletId, recordSet);
+		long displayDDMTemplateId = GetterUtil.getLong(
+			portletPreferences.getValue("displayDDMTemplateId", null));
+
+		exportReferenceDDMTemplate(
+			displayDDMTemplateId, portletDataContext, portletId);
+
+		long formDDMTemplateId = GetterUtil.getLong(
+			portletPreferences.getValue("formDDMTemplateId", null));
+
+		exportReferenceDDMTemplate(
+			formDDMTemplateId, portletDataContext, portletId);
 
 		return portletPreferences;
 	}
@@ -172,6 +183,13 @@ public class DDLDisplayExportImportPortletPreferencesProcessor
 	}
 
 	@Reference(unbind = "-")
+	protected void setDDMTemplateLocalService(
+		DDMTemplateLocalService ddmTemplateLocalService) {
+
+		_ddmTemplateLocalService = ddmTemplateLocalService;
+	}
+
+	@Reference(unbind = "-")
 	protected void setReferencedStagedModelImporterCapability(
 		ReferencedStagedModelImporterCapability
 			referencedStagedModelImporterCapability) {
@@ -180,10 +198,27 @@ public class DDLDisplayExportImportPortletPreferencesProcessor
 			referencedStagedModelImporterCapability;
 	}
 
+	private void exportReferenceDDMTemplate(
+			long ddmTemplateId, PortletDataContext portletDataContext,
+			String portletId)
+		throws PortletDataException {
+
+		if (ddmTemplateId!= 0) {
+			DDMTemplate ddmTemplate = _ddmTemplateLocalService.fetchDDMTemplate(
+				ddmTemplateId);
+
+			if (ddmTemplate != null) {
+				StagedModelDataHandlerUtil.exportReferenceStagedModel(
+					portletDataContext, portletId, ddmTemplate);
+			}
+		}
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDLDisplayExportImportPortletPreferencesProcessor.class);
 
 	private DDLRecordSetLocalService _ddlRecordSetLocalService;
+	private DDMTemplateLocalService _ddmTemplateLocalService;
 	private ReferencedStagedModelImporterCapability
 		_referencedStagedModelImporterCapability;
 
