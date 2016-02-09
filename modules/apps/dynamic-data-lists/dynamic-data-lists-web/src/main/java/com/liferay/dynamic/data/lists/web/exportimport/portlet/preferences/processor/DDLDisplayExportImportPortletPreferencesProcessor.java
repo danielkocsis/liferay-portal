@@ -84,7 +84,7 @@ public class DDLDisplayExportImportPortletPreferencesProcessor
 		String portletId = portletDataContext.getPortletId();
 
 		long recordSetId = GetterUtil.getLong(
-			portletPreferences.getValue("recordSetId", null), 0);
+			portletPreferences.getValue("recordSetId", null));
 
 		if (recordSetId == 0) {
 			if (_log.isWarnEnabled()) {
@@ -203,7 +203,7 @@ public class DDLDisplayExportImportPortletPreferencesProcessor
 			String portletId)
 		throws PortletDataException {
 
-		if (ddmTemplateId!= 0) {
+		if (ddmTemplateId != 0) {
 			DDMTemplate ddmTemplate = _ddmTemplateLocalService.fetchDDMTemplate(
 				ddmTemplateId);
 
