@@ -108,13 +108,13 @@ public class DDLDisplayExportImportPortletPreferencesProcessor
 			portletPreferences.getValue("displayDDMTemplateId", null));
 
 		exportReferenceDDMTemplate(
-			displayDDMTemplateId, portletDataContext, portletId);
+			portletDataContext, portletId, displayDDMTemplateId);
 
 		long formDDMTemplateId = GetterUtil.getLong(
 			portletPreferences.getValue("formDDMTemplateId", null));
 
 		exportReferenceDDMTemplate(
-			formDDMTemplateId, portletDataContext, portletId);
+			portletDataContext, portletId, formDDMTemplateId);
 
 		return portletPreferences;
 	}
@@ -136,10 +136,6 @@ public class DDLDisplayExportImportPortletPreferencesProcessor
 
 		long importedRecordSetId = GetterUtil.getLong(
 			portletPreferences.getValue("recordSetId", null));
-		long importedDisplayDDMTemplateId = GetterUtil.getLong(
-			portletPreferences.getValue("displayDDMTemplateId", null));
-		long importedFormDDMTemplateId = GetterUtil.getLong(
-			portletPreferences.getValue("formDDMTemplateId", null));
 
 		Map<Long, Long> recordSetIds =
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
@@ -152,9 +148,15 @@ public class DDLDisplayExportImportPortletPreferencesProcessor
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				DDMTemplate.class);
 
+		long importedDisplayDDMTemplateId = GetterUtil.getLong(
+			portletPreferences.getValue("displayDDMTemplateId", null));
+
 		long displayDDMTemplateId = MapUtil.getLong(
 			templateIds, importedDisplayDDMTemplateId,
 			importedDisplayDDMTemplateId);
+
+		long importedFormDDMTemplateId = GetterUtil.getLong(
+			portletPreferences.getValue("formDDMTemplateId", null));
 
 		long formDDMTemplateId = MapUtil.getLong(
 			templateIds, importedFormDDMTemplateId, importedFormDDMTemplateId);
@@ -199,19 +201,29 @@ public class DDLDisplayExportImportPortletPreferencesProcessor
 	}
 
 	private void exportReferenceDDMTemplate(
-			long ddmTemplateId, PortletDataContext portletDataContext,
-			String portletId)
+			PortletDataContext portletDataContext, String portletId,
+			long ddmTemplateId)
 		throws PortletDataException {
 
-		if (ddmTemplateId != 0) {
-			DDMTemplate ddmTemplate = _ddmTemplateLocalService.fetchDDMTemplate(
-				ddmTemplateId);
-
-			if (ddmTemplate != null) {
-				StagedModelDataHandlerUtil.exportReferenceStagedModel(
-					portletDataContext, portletId, ddmTemplate);
-			}
+		if (ddmTemplateId == 0) {
+			return;
 		}
+
+		DDMTemplate ddmTemplate = _ddmTemplateLocalService.fetchDDMTemplate(
+			ddmTemplateId);
+
+		if (ddmTemplate == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to export referenced template with id " +
+						ddmTemplateId);
+			}
+
+			return;
+		}
+
+		StagedModelDataHandlerUtil.exportReferenceStagedModel(
+			portletDataContext, portletId, ddmTemplate);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
