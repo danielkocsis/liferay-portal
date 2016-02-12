@@ -580,10 +580,19 @@ public class LayoutExportController implements ExportController {
 		if (ExportImportThreadLocal.isStagingInProcess() &&
 			updateLastPublishDate) {
 
+			DateRange dateRange = null;
+
+			String range = MapUtil.getString(
+				portletDataContext.getParameterMap(),
+				ExportImportDateUtil.RANGE);
+
+			if (range.equals(ExportImportDateUtil.RANGE_DATE_RANGE)) {
+				dateRange = portletDataContext.getDateRange();
+			}
+
 			ExportImportProcessCallbackRegistryUtil.registerCallback(
 				new UpdateLayoutSetLastPublishDateCallable(
-					portletDataContext.getDateRange(),
-					portletDataContext.getGroupId(),
+					dateRange, portletDataContext.getGroupId(),
 					portletDataContext.isPrivateLayout()));
 		}
 

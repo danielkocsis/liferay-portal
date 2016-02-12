@@ -521,7 +521,7 @@ public class ExportImportDateUtil {
 
 		if (dateRange == null) {
 
-			// This is a valid scenario when publishing all
+			// This is a valid scenario when not publishing a date range
 
 			return true;
 		}
