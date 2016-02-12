@@ -439,6 +439,22 @@ public class ExportImportDateUtil {
 					groupId, privateLayout);
 
 				lastPublishDate = getLastPublishDate(layoutSet);
+
+				LayoutSet counterpartLayoutSet =
+					LayoutSetLocalServiceUtil.getLayoutSet(
+						groupId, !privateLayout);
+
+				Date counterpartLastPublishDate = getLastPublishDate(
+					counterpartLayoutSet);
+
+				if ((Validator.isNull(lastPublishDate) &&
+					 Validator.isNotNull(counterpartLastPublishDate)) ||
+					(Validator.isNotNull(lastPublishDate) &&
+					 Validator.isNotNull(counterpartLastPublishDate) &&
+					 counterpartLastPublishDate.after(lastPublishDate))) {
+
+					lastPublishDate = counterpartLastPublishDate;
+				}
 			}
 
 			if (lastPublishDate != null) {
