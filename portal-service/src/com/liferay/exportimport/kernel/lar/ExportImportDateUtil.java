@@ -439,6 +439,22 @@ public class ExportImportDateUtil {
 					groupId, privateLayout);
 
 				lastPublishDate = getLastPublishDate(layoutSet);
+
+				LayoutSet counterpartLayoutSet =
+					LayoutSetLocalServiceUtil.getLayoutSet(
+						groupId, !privateLayout);
+
+				Date counterpartLastPublishDate = getLastPublishDate(
+					counterpartLayoutSet);
+
+				if ((Validator.isNull(lastPublishDate) &&
+					 Validator.isNotNull(counterpartLastPublishDate)) ||
+					(Validator.isNotNull(lastPublishDate) &&
+					 Validator.isNotNull(counterpartLastPublishDate) &&
+					 counterpartLastPublishDate.after(lastPublishDate))) {
+
+					lastPublishDate = counterpartLastPublishDate;
+				}
 			}
 
 			if (lastPublishDate != null) {
@@ -505,7 +521,7 @@ public class ExportImportDateUtil {
 
 		if (dateRange == null) {
 
-			// This is a valid scenario when publishing all
+			// This is a valid scenario when not publishing a date range
 
 			return true;
 		}

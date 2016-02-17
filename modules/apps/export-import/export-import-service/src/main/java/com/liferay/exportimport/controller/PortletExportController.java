@@ -287,8 +287,16 @@ public class PortletExportController implements ExportController {
 		if (ExportImportThreadLocal.isStagingInProcess() &&
 			updateLastPublishDate) {
 
-			DateRange adjustedDateRange = new DateRange(
-				portletLastPublishDate, portletDataContext.getEndDate());
+			DateRange adjustedDateRange = null;
+
+			String range = MapUtil.getString(
+				portletDataContext.getParameterMap(),
+				ExportImportDateUtil.RANGE);
+
+			if (range.equals(ExportImportDateUtil.RANGE_DATE_RANGE)) {
+				adjustedDateRange = new DateRange(
+					portletLastPublishDate, portletDataContext.getEndDate());
+			}
 
 			ExportImportProcessCallbackRegistryUtil.registerCallback(
 				new UpdatePortletLastPublishDateCallable(
