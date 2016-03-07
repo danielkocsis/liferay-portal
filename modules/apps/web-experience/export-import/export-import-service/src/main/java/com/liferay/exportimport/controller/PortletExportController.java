@@ -1073,13 +1073,6 @@ public class PortletExportController implements ExportController {
 			Element parentElement)
 		throws Exception {
 
-		String path = ExportImportPathUtil.getServicePortletPreferencesPath(
-			portletDataContext, serviceName, ownerId, ownerType);
-
-		if (portletDataContext.isPathProcessed(path)) {
-			return;
-		}
-
 		String preferencesXML = portletPreferences.getPreferences();
 
 		if (Validator.isNull(preferencesXML)) {
@@ -1128,6 +1121,9 @@ public class PortletExportController implements ExportController {
 		for (Node node : nodes) {
 			document.remove(node);
 		}
+
+		String path = ExportImportPathUtil.getServicePortletPreferencesPath(
+			portletDataContext, serviceName, ownerId, ownerType);
 
 		serviceElement.addAttribute("path", path);
 
