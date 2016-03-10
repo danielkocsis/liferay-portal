@@ -16,6 +16,7 @@ package com.liferay.exportimport.kernel.lar;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.Portlet;
@@ -198,6 +199,20 @@ public class ExportImportHelperUtil {
 		return _exportImportHelper.getImportPortletControlsMap(
 			companyId, portletId, parameterMap, portletDataElement,
 			manifestSummary);
+	}
+
+	public static Map<Long, Boolean> getLayoutIdMap(
+			ExportImportConfiguration exportImportConfiguration)
+		throws PortalException {
+
+		return _exportImportHelper.getLayoutIdMap(exportImportConfiguration);
+	}
+
+	public static Map<Long, Boolean> getLayoutIdMap(
+			long exportImportConfigurationId)
+		throws PortalException {
+
+		return _exportImportHelper.getLayoutIdMap(exportImportConfigurationId);
 	}
 
 	public static Map<Long, Boolean> getLayoutIdMap(

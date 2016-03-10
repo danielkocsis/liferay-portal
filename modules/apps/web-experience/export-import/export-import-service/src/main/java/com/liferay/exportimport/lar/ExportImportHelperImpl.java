@@ -30,6 +30,8 @@ import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.exportimport.kernel.lar.UserIdStrategy;
+import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
+import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalService;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Disjunction;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -91,6 +93,7 @@ import com.liferay.portal.util.PropsValues;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -408,30 +411,39 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 	}
 
 	@Override
-	public Map<Long, Boolean> getLayoutIdMap(PortletRequest portletRequest)
+	public Map<Long, Boolean> getLayoutIdMap(
+			ExportImportConfiguration exportImportConfiguration)
 		throws PortalException {
 
-		Map<Long, Boolean> layoutIdMap = new LinkedHashMap<>();
+		if (exportImportConfiguration == null) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, Serializable> settingsMap =
+			exportImportConfiguration.getSettingsMap();
+
+		return (Map<Long, Boolean>)settingsMap.get("layoutIdMap");
+	}
+
+	@Override
+	public Map<Long, Boolean> getLayoutIdMap(long exportImportConfigurationId)
+		throws PortalException {
+
+		ExportImportConfiguration exportImportConfiguration =
+			_exportImportConfigurationLocalService.
+				fetchExportImportConfiguration(exportImportConfigurationId);
+
+		return getLayoutIdMap(exportImportConfiguration);
+	}
+
+	@Override
+	public Map<Long, Boolean> getLayoutIdMap(PortletRequest portletRequest)
+		throws PortalException {
 
 		String layoutIdsJSON = GetterUtil.getString(
 			portletRequest.getAttribute("layoutIdMap"));
 
-		if (Validator.isNull(layoutIdsJSON)) {
-			return layoutIdMap;
-		}
-
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray(layoutIdsJSON);
-
-		for (int i = 0; i < jsonArray.length(); ++i) {
-			JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-			long plid = jsonObject.getLong("plid");
-			boolean includeChildren = jsonObject.getBoolean("includeChildren");
-
-			layoutIdMap.put(plid, includeChildren);
-		}
-
-		return layoutIdMap;
+		return getLayoutIdMap(layoutIdsJSON);
 	}
 
 	@Override
@@ -1493,6 +1505,29 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 		return importPortletSetupMap;
 	}
 
+	protected Map<Long, Boolean> getLayoutIdMap(String layoutIdsJSON)
+		throws PortalException {
+
+		Map<Long, Boolean> layoutIdMap = new LinkedHashMap<>();
+
+		if (Validator.isNull(layoutIdsJSON)) {
+			return layoutIdMap;
+		}
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray(layoutIdsJSON);
+
+		for (int i = 0; i < jsonArray.length(); ++i) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			long plid = jsonObject.getLong("plid");
+			boolean includeChildren = jsonObject.getBoolean("includeChildren");
+
+			layoutIdMap.put(plid, includeChildren);
+		}
+
+		return layoutIdMap;
+	}
+
 	protected ZipWriter getZipWriter(String fileName) {
 		if (!ExportImportThreadLocal.isStagingInProcess() ||
 			(PropsValues.STAGING_DELETE_TEMP_LAR_ON_FAILURE &&
@@ -1560,6 +1595,15 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 		DLFileEntryLocalService dlFileEntryLocalService) {
 
 		_dlFileEntryLocalService = dlFileEntryLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setExportImportConfigurationLocalService(
+		ExportImportConfigurationLocalService
+			exportImportConfigurationLocalService) {
+
+		_exportImportConfigurationLocalService =
+			exportImportConfigurationLocalService;
 	}
 
 	@Reference(unbind = "-")
@@ -1632,6 +1676,8 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 		ExportImportHelperImpl.class);
 
 	private DLFileEntryLocalService _dlFileEntryLocalService;
+	private ExportImportConfigurationLocalService
+		_exportImportConfigurationLocalService;
 	private GroupLocalService _groupLocalService;
 	private LayoutLocalService _layoutLocalService;
 	private LayoutService _layoutService;
