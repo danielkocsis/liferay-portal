@@ -68,12 +68,12 @@ PortletURL customPublishURL = renderResponse.createRenderURL();
 
 customPublishURL.setParameter("mvcRenderCommandName", "publishLayouts");
 customPublishURL.setParameter(Constants.CMD, cmd);
-customPublishURL.setParameter("publishConfigurationButtons", "custom");
 customPublishURL.setParameter("tabs1", privateLayout ? "private-pages" : "public-pages");
 customPublishURL.setParameter("groupId", String.valueOf(stagingGroupId));
 customPublishURL.setParameter("layoutSetBranchId", String.valueOf(layoutSetBranchId));
-customPublishURL.setParameter("selPlid", String.valueOf(selPlid));
 customPublishURL.setParameter("privateLayout", String.valueOf(privateLayout));
+customPublishURL.setParameter("publishConfigurationButtons", "custom");
+customPublishURL.setParameter("selPlid", String.valueOf(selPlid));
 
 boolean localPublishing = true;
 
@@ -85,12 +85,12 @@ PortletURL publishTemplatesURL = renderResponse.createRenderURL();
 
 publishTemplatesURL.setParameter("mvcRenderCommandName", "publishLayouts");
 publishTemplatesURL.setParameter(Constants.CMD, Constants.PUBLISH);
-publishTemplatesURL.setParameter("publishConfigurationButtons", "saved");
 publishTemplatesURL.setParameter("groupId", String.valueOf(stagingGroupId));
 publishTemplatesURL.setParameter("layoutSetBranchId", String.valueOf(layoutSetBranchId));
 publishTemplatesURL.setParameter("layoutSetBranchName", layoutSetBranchName);
 publishTemplatesURL.setParameter("localPublishing", String.valueOf(localPublishing));
 publishTemplatesURL.setParameter("privateLayout", String.valueOf(privateLayout));
+publishTemplatesURL.setParameter("publishConfigurationButtons", "saved");
 %>
 
 <c:if test='<%= !publishConfigurationButtons.equals("template") %>'>
