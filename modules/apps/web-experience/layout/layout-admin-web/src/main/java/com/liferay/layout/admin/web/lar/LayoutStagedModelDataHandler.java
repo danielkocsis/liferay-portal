@@ -608,6 +608,8 @@ public class LayoutStagedModelDataHandler
 		else if (layout.isTypeLinkToLayout()) {
 			importLinkedLayout(
 				portletDataContext, layout, importedLayout, layoutElement);
+
+			updateTypeSettings(importedLayout, layout);
 		}
 		else {
 			updateTypeSettings(importedLayout, layout);
@@ -1006,13 +1008,7 @@ public class LayoutStagedModelDataHandler
 		String linkedToLayoutUuid = layoutElement.attributeValue(
 			"linked-to-layout-uuid");
 
-		if (Validator.isNull(linkedToLayoutUuid)) {
-			return;
-		}
-
-		if (linkToLayoutId <= 0) {
-			updateTypeSettings(importedLayout, layout);
-
+		if (Validator.isNull(linkedToLayoutUuid) || (linkToLayoutId <= 0)) {
 			return;
 		}
 
@@ -1021,8 +1017,6 @@ public class LayoutStagedModelDataHandler
 				portletDataContext.getScopeGroupId(),
 				portletDataContext.isPrivateLayout(), importedLayout.getUuid(),
 				linkedToLayoutUuid));
-
-		updateTypeSettings(importedLayout, layout);
 	}
 
 	@Override
