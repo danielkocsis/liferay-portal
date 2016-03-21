@@ -260,22 +260,20 @@ public class StagingImpl implements Staging {
 	public long copyFromLive(PortletRequest portletRequest, Portlet portlet)
 		throws PortalException {
 
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		long scopeGroupId = PortalUtil.getScopeGroupId(portletRequest);
+
 		long plid = ParamUtil.getLong(portletRequest, "plid");
 
-		Layout targetLayout = _layoutLocalService.getLayout(plid);
+		Map<String, String[]> parameterMap =
+			ExportImportConfigurationParameterMapFactory.buildParameterMap(
+				portletRequest);
 
-		Group stagingGroup = targetLayout.getGroup();
-
-		Group liveGroup = stagingGroup.getLiveGroup();
-
-		Layout sourceLayout = _layoutLocalService.getLayoutByUuidAndGroupId(
-			targetLayout.getUuid(), liveGroup.getGroupId(),
-			targetLayout.isPrivateLayout());
-
-		return copyPortlet(
-			portletRequest, liveGroup.getGroupId(), stagingGroup.getGroupId(),
-			sourceLayout.getPlid(), targetLayout.getPlid(),
-			portlet.getPortletId());
+		return publishPortlet(
+			themeDisplay.getUserId(), scopeGroupId, plid,
+			portlet.getPortletId(), parameterMap, true);
 	}
 
 	/**
@@ -1562,45 +1560,20 @@ public class StagingImpl implements Staging {
 	public long publishToLive(PortletRequest portletRequest, Portlet portlet)
 		throws PortalException {
 
-		long plid = ParamUtil.getLong(portletRequest, "plid");
-
-		Layout sourceLayout = _layoutLocalService.getLayout(plid);
-
-		Group stagingGroup = null;
-		Group liveGroup = null;
-
-		Layout targetLayout = null;
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		long scopeGroupId = PortalUtil.getScopeGroupId(portletRequest);
 
-		if (sourceLayout.isTypeControlPanel()) {
-			stagingGroup = _groupLocalService.fetchGroup(scopeGroupId);
-			liveGroup = stagingGroup.getLiveGroup();
+		long plid = ParamUtil.getLong(portletRequest, "plid");
 
-			targetLayout = sourceLayout;
-		}
-		else if (sourceLayout.hasScopeGroup() &&
-				 (sourceLayout.getScopeGroup().getGroupId() == scopeGroupId)) {
+		Map<String, String[]> parameterMap =
+			ExportImportConfigurationParameterMapFactory.buildParameterMap(
+				portletRequest);
 
-			stagingGroup = sourceLayout.getScopeGroup();
-			liveGroup = stagingGroup.getLiveGroup();
-
-			targetLayout = _layoutLocalService.getLayout(
-				liveGroup.getClassPK());
-		}
-		else {
-			stagingGroup = sourceLayout.getGroup();
-			liveGroup = stagingGroup.getLiveGroup();
-
-			targetLayout = _layoutLocalService.fetchLayoutByUuidAndGroupId(
-				sourceLayout.getUuid(), liveGroup.getGroupId(),
-				sourceLayout.isPrivateLayout());
-		}
-
-		return copyPortlet(
-			portletRequest, stagingGroup.getGroupId(), liveGroup.getGroupId(),
-			sourceLayout.getPlid(), targetLayout.getPlid(),
-			portlet.getPortletId());
+		return publishPortlet(
+			themeDisplay.getUserId(), scopeGroupId, plid,
+			portlet.getPortletId(), parameterMap, false);
 	}
 
 	@Override
@@ -2252,6 +2225,55 @@ public class StagingImpl implements Staging {
 				themeDisplay.getUserId(), sourceGroupId, targetGroupId,
 				privateLayout, layoutIds, name, parameterMap);
 		}
+	}
+
+	protected long publishPortlet(
+			long userId, long scopeGroupId, long plid, String portletId,
+			Map<String, String[]> parameterMap, boolean copyFromLive)
+		throws PortalException {
+
+		Layout sourceLayout = _layoutLocalService.getLayout(plid);
+
+		Group stagingGroup = null;
+		Group liveGroup = null;
+
+		Layout targetLayout = null;
+
+		if (sourceLayout.isTypeControlPanel()) {
+			stagingGroup = _groupLocalService.fetchGroup(scopeGroupId);
+			liveGroup = stagingGroup.getLiveGroup();
+
+			targetLayout = sourceLayout;
+		}
+		else if (sourceLayout.hasScopeGroup() &&
+				 (sourceLayout.getScopeGroup().getGroupId() == scopeGroupId)) {
+
+			stagingGroup = sourceLayout.getScopeGroup();
+			liveGroup = stagingGroup.getLiveGroup();
+
+			targetLayout = _layoutLocalService.getLayout(
+				liveGroup.getClassPK());
+		}
+		else {
+			stagingGroup = sourceLayout.getGroup();
+			liveGroup = stagingGroup.getLiveGroup();
+
+			targetLayout = _layoutLocalService.fetchLayoutByUuidAndGroupId(
+				sourceLayout.getUuid(), liveGroup.getGroupId(),
+				sourceLayout.isPrivateLayout());
+		}
+
+		if (copyFromLive) {
+			return publishPortlet(
+				userId, liveGroup.getGroupId(), stagingGroup.getGroupId(),
+				targetLayout.getPlid(), sourceLayout.getPlid(), portletId,
+				parameterMap);
+		}
+
+		return publishPortlet(
+			userId, stagingGroup.getGroupId(), liveGroup.getGroupId(),
+			sourceLayout.getPlid(), targetLayout.getPlid(), portletId,
+			parameterMap);
 	}
 
 	protected long publishToRemote(
