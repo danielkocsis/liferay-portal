@@ -2399,60 +2399,6 @@ public class StagingImpl implements Staging {
 		return false;
 	}
 
-	protected long publishLayouts(
-			PortletRequest portletRequest, long sourceGroupId,
-			long targetGroupId, Map<String, String[]> parameterMap,
-			boolean schedule)
-		throws PortalException {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		boolean privateLayout = getPrivateLayout(portletRequest);
-
-		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
-			portletRequest, targetGroupId);
-		String name = ParamUtil.getString(portletRequest, "name");
-
-		if (schedule) {
-			String groupName = getSchedulerGroupName(
-				DestinationNames.LAYOUTS_LOCAL_PUBLISHER, targetGroupId);
-
-			int recurrenceType = ParamUtil.getInteger(
-				portletRequest, "recurrenceType");
-
-			Calendar startCalendar = ExportImportDateUtil.getCalendar(
-				portletRequest, "schedulerStartDate", true);
-
-			String cronText = SchedulerEngineHelperUtil.getCronText(
-				portletRequest, startCalendar, true, recurrenceType);
-
-			Date schedulerEndDate = null;
-
-			int endDateType = ParamUtil.getInteger(
-				portletRequest, "endDateType");
-
-			if (endDateType == 1) {
-				Calendar endCalendar = ExportImportDateUtil.getCalendar(
-					portletRequest, "schedulerEndDate", true);
-
-				schedulerEndDate = endCalendar.getTime();
-			}
-
-			_layoutService.schedulePublishToLive(
-				sourceGroupId, targetGroupId, privateLayout, layoutIds,
-				parameterMap, groupName, cronText, startCalendar.getTime(),
-				schedulerEndDate, name);
-
-			return 0;
-		}
-		else {
-			return publishLayouts(
-				themeDisplay.getUserId(), sourceGroupId, targetGroupId,
-				privateLayout, layoutIds, name, parameterMap);
-		}
-	}
-
 	protected long publishToRemote(
 			PortletRequest portletRequest, boolean schedule)
 		throws PortalException {
