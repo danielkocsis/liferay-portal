@@ -1715,8 +1715,42 @@ public class StagingImpl implements Staging {
 			ExportImportConfigurationParameterMapFactory.buildParameterMap(
 				portletRequest);
 
-		publishLayouts(
-			portletRequest, stagingGroupId, liveGroupId, parameterMap, true);
+		long sourceGroupId = stagingGroupId;
+		long targetGroupId = liveGroupId;
+
+		boolean privateLayout = getPrivateLayout(portletRequest);
+
+		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
+			portletRequest, targetGroupId);
+		String name = ParamUtil.getString(portletRequest, "name");
+
+		String groupName = getSchedulerGroupName(
+			DestinationNames.LAYOUTS_LOCAL_PUBLISHER, targetGroupId);
+
+		int recurrenceType = ParamUtil.getInteger(
+			portletRequest, "recurrenceType");
+
+		Calendar startCalendar = ExportImportDateUtil.getCalendar(
+			portletRequest, "schedulerStartDate", true);
+
+		String cronText = SchedulerEngineHelperUtil.getCronText(
+			portletRequest, startCalendar, true, recurrenceType);
+
+		Date schedulerEndDate = null;
+
+		int endDateType = ParamUtil.getInteger(portletRequest, "endDateType");
+
+		if (endDateType == 1) {
+			Calendar endCalendar = ExportImportDateUtil.getCalendar(
+				portletRequest, "schedulerEndDate", true);
+
+			schedulerEndDate = endCalendar.getTime();
+		}
+
+		_layoutService.schedulePublishToLive(
+			sourceGroupId, targetGroupId, privateLayout, layoutIds,
+			parameterMap, groupName, cronText, startCalendar.getTime(),
+			schedulerEndDate, name);
 	}
 
 	@Override
