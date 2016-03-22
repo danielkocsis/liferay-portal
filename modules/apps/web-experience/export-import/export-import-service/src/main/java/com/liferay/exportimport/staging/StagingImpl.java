@@ -263,7 +263,9 @@ public class StagingImpl implements Staging {
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		long scopeGroupId = PortalUtil.getScopeGroupId(portletRequest);
+		long scopeGroupId = PortalUtil.getScopeGroupId(
+			PortalUtil.getHttpServletRequest(portletRequest),
+			portlet.getPortletId());
 
 		long plid = ParamUtil.getLong(portletRequest, "plid");
 
@@ -1563,7 +1565,9 @@ public class StagingImpl implements Staging {
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		long scopeGroupId = PortalUtil.getScopeGroupId(portletRequest);
+		long scopeGroupId = PortalUtil.getScopeGroupId(
+			PortalUtil.getHttpServletRequest(portletRequest),
+			portlet.getPortletId());
 
 		long plid = ParamUtil.getLong(portletRequest, "plid");
 
