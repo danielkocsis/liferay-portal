@@ -1718,7 +1718,95 @@ public class StagingImpl implements Staging {
 	public long publishToRemote(PortletRequest portletRequest)
 		throws PortalException {
 
-		return publishToRemote(portletRequest, false);
+		long groupId = ParamUtil.getLong(portletRequest, "groupId");
+
+		boolean privateLayout = getPrivateLayout(portletRequest);
+
+		Map<Long, Boolean> layoutIdMap = ExportImportHelperUtil.getLayoutIdMap(
+			portletRequest);
+
+		Map<String, String[]> parameterMap =
+			ExportImportConfigurationParameterMapFactory.buildParameterMap(
+				portletRequest);
+
+		Group group = _groupLocalService.getGroup(groupId);
+
+		UnicodeProperties groupTypeSettingsProperties =
+			group.getTypeSettingsProperties();
+
+		String remoteAddress = ParamUtil.getString(
+			portletRequest, "remoteAddress",
+			groupTypeSettingsProperties.getProperty("remoteAddress"));
+
+		remoteAddress = stripProtocolFromRemoteAddress(remoteAddress);
+
+		int remotePort = ParamUtil.getInteger(
+			portletRequest, "remotePort",
+			GetterUtil.getInteger(
+				groupTypeSettingsProperties.getProperty("remotePort")));
+		String remotePathContext = ParamUtil.getString(
+			portletRequest, "remotePathContext",
+			groupTypeSettingsProperties.getProperty("remotePathContext"));
+		boolean secureConnection = ParamUtil.getBoolean(
+			portletRequest, "secureConnection",
+			GetterUtil.getBoolean(
+				groupTypeSettingsProperties.getProperty("secureConnection")));
+		long remoteGroupId = ParamUtil.getLong(
+			portletRequest, "remoteGroupId",
+			GetterUtil.getLong(
+				groupTypeSettingsProperties.getProperty("remoteGroupId")));
+		boolean remotePrivateLayout = ParamUtil.getBoolean(
+			portletRequest, "remotePrivateLayout");
+
+		validateRemote(
+			groupId, remoteAddress, remotePort, remotePathContext,
+			secureConnection, remoteGroupId);
+
+		String name = ParamUtil.getString(portletRequest, "name");
+
+		long sourceGroupId = groupId;
+
+		validateRemoteGroup(
+			sourceGroupId, remoteGroupId, remoteAddress, remotePort,
+			remotePathContext, secureConnection);
+
+		PermissionChecker permissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		User user = permissionChecker.getUser();
+
+		Map<String, Serializable> publishLayoutRemoteSettingsMap =
+			ExportImportConfigurationSettingsMapFactory.
+				buildPublishLayoutRemoteSettingsMap(
+					user.getUserId(), sourceGroupId, privateLayout, layoutIdMap,
+					parameterMap, remoteAddress, remotePort, remotePathContext,
+					secureConnection, remoteGroupId, remotePrivateLayout,
+					user.getLocale(), user.getTimeZone());
+
+		ExportImportConfiguration exportImportConfiguration = null;
+
+		if (Validator.isNotNull(name)) {
+			exportImportConfiguration =
+				_exportImportConfigurationLocalService.
+					addDraftExportImportConfiguration(
+						user.getUserId(), name,
+						ExportImportConfigurationConstants.
+							TYPE_PUBLISH_LAYOUT_REMOTE,
+						publishLayoutRemoteSettingsMap);
+		}
+		else {
+			exportImportConfiguration =
+				_exportImportConfigurationLocalService.
+					addDraftExportImportConfiguration(
+						user.getUserId(),
+						ExportImportConfigurationConstants.
+							TYPE_PUBLISH_LAYOUT_REMOTE,
+						publishLayoutRemoteSettingsMap);
+		}
+
+		return doCopyRemoteLayouts(
+			exportImportConfiguration, remoteAddress, remotePort,
+			remotePathContext, secureConnection, remotePrivateLayout);
 	}
 
 	@Override
