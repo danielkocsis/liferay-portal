@@ -1935,43 +1935,83 @@ public class StagingImpl implements Staging {
 
 		long groupId = ParamUtil.getLong(portletRequest, "groupId");
 
-		boolean privateLayout = getPrivateLayout(portletRequest);
-
-		Map<Long, Boolean> layoutIdMap = ExportImportHelperUtil.getLayoutIdMap(
-			portletRequest);
-
-		Map<String, String[]> parameterMap =
-			ExportImportConfigurationParameterMapFactory.buildParameterMap(
-				portletRequest);
-
 		Group group = _groupLocalService.getGroup(groupId);
 
 		UnicodeProperties groupTypeSettingsProperties =
 			group.getTypeSettingsProperties();
 
-		String remoteAddress = ParamUtil.getString(
-			portletRequest, "remoteAddress",
-			groupTypeSettingsProperties.getProperty("remoteAddress"));
+		boolean privateLayout = false;
+		Map<Long, Boolean> layoutIdMap = null;
+		Map<String, String[]> parameterMap = null;
+		String remoteAddress = null;
+		int remotePort = 0;
+		String remotePathContext = null;
+		boolean secureConnection = false;
+		boolean remotePrivateLayout = false;
+
+		long exportImportConfigurationId = ParamUtil.getLong(
+			portletRequest, "exportImportConfigurationId");
+
+		if (exportImportConfigurationId > 0) {
+			ExportImportConfiguration exportImportConfiguration =
+				_exportImportConfigurationLocalService.
+					fetchExportImportConfiguration(exportImportConfigurationId);
+
+			if (exportImportConfiguration != null) {
+				Map<String, Serializable> settingsMap =
+					exportImportConfiguration.getSettingsMap();
+
+				privateLayout = MapUtil.getBoolean(
+					settingsMap, "privateLayout");
+				layoutIdMap = (Map<Long, Boolean>)settingsMap.get(
+					"layoutIdMap");
+				parameterMap = (Map<String, String[]>)settingsMap.get(
+					"parameterMap");
+				remoteAddress = MapUtil.getString(settingsMap, "remoteAddress");
+				remotePort = MapUtil.getInteger(settingsMap, "remotePort");
+				remotePathContext = MapUtil.getString(
+					settingsMap, "remotePathContext");
+				secureConnection = MapUtil.getBoolean(
+					settingsMap, "secureConnection");
+				remotePrivateLayout = MapUtil.getBoolean(
+					settingsMap, "remotePrivateLayout");
+			}
+		}
+
+		if (parameterMap == null) {
+			privateLayout = getPrivateLayout(portletRequest);
+
+			layoutIdMap = ExportImportHelperUtil.getLayoutIdMap(portletRequest);
+
+			parameterMap =
+				ExportImportConfigurationParameterMapFactory.buildParameterMap(
+					portletRequest);
+
+			remoteAddress = ParamUtil.getString(
+				portletRequest, "remoteAddress",
+				groupTypeSettingsProperties.getProperty("remoteAddress"));
+			remotePort = ParamUtil.getInteger(
+				portletRequest, "remotePort",
+				GetterUtil.getInteger(
+					groupTypeSettingsProperties.getProperty("remotePort")));
+			remotePathContext = ParamUtil.getString(
+				portletRequest, "remotePathContext",
+				groupTypeSettingsProperties.getProperty("remotePathContext"));
+			secureConnection = ParamUtil.getBoolean(
+				portletRequest, "secureConnection",
+				GetterUtil.getBoolean(
+					groupTypeSettingsProperties.getProperty(
+						"secureConnection")));
+			remotePrivateLayout = ParamUtil.getBoolean(
+				portletRequest, "remotePrivateLayout");
+		}
 
 		remoteAddress = stripProtocolFromRemoteAddress(remoteAddress);
 
-		int remotePort = ParamUtil.getInteger(
-			portletRequest, "remotePort",
-			GetterUtil.getInteger(
-				groupTypeSettingsProperties.getProperty("remotePort")));
-		String remotePathContext = ParamUtil.getString(
-			portletRequest, "remotePathContext",
-			groupTypeSettingsProperties.getProperty("remotePathContext"));
-		boolean secureConnection = ParamUtil.getBoolean(
-			portletRequest, "secureConnection",
-			GetterUtil.getBoolean(
-				groupTypeSettingsProperties.getProperty("secureConnection")));
 		long remoteGroupId = ParamUtil.getLong(
 			portletRequest, "remoteGroupId",
 			GetterUtil.getLong(
 				groupTypeSettingsProperties.getProperty("remoteGroupId")));
-		boolean remotePrivateLayout = ParamUtil.getBoolean(
-			portletRequest, "remotePrivateLayout");
 
 		validateRemote(
 			groupId, remoteAddress, remotePort, remotePathContext,
