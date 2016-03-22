@@ -1977,8 +1977,6 @@ public class StagingImpl implements Staging {
 			groupId, remoteAddress, remotePort, remotePathContext,
 			secureConnection, remoteGroupId);
 
-		String name = ParamUtil.getString(portletRequest, "name");
-
 		String groupName = getSchedulerGroupName(
 			DestinationNames.LAYOUTS_REMOTE_PUBLISHER, groupId);
 
@@ -2001,6 +1999,8 @@ public class StagingImpl implements Staging {
 
 			schedulerEndDate = endCalendar.getTime();
 		}
+
+		String name = ParamUtil.getString(portletRequest, "name");
 
 		_layoutService.schedulePublishToRemote(
 			groupId, privateLayout, layoutIdMap, parameterMap, remoteAddress,
