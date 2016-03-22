@@ -252,8 +252,54 @@ public class StagingImpl implements Staging {
 			ExportImportConfigurationParameterMapFactory.buildParameterMap(
 				portletRequest);
 
-		return publishLayouts(
-			portletRequest, liveGroupId, stagingGroupId, parameterMap, false);
+		long sourceGroupId = liveGroupId;
+		long targetGroupId = stagingGroupId;
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		long userId = themeDisplay.getUserId();
+
+		boolean privateLayout = getPrivateLayout(portletRequest);
+
+		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
+			portletRequest, targetGroupId);
+		String name = ParamUtil.getString(portletRequest, "name");
+
+		parameterMap.put(
+			PortletDataHandlerKeys.PERFORM_DIRECT_BINARY_IMPORT,
+			new String[] {Boolean.TRUE.toString()});
+
+		User user = _userLocalService.getUser(userId);
+
+		Map<String, Serializable> publishLayoutLocalSettingsMap =
+			ExportImportConfigurationSettingsMapFactory.
+				buildPublishLayoutLocalSettingsMap(
+					user, sourceGroupId, targetGroupId, privateLayout,
+					layoutIds, parameterMap);
+
+		ExportImportConfiguration exportImportConfiguration = null;
+
+		if (Validator.isNotNull(name)) {
+			exportImportConfiguration =
+				_exportImportConfigurationLocalService.
+					addDraftExportImportConfiguration(
+						userId, name,
+						ExportImportConfigurationConstants.
+							TYPE_PUBLISH_LAYOUT_LOCAL,
+						publishLayoutLocalSettingsMap);
+		}
+		else {
+			exportImportConfiguration =
+				_exportImportConfigurationLocalService.
+					addDraftExportImportConfiguration(
+						userId,
+						ExportImportConfigurationConstants.
+							TYPE_PUBLISH_LAYOUT_LOCAL,
+						publishLayoutLocalSettingsMap);
+		}
+
+		return publishLayouts(userId, exportImportConfiguration);
 	}
 
 	@Override
