@@ -1718,6 +1718,11 @@ public class StagingImpl implements Staging {
 	public long publishToRemote(PortletRequest portletRequest)
 		throws PortalException {
 
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		User user = themeDisplay.getUser();
+
 		long groupId = ParamUtil.getLong(portletRequest, "groupId");
 
 		boolean privateLayout = getPrivateLayout(portletRequest);
@@ -1762,28 +1767,17 @@ public class StagingImpl implements Staging {
 			groupId, remoteAddress, remotePort, remotePathContext,
 			secureConnection, remoteGroupId);
 
-		String name = ParamUtil.getString(portletRequest, "name");
-
-		long sourceGroupId = groupId;
-
-		validateRemoteGroup(
-			sourceGroupId, remoteGroupId, remoteAddress, remotePort,
-			remotePathContext, secureConnection);
-
-		PermissionChecker permissionChecker =
-			PermissionThreadLocal.getPermissionChecker();
-
-		User user = permissionChecker.getUser();
-
 		Map<String, Serializable> publishLayoutRemoteSettingsMap =
 			ExportImportConfigurationSettingsMapFactory.
 				buildPublishLayoutRemoteSettingsMap(
-					user.getUserId(), sourceGroupId, privateLayout, layoutIdMap,
+					user.getUserId(), groupId, privateLayout, layoutIdMap,
 					parameterMap, remoteAddress, remotePort, remotePathContext,
 					secureConnection, remoteGroupId, remotePrivateLayout,
 					user.getLocale(), user.getTimeZone());
 
 		ExportImportConfiguration exportImportConfiguration = null;
+
+		String name = ParamUtil.getString(portletRequest, "name");
 
 		if (Validator.isNotNull(name)) {
 			exportImportConfiguration =
