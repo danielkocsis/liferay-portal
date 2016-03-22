@@ -1933,7 +1933,80 @@ public class StagingImpl implements Staging {
 	public void schedulePublishToRemote(PortletRequest portletRequest)
 		throws PortalException {
 
-		publishToRemote(portletRequest, true);
+		long groupId = ParamUtil.getLong(portletRequest, "groupId");
+
+		boolean privateLayout = getPrivateLayout(portletRequest);
+
+		Map<Long, Boolean> layoutIdMap = ExportImportHelperUtil.getLayoutIdMap(
+			portletRequest);
+
+		Map<String, String[]> parameterMap =
+			ExportImportConfigurationParameterMapFactory.buildParameterMap(
+				portletRequest);
+
+		Group group = _groupLocalService.getGroup(groupId);
+
+		UnicodeProperties groupTypeSettingsProperties =
+			group.getTypeSettingsProperties();
+
+		String remoteAddress = ParamUtil.getString(
+			portletRequest, "remoteAddress",
+			groupTypeSettingsProperties.getProperty("remoteAddress"));
+
+		remoteAddress = stripProtocolFromRemoteAddress(remoteAddress);
+
+		int remotePort = ParamUtil.getInteger(
+			portletRequest, "remotePort",
+			GetterUtil.getInteger(
+				groupTypeSettingsProperties.getProperty("remotePort")));
+		String remotePathContext = ParamUtil.getString(
+			portletRequest, "remotePathContext",
+			groupTypeSettingsProperties.getProperty("remotePathContext"));
+		boolean secureConnection = ParamUtil.getBoolean(
+			portletRequest, "secureConnection",
+			GetterUtil.getBoolean(
+				groupTypeSettingsProperties.getProperty("secureConnection")));
+		long remoteGroupId = ParamUtil.getLong(
+			portletRequest, "remoteGroupId",
+			GetterUtil.getLong(
+				groupTypeSettingsProperties.getProperty("remoteGroupId")));
+		boolean remotePrivateLayout = ParamUtil.getBoolean(
+			portletRequest, "remotePrivateLayout");
+
+		validateRemote(
+			groupId, remoteAddress, remotePort, remotePathContext,
+			secureConnection, remoteGroupId);
+
+		String name = ParamUtil.getString(portletRequest, "name");
+
+		String groupName = getSchedulerGroupName(
+			DestinationNames.LAYOUTS_REMOTE_PUBLISHER, groupId);
+
+		int recurrenceType = ParamUtil.getInteger(
+			portletRequest, "recurrenceType");
+
+		Calendar startCalendar = ExportImportDateUtil.getCalendar(
+			portletRequest, "schedulerStartDate", true);
+
+		String cronText = SchedulerEngineHelperUtil.getCronText(
+			portletRequest, startCalendar, true, recurrenceType);
+
+		Date schedulerEndDate = null;
+
+		int endDateType = ParamUtil.getInteger(portletRequest, "endDateType");
+
+		if (endDateType == 1) {
+			Calendar endCalendar = ExportImportDateUtil.getCalendar(
+				portletRequest, "schedulerEndDate", true);
+
+			schedulerEndDate = endCalendar.getTime();
+		}
+
+		_layoutService.schedulePublishToRemote(
+			groupId, privateLayout, layoutIdMap, parameterMap, remoteAddress,
+			remotePort, remotePathContext, secureConnection, remoteGroupId,
+			remotePrivateLayout, null, null, groupName, cronText,
+			startCalendar.getTime(), schedulerEndDate, name);
 	}
 
 	@Override
