@@ -1558,24 +1558,50 @@ public class StagingImpl implements Staging {
 		long sourceGroupId = sourceGroup.getGroupId();
 		long targetGroupId = targetGroup.getGroupId();
 
-		boolean privateLayout = getPrivateLayout(portletRequest);
+		Map<String, Serializable> publishLayoutLocalSettingsMap = null;
 
-		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
-			portletRequest, targetGroupId);
+		long exportImportConfigurationId = ParamUtil.getLong(
+			portletRequest, "exportImportConfigurationId");
 
-		Map<String, String[]> parameterMap =
-			ExportImportConfigurationParameterMapFactory.buildParameterMap(
-				portletRequest);
+		if (exportImportConfigurationId > 0) {
+			ExportImportConfiguration exportImportConfiguration =
+				_exportImportConfigurationLocalService.
+					fetchExportImportConfiguration(exportImportConfigurationId);
 
-		parameterMap.put(
-			PortletDataHandlerKeys.PERFORM_DIRECT_BINARY_IMPORT,
-			new String[] {Boolean.TRUE.toString()});
+			if (exportImportConfiguration != null) {
+				publishLayoutLocalSettingsMap =
+					exportImportConfiguration.getSettingsMap();
 
-		Map<String, Serializable> publishLayoutLocalSettingsMap =
-			ExportImportConfigurationSettingsMapFactory.
-				buildPublishLayoutLocalSettingsMap(
-					user, sourceGroupId, targetGroupId, privateLayout,
-					layoutIds, parameterMap);
+				Map<String, String[]> parameterMap =
+					(Map<String, String[]>)publishLayoutLocalSettingsMap.get(
+						"parameterMap");
+
+				parameterMap.put(
+					PortletDataHandlerKeys.PERFORM_DIRECT_BINARY_IMPORT,
+					new String[] {Boolean.TRUE.toString()});
+			}
+		}
+
+		if (publishLayoutLocalSettingsMap == null) {
+			boolean privateLayout = getPrivateLayout(portletRequest);
+
+			long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
+				portletRequest, targetGroupId);
+
+			Map<String, String[]> parameterMap =
+				ExportImportConfigurationParameterMapFactory.buildParameterMap(
+					portletRequest);
+
+			parameterMap.put(
+				PortletDataHandlerKeys.PERFORM_DIRECT_BINARY_IMPORT,
+				new String[] {Boolean.TRUE.toString()});
+
+			publishLayoutLocalSettingsMap =
+				ExportImportConfigurationSettingsMapFactory.
+					buildPublishLayoutLocalSettingsMap(
+						user, sourceGroupId, targetGroupId, privateLayout,
+						layoutIds, parameterMap);
+		}
 
 		String name = ParamUtil.getString(portletRequest, "name");
 
