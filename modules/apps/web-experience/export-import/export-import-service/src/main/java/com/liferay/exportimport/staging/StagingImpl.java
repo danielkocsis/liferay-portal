@@ -1725,28 +1725,19 @@ public class StagingImpl implements Staging {
 	public void scheduleCopyFromLive(PortletRequest portletRequest)
 		throws PortalException {
 
-		long stagingGroupId = ParamUtil.getLong(
+		long targetGroupId = ParamUtil.getLong(
 			portletRequest, "stagingGroupId");
 
-		Group stagingGroup = _groupLocalService.getGroup(stagingGroupId);
+		Group targetGroup = _groupLocalService.getGroup(targetGroupId);
 
-		long liveGroupId = stagingGroup.getLiveGroupId();
+		long sourceGroupId = targetGroup.getLiveGroupId();
 
+		boolean privateLayout = getPrivateLayout(portletRequest);
+		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
+			portletRequest, targetGroupId);
 		Map<String, String[]> parameterMap =
 			ExportImportConfigurationParameterMapFactory.buildParameterMap(
 				portletRequest);
-
-		long sourceGroupId = liveGroupId;
-		long targetGroupId = stagingGroupId;
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		boolean privateLayout = getPrivateLayout(portletRequest);
-
-		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
-			portletRequest, targetGroupId);
-		String name = ParamUtil.getString(portletRequest, "name");
 
 		String groupName = getSchedulerGroupName(
 			DestinationNames.LAYOUTS_LOCAL_PUBLISHER, targetGroupId);
@@ -1770,6 +1761,8 @@ public class StagingImpl implements Staging {
 
 			schedulerEndDate = endCalendar.getTime();
 		}
+
+		String name = ParamUtil.getString(portletRequest, "name");
 
 		_layoutService.schedulePublishToLive(
 			sourceGroupId, targetGroupId, privateLayout, layoutIds,
