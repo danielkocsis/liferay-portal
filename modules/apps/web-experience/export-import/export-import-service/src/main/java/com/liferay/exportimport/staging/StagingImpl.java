@@ -241,36 +241,28 @@ public class StagingImpl implements Staging {
 	public long copyFromLive(PortletRequest portletRequest)
 		throws PortalException {
 
-		long stagingGroupId = ParamUtil.getLong(
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		User user = themeDisplay.getUser();
+
+		long targetGroupId = ParamUtil.getLong(
 			portletRequest, "stagingGroupId");
 
-		Group stagingGroup = _groupLocalService.getGroup(stagingGroupId);
+		Group stagingGroup = _groupLocalService.getGroup(targetGroupId);
 
-		long liveGroupId = stagingGroup.getLiveGroupId();
+		long sourceGroupId = stagingGroup.getLiveGroupId();
 
+		boolean privateLayout = getPrivateLayout(portletRequest);
+		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
+			portletRequest, targetGroupId);
 		Map<String, String[]> parameterMap =
 			ExportImportConfigurationParameterMapFactory.buildParameterMap(
 				portletRequest);
 
-		long sourceGroupId = liveGroupId;
-		long targetGroupId = stagingGroupId;
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		long userId = themeDisplay.getUserId();
-
-		boolean privateLayout = getPrivateLayout(portletRequest);
-
-		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
-			portletRequest, targetGroupId);
-		String name = ParamUtil.getString(portletRequest, "name");
-
 		parameterMap.put(
 			PortletDataHandlerKeys.PERFORM_DIRECT_BINARY_IMPORT,
 			new String[] {Boolean.TRUE.toString()});
-
-		User user = _userLocalService.getUser(userId);
 
 		Map<String, Serializable> publishLayoutLocalSettingsMap =
 			ExportImportConfigurationSettingsMapFactory.
@@ -280,11 +272,13 @@ public class StagingImpl implements Staging {
 
 		ExportImportConfiguration exportImportConfiguration = null;
 
+		String name = ParamUtil.getString(portletRequest, "name");
+
 		if (Validator.isNotNull(name)) {
 			exportImportConfiguration =
 				_exportImportConfigurationLocalService.
 					addDraftExportImportConfiguration(
-						userId, name,
+						user.getUserId(), name,
 						ExportImportConfigurationConstants.
 							TYPE_PUBLISH_LAYOUT_LOCAL,
 						publishLayoutLocalSettingsMap);
@@ -293,13 +287,13 @@ public class StagingImpl implements Staging {
 			exportImportConfiguration =
 				_exportImportConfigurationLocalService.
 					addDraftExportImportConfiguration(
-						userId,
+						user.getUserId(),
 						ExportImportConfigurationConstants.
 							TYPE_PUBLISH_LAYOUT_LOCAL,
 						publishLayoutLocalSettingsMap);
 		}
 
-		return publishLayouts(userId, exportImportConfiguration);
+		return publishLayouts(user.getUserId(), exportImportConfiguration);
 	}
 
 	@Override
