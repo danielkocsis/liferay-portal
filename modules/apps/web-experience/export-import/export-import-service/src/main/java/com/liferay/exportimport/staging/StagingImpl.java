@@ -1739,35 +1739,17 @@ public class StagingImpl implements Staging {
 			ExportImportConfigurationParameterMapFactory.buildParameterMap(
 				portletRequest);
 
-		String groupName = getSchedulerGroupName(
-			DestinationNames.LAYOUTS_LOCAL_PUBLISHER, targetGroupId);
-
-		int recurrenceType = ParamUtil.getInteger(
-			portletRequest, "recurrenceType");
-
-		Calendar startCalendar = ExportImportDateUtil.getCalendar(
-			portletRequest, "schedulerStartDate", true);
-
-		String cronText = SchedulerEngineHelperUtil.getCronText(
-			portletRequest, startCalendar, true, recurrenceType);
-
-		Date schedulerEndDate = null;
-
-		int endDateType = ParamUtil.getInteger(portletRequest, "endDateType");
-
-		if (endDateType == 1) {
-			Calendar endCalendar = ExportImportDateUtil.getCalendar(
-				portletRequest, "schedulerEndDate", true);
-
-			schedulerEndDate = endCalendar.getTime();
-		}
+		ScheduleInformation scheduleInformation = getScheduleInformation(
+			portletRequest, targetGroupId);
 
 		String name = ParamUtil.getString(portletRequest, "name");
 
 		_layoutService.schedulePublishToLive(
 			sourceGroupId, targetGroupId, privateLayout, layoutIds,
-			parameterMap, groupName, cronText, startCalendar.getTime(),
-			schedulerEndDate, name);
+			parameterMap, scheduleInformation.getGroupName(),
+			scheduleInformation.getCronText(),
+			scheduleInformation.getStartCalendar().getTime(),
+			scheduleInformation.getSchedulerEndDate(), name);
 	}
 
 	@Override
@@ -1816,35 +1798,17 @@ public class StagingImpl implements Staging {
 					portletRequest);
 		}
 
-		String groupName = getSchedulerGroupName(
-			DestinationNames.LAYOUTS_LOCAL_PUBLISHER, targetGroupId);
-
-		int recurrenceType = ParamUtil.getInteger(
-			portletRequest, "recurrenceType");
-
-		Calendar startCalendar = ExportImportDateUtil.getCalendar(
-			portletRequest, "schedulerStartDate", true);
-
-		String cronText = SchedulerEngineHelperUtil.getCronText(
-			portletRequest, startCalendar, true, recurrenceType);
-
-		Date schedulerEndDate = null;
-
-		int endDateType = ParamUtil.getInteger(portletRequest, "endDateType");
-
-		if (endDateType == 1) {
-			Calendar endCalendar = ExportImportDateUtil.getCalendar(
-				portletRequest, "schedulerEndDate", true);
-
-			schedulerEndDate = endCalendar.getTime();
-		}
+		ScheduleInformation scheduleInformation = getScheduleInformation(
+			portletRequest, targetGroupId);
 
 		String name = ParamUtil.getString(portletRequest, "name");
 
 		_layoutService.schedulePublishToLive(
 			sourceGroupId, targetGroupId, privateLayout, layoutIds,
-			parameterMap, groupName, cronText, startCalendar.getTime(),
-			schedulerEndDate, name);
+			parameterMap, scheduleInformation.getGroupName(),
+			scheduleInformation.getCronText(),
+			scheduleInformation.getStartCalendar().getTime(),
+			scheduleInformation.getSchedulerEndDate(), name);
 	}
 
 	@Override
@@ -2358,6 +2322,45 @@ public class StagingImpl implements Staging {
 		return 0;
 	}
 
+	protected ScheduleInformation getScheduleInformation(
+		PortletRequest portletRequest, long targetGroupId) {
+
+		ScheduleInformation scheduleInformation = new ScheduleInformation();
+
+		String groupName = getSchedulerGroupName(
+			DestinationNames.LAYOUTS_LOCAL_PUBLISHER, targetGroupId);
+
+		scheduleInformation.setGroupName(groupName);
+
+		int recurrenceType = ParamUtil.getInteger(
+			portletRequest, "recurrenceType");
+
+		Calendar startCalendar = ExportImportDateUtil.getCalendar(
+			portletRequest, "schedulerStartDate", true);
+
+		scheduleInformation.setStartCalendar(startCalendar);
+
+		String cronText = SchedulerEngineHelperUtil.getCronText(
+			portletRequest, startCalendar, true, recurrenceType);
+
+		scheduleInformation.setCronText(cronText);
+
+		Date schedulerEndDate = null;
+
+		int endDateType = ParamUtil.getInteger(portletRequest, "endDateType");
+
+		if (endDateType == 1) {
+			Calendar endCalendar = ExportImportDateUtil.getCalendar(
+				portletRequest, "schedulerEndDate", true);
+
+			schedulerEndDate = endCalendar.getTime();
+		}
+
+		scheduleInformation.setSchedulerEndDate(schedulerEndDate);
+
+		return scheduleInformation;
+	}
+
 	protected int getStagingType(
 		PortletRequest portletRequest, Group liveGroup) {
 
@@ -2831,5 +2834,49 @@ public class StagingImpl implements Staging {
 	private StagingLocalService _stagingLocalService;
 	private UserLocalService _userLocalService;
 	private WorkflowInstanceLinkLocalService _workflowInstanceLinkLocalService;
+
+	private class ScheduleInformation {
+
+		public ScheduleInformation() {
+		}
+
+		public String getCronText() {
+			return _cronText;
+		}
+
+		public String getGroupName() {
+			return _groupName;
+		}
+
+		public Date getSchedulerEndDate() {
+			return _schedulerEndDate;
+		}
+
+		public Calendar getStartCalendar() {
+			return _startCalendar;
+		}
+
+		public void setCronText(String cronText) {
+			_cronText = cronText;
+		}
+
+		public void setGroupName(String groupName) {
+			_groupName = groupName;
+		}
+
+		public void setSchedulerEndDate(Date schedulerEndDate) {
+			_schedulerEndDate = schedulerEndDate;
+		}
+
+		public void setStartCalendar(Calendar startCalendar) {
+			_startCalendar = startCalendar;
+		}
+
+		private String _cronText;
+		private String _groupName;
+		private Date _schedulerEndDate;
+		private Calendar _startCalendar;
+
+	}
 
 }
