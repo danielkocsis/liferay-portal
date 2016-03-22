@@ -402,6 +402,7 @@ public class ExportImportPathUtil {
 		sb.append(PATH_PREFIX_SERVICE);
 		sb.append(StringPool.FORWARD_SLASH);
 		sb.append(serviceName);
+		sb.append(StringPool.FORWARD_SLASH);
 		sb.append(getOwnerTypePath(ownerType));
 		sb.append(ownerId);
 		sb.append(CharPool.FORWARD_SLASH);
