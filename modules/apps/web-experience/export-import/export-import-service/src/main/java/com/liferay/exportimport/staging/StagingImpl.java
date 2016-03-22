@@ -1711,14 +1711,40 @@ public class StagingImpl implements Staging {
 
 		long targetGroupId = sourceGroup.getLiveGroupId();
 
-		boolean privateLayout = getPrivateLayout(portletRequest);
+		long exportImportConfigurationId = ParamUtil.getLong(
+			portletRequest, "exportImportConfigurationId");
 
-		long[] layoutIds = ExportImportHelperUtil.getLayoutIds(
-			portletRequest, targetGroupId);
+		Map<String, String[]> parameterMap = null;
+		boolean privateLayout = false;
+		long[] layoutIds = null;
 
-		Map<String, String[]> parameterMap =
-			ExportImportConfigurationParameterMapFactory.buildParameterMap(
-				portletRequest);
+		if (exportImportConfigurationId > 0) {
+			ExportImportConfiguration exportImportConfiguration =
+				_exportImportConfigurationLocalService.
+					fetchExportImportConfiguration(exportImportConfigurationId);
+
+			if (exportImportConfiguration != null) {
+				Map<String, Serializable> settingsMap =
+					exportImportConfiguration.getSettingsMap();
+
+				parameterMap = (Map<String, String[]>)settingsMap.get(
+					"parameterMap");
+				privateLayout = MapUtil.getBoolean(
+					settingsMap, "privateLayout");
+				layoutIds = (long[])settingsMap.get("layoutIds");
+			}
+		}
+
+		if (parameterMap == null) {
+			privateLayout = getPrivateLayout(portletRequest);
+
+			layoutIds = ExportImportHelperUtil.getLayoutIds(
+				portletRequest, targetGroupId);
+
+			parameterMap =
+				ExportImportConfigurationParameterMapFactory.buildParameterMap(
+					portletRequest);
+		}
 
 		String groupName = getSchedulerGroupName(
 			DestinationNames.LAYOUTS_LOCAL_PUBLISHER, targetGroupId);
