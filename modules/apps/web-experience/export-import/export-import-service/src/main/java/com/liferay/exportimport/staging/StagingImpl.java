@@ -1858,7 +1858,7 @@ public class StagingImpl implements Staging {
 				portletRequest);
 
 		ScheduleInformation scheduleInformation = getScheduleInformation(
-			portletRequest, targetGroupId);
+			portletRequest, targetGroupId, false);
 
 		String name = ParamUtil.getString(portletRequest, "name");
 
@@ -1917,7 +1917,7 @@ public class StagingImpl implements Staging {
 		}
 
 		ScheduleInformation scheduleInformation = getScheduleInformation(
-			portletRequest, targetGroupId);
+			portletRequest, targetGroupId, false);
 
 		String name = ParamUtil.getString(portletRequest, "name");
 
@@ -2017,36 +2017,18 @@ public class StagingImpl implements Staging {
 			groupId, remoteAddress, remotePort, remotePathContext,
 			secureConnection, remoteGroupId);
 
-		String groupName = getSchedulerGroupName(
-			DestinationNames.LAYOUTS_REMOTE_PUBLISHER, groupId);
-
-		int recurrenceType = ParamUtil.getInteger(
-			portletRequest, "recurrenceType");
-
-		Calendar startCalendar = ExportImportDateUtil.getCalendar(
-			portletRequest, "schedulerStartDate", true);
-
-		String cronText = SchedulerEngineHelperUtil.getCronText(
-			portletRequest, startCalendar, true, recurrenceType);
-
-		Date schedulerEndDate = null;
-
-		int endDateType = ParamUtil.getInteger(portletRequest, "endDateType");
-
-		if (endDateType == 1) {
-			Calendar endCalendar = ExportImportDateUtil.getCalendar(
-				portletRequest, "schedulerEndDate", true);
-
-			schedulerEndDate = endCalendar.getTime();
-		}
+		ScheduleInformation scheduleInformation = getScheduleInformation(
+			portletRequest, groupId, true);
 
 		String name = ParamUtil.getString(portletRequest, "name");
 
 		_layoutService.schedulePublishToRemote(
 			groupId, privateLayout, layoutIdMap, parameterMap, remoteAddress,
 			remotePort, remotePathContext, secureConnection, remoteGroupId,
-			remotePrivateLayout, null, null, groupName, cronText,
-			startCalendar.getTime(), schedulerEndDate, name);
+			remotePrivateLayout, null, null, scheduleInformation.getGroupName(),
+			scheduleInformation.getCronText(),
+			scheduleInformation.getStartCalendar().getTime(),
+			scheduleInformation.getSchedulerEndDate(), name);
 	}
 
 	@Override
@@ -2554,12 +2536,18 @@ public class StagingImpl implements Staging {
 	}
 
 	protected ScheduleInformation getScheduleInformation(
-		PortletRequest portletRequest, long targetGroupId) {
+		PortletRequest portletRequest, long targetGroupId, boolean remote) {
 
 		ScheduleInformation scheduleInformation = new ScheduleInformation();
 
+		String destinationName = DestinationNames.LAYOUTS_LOCAL_PUBLISHER;
+
+		if (remote) {
+			destinationName = DestinationNames.LAYOUTS_REMOTE_PUBLISHER;
+		}
+
 		String groupName = getSchedulerGroupName(
-			DestinationNames.LAYOUTS_LOCAL_PUBLISHER, targetGroupId);
+			destinationName, targetGroupId);
 
 		scheduleInformation.setGroupName(groupName);
 
