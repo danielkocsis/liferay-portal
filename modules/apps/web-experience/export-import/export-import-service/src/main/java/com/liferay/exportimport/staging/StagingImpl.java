@@ -1583,9 +1583,7 @@ public class StagingImpl implements Staging {
 		}
 
 		if (targetGroup.isStagedRemotely()) {
-			publishToRemote(portletRequest);
-
-			return 0;
+			return publishToRemote(portletRequest);
 		}
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
