@@ -67,7 +67,6 @@ import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutBranch;
 import com.liferay.portal.kernel.model.LayoutRevision;
@@ -300,6 +299,9 @@ public class StagingImpl implements Staging {
 	public long copyFromLive(PortletRequest portletRequest, Portlet portlet)
 		throws PortalException {
 
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
 		long plid = ParamUtil.getLong(portletRequest, "plid");
 
 		Layout targetLayout = _layoutLocalService.getLayout(plid);
@@ -312,10 +314,14 @@ public class StagingImpl implements Staging {
 			targetLayout.getUuid(), liveGroup.getGroupId(),
 			targetLayout.isPrivateLayout());
 
-		return copyPortlet(
-			portletRequest, liveGroup.getGroupId(), stagingGroup.getGroupId(),
-			sourceLayout.getPlid(), targetLayout.getPlid(),
-			portlet.getPortletId());
+		Map<String, String[]> parameterMap =
+			ExportImportConfigurationParameterMapFactory.buildParameterMap(
+				portletRequest);
+
+		return publishPortlet(
+			themeDisplay.getUserId(), liveGroup.getGroupId(),
+			stagingGroup.getGroupId(), sourceLayout.getPlid(),
+			targetLayout.getPlid(), portlet.getPortletId(), parameterMap);
 	}
 
 	/**
@@ -2398,8 +2404,7 @@ public class StagingImpl implements Staging {
 			exportImportConfiguration.getExportImportConfigurationId());
 
 		String remoteURL = buildRemoteURL(
-			remoteAddress, remotePort, remotePathContext, secureConnection,
-			GroupConstants.DEFAULT_LIVE_GROUP_ID, remotePrivateLayout);
+			remoteAddress, remotePort, remotePathContext, secureConnection);
 
 		PermissionChecker permissionChecker =
 			PermissionThreadLocal.getPermissionChecker();
