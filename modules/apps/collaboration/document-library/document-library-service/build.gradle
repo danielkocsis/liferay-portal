@@ -3,7 +3,6 @@ dependencies {
 	provided group: "com.liferay", name: "com.liferay.dynamic.data.mapping.io", version: "2.0.0"
 	provided group: "com.liferay", name: "com.liferay.dynamic.data.mapping.service", version: "2.0.0"
 	provided group: "com.liferay", name: "com.liferay.exportimport.api", version: "2.0.0"
-	provided group: "com.liferay", name: "com.liferay.exportimport.service", version: "2.0.0"
 	provided group: "com.liferay", name: "com.liferay.portal.configuration.metatype", version: "2.0.0"
 	provided group: "com.liferay", name: "com.liferay.portal.instance.lifecycle", version: "2.0.0"
 	provided group: "com.liferay", name: "com.liferay.portal.search", version: "2.0.0"
@@ -18,4 +17,5 @@ dependencies {
 	provided group: "org.springframework", name: "spring-context", version: "4.1.9.RELEASE"
 	provided project(":apps:collaboration:document-library:document-library-api")
 	provided project(":apps:forms-and-workflow:dynamic-data-mapping:dynamic-data-mapping-api")
+	provided project(":apps:web-experience:export-import:export-import-service")
 }
