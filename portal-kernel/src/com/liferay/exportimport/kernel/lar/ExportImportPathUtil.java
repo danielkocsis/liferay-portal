@@ -395,7 +395,7 @@ public class ExportImportPathUtil {
 		PortletDataContext portletDataContext, String serviceName, long ownerId,
 		int ownerType) {
 
-		StringBundler sb = new StringBundler(9);
+		StringBundler sb = new StringBundler(10);
 
 		sb.append(getRootPath(portletDataContext));
 		sb.append(StringPool.FORWARD_SLASH);
