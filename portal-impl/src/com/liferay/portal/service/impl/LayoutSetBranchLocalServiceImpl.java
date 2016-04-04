@@ -169,7 +169,7 @@ public class LayoutSetBranchLocalServiceImpl
 						layoutBranch.getLayoutBranchId(),
 						LayoutRevisionConstants.
 							DEFAULT_PARENT_LAYOUT_REVISION_ID,
-						true, lastLayoutRevision.getPlid(),
+						false, lastLayoutRevision.getPlid(),
 						lastLayoutRevision.getLayoutRevisionId(),
 						lastLayoutRevision.getPrivateLayout(),
 						lastLayoutRevision.getName(),
@@ -217,7 +217,7 @@ public class LayoutSetBranchLocalServiceImpl
 				layoutRevisionLocalService.addLayoutRevision(
 					userId, layoutSetBranchId, layoutBranch.getLayoutBranchId(),
 					LayoutRevisionConstants.DEFAULT_PARENT_LAYOUT_REVISION_ID,
-					true, layoutRevision.getPlid(),
+					false, layoutRevision.getPlid(),
 					layoutRevision.getLayoutRevisionId(),
 					layoutRevision.getPrivateLayout(), layoutRevision.getName(),
 					layoutRevision.getTitle(), layoutRevision.getDescription(),
