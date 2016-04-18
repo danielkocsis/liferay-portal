@@ -1883,7 +1883,8 @@ public class StagingImpl implements Staging {
 					"parameterMap");
 				privateLayout = MapUtil.getBoolean(
 					settingsMap, "privateLayout");
-				layoutIds = (long[])settingsMap.get("layoutIds");
+				layoutIds = GetterUtil.getLongValues(
+					settingsMap.get("layoutIds"));
 			}
 		}
 
