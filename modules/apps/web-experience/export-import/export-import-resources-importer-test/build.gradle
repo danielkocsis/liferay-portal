@@ -3,10 +3,13 @@ copyLibs {
 }
 
 dependencies {
+	testIntegrationCompile group: "com.liferay", name: "com.liferay.exportimport.resources.importer", version: "1.0.4"
+	testIntegrationCompile group: "com.liferay", name: "com.liferay.journal.api", version: "2.0.1"
 	testIntegrationCompile group: "com.liferay.arquillian", name: "com.liferay.arquillian.arquillian-container-liferay", version: "1.0.3"
 	testIntegrationCompile group: "com.liferay.arquillian", name: "com.liferay.arquillian.arquillian-deployment-generator-bnd", version: "1.0.3"
-	testIntegrationCompile group: "com.liferay", name: "com.liferay.exportimport.resources.importer", version: "1.0.5"
-	testIntegrationCompile group: "com.liferay", name: "com.liferay.journal.api", version: "2.0.2"
-	testIntegrationCompile group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "2.4.0"
-	testIntegrationCompile group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "2.4.0"
+	testIntegrationCompile group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "2.3.0"
+	testIntegrationCompile group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "2.3.0"
+	testIntegrationCompile group: "junit", name: "junit", version: "4.12"
+	testIntegrationCompile group: "org.jboss.arquillian.junit", name: "arquillian-junit-container", version: "1.1.6.Final"
+	testIntegrationCompile group: "org.osgi", name: "org.osgi.core", version: "6.0.0"
 }
