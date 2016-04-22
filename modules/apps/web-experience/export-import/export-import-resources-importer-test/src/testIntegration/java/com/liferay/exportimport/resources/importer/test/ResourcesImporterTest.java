@@ -98,8 +98,9 @@ public class ResourcesImporterTest {
 					public void receive(Message message)
 						throws MessageListenerException {
 
-							countDownLatch.countDown();
-						}
+						countDownLatch.countDown();
+					}
+
 				},
 				properties);
 
