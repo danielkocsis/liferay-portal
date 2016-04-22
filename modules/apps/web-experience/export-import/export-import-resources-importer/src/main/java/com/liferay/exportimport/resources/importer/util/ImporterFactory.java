@@ -29,7 +29,6 @@ import com.liferay.journal.util.JournalConverter;
 import com.liferay.portal.kernel.deploy.DeployManagerUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.plugin.PluginPackage;
-import com.liferay.portal.kernel.portlet.PortletPreferencesFactory;
 import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
@@ -195,8 +194,7 @@ public class ImporterFactory {
 			_journalArticleService, _layoutLocalService,
 			_layoutPrototypeLocalService, _layoutSetLocalService,
 			_layoutSetPrototypeLocalService, _mimeTypes, _portal,
-			_portletPreferencesFactory, _repositoryLocalService, _saxReader,
-			_themeLocalService);
+			_repositoryLocalService, _saxReader, _themeLocalService);
 	}
 
 	protected LARImporter getLARImporter() {
@@ -213,8 +211,7 @@ public class ImporterFactory {
 			_journalArticleService, _layoutLocalService,
 			_layoutPrototypeLocalService, _layoutSetLocalService,
 			_layoutSetPrototypeLocalService, _mimeTypes, _portal,
-			_portletPreferencesFactory, _repositoryLocalService, _saxReader,
-			_themeLocalService);
+			_repositoryLocalService, _saxReader, _themeLocalService);
 	}
 
 	@Reference
@@ -279,9 +276,6 @@ public class ImporterFactory {
 
 	@Reference
 	private Portal _portal;
-
-	@Reference
-	private PortletPreferencesFactory _portletPreferencesFactory;
 
 	@Reference
 	private RepositoryLocalService _repositoryLocalService;

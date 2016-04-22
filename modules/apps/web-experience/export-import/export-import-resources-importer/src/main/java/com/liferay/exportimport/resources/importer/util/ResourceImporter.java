@@ -29,7 +29,6 @@ import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
 import com.liferay.dynamic.data.mapping.util.DDMXML;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.service.JournalArticleService;
-import com.liferay.portal.kernel.portlet.PortletPreferencesFactory;
 import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutPrototypeLocalService;
@@ -81,7 +80,6 @@ public class ResourceImporter extends FileSystemImporter {
 		LayoutSetLocalService layoutSetLocalService,
 		LayoutSetPrototypeLocalService layoutSetPrototypeLocalService,
 		MimeTypes mimeTypes, Portal portal,
-		PortletPreferencesFactory portletPreferencesFactory,
 		RepositoryLocalService repositoryLocalService, SAXReader saxReader,
 		ThemeLocalService themeLocalService) {
 
@@ -93,8 +91,7 @@ public class ResourceImporter extends FileSystemImporter {
 			indexerRegistry, journalArticleLocalService, journalArticleService,
 			layoutLocalService, layoutPrototypeLocalService,
 			layoutSetLocalService, layoutSetPrototypeLocalService, mimeTypes,
-			portal, portletPreferencesFactory, repositoryLocalService,
-			saxReader, themeLocalService);
+			portal, repositoryLocalService, saxReader, themeLocalService);
 	}
 
 	@Override
