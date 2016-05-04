@@ -35,7 +35,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.List;
 import java.util.Locale;
@@ -253,15 +252,6 @@ public class LayoutRevisionImpl extends LayoutRevisionBaseImpl {
 		else {
 			return false;
 		}
-	}
-
-	@Override
-	public void setStatus(int status) {
-		if (status == WorkflowConstants.STATUS_APPROVED) {
-			super.setMajor(true);
-		}
-
-		super.setStatus(status);
 	}
 
 	@Override

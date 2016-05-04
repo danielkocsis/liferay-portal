@@ -107,6 +107,12 @@ public class LayoutRevisionLocalServiceImpl
 
 		copyPortletPreferences(layoutRevision, portletPreferencesPlid);
 
+		boolean major = ParamUtil.getBoolean(serviceContext, "major");
+
+		if (major || !isWorkflowEnabled(plid)) {
+			updateMajor(layoutRevision);
+		}
+
 		// Workflow
 
 		if (isWorkflowEnabled(plid)) {
@@ -117,8 +123,6 @@ public class LayoutRevisionLocalServiceImpl
 				serviceContext);
 		}
 		else {
-			updateMajor(layoutRevision);
-
 			updateStatus(
 				userId, layoutRevisionId, WorkflowConstants.STATUS_APPROVED,
 				serviceContext);
