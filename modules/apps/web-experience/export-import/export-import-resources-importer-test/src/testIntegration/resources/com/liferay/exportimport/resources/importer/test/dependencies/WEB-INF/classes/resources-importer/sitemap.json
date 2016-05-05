@@ -1,0 +1,45 @@
+{
+	"layoutTemplateId": "1_column",
+	"publicPages": [
+		{
+			"columns": [
+				[
+					{
+					 "portletId": "com_liferay_hello_world_web_portlet_HelloWorldPortlet"
+					 }
+				],
+				[
+				    "The Search for Extra Terrestrial Life.html"
+				]
+			],
+			"friendlyURL": "/home",
+			"name": "Welcome",
+			"title": "Welcome",
+			"layoutTemplateId": "2_columns_ii"
+		},
+		{
+			"columns": [
+				[
+				    "The Space Program.html"
+				]
+			],
+			"friendlyURL": "/about-us",
+			"layoutTemplateId": "2_columns_ii",
+			"layouts": [
+                {
+                    "friendlyURL": "/contact-us",
+                    "name": "Contact Us",
+                    "title": "Contact Us"
+                },
+                {
+                    "friendlyURL": "/careers",
+                    "name": "Careers",
+                    "title": "Careers"
+                }
+            ],
+			"name": "About Us",
+			"title": "About Us",
+		}
+		
+	]
+}
