@@ -12,9 +12,8 @@
  * details.
  */
 
-package com.liferay.portal.verify;
+package com.liferay.portlet.admin.util;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
@@ -39,7 +38,7 @@ import java.util.List;
 /**
  * @author Andrew Betts
  */
-public class VerifyPortletPreferences extends VerifyProcess {
+public class CleanUpPortletPreferencesUtil {
 
 	public static void cleanUpLayoutRevisionPortletPreferences()
 		throws Exception {
@@ -128,19 +127,7 @@ public class VerifyPortletPreferences extends VerifyProcess {
 		return portletPreferencesActionableDynamicQuery;
 	}
 
-	@Override
-	protected void doVerify() throws Exception {
-		CacheRegistryUtil.setActive(true);
-
-		try {
-			cleanUpLayoutRevisionPortletPreferences();
-		}
-		finally {
-			CacheRegistryUtil.setActive(false);
-		}
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
-		VerifyPortletPreferences.class);
+		CleanUpPortletPreferencesUtil.class);
 
 }
