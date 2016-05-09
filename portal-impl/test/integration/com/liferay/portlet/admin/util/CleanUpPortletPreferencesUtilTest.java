@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.verify;
+package com.liferay.portlet.admin.util;
 
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
@@ -35,7 +35,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.LayoutTestUtil;
-import com.liferay.portal.verify.test.BaseVerifyProcessTestCase;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,7 +45,7 @@ import org.junit.Test;
 /**
  * @author Andrew Betts
  */
-public class VerifyPortletPreferencesTest extends BaseVerifyProcessTestCase {
+public class CleanUpPortletPreferencesUtilTest {
 
 	@ClassRule
 	@Rule
@@ -54,10 +53,7 @@ public class VerifyPortletPreferencesTest extends BaseVerifyProcessTestCase {
 		new LiferayIntegrationTestRule();
 
 	@Before
-	@Override
 	public void setUp() throws Exception {
-		super.setUp();
-
 		_group = GroupTestUtil.addGroup();
 	}
 
@@ -74,7 +70,7 @@ public class VerifyPortletPreferencesTest extends BaseVerifyProcessTestCase {
 
 		Assert.assertNotNull(portletPreferences);
 
-		doVerify();
+		CleanUpPortletPreferencesUtil.cleanUpLayoutRevisionPortletPreferences();
 
 		portletPreferences =
 			PortletPreferencesLocalServiceUtil.fetchPortletPreferences(
@@ -102,11 +98,6 @@ public class VerifyPortletPreferencesTest extends BaseVerifyProcessTestCase {
 		return LayoutRevisionLocalServiceUtil.getLayoutRevision(
 			layoutSetBranch.getLayoutSetBranchId(),
 			layoutBranch.getLayoutBranchId(), layout.getPlid());
-	}
-
-	@Override
-	protected VerifyProcess getVerifyProcess() {
-		return new VerifyPortletPreferences();
 	}
 
 	@DeleteAfterTestRun

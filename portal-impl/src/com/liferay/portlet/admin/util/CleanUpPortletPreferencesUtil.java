@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.verify;
+package com.liferay.portlet.admin.util;
 
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
@@ -39,10 +39,12 @@ import java.util.List;
 /**
  * @author Andrew Betts
  */
-public class VerifyPortletPreferences extends VerifyProcess {
+public class CleanUpPortletPreferencesUtil {
 
 	public static void cleanUpLayoutRevisionPortletPreferences()
 		throws Exception {
+
+		CacheRegistryUtil.setActive(true);
 
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			ActionableDynamicQuery actionableDynamicQuery =
@@ -51,6 +53,9 @@ public class VerifyPortletPreferences extends VerifyProcess {
 			actionableDynamicQuery.setParallel(true);
 
 			actionableDynamicQuery.performActions();
+		}
+		finally {
+			CacheRegistryUtil.setActive(false);
 		}
 	}
 
@@ -128,19 +133,7 @@ public class VerifyPortletPreferences extends VerifyProcess {
 		return portletPreferencesActionableDynamicQuery;
 	}
 
-	@Override
-	protected void doVerify() throws Exception {
-		CacheRegistryUtil.setActive(true);
-
-		try {
-			cleanUpLayoutRevisionPortletPreferences();
-		}
-		finally {
-			CacheRegistryUtil.setActive(false);
-		}
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
-		VerifyPortletPreferences.class);
+		CleanUpPortletPreferencesUtil.class);
 
 }
