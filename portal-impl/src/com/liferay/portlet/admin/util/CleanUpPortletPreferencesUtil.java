@@ -33,8 +33,10 @@ import com.liferay.portal.kernel.service.LayoutRevisionLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LoggingTimer;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Andrew Betts
@@ -116,6 +118,19 @@ public class CleanUpPortletPreferencesUtil {
 							portletPreferences.getPortletId())) {
 
 						return;
+					}
+
+					UnicodeProperties typeSettingsProperties =
+						layoutRevision.getTypeSettingsProperties();
+
+					for (Map.Entry<String, String> typeSettingsProperty :
+							typeSettingsProperties.entrySet()) {
+
+						String value = typeSettingsProperty.getValue();
+
+						if (value.contains(portletPreferences.getPortletId())) {
+							return;
+						}
 					}
 
 					if (_log.isWarnEnabled()) {
