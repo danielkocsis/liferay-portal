@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutRevision;
+import com.liferay.portal.kernel.model.LayoutStagingHandler;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.PortletPreferences;
@@ -33,10 +34,10 @@ import com.liferay.portal.kernel.service.LayoutRevisionLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LoggingTimer;
-import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Andrew Betts
@@ -59,6 +60,18 @@ public class CleanUpPortletPreferencesUtil {
 		finally {
 			CacheRegistryUtil.setActive(false);
 		}
+	}
+
+	protected static boolean containsPortlet(Layout layout, String portletId) {
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		List<Portlet> portlets = layoutTypePortlet.getAllPortlets();
+
+		List<String> portletIds = ListUtil.toList(
+			portlets, Portlet.PORTLET_ID_ACCESSOR);
+
+		return portletIds.contains(portletId);
 	}
 
 	protected static ActionableDynamicQuery
@@ -106,31 +119,25 @@ public class CleanUpPortletPreferencesUtil {
 						return;
 					}
 
-					LayoutTypePortlet layoutTypePortlet =
-						(LayoutTypePortlet)layout.getLayoutType();
-
-					List<Portlet> portlets = layoutTypePortlet.getAllPortlets();
-
-					List<String> portletIds = ListUtil.toList(
-						portlets, Portlet.PORTLET_ID_ACCESSOR);
-
-					if (portletIds.contains(
-							portletPreferences.getPortletId())) {
+					if (containsPortlet(
+							layout, portletPreferences.getPortletId())) {
 
 						return;
 					}
 
-					UnicodeProperties typeSettingsProperties =
-						layoutRevision.getTypeSettingsProperties();
+					LayoutStagingHandler layoutStagingHandler =
+						new LayoutStagingHandler(layout);
 
-					for (Map.Entry<String, String> typeSettingsProperty :
-							typeSettingsProperties.entrySet()) {
+					layoutStagingHandler.setLayoutRevision(layoutRevision);
 
-						String value = typeSettingsProperty.getValue();
+					Layout proxiedLayout = (Layout)ProxyUtil.newProxyInstance(
+						PortalClassLoaderUtil.getClassLoader(),
+						new Class[] {Layout.class}, layoutStagingHandler);
 
-						if (value.contains(portletPreferences.getPortletId())) {
-							return;
-						}
+					if (containsPortlet(
+							proxiedLayout, portletPreferences.getPortletId())) {
+
+						return;
 					}
 
 					if (_log.isWarnEnabled()) {
