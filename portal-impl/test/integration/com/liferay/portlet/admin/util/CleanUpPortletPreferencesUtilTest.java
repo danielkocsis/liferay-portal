@@ -19,8 +19,11 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutBranch;
 import com.liferay.portal.kernel.model.LayoutRevision;
 import com.liferay.portal.kernel.model.LayoutSetBranch;
+import com.liferay.portal.kernel.model.LayoutTypePortlet;
+import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.service.LayoutBranchLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutRevisionLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutSetBranchLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
@@ -32,6 +35,7 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.LayoutTestUtil;
@@ -58,7 +62,7 @@ public class CleanUpPortletPreferencesUtilTest {
 	}
 
 	@Test
-	public void testCleanUpLayoutRevisionPortletPreferences() throws Exception {
+	public void testCleanUpOrphanePortletPreferences() throws Exception {
 		LayoutRevision layoutRevision = getLayoutRevision();
 
 		PortletPreferences portletPreferences =
@@ -77,6 +81,47 @@ public class CleanUpPortletPreferencesUtilTest {
 				portletPreferences.getPortletPreferencesId());
 
 		Assert.assertNull(portletPreferences);
+	}
+
+	@Test
+	public void testCleanUpProperPortletPreferences() throws Exception {
+		LayoutRevision layoutRevision = getLayoutRevision();
+
+		String portletId = PortletConstants.assemblePortletId(
+			com.liferay.portlet.util.test.PortletKeys.TEST,
+			PortletConstants.generateInstanceId());
+
+		UnicodeProperties typeSettingProperties =
+			layoutRevision.getTypeSettingsProperties();
+
+		typeSettingProperties.setProperty("column-1", portletId);
+
+		layoutRevision = LayoutRevisionLocalServiceUtil.updateLayoutRevision(
+			layoutRevision);
+
+		PortletPreferences portletPreferences =
+			PortletPreferencesLocalServiceUtil.addPortletPreferences(
+				TestPropsValues.getCompanyId(), TestPropsValues.getUserId(), 0,
+				layoutRevision.getLayoutRevisionId(), portletId, null,
+				StringPool.BLANK);
+
+		Assert.assertNotNull(portletPreferences);
+
+		Layout layout = LayoutLocalServiceUtil.getLayout(
+			layoutRevision.getPlid());
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		Assert.assertTrue(layoutTypePortlet.getPortletIds().isEmpty());
+
+		CleanUpPortletPreferencesUtil.cleanUpLayoutRevisionPortletPreferences();
+
+		portletPreferences =
+			PortletPreferencesLocalServiceUtil.fetchPortletPreferences(
+				portletPreferences.getPortletPreferencesId());
+
+		Assert.assertNotNull(portletPreferences);
 	}
 
 	protected LayoutRevision getLayoutRevision() throws Exception {
