@@ -54,6 +54,7 @@ import com.liferay.exportimport.kernel.staging.MergeLayoutPrototypesThreadLocal;
 import com.liferay.exportimport.lar.DeletionSystemEventImporter;
 import com.liferay.exportimport.lar.LayoutCache;
 import com.liferay.exportimport.lar.PermissionImporter;
+import com.liferay.exportimport.portlet.data.handler.provider.PortletDataHandlerProvider;
 import com.liferay.exportimport.portlet.preferences.processor.Capability;
 import com.liferay.exportimport.portlet.preferences.processor.ExportImportPortletPreferencesProcessor;
 import com.liferay.exportimport.portlet.preferences.processor.ExportImportPortletPreferencesProcessorRegistryUtil;
@@ -70,7 +71,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
-import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.model.PortletItem;
 import com.liferay.portal.kernel.model.PortletPreferences;
@@ -253,23 +253,10 @@ public class PortletImportController implements ImportController {
 			PortletPreferences portletPreferences, Element portletDataElement)
 		throws Exception {
 
-		Portlet portlet = _portletLocalService.getPortletById(
-			portletDataContext.getCompanyId(),
-			portletDataContext.getPortletId());
-
-		if (portlet == null) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(
-					"Do not import portlet data for " +
-						portletDataContext.getPortletId() +
-							" because the portlet does not exist");
-			}
-
-			return null;
-		}
-
 		PortletDataHandler portletDataHandler =
-			portlet.getPortletDataHandlerInstance();
+			_portletDataHandlerProvider.provide(
+				portletDataContext.getCompanyId(),
+				portletDataContext.getPortletId());
 
 		if ((portletDataHandler == null) ||
 			portletDataHandler.isDataPortletInstanceLevel()) {
@@ -414,23 +401,10 @@ public class PortletImportController implements ImportController {
 			return null;
 		}
 
-		Portlet portlet = _portletLocalService.getPortletById(
-			portletDataContext.getCompanyId(),
-			portletDataContext.getPortletId());
-
-		if (portlet == null) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(
-					"Do not delete portlet data for " +
-						portletDataContext.getPortletId() +
-							" because the portlet does not exist");
-			}
-
-			return null;
-		}
-
 		PortletDataHandler portletDataHandler =
-			portlet.getPortletDataHandlerInstance();
+			_portletDataHandlerProvider.provide(
+				portletDataContext.getCompanyId(),
+				portletDataContext.getPortletId());
 
 		if (portletDataHandler == null) {
 			if (_log.isDebugEnabled()) {
@@ -949,14 +923,12 @@ public class PortletImportController implements ImportController {
 							preferenceDataElement);
 					}
 
-					Portlet portlet = _portletLocalService.getPortletById(
-						portletDataContext.getCompanyId(), curPortletId);
-
 					ExportImportPortletPreferencesProcessor
 						exportImportPortletPreferencesProcessor =
 							ExportImportPortletPreferencesProcessorRegistryUtil.
 								getExportImportPortletPreferencesProcessor(
-									portlet.getRootPortletId());
+									PortletConstants.getRootPortletId(
+										curPortletId));
 
 					if (exportImportPortletPreferencesProcessor != null) {
 						List<Capability> importCapabilities =
@@ -978,7 +950,9 @@ public class PortletImportController implements ImportController {
 					}
 					else {
 						PortletDataHandler portletDataHandler =
-							portlet.getPortletDataHandlerInstance();
+							_portletDataHandlerProvider.provide(
+								portletDataContext.getCompanyId(),
+								curPortletId);
 
 						jxPortletPreferences =
 							portletDataHandler.processImportPortletPreferences(
@@ -1048,18 +1022,10 @@ public class PortletImportController implements ImportController {
 			PortletDataContext portletDataContext)
 		throws Exception {
 
-		Portlet portlet = _portletLocalService.getPortletById(
-			portletDataContext.getCompanyId(),
-			portletDataContext.getPortletId());
-
-		if ((portlet == null) || !portlet.isActive() ||
-			portlet.isUndeployedPortlet()) {
-
-			return;
-		}
-
 		PortletDataHandler portletDataHandler =
-			portlet.getPortletDataHandlerInstance();
+			_portletDataHandlerProvider.provide(
+				portletDataContext.getCompanyId(),
+				portletDataContext.getPortletId());
 
 		if (portletDataHandler == null) {
 			return;
@@ -1259,21 +1225,9 @@ public class PortletImportController implements ImportController {
 			long plid, String portletId, String xml, boolean importData)
 		throws Exception {
 
-		Portlet portlet = _portletLocalService.getPortletById(
-			portletDataContext.getCompanyId(), portletId);
-
-		if (portlet == null) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(
-					"Do not update portlet preferences for " + portletId +
-						" because the portlet does not exist");
-			}
-
-			return;
-		}
-
 		PortletDataHandler portletDataHandler =
-			portlet.getPortletDataHandlerInstance();
+			_portletDataHandlerProvider.provide(
+				portletDataContext.getCompanyId(), portletId);
 
 		if (importData || !MergeLayoutPrototypesThreadLocal.isInProgress()) {
 			_portletPreferencesLocalService.updatePreferences(
@@ -1381,11 +1335,8 @@ public class PortletImportController implements ImportController {
 
 		// Available locales
 
-		Portlet portlet = _portletLocalService.getPortletById(
-			companyId, portletId);
-
 		PortletDataHandler portletDataHandler =
-			portlet.getPortletDataHandlerInstance();
+			_portletDataHandlerProvider.provide(companyId, portletId);
 
 		if (portletDataHandler.isDataLocalized()) {
 			List<Locale> sourceAvailableLocales = Arrays.asList(
@@ -1428,6 +1379,10 @@ public class PortletImportController implements ImportController {
 	private LayoutLocalService _layoutLocalService;
 	private final PermissionImporter _permissionImporter =
 		PermissionImporter.getInstance();
+
+	@Reference
+	private PortletDataHandlerProvider _portletDataHandlerProvider;
+
 	private PortletItemLocalService _portletItemLocalService;
 	private PortletLocalService _portletLocalService;
 	private PortletPreferencesLocalService _portletPreferencesLocalService;
