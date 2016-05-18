@@ -81,7 +81,6 @@ import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.PortletItemLocalService;
-import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
@@ -954,10 +953,13 @@ public class PortletImportController implements ImportController {
 								portletDataContext.getCompanyId(),
 								curPortletId);
 
-						jxPortletPreferences =
-							portletDataHandler.processImportPortletPreferences(
-								portletDataContext, curPortletId,
-								jxPortletPreferences);
+						if (portletDataHandler != null) {
+							jxPortletPreferences =
+								portletDataHandler.
+									processImportPortletPreferences(
+										portletDataContext, curPortletId,
+										jxPortletPreferences);
+						}
 					}
 				}
 				finally {
@@ -1202,13 +1204,6 @@ public class PortletImportController implements ImportController {
 	}
 
 	@Reference(unbind = "-")
-	protected void setPortletLocalService(
-		PortletLocalService portletLocalService) {
-
-		_portletLocalService = portletLocalService;
-	}
-
-	@Reference(unbind = "-")
 	protected void setPortletPreferencesLocalService(
 		PortletPreferencesLocalService portletPreferencesLocalService) {
 
@@ -1384,7 +1379,6 @@ public class PortletImportController implements ImportController {
 	private PortletDataHandlerProvider _portletDataHandlerProvider;
 
 	private PortletItemLocalService _portletItemLocalService;
-	private PortletLocalService _portletLocalService;
 	private PortletPreferencesLocalService _portletPreferencesLocalService;
 	private UserLocalService _userLocalService;
 

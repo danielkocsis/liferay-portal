@@ -56,10 +56,6 @@ public class PortletDataHandlerProviderImpl
 	}
 
 	protected PortletDataHandler doProvide(Portlet portlet) {
-		if (portlet == null) {
-			return null;
-		}
-
 		if ((portlet == null) || !portlet.isActive() ||
 			portlet.isUndeployedPortlet()) {
 

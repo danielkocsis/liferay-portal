@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatusMessageSende
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskThreadLocal;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.model.StagedModel;
-import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.util.LongWrapper;
 
 import java.util.HashMap;
@@ -158,8 +157,5 @@ public class PortletDataHandlerStatusMessageSenderImpl
 
 	@Reference
 	private PortletDataHandlerProvider _portletDataHandlerProvider;
-
-	@Reference
-	private PortletLocalService _portletLocalService;
 
 }
