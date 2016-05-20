@@ -459,6 +459,10 @@ public class LayoutExportController implements ExportController {
 		portletDataContext.addDeletionSystemEventStagedModelTypes(
 			new StagedModelType(Layout.class));
 
+		// Force to always have a Layout group element
+
+		portletDataContext.getExportDataGroupElement(Layout.class);
+
 		for (Layout layout : layouts) {
 			exportLayout(portletDataContext, layoutIds, layout);
 		}
