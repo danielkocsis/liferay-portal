@@ -48,9 +48,7 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -99,10 +97,33 @@ public class ResourcesImporterHotDeployMessageListener
 				}
 
 			});
+
+		if (_destinationFactory != null) {
+			DestinationConfiguration destinationConfiguration =
+				new DestinationConfiguration(
+					DestinationConfiguration.DESTINATION_TYPE_SERIAL,
+					ResourcesImporterDestinationNames.RESOURCES_IMPORTER);
+
+			_destination = _destinationFactory.createDestination(
+				destinationConfiguration);
+
+			Dictionary<String, Object> dictionary = new HashMapDictionary<>();
+
+			dictionary.put("destination.name", _destination.getName());
+
+			_serviceRegistration = bundleContext.registerService(
+				Destination.class, _destination, dictionary);
+		}
 	}
 
 	@Deactivate
 	protected void deactivate() {
+		if (_serviceRegistration != null) {
+			_serviceRegistration.unregister();
+
+			_destination.destroy();
+		}
+
 		_serviceTrackerMap.close();
 	}
 
@@ -169,31 +190,13 @@ public class ResourcesImporterHotDeployMessageListener
 
 	@Reference(
 		cardinality = ReferenceCardinality.OPTIONAL,
-		policy = ReferencePolicy.DYNAMIC,
+		policy = ReferencePolicy.STATIC,
 		policyOption = ReferencePolicyOption.GREEDY
 	)
 	protected void setDestinationFactory(
 		DestinationFactory destinationFactory) {
 
-		DestinationConfiguration destinationConfiguration =
-			new DestinationConfiguration(
-				DestinationConfiguration.DESTINATION_TYPE_SERIAL,
-				ResourcesImporterDestinationNames.RESOURCES_IMPORTER);
-
-		Destination destination = destinationFactory.createDestination(
-			destinationConfiguration);
-
-		Dictionary<String, Object> dictionary = new HashMapDictionary<>();
-
-		dictionary.put("destination.name", destination.getName());
-
-		Bundle bundle = FrameworkUtil.getBundle(
-			ResourcesImporterHotDeployMessageListener.class);
-
-		BundleContext bundleContext = bundle.getBundleContext();
-
-		_serviceRegistration = bundleContext.registerService(
-			Destination.class, destination, dictionary);
+		_destinationFactory = destinationFactory;
 	}
 
 	@Reference(unbind = "-")
@@ -206,26 +209,6 @@ public class ResourcesImporterHotDeployMessageListener
 		unbind = "-"
 	)
 	protected void setRelease(Release release) {
-	}
-
-	protected void unsetDestinationFactory(
-		DestinationFactory destinationFactory) {
-
-		if (_serviceRegistration == null) {
-			return;
-		}
-
-		Bundle bundle = FrameworkUtil.getBundle(
-			ResourcesImporterHotDeployMessageListener.class);
-
-		BundleContext bundleContext = bundle.getBundleContext();
-
-		Destination destination = bundleContext.getService(
-			_serviceRegistration.getReference());
-
-		_serviceRegistration.unregister();
-
-		destination.destroy();
 	}
 
 	private void _importResources(
@@ -316,6 +299,8 @@ public class ResourcesImporterHotDeployMessageListener
 		ResourcesImporterHotDeployMessageListener.class);
 
 	private CompanyLocalService _companyLocalService;
+	private Destination _destination;
+	private DestinationFactory _destinationFactory;
 	private ImporterFactory _importerFactory;
 	private ServiceRegistration<Destination> _serviceRegistration;
 	private ServiceTrackerMap<String, ServletContext> _serviceTrackerMap;
