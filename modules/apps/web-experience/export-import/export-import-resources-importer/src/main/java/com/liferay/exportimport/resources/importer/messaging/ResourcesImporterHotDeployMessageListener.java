@@ -15,6 +15,7 @@
 package com.liferay.exportimport.resources.importer.messaging;
 
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
+import com.liferay.exportimport.resources.importer.constants.ResourcesImporterDestinationNames;
 import com.liferay.exportimport.resources.importer.util.Importer;
 import com.liferay.exportimport.resources.importer.util.ImporterException;
 import com.liferay.exportimport.resources.importer.util.ImporterFactory;
@@ -25,6 +26,8 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.Destination;
+import com.liferay.portal.kernel.messaging.DestinationConfiguration;
+import com.liferay.portal.kernel.messaging.DestinationFactory;
 import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.HotDeployMessageListener;
 import com.liferay.portal.kernel.messaging.Message;
@@ -35,20 +38,28 @@ import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * @author Ryan Park
@@ -156,6 +167,35 @@ public class ResourcesImporterHotDeployMessageListener
 	protected void setDestination(Destination destination) {
 	}
 
+	@Reference(
+		cardinality = ReferenceCardinality.OPTIONAL,
+		policy = ReferencePolicy.DYNAMIC,
+		policyOption = ReferencePolicyOption.GREEDY
+	)
+	protected void setDestinationFactory(
+		DestinationFactory destinationFactory) {
+
+		DestinationConfiguration destinationConfiguration =
+			new DestinationConfiguration(
+				DestinationConfiguration.DESTINATION_TYPE_SERIAL,
+				ResourcesImporterDestinationNames.RESOURCES_IMPORTER);
+
+		Destination destination = destinationFactory.createDestination(
+			destinationConfiguration);
+
+		Dictionary<String, Object> dictionary = new HashMapDictionary<>();
+
+		dictionary.put("destination.name", destination.getName());
+
+		Bundle bundle = FrameworkUtil.getBundle(
+			ResourcesImporterHotDeployMessageListener.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_serviceRegistration = bundleContext.registerService(
+			Destination.class, destination, dictionary);
+	}
+
 	@Reference(unbind = "-")
 	protected void setImporterFactory(ImporterFactory importerFactory) {
 		_importerFactory = importerFactory;
@@ -166,6 +206,26 @@ public class ResourcesImporterHotDeployMessageListener
 		unbind = "-"
 	)
 	protected void setRelease(Release release) {
+	}
+
+	protected void unsetDestinationFactory(
+		DestinationFactory destinationFactory) {
+
+		if (_serviceRegistration == null) {
+			return;
+		}
+
+		Bundle bundle = FrameworkUtil.getBundle(
+			ResourcesImporterHotDeployMessageListener.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		Destination destination = bundleContext.getService(
+			_serviceRegistration.getReference());
+
+		_serviceRegistration.unregister();
+
+		destination.destroy();
 	}
 
 	private void _importResources(
@@ -257,6 +317,7 @@ public class ResourcesImporterHotDeployMessageListener
 
 	private CompanyLocalService _companyLocalService;
 	private ImporterFactory _importerFactory;
+	private ServiceRegistration<Destination> _serviceRegistration;
 	private ServiceTrackerMap<String, ServletContext> _serviceTrackerMap;
 
 }
