@@ -73,6 +73,8 @@ public class ResourcesImporterHotDeployMessageListener
 
 	@Activate
 	protected void activate(final BundleContext bundleContext) {
+		_bundleContext = bundleContext;
+
 		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
 			bundleContext, ServletContext.class, null,
 			new ServiceReferenceMapper<String, ServletContext>() {
@@ -97,27 +99,12 @@ public class ResourcesImporterHotDeployMessageListener
 				}
 
 			});
-
-		if (_destinationFactory != null) {
-			DestinationConfiguration destinationConfiguration =
-				new DestinationConfiguration(
-					DestinationConfiguration.DESTINATION_TYPE_SERIAL,
-					ResourcesImporterDestinationNames.RESOURCES_IMPORTER);
-
-			_destination = _destinationFactory.createDestination(
-				destinationConfiguration);
-
-			Dictionary<String, Object> dictionary = new HashMapDictionary<>();
-
-			dictionary.put("destination.name", _destination.getName());
-
-			_serviceRegistration = bundleContext.registerService(
-				Destination.class, _destination, dictionary);
-		}
 	}
 
 	@Deactivate
 	protected void deactivate() {
+		_bundleContext = null;
+
 		if (_serviceRegistration != null) {
 			_serviceRegistration.unregister();
 
@@ -196,7 +183,20 @@ public class ResourcesImporterHotDeployMessageListener
 	protected void setDestinationFactory(
 		DestinationFactory destinationFactory) {
 
-		_destinationFactory = destinationFactory;
+		DestinationConfiguration destinationConfiguration =
+			new DestinationConfiguration(
+				DestinationConfiguration.DESTINATION_TYPE_SERIAL,
+				ResourcesImporterDestinationNames.RESOURCES_IMPORTER);
+
+		_destination = destinationFactory.createDestination(
+			destinationConfiguration);
+
+		Dictionary<String, Object> dictionary = new HashMapDictionary<>();
+
+		dictionary.put("destination.name", _destination.getName());
+
+		_serviceRegistration = _bundleContext.registerService(
+			Destination.class, _destination, dictionary);
 	}
 
 	@Reference(unbind = "-")
@@ -298,9 +298,9 @@ public class ResourcesImporterHotDeployMessageListener
 	private static final Log _log = LogFactoryUtil.getLog(
 		ResourcesImporterHotDeployMessageListener.class);
 
+	private BundleContext _bundleContext;
 	private CompanyLocalService _companyLocalService;
 	private Destination _destination;
-	private DestinationFactory _destinationFactory;
 	private ImporterFactory _importerFactory;
 	private ServiceRegistration<Destination> _serviceRegistration;
 	private ServiceTrackerMap<String, ServletContext> _serviceTrackerMap;
