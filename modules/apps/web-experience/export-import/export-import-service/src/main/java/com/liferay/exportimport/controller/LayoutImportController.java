@@ -66,6 +66,7 @@ import com.liferay.portal.kernel.model.LayoutPrototype;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
 import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.plugin.Version;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutPrototypeLocalService;
@@ -104,10 +105,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiPredicate;
 
 import org.apache.commons.lang.time.StopWatch;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -1269,19 +1274,68 @@ public class LayoutImportController implements ImportController {
 			throw new LARFileException(e);
 		}
 
-		// Build compatibility
-
-		int buildNumber = ReleaseInfo.getBuildNumber();
-
 		Element headerElement = rootElement.element("header");
 
-		int importBuildNumber = GetterUtil.getInteger(
-			headerElement.attributeValue("build-number"));
+		// Export Import bundle compatibility
 
-		if (buildNumber != importBuildNumber) {
-			throw new LayoutImportException(
-				"LAR build number " + importBuildNumber + " does not match " +
-					"portal build number " + buildNumber);
+		String importBundleVersion = GetterUtil.getString(
+			headerElement.attributeValue("bundle-version"));
+
+		if (Validator.isNull(importBundleVersion)) {
+			int buildNumber = ReleaseInfo.getBuildNumber();
+
+			int importBuildNumber = GetterUtil.getInteger(
+				headerElement.attributeValue("build-number"));
+
+			if (buildNumber != importBuildNumber) {
+				throw new LayoutImportException(
+					"LAR build number " + importBuildNumber +
+						" does not match portal build number " + buildNumber);
+			}
+		}
+		else {
+			BiPredicate<Version, Version> majorVersionPredicate =
+				(Version currentVersion, Version importVersion) ->
+					Objects.equals(
+						currentVersion.getMajor(), importVersion.getMajor());
+
+			BiPredicate<Version, Version> minorVersionPredicate =
+				(Version currentVersion, Version importVersion) -> {
+
+				int currentMinorVersion = GetterUtil.getInteger(
+					currentVersion.getMinor(), -1);
+				int importedMinorVersion = GetterUtil.getInteger(
+					importVersion.getMinor(), -1);
+
+				if (((currentMinorVersion == -1) &&
+					 (importedMinorVersion == -1)) ||
+					(currentMinorVersion < importedMinorVersion)) {
+
+					return false;
+				}
+
+				return true;
+			};
+
+			BiPredicate<Version, Version> manifestVersionPredicate =
+				(Version currentVersion, Version importVersion) ->
+					majorVersionPredicate.and(minorVersionPredicate).test(
+						currentVersion, importVersion);
+
+			Bundle bundle = FrameworkUtil.getBundle(
+				LayoutImportController.class);
+
+			String currentBundleVersion = bundle.getVersion().toString();
+
+			if (!manifestVersionPredicate.test(
+					Version.getInstance(currentBundleVersion),
+					Version.getInstance(importBundleVersion))) {
+
+				throw new LayoutImportException(
+					"LAR bundle version " + importBundleVersion +
+						" does not match deployed export/import bundle" +
+							" version " + bundle.getVersion());
+			}
 		}
 
 		// Type
