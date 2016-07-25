@@ -48,7 +48,9 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -73,8 +75,6 @@ public class ResourcesImporterHotDeployMessageListener
 
 	@Activate
 	protected void activate(final BundleContext bundleContext) {
-		_bundleContext = bundleContext;
-
 		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
 			bundleContext, ServletContext.class, null,
 			new ServiceReferenceMapper<String, ServletContext>() {
@@ -103,8 +103,6 @@ public class ResourcesImporterHotDeployMessageListener
 
 	@Deactivate
 	protected void deactivate() {
-		_bundleContext = null;
-
 		if (_serviceRegistration != null) {
 			_serviceRegistration.unregister();
 
@@ -183,6 +181,11 @@ public class ResourcesImporterHotDeployMessageListener
 	protected void setDestinationFactory(
 		DestinationFactory destinationFactory) {
 
+		Bundle bundle = FrameworkUtil.getBundle(
+			ResourcesImporterHotDeployMessageListener.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
 		DestinationConfiguration destinationConfiguration =
 			new DestinationConfiguration(
 				DestinationConfiguration.DESTINATION_TYPE_SERIAL,
@@ -195,7 +198,7 @@ public class ResourcesImporterHotDeployMessageListener
 
 		dictionary.put("destination.name", _destination.getName());
 
-		_serviceRegistration = _bundleContext.registerService(
+		_serviceRegistration = bundleContext.registerService(
 			Destination.class, _destination, dictionary);
 	}
 
@@ -298,7 +301,6 @@ public class ResourcesImporterHotDeployMessageListener
 	private static final Log _log = LogFactoryUtil.getLog(
 		ResourcesImporterHotDeployMessageListener.class);
 
-	private BundleContext _bundleContext;
 	private CompanyLocalService _companyLocalService;
 	private Destination _destination;
 	private ImporterFactory _importerFactory;
