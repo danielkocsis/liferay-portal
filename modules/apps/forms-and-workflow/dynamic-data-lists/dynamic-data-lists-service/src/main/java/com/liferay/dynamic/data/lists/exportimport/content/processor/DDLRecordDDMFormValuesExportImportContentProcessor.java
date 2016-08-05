@@ -15,7 +15,7 @@
 package com.liferay.dynamic.data.lists.exportimport.content.processor;
 
 import com.liferay.dynamic.data.lists.model.DDLRecord;
-import com.liferay.dynamic.data.mapping.exportimport.content.processor.BaseDDMFormValuesExportImportContentProcessor;
+import com.liferay.dynamic.data.mapping.exportimport.content.processor.DDMFormValuesExportImportContentProcessor;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.exportimport.content.processor.ExportImportContentProcessor;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
@@ -41,7 +41,7 @@ public class DDLRecordDDMFormValuesExportImportContentProcessor
 			boolean escapeContent)
 		throws Exception {
 
-		return baseDDMFormValuesExportImportContentProcessor.
+		return ddmFormValuesExportImportContentProcessor.
 			replaceExportContentReferences(
 				portletDataContext, stagedModel, content,
 				exportReferencedContent, escapeContent);
@@ -52,7 +52,7 @@ public class DDLRecordDDMFormValuesExportImportContentProcessor
 			DDMFormValues content)
 		throws Exception {
 
-		return baseDDMFormValuesExportImportContentProcessor.
+		return ddmFormValuesExportImportContentProcessor.
 			replaceImportContentReferences(
 				portletDataContext, stagedModel, content);
 	}
@@ -60,12 +60,12 @@ public class DDLRecordDDMFormValuesExportImportContentProcessor
 	public boolean validateContentReferences(
 		long groupId, DDMFormValues content) {
 
-		return baseDDMFormValuesExportImportContentProcessor.
+		return ddmFormValuesExportImportContentProcessor.
 			validateContentReferences(groupId, content);
 	}
 
 	@Reference
-	protected BaseDDMFormValuesExportImportContentProcessor
-		baseDDMFormValuesExportImportContentProcessor;
+	protected DDMFormValuesExportImportContentProcessor
+		ddmFormValuesExportImportContentProcessor;
 
 }
