@@ -43,11 +43,16 @@ import com.liferay.portal.kernel.xml.Element;
 import java.util.Locale;
 import java.util.Map;
 
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Daniel Kocsis
  */
+@Component(
+	immediate = true,
+	service = BaseDDMFormValuesExportImportContentProcessor.class
+)
 public class
 	BaseDDMFormValuesExportImportContentProcessor<S extends StagedModel>
 		implements ExportImportContentProcessor<S, DDMFormValues> {
