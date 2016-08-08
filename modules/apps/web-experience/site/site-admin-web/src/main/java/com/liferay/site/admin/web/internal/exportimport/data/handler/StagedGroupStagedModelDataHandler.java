@@ -153,6 +153,14 @@ public class StagedGroupStagedModelDataHandler
 			group = group.getLiveGroup();
 		}
 
+		long[] layoutIds = portletDataContext.getLayoutIds();
+
+		if (group.isLayoutPrototype()) {
+			layoutIds = ExportImportHelperUtil.getAllLayoutIds(
+				portletDataContext.getGroupId(),
+				portletDataContext.isPrivateLayout());
+		}
+
 		// Collect data portlets
 
 		List<Portlet> dataSiteLevelPortlets =

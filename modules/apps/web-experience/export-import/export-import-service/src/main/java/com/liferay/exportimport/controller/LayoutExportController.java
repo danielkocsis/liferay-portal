@@ -99,12 +99,6 @@ public class LayoutExportController implements ExportController {
 		try {
 			ExportImportThreadLocal.setLayoutExportInProcess(true);
 
-			Map<String, Serializable> settingsMap =
-				exportImportConfiguration.getSettingsMap();
-
-			long[] layoutIds = GetterUtil.getLongValues(
-				settingsMap.get("layoutIds"));
-
 			portletDataContext = getPortletDataContext(
 				exportImportConfiguration);
 
@@ -113,7 +107,7 @@ public class LayoutExportController implements ExportController {
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
-			File file = doExport(portletDataContext, layoutIds);
+			File file = doExport(portletDataContext);
 
 			ExportImportThreadLocal.setLayoutExportInProcess(false);
 
@@ -137,8 +131,7 @@ public class LayoutExportController implements ExportController {
 		}
 	}
 
-	protected File doExport(
-			PortletDataContext portletDataContext, long[] layoutIds)
+	protected File doExport(PortletDataContext portletDataContext)
 		throws Exception {
 
 		Map<String, String[]> parameterMap =
@@ -243,10 +236,6 @@ public class LayoutExportController implements ExportController {
 					group.getClassPK());
 
 			headerElement.addAttribute("type-uuid", layoutPrototype.getUuid());
-
-			layoutIds = ExportImportHelperUtil.getAllLayoutIds(
-				portletDataContext.getGroupId(),
-				portletDataContext.isPrivateLayout());
 		}
 		else if (group.isLayoutSetPrototype()) {
 			type ="layout-set-prototype";
@@ -311,12 +300,14 @@ public class LayoutExportController implements ExportController {
 			exportImportConfiguration.getSettingsMap();
 
 		long sourceGroupId = MapUtil.getLong(settingsMap, "sourceGroupId");
-		boolean privateLayout = MapUtil.getBoolean(
-			settingsMap, "privateLayout");
 		Map<String, String[]> parameterMap =
 			(Map<String, String[]>)settingsMap.get("parameterMap");
 		DateRange dateRange = ExportImportDateUtil.getDateRange(
 			exportImportConfiguration);
+		boolean privateLayout = MapUtil.getBoolean(
+			settingsMap, "privateLayout");
+		long[] layoutIds = GetterUtil.getLongValues(
+			settingsMap.get("layoutIds"));
 
 		Group group = _groupLocalService.getGroup(sourceGroupId);
 		ZipWriter zipWriter = ExportImportHelperUtil.getLayoutSetZipWriter(
@@ -327,6 +318,7 @@ public class LayoutExportController implements ExportController {
 				group.getCompanyId(), sourceGroupId, parameterMap,
 				dateRange.getStartDate(), dateRange.getEndDate(), zipWriter);
 
+		portletDataContext.setLayoutIds(layoutIds);
 		portletDataContext.setPrivateLayout(privateLayout);
 
 		return portletDataContext;
