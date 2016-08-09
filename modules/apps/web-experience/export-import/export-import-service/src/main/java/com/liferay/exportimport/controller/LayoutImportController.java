@@ -388,15 +388,9 @@ public class LayoutImportController implements ImportController {
 			layoutSetPrototypeLinkEnabled = false;
 		}
 
-		boolean layoutSetPrototypeSettings = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.LAYOUT_SET_PROTOTYPE_SETTINGS);
-		boolean layoutSetSettings = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.LAYOUT_SET_SETTINGS);
 		String layoutsImportMode = MapUtil.getString(
 			parameterMap, PortletDataHandlerKeys.LAYOUTS_IMPORT_MODE,
 			PortletDataHandlerKeys.LAYOUTS_IMPORT_MODE_MERGE_BY_LAYOUT_UUID);
-		boolean logo = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.LOGO);
 		boolean permissions = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.PERMISSIONS);
 
@@ -550,47 +544,6 @@ public class LayoutImportController implements ImportController {
 
 			layoutSetPrototypeUuid = GetterUtil.getString(
 				headerElement.attributeValue("type-uuid"));
-		}
-
-		if (layoutSetPrototypeSettings &&
-			Validator.isNotNull(layoutSetPrototypeUuid)) {
-
-			layoutSet.setLayoutSetPrototypeUuid(layoutSetPrototypeUuid);
-			layoutSet.setLayoutSetPrototypeLinkEnabled(
-				layoutSetPrototypeLinkEnabled);
-
-			_layoutSetLocalService.updateLayoutSet(layoutSet);
-		}
-
-		// Look and feel
-
-		if (logo) {
-			String logoPath = headerElement.attributeValue("logo-path");
-
-			byte[] iconBytes = portletDataContext.getZipEntryAsByteArray(
-				logoPath);
-
-			if (ArrayUtil.isNotEmpty(iconBytes)) {
-				_layoutSetLocalService.updateLogo(
-					portletDataContext.getGroupId(),
-					portletDataContext.isPrivateLayout(), true, iconBytes);
-			}
-			else {
-				_layoutSetLocalService.updateLogo(
-					portletDataContext.getGroupId(),
-					portletDataContext.isPrivateLayout(), false, (File)null);
-			}
-		}
-
-		_themeImporter.importTheme(portletDataContext, layoutSet);
-
-		if (layoutSetSettings) {
-			String settings = GetterUtil.getString(
-				headerElement.elementText("settings"));
-
-			_layoutSetLocalService.updateSettings(
-				portletDataContext.getGroupId(),
-				portletDataContext.isPrivateLayout(), settings);
 		}
 
 		Element portletsElement = rootElement.element("portlets");
