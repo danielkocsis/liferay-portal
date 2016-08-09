@@ -344,15 +344,6 @@ public class StagedGroupStagedModelDataHandler
 				scopeLayoutUuid = (String)portletIdsEntry.getValue()[4];
 			}
 
-			Layout layout = _layoutLocalService.fetchLayout(plid);
-
-			if (layout == null) {
-				layout = new LayoutImpl();
-
-				layout.setCompanyId(portletDataContext.getCompanyId());
-				layout.setGroupId(portletDataContext.getGroupId());
-			}
-
 			portletDataContext.setPlid(plid);
 			portletDataContext.setOldPlid(plid);
 			portletDataContext.setPortletId(portletId);
@@ -372,7 +363,7 @@ public class StagedGroupStagedModelDataHandler
 						portletDataContext));
 
 				_portletExportController.exportPortlet(
-					portletDataContext, layout, portletsElement, permissions,
+					portletDataContext, plid, portletsElement, permissions,
 					exportPortletControlsMap.get(
 						PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS),
 					exportPortletControlsMap.get(
