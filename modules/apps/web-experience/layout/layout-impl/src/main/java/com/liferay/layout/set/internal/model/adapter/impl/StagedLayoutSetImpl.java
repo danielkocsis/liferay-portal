@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.layout.internal.model.adapter.impl;
+package com.liferay.layout.set.internal.model.adapter.impl;
 
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
@@ -25,338 +25,371 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Mate Thurzo
  */
 public class StagedLayoutSetImpl implements StagedLayoutSet {
 
+	public StagedLayoutSetImpl() {
+	}
+
+	public StagedLayoutSetImpl(LayoutSet layoutSet) {
+		Objects.requireNonNull(
+			layoutSet,
+			"Cannot create a new StagedLayoutSet for a null LayoutSet");
+
+		_layoutSet = layoutSet;
+	}
+
 	public StagedModelType getStagedModelType() {
-		return null;
+		return new StagedModelType(StagedLayoutSet.class);
 	}
 
 	public String getUuid() {
-		return null;
+		StringBundler sb = new StringBundler(5);
+
+		sb.append(_layoutSet.getLayoutSetId());
+		sb.append(StringPool.POUND);
+		sb.append(_layoutSet.getGroupId());
+		sb.append(StringPool.POUND);
+		sb.append(_layoutSet.isPrivateLayout());
+
+		return sb.toString();
 	}
 
 	public void setUuid(String uuid) {
-
+		throw new UnsupportedOperationException();
 	}
 
 	public ColorScheme getColorScheme() {
-		return null;
+		return _layoutSet.getColorScheme();
 	}
 
 	public String getCompanyFallbackVirtualHostname() {
-		return null;
+		return _layoutSet.getCompanyFallbackVirtualHostname();
 	}
 
 	public Group getGroup() throws PortalException {
-		return null;
+		return _layoutSet.getGroup();
 	}
 
 	public long getLayoutSetPrototypeId() throws PortalException {
-		return 0;
+		return _layoutSet.getLayoutSetPrototypeId();
 	}
 
 	public long getLiveLogoId() {
-		return 0;
+		return _layoutSet.getLiveLogoId();
 	}
 
 	public boolean getLogo() {
-		return false;
+		return _layoutSet.getLogo();
 	}
 
 	public UnicodeProperties getSettingsProperties() {
-		return null;
+		return _layoutSet.getSettingsProperties();
 	}
 
 	public String getSettingsProperty(String key) {
-		return null;
+		return _layoutSet.getSettingsProperty(key);
 	}
 
 	public Theme getTheme() {
-		return null;
+		return _layoutSet.getTheme();
 	}
 
 	public String getThemeSetting(String key, String device) {
-		return null;
+		return _layoutSet.getThemeSetting(key, device);
 	}
 
 	public String getVirtualHostname() {
-		return null;
+		return _layoutSet.getVirtualHostname();
 	}
 
 	public boolean hasSetModifiedDate() {
-		return false;
+		return _layoutSet.hasSetModifiedDate();
 	}
 
 	public boolean isLayoutSetPrototypeLinkActive() {
-		return false;
+		return _layoutSet.isLayoutSetPrototypeLinkActive();
 	}
 
 	public boolean isLogo() {
-		return false;
+		return _layoutSet.isLogo();
 	}
 
 	public void setCompanyFallbackVirtualHostname(
 		String companyFallbackVirtualHostname) {
 
+		_layoutSet.setCompanyFallbackVirtualHostname(
+			companyFallbackVirtualHostname);
 	}
 
 	public void setSettingsProperties(
 		UnicodeProperties settingsProperties) {
 
+		_layoutSet.setSettingsProperties(settingsProperties);
 	}
 
 	public void setVirtualHostname(String virtualHostname) {
-
+		_layoutSet.setVirtualHostname(virtualHostname);
 	}
 
 	public long getPrimaryKey() {
-		return 0;
+		return _layoutSet.getPrimaryKey();
 	}
 
 	public void setPrimaryKey(long primaryKey) {
-
+		_layoutSet.setPrimaryKey(primaryKey);
 	}
 
 	public long getMvccVersion() {
-		return 0;
+		return _layoutSet.getMvccVersion();
 	}
 
 	public void setMvccVersion(long mvccVersion) {
-
+		_layoutSet.setMvccVersion(mvccVersion);
 	}
 
 	public long getLayoutSetId() {
-		return 0;
+		return _layoutSet.getLayoutSetId();
 	}
 
 	public void setLayoutSetId(long layoutSetId) {
-
+		_layoutSet.setLayoutSetId(layoutSetId);
 	}
 
 	public long getGroupId() {
-		return 0;
+		return _layoutSet.getGroupId();
 	}
 
 	public void setGroupId(long groupId) {
-
+		_layoutSet.setGroupId(groupId);
 	}
 
 	public long getCompanyId() {
-		return 0;
+		return _layoutSet.getCompanyId();
 	}
 
 	public void setCompanyId(long companyId) {
-
+		_layoutSet.setCompanyId(companyId);
 	}
 
 	public Date getCreateDate() {
-		return null;
+		return _layoutSet.getCreateDate();
 	}
 
 	public void setCreateDate(Date createDate) {
-
+		_layoutSet.setCreateDate(createDate);
 	}
 
 	public Date getModifiedDate() {
-		return null;
+		return _layoutSet.getModifiedDate();
 	}
 
 	public void setModifiedDate(Date modifiedDate) {
-
+		_layoutSet.setModifiedDate(modifiedDate);
 	}
 
 	public boolean getPrivateLayout() {
-		return false;
+		return _layoutSet.getPrivateLayout();
 	}
 
 	public boolean isPrivateLayout() {
-		return false;
+		return _layoutSet.isPrivateLayout();
 	}
 
 	public void setPrivateLayout(boolean privateLayout) {
-
+		_layoutSet.setPrivateLayout(privateLayout);
 	}
 
 	public long getLogoId() {
-		return 0;
+		return _layoutSet.getLogoId();
 	}
 
 	public void setLogoId(long logoId) {
-
+		_layoutSet.setLogoId(logoId);
 	}
 
 	public String getThemeId() {
-		return null;
+		return _layoutSet.getThemeId();
 	}
 
 	public void setThemeId(String themeId) {
-
+		_layoutSet.setThemeId(themeId);
 	}
 
 	public String getColorSchemeId() {
-		return null;
+		return _layoutSet.getColorSchemeId();
 	}
 
 	public void setColorSchemeId(String colorSchemeId) {
-
+		_layoutSet.setColorSchemeId(colorSchemeId);
 	}
 
 	public String getCss() {
-		return null;
+		return _layoutSet.getCss();
 	}
 
 	public void setCss(String css) {
-
+		_layoutSet.setCss(css);
 	}
 
 	public int getPageCount() {
-		return 0;
+		return _layoutSet.getPageCount();
 	}
 
 	public void setPageCount(int pageCount) {
-
+		_layoutSet.setPageCount(pageCount);
 	}
 
 	public String getSettings() {
-		return null;
+		return _layoutSet.getSettings();
 	}
 
 	public void setSettings(String settings) {
-
+		_layoutSet.setSettings(settings);
 	}
 
 	public String getLayoutSetPrototypeUuid() {
-		return null;
+		return _layoutSet.getLayoutSetPrototypeUuid();
 	}
 
 	public void setLayoutSetPrototypeUuid(String layoutSetPrototypeUuid) {
-
+		_layoutSet.setLayoutSetPrototypeUuid(layoutSetPrototypeUuid);
 	}
 
 	public boolean getLayoutSetPrototypeLinkEnabled() {
-		return false;
+		return _layoutSet.getLayoutSetPrototypeLinkEnabled();
 	}
 
 	public boolean isLayoutSetPrototypeLinkEnabled() {
-		return false;
+		return _layoutSet.isLayoutSetPrototypeLinkEnabled();
 	}
 
 	public void setLayoutSetPrototypeLinkEnabled(
 		boolean layoutSetPrototypeLinkEnabled) {
 
+		_layoutSet.setLayoutSetPrototypeLinkEnabled(
+			layoutSetPrototypeLinkEnabled);
 	}
 
 	public boolean isNew() {
-		return false;
+		return _layoutSet.isNew();
 	}
 
 	public void resetOriginalValues() {
-
+		_layoutSet.resetOriginalValues();
 	}
 
 	public void setNew(boolean n) {
-
+		_layoutSet.setNew(n);
 	}
 
 	public boolean isCachedModel() {
-		return false;
+		return _layoutSet.isCachedModel();
 	}
 
 	public boolean isEntityCacheEnabled() {
-		return false;
+		return _layoutSet.isEntityCacheEnabled();
 	}
 
 	public void setCachedModel(boolean cachedModel) {
-
+		_layoutSet.setCachedModel(cachedModel);
 	}
 
 	public boolean isEscapedModel() {
-		return false;
+		return _layoutSet.isEscapedModel();
 	}
 
 	public boolean isFinderCacheEnabled() {
-		return false;
+		return _layoutSet.isFinderCacheEnabled();
 	}
 
 	public Serializable getPrimaryKeyObj() {
-		return null;
+		return _layoutSet.getPrimaryKeyObj();
 	}
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-
+		_layoutSet.setPrimaryKeyObj(primaryKeyObj);
 	}
 
 	public ExpandoBridge getExpandoBridge() {
-		return null;
+		return _layoutSet.getExpandoBridge();
 	}
 
 	public Class<?> getModelClass() {
-		return null;
+		return _layoutSet.getModelClass();
 	}
 
 	public String getModelClassName() {
-		return null;
+		return _layoutSet.getModelClassName();
 	}
 
 	public Map<String, Object> getModelAttributes() {
-		return null;
+		return _layoutSet.getModelAttributes();
 	}
 
 	public void setExpandoBridgeAttributes(
 		BaseModel<?> baseModel) {
 
+		_layoutSet.setExpandoBridgeAttributes(baseModel);
 	}
 
 	public void setExpandoBridgeAttributes(
 		ExpandoBridge expandoBridge) {
 
+		_layoutSet.setExpandoBridgeAttributes(expandoBridge);
 	}
 
 	public void setExpandoBridgeAttributes(
 		ServiceContext serviceContext) {
 
+		_layoutSet.setExpandoBridgeAttributes(serviceContext);
 	}
 
 	public Object clone() {
-		return null;
+		return _layoutSet.clone();
 	}
 
 	public void setModelAttributes(
 		Map<String, Object> attributes) {
 
+		_layoutSet.setModelAttributes(attributes);
 	}
 
 	public int compareTo(LayoutSet layoutSet) {
-		return 0;
+		return _layoutSet.compareTo(layoutSet);
 	}
 
 	public CacheModel<LayoutSet> toCacheModel() {
-		return null;
+		return _layoutSet.toCacheModel();
 	}
 
 	public LayoutSet toEscapedModel() {
-		return null;
+		return _layoutSet.toEscapedModel();
 	}
 
 	public LayoutSet toUnescapedModel() {
-		return null;
+		return _layoutSet.toUnescapedModel();
 	}
 
 	public String toXmlString() {
-		return null;
+		return _layoutSet.toXmlString();
 	}
 
 	public void persist() {
-
+		_layoutSet.persist();
 	}
+
+	private LayoutSet _layoutSet;
 
 }

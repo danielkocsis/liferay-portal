@@ -187,8 +187,6 @@ public class LayoutExportController implements ExportController {
 			parameterMap, PortletDataHandlerKeys.IGNORE_LAST_PUBLISH_DATE);
 		boolean layoutSetPrototypeSettings = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.LAYOUT_SET_PROTOTYPE_SETTINGS);
-		boolean layoutSetSettings = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.LAYOUT_SET_SETTINGS);
 		boolean logo = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.LOGO);
 		boolean permissions = MapUtil.getBoolean(
@@ -368,6 +366,7 @@ public class LayoutExportController implements ExportController {
 			_themeExporter.exportTheme(portletDataContext, layoutSet);
 		}
 
+		/* Not needed anymore
 		if (layoutSetSettings) {
 			Element settingsElement = headerElement.addElement("settings");
 
@@ -378,6 +377,7 @@ public class LayoutExportController implements ExportController {
 				settingsElement.addCDATA(layoutSet.getSettings());
 			}
 		}
+		*/
 
 		Map<String, Object[]> portletIds = new LinkedHashMap<>();
 
