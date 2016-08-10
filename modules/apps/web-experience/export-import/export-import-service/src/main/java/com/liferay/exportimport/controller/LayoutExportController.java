@@ -187,8 +187,6 @@ public class LayoutExportController implements ExportController {
 			parameterMap, PortletDataHandlerKeys.IGNORE_LAST_PUBLISH_DATE);
 		boolean layoutSetPrototypeSettings = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.LAYOUT_SET_PROTOTYPE_SETTINGS);
-		boolean logo = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.LOGO);
 		boolean permissions = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.PERMISSIONS);
 
@@ -312,29 +310,6 @@ public class LayoutExportController implements ExportController {
 		LayoutSetBranch layoutSetBranch =
 			_layoutSetBranchLocalService.fetchLayoutSetBranch(
 				layoutSetBranchId);
-
-		if (logo) {
-			Image image = null;
-
-			if (layoutSetBranch != null) {
-				image = _imageLocalService.getImage(
-					layoutSetBranch.getLogoId());
-			}
-			else {
-				image = _imageLocalService.getImage(layoutSet.getLogoId());
-			}
-
-			if ((image != null) && (image.getTextObj() != null)) {
-				String logoPath = ExportImportPathUtil.getRootPath(
-					portletDataContext);
-
-				logoPath += "/logo";
-
-				headerElement.addAttribute("logo-path", logoPath);
-
-				portletDataContext.addZipEntry(logoPath, image.getTextObj());
-			}
-		}
 
 		String layoutSetPrototypeUuid = layoutSet.getLayoutSetPrototypeUuid();
 
