@@ -392,8 +392,6 @@ public class LayoutImportController implements ImportController {
 		String layoutsImportMode = MapUtil.getString(
 			parameterMap, PortletDataHandlerKeys.LAYOUTS_IMPORT_MODE,
 			PortletDataHandlerKeys.LAYOUTS_IMPORT_MODE_MERGE_BY_LAYOUT_UUID);
-		boolean logo = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.LOGO);
 		boolean permissions = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.PERMISSIONS);
 
@@ -548,28 +546,6 @@ public class LayoutImportController implements ImportController {
 			layoutSetPrototypeUuid = GetterUtil.getString(
 				headerElement.attributeValue("type-uuid"));
 		}
-
-		// Look and feel
-
-		if (logo) {
-			String logoPath = headerElement.attributeValue("logo-path");
-
-			byte[] iconBytes = portletDataContext.getZipEntryAsByteArray(
-				logoPath);
-
-			if (ArrayUtil.isNotEmpty(iconBytes)) {
-				_layoutSetLocalService.updateLogo(
-					portletDataContext.getGroupId(),
-					portletDataContext.isPrivateLayout(), true, iconBytes);
-			}
-			else {
-				_layoutSetLocalService.updateLogo(
-					portletDataContext.getGroupId(),
-					portletDataContext.isPrivateLayout(), false, (File)null);
-			}
-		}
-
-		_themeImporter.importTheme(portletDataContext, layoutSet);
 
 		Element portletsElement = rootElement.element("portlets");
 
