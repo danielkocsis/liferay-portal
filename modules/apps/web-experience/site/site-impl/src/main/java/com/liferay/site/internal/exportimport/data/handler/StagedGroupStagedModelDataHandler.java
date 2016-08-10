@@ -199,13 +199,12 @@ public class StagedGroupStagedModelDataHandler
 		boolean permissions = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.PERMISSIONS);
 
-		Group group = _groupLocalService.getGroup(stagedGroup.getGroupId());
-
 		Map<String, Object[]> portletIds = new LinkedHashMap<>();
 
 		List<Layout> layouts = _layoutLocalService.getLayouts(
 			portletDataContext.getGroupId(),
 			portletDataContext.isPrivateLayout());
+		Group group = stagedGroup;
 
 		if (group.isStagingGroup()) {
 			group = group.getLiveGroup();
