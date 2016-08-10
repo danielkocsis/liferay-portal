@@ -53,7 +53,6 @@ import com.liferay.portal.kernel.model.LayoutSetPrototype;
 import com.liferay.portal.kernel.model.LayoutStagingHandler;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.model.adapter.StagedGroup;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutRevisionLocalService;
@@ -77,6 +76,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
+import com.liferay.site.model.adapter.StagedGroup;
 import com.liferay.sites.kernel.util.Sites;
 import com.liferay.sites.kernel.util.SitesUtil;
 
@@ -196,13 +196,12 @@ public class StagedGroupStagedModelDataHandler
 		boolean permissions = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.PERMISSIONS);
 
-		Group group = _groupLocalService.getGroup(stagedGroup.getGroupId());
-
 		Map<String, Object[]> portletIds = new LinkedHashMap<>();
 
 		List<Layout> layouts = _layoutLocalService.getLayouts(
 			portletDataContext.getGroupId(),
 			portletDataContext.isPrivateLayout());
+		Group group = stagedGroup;
 
 		if (group.isStagingGroup()) {
 			group = group.getLiveGroup();
