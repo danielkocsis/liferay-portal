@@ -915,6 +915,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 			"path", path);
 	}
 
+	public long[] getLayoutIds() {
+		return new long[0];
+	}
+
 	@Override
 	public Map<String, Lock> getLocks() {
 		return _locksMap;
