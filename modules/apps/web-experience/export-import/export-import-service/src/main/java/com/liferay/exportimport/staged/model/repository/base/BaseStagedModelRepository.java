@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.trash.kernel.util.TrashUtil;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,6 +55,20 @@ public abstract class BaseStagedModelRepository<T extends StagedModel>
 	public abstract void deleteStagedModels(
 			PortletDataContext portletDataContext)
 		throws PortalException;
+
+	@Override
+	public List<? extends StagedModel> fetchChildrenStagedModels(
+		PortletDataContext portletDataContext, T stagedModel) {
+
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<? extends StagedModel> fetchDependencyStagedModels(
+		PortletDataContext portletDataContext, T stagedModel) {
+
+		return Collections.emptyList();
+	}
 
 	@Override
 	public T fetchMissingReference(String uuid, long groupId) {

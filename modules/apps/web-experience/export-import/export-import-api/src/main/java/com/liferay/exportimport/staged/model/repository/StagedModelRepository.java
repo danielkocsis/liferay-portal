@@ -40,6 +40,12 @@ public interface StagedModelRepository<T extends StagedModel> {
 	public void deleteStagedModels(PortletDataContext portletDataContext)
 		throws PortalException;
 
+	public List<? extends StagedModel> fetchChildrenStagedModels(
+		PortletDataContext portletDataContext, T stagedModel);
+
+	public List<? extends StagedModel> fetchDependencyStagedModels(
+		PortletDataContext portletDataContext, T stagedModel);
+
 	public T fetchMissingReference(String uuid, long groupId);
 
 	public T fetchStagedModelByUuidAndGroupId(String uuid, long groupId);
