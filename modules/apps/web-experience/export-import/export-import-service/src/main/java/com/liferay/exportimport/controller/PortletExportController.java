@@ -775,7 +775,8 @@ public class PortletExportController implements ExportController {
 				portletDataContext.getParameterMap());
 
 		exportPortlet(
-			portletDataContext, layout.getPlid(), rootElement, exportPermissions,
+			portletDataContext, layout.getPlid(), rootElement,
+			exportPermissions,
 			exportPortletControlsMap.get(
 				PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS),
 			exportPortletControlsMap.get(PortletDataHandlerKeys.PORTLET_DATA),
