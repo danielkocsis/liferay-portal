@@ -38,6 +38,7 @@ import com.liferay.exportimport.kernel.staging.LayoutStagingUtil;
 import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
 import com.liferay.exportimport.lar.LayoutCache;
 import com.liferay.exportimport.lar.PermissionImporter;
+import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskThreadLocal;
 import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -237,6 +238,18 @@ public class StagedGroupStagedModelDataHandler
 			PortletDataContext portletDataContext, StagedGroup stagedGroup)
 		throws Exception {
 
+		// Currently it exports the layout set only
+
+		List<StagedModel> childrenStagedModels =
+			_stagedModelRepository.fetchChildrenStagedModels(
+				portletDataContext, stagedGroup);
+
+		for (StagedModel stagedModel : childrenStagedModels) {
+			StagedModelDataHandlerUtil.exportReferenceStagedModel(
+				portletDataContext, stagedGroup, stagedModel,
+				PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
+		}
+
 		Group group = stagedGroup;
 
 		if (group.isStagingGroup()) {
@@ -279,21 +292,6 @@ public class StagedGroupStagedModelDataHandler
 		finally {
 			portletDataContext.setScopeGroupId(previousScopeGroupId);
 		}
-
-		// Layout Set
-
-		LayoutSet layoutSet = _layoutSetLocalService.getLayoutSet(
-			group.getGroupId(), portletDataContext.isPrivateLayout());
-
-		// TODO: merge with StagedLayoutSet changes
-
-		/*
-		StagedGroup stagedLayoutSet = ModelAdapterUtil.adapt(
-			group, StagedLayoutSet.class, LayoutSet.class);
-
-		StagedModelDataHandlerUtil.exportStagedModel(
-			portletDataContext, stagedLayoutSet);
-		*/
 	}
 
 	@Override
@@ -1187,5 +1185,11 @@ public class StagedGroupStagedModelDataHandler
 	private PortletExportController _portletExportController;
 	private PortletImportController _portletImportController;
 	private PortletLocalService _portletLocalService;
+
+	@Reference(
+		target = "model.class.name=com.liferay.site.model.adapter.StagedGroup",
+		unbind = "-"
+	)
+	private StagedModelRepository<StagedGroup> _stagedModelRepository;
 
 }
