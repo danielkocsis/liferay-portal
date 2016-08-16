@@ -45,15 +45,13 @@ import java.util.Optional;
  */
 public class StagedLayoutSetImpl implements StagedLayoutSet {
 
-	public StagedLayoutSetImpl() {
-	}
-
 	public StagedLayoutSetImpl(LayoutSet layoutSet) {
 		Objects.requireNonNull(
 			layoutSet,
 			"Unable to create a new staged layout set for a null layout set");
 
 		_layoutSet = layoutSet;
+		_layoutSetPrototypeName = StringPool.BLANK;
 
 		if (Validator.isNotNull(_layoutSet.getLayoutSetPrototypeUuid())) {
 			LayoutSetPrototype layoutSetPrototype =
@@ -70,7 +68,7 @@ public class StagedLayoutSetImpl implements StagedLayoutSet {
 	}
 
 	public Object clone() {
-		return _layoutSet.clone();
+		return new StagedLayoutSetImpl(_layoutSet);
 	}
 
 	public int compareTo(LayoutSet layoutSet) {
@@ -411,7 +409,7 @@ public class StagedLayoutSetImpl implements StagedLayoutSet {
 		return _layoutSet.toXmlString();
 	}
 
-	private LayoutSet _layoutSet;
+	private final LayoutSet _layoutSet;
 	private String _layoutSetPrototypeName;
 
 }

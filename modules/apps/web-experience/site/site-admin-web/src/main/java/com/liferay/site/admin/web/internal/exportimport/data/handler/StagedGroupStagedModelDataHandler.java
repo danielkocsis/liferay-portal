@@ -44,14 +44,12 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
-import com.liferay.portal.kernel.service.LayoutSetLocalService;
 import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
@@ -228,7 +226,7 @@ public class StagedGroupStagedModelDataHandler
 
 		// Currently it exports the layout set only
 
-		List<StagedModel> childrenStagedModels =
+		List<? extends StagedModel> childrenStagedModels =
 			_stagedModelRepository.fetchChildrenStagedModels(
 				portletDataContext, stagedGroup);
 
@@ -530,7 +528,7 @@ public class StagedGroupStagedModelDataHandler
 		portletDataContext.setPlid(plid);
 		portletDataContext.setOldPlid(plid);
 		portletDataContext.setPortletId(portletId);
-		portletDataContext.setScopeGroupId(scopeGroupId);
+
 		portletDataContext.setScopeType(scopeType);
 		portletDataContext.setScopeLayoutUuid(scopeLayoutUuid);
 
@@ -612,7 +610,7 @@ public class StagedGroupStagedModelDataHandler
 
 			exportPortlet(
 				portletDataContext, portletId, LayoutConstants.DEFAULT_PLID,
-				GroupConstants.DEFAULT_PARENT_GROUP_ID, StringPool.BLANK,
+				portletDataContext.getGroupId(), StringPool.BLANK,
 				StringPool.BLANK, type, portletsElement, servicesElement,
 				permissions);
 
@@ -704,13 +702,6 @@ public class StagedGroupStagedModelDataHandler
 		LayoutLocalService layoutLocalService) {
 
 		_layoutLocalService = layoutLocalService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setLayoutSetLocalService(
-		LayoutSetLocalService layoutSetLocalService) {
-
-		_layoutSetLocalService = layoutSetLocalService;
 	}
 
 	@Reference(unbind = "-")
@@ -831,7 +822,6 @@ public class StagedGroupStagedModelDataHandler
 	private ExportImportLifecycleManager _exportImportLifecycleManager;
 	private GroupLocalService _groupLocalService;
 	private LayoutLocalService _layoutLocalService;
-	private LayoutSetLocalService _layoutSetLocalService;
 	private final PermissionImporter _permissionImporter =
 		PermissionImporter.getInstance();
 	private PortletExportController _portletExportController;
@@ -839,7 +829,7 @@ public class StagedGroupStagedModelDataHandler
 	private PortletLocalService _portletLocalService;
 
 	@Reference(
-		target = "model.class.name=com.liferay.site.model.adapter.StagedGroup",
+		target = "(model.class.name=com.liferay.site.model.adapter.StagedGroup)",
 		unbind = "-"
 	)
 	private StagedModelRepository<StagedGroup> _stagedModelRepository;

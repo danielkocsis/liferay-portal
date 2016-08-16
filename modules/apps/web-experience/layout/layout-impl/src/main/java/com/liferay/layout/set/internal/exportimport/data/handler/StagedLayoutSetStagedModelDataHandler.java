@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Image;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutSetBranch;
-import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ImageLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
@@ -47,6 +46,7 @@ import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.xml.Element;
 
 import java.io.File;
+
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -113,42 +113,6 @@ public class StagedLayoutSetStagedModelDataHandler
 		importTheme(portletDataContext, stagedLayoutSet);
 	}
 
-	protected void importLogo(PortletDataContext portletDataContext) {
-		boolean logo = MapUtil.getBoolean(
-			portletDataContext.getParameterMap(), PortletDataHandlerKeys.LOGO);
-
-		if (!logo) {
-			return;
-		}
-
-		Element rootElement = portletDataContext.getExportDataRootElement();
-
-		Element headerElement = rootElement.element("header");
-
-		String logoPath = headerElement.attributeValue("logo-path");
-
-		byte[] iconBytes = portletDataContext.getZipEntryAsByteArray(
-			logoPath);
-
-		try {
-			if (ArrayUtil.isNotEmpty(iconBytes)) {
-				_layoutSetLocalService.updateLogo(
-					portletDataContext.getGroupId(),
-					portletDataContext.isPrivateLayout(), true, iconBytes);
-			}
-			else {
-				_layoutSetLocalService.updateLogo(
-					portletDataContext.getGroupId(),
-					portletDataContext.isPrivateLayout(), false, (File) null);
-			}
-		}
-		catch (PortalException pe) {
-			if (_log.isWarnEnabled()) {
-				_log.warn("Cannot import logo", pe);
-			}
-		}
-	}
-
 	protected void exportLayout(
 			PortletDataContext portletDataContext, long[] layoutIds,
 			Layout layout)
@@ -173,7 +137,7 @@ public class StagedLayoutSetStagedModelDataHandler
 			portletDataContext, layout);
 	}
 
-	protected void exportLayouts(PortletDataContext portletDataContext, ) {
+	protected void exportLayouts(PortletDataContext portletDataContext) {
 
 		// Force to always have a Layout group element
 
@@ -193,25 +157,6 @@ public class StagedLayoutSetStagedModelDataHandler
 				if (_log.isWarnEnabled()) {
 					_log.warn("Cannot export layout " + layout.getName(), e);
 				}
-			}
-		}
-	}
-
-	protected void importTheme(
-		PortletDataContext portletDataContext,
-		StagedLayoutSet stagedLayoutSet) {
-
-		ThemeImporter themeImporter = ThemeImporter.getInstance();
-
-		try {
-			themeImporter.importTheme(portletDataContext, stagedLayoutSet);
-		}
-		catch (Exception e) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Cannot import theme reference " +
-						stagedLayoutSet.getThemeId(),
-					e);
 			}
 		}
 	}
@@ -322,8 +267,65 @@ public class StagedLayoutSetStagedModelDataHandler
 		}
 	}
 
+	protected void importLogo(PortletDataContext portletDataContext) {
+		boolean logo = MapUtil.getBoolean(
+			portletDataContext.getParameterMap(), PortletDataHandlerKeys.LOGO);
+
+		if (!logo) {
+			return;
+		}
+
+		Element rootElement = portletDataContext.getExportDataRootElement();
+
+		Element headerElement = rootElement.element("header");
+
+		String logoPath = headerElement.attributeValue("logo-path");
+
+		byte[] iconBytes = portletDataContext.getZipEntryAsByteArray(logoPath);
+
+		try {
+			if (ArrayUtil.isNotEmpty(iconBytes)) {
+				_layoutSetLocalService.updateLogo(
+					portletDataContext.getGroupId(),
+					portletDataContext.isPrivateLayout(), true, iconBytes);
+			}
+			else {
+				_layoutSetLocalService.updateLogo(
+					portletDataContext.getGroupId(),
+					portletDataContext.isPrivateLayout(), false, (File)null);
+			}
+		}
+		catch (PortalException pe) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Cannot import logo", pe);
+			}
+		}
+	}
+
+	protected void importTheme(
+		PortletDataContext portletDataContext,
+		StagedLayoutSet stagedLayoutSet) {
+
+		ThemeImporter themeImporter = ThemeImporter.getInstance();
+
+		try {
+			themeImporter.importTheme(portletDataContext, stagedLayoutSet);
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Cannot import theme reference " +
+						stagedLayoutSet.getThemeId(),
+					e);
+			}
+		}
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		StagedLayoutSetStagedModelDataHandler.class);
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private ImageLocalService _imageLocalService;
@@ -332,13 +334,10 @@ public class StagedLayoutSetStagedModelDataHandler
 	private LayoutLocalService _layoutLocalService;
 
 	@Reference
-	private LayoutSetLocalService _layoutSetLocalService;
-
-	@Reference
 	private LayoutSetBranchLocalService _layoutSetBranchLocalService;
 
 	@Reference
-	private GroupLocalService _groupLocalService;
+	private LayoutSetLocalService _layoutSetLocalService;
 
 	private class UpdateLayoutSetLastPublishDateCallable
 		implements Callable<Void> {

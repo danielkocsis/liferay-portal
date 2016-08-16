@@ -82,7 +82,7 @@ public class StagedLayoutSetStagedModelRepository
 
 	}
 
-	public List<StagedModel> fetchChildrenStagedModels(
+	public List<Layout> fetchChildrenStagedModels(
 		PortletDataContext portletDataContext,
 		StagedLayoutSet stagedLayoutSet) {
 
@@ -158,9 +158,9 @@ public class StagedLayoutSetStagedModelRepository
 	}
 
 	@Reference
-	private LayoutSetLocalService _layoutSetLocalService;
+	private LayoutLocalService _layoutLocalService;
 
 	@Reference
-	private LayoutLocalService _layoutLocalService;
+	private LayoutSetLocalService _layoutSetLocalService;
 
 }
