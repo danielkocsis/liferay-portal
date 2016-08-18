@@ -14,15 +14,23 @@
 
 package com.liferay.layout.admin.web.internal.exportimport.data.handler;
 
+import static com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_FAILED;
+import static com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_STARTED;
+import static com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleConstants.EVENT_PORTLET_EXPORT_SUCCEEDED;
+
 import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.exportimport.controller.PortletExportController;
+import com.liferay.exportimport.kernel.lar.ExportImportHelperUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportProcessCallbackRegistryUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
+import com.liferay.exportimport.kernel.lar.PortletDataContextFactoryUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataException;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelModifiedDateComparator;
+import com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleManager;
 import com.liferay.exportimport.kernel.staging.LayoutStagingUtil;
 import com.liferay.exportimport.kernel.staging.StagingUtil;
 import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
@@ -46,6 +54,7 @@ import com.liferay.portal.kernel.model.LayoutStagingHandler;
 import com.liferay.portal.kernel.model.LayoutTemplate;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.LayoutTypePortletConstants;
+import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.adapter.StagedTheme;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ImageLocalService;
@@ -57,6 +66,10 @@ import com.liferay.portal.kernel.service.LayoutTemplateLocalService;
 import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
+import com.liferay.portal.kernel.settings.PortletInstanceSettingsLocator;
+import com.liferay.portal.kernel.settings.Settings;
+import com.liferay.portal.kernel.settings.SettingsFactoryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.Constants;
@@ -77,6 +90,7 @@ import com.liferay.sites.kernel.util.SitesUtil;
 
 import java.io.IOException;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -279,6 +293,11 @@ public class LayoutStagedModelDataHandler
 				layout.getType(), LayoutConstants.TYPE_LINK_TO_LAYOUT)) {
 
 			exportLinkedLayout(portletDataContext, layout, layoutElement);
+		}
+		else if (Objects.equals(
+					layout.getTarget(), LayoutConstants.TYPE_PORTLET)) {
+
+			exportLayoutPortlets(portletDataContext, layout, layoutElement);
 		}
 
 		fixExportTypeSettings(layout);
@@ -694,6 +713,81 @@ public class LayoutStagedModelDataHandler
 		}
 	}
 
+	protected void exportLayoutPortlets(
+			PortletDataContext portletDataContext, Layout layout,
+			Element layoutElement)
+		throws Exception {
+
+		Map<String, String[]> parameterMap =
+			portletDataContext.getParameterMap();
+
+		boolean permissions = MapUtil.getBoolean(
+			parameterMap, PortletDataHandlerKeys.PERMISSIONS);
+
+		Element portletsElement = layoutElement.addElement("portlet");
+
+		long previousScopeGroupId = portletDataContext.getScopeGroupId();
+
+		Map<String, Object[]> portletIds = getPortletids(
+			portletDataContext, layout);
+
+		for (Map.Entry<String, Object[]> portletIdsEntry :
+				portletIds.entrySet()) {
+
+			String portletId = (String)portletIdsEntry.getValue()[0];
+			long scopeGroupId = (Long)portletIdsEntry.getValue()[1];
+			String scopeType = (String)portletIdsEntry.getValue()[2];
+			String scopeLayoutUuid = (String)portletIdsEntry.getValue()[3];
+
+			portletDataContext.setPlid(layout.getPlid());
+			portletDataContext.setOldPlid(layout.getPlid());
+			portletDataContext.setPortletId(portletId);
+			portletDataContext.setScopeGroupId(scopeGroupId);
+			portletDataContext.setScopeType(scopeType);
+			portletDataContext.setScopeLayoutUuid(scopeLayoutUuid);
+
+			Map<String, Boolean> exportPortletControlsMap =
+				ExportImportHelperUtil.getExportPortletControlsMap(
+					layout.getCompanyId(), portletId, parameterMap,
+					portletDataContext.getType());
+
+			try {
+				_exportImportLifecycleManager.fireExportImportLifecycleEvent(
+					EVENT_PORTLET_EXPORT_STARTED, getProcessFlag(),
+					PortletDataContextFactoryUtil.clonePortletDataContext(
+						portletDataContext));
+
+				_portletExportController.exportPortlet(
+					portletDataContext, layout.getPlid(), portletsElement,
+					permissions,
+					exportPortletControlsMap.get(
+						PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS),
+					exportPortletControlsMap.get(
+						PortletDataHandlerKeys.PORTLET_DATA),
+					exportPortletControlsMap.get(
+						PortletDataHandlerKeys.PORTLET_SETUP),
+					exportPortletControlsMap.get(
+						PortletDataHandlerKeys.PORTLET_USER_PREFERENCES));
+
+				_exportImportLifecycleManager.fireExportImportLifecycleEvent(
+					EVENT_PORTLET_EXPORT_SUCCEEDED, getProcessFlag(),
+					PortletDataContextFactoryUtil.clonePortletDataContext(
+						portletDataContext));
+			}
+			catch (Throwable t) {
+				_exportImportLifecycleManager.fireExportImportLifecycleEvent(
+					EVENT_PORTLET_EXPORT_FAILED, getProcessFlag(),
+					PortletDataContextFactoryUtil.clonePortletDataContext(
+						portletDataContext),
+					t);
+
+				throw t;
+			}
+		}
+
+		portletDataContext.setScopeGroupId(previousScopeGroupId);
+	}
+
 	protected void exportLinkedLayout(
 			PortletDataContext portletDataContext, Layout layout,
 			Element layoutElement)
@@ -909,6 +1003,85 @@ public class LayoutStagedModelDataHandler
 		}
 
 		return StringPool.SLASH + layoutId;
+	}
+
+	protected Map<String, Object[]> getPortletids(
+			PortletDataContext portletDataContext, Layout layout)
+		throws Exception {
+
+		if (!LayoutStagingUtil.prepareLayoutStagingHandler(
+				portletDataContext, layout) ||
+			!layout.isSupportsEmbeddedPortlets()) {
+
+			// Only portlet type layouts support page scoping
+
+			return Collections.emptyMap();
+		}
+
+		Map<String, Object[]> portletIds = new HashMap<>();
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		// The getAllPortlets method returns all effective nonsystem portlets
+		// for any layout type, including embedded portlets, or in the case of
+		// panel type layout, selected portlets
+
+		for (Portlet portlet : layoutTypePortlet.getAllPortlets(false)) {
+			String portletId = portlet.getPortletId();
+
+			Settings portletInstanceSettings = SettingsFactoryUtil.getSettings(
+				new PortletInstanceSettingsLocator(layout, portletId));
+
+			String scopeType = portletInstanceSettings.getValue(
+				"lfrScopeType", null);
+			String scopeLayoutUuid = portletInstanceSettings.getValue(
+				"lfrScopeLayoutUuid", null);
+
+			long scopeGroupId = portletDataContext.getScopeGroupId();
+
+			if (Validator.isNotNull(scopeType)) {
+				Group scopeGroup = null;
+
+				if (scopeType.equals("company")) {
+					scopeGroup = _groupLocalService.getCompanyGroup(
+						layout.getCompanyId());
+				}
+				else if (scopeType.equals("layout")) {
+					Layout scopeLayout = null;
+
+					scopeLayout =
+						_layoutLocalService.fetchLayoutByUuidAndGroupId(
+							scopeLayoutUuid, portletDataContext.getGroupId(),
+							portletDataContext.isPrivateLayout());
+
+					if (scopeLayout == null) {
+						continue;
+					}
+
+					scopeGroup = scopeLayout.getScopeGroup();
+				}
+				else {
+					throw new IllegalArgumentException(
+						"Scope type " + scopeType + " is invalid");
+				}
+
+				if (scopeGroup != null) {
+					scopeGroupId = scopeGroup.getGroupId();
+				}
+			}
+
+			String key = PortletPermissionUtil.getPrimaryKey(
+				layout.getPlid(), portletId);
+
+			portletIds.put(
+				key,
+				new Object[] {
+					portletId, scopeGroupId, scopeType, scopeLayoutUuid
+				});
+		}
+
+		return portletIds;
 	}
 
 	protected String getUniqueFriendlyURL(
@@ -1230,6 +1403,13 @@ public class LayoutStagedModelDataHandler
 	}
 
 	@Reference(unbind = "-")
+	protected void setExportImportLifecycleManager(
+		ExportImportLifecycleManager exportImportLifecycleManager) {
+
+		_exportImportLifecycleManager = exportImportLifecycleManager;
+	}
+
+	@Reference(unbind = "-")
 	protected void setGroupLocalService(GroupLocalService groupLocalService) {
 		_groupLocalService = groupLocalService;
 	}
@@ -1279,6 +1459,13 @@ public class LayoutStagedModelDataHandler
 		LayoutTemplateLocalService layoutTemplateLocalService) {
 
 		_layoutTemplateLocalService = layoutTemplateLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setPortletExportController(
+		PortletExportController portletExportController) {
+
+		_portletExportController = portletExportController;
 	}
 
 	@Reference(unbind = "-")
@@ -1337,6 +1524,7 @@ public class LayoutStagedModelDataHandler
 		LayoutStagedModelDataHandler.class);
 
 	private CounterLocalService _counterLocalService;
+	private ExportImportLifecycleManager _exportImportLifecycleManager;
 	private GroupLocalService _groupLocalService;
 	private ImageLocalService _imageLocalService;
 	private LayoutFriendlyURLLocalService _layoutFriendlyURLLocalService;
@@ -1345,6 +1533,7 @@ public class LayoutStagedModelDataHandler
 	private LayoutPrototypeLocalService _layoutPrototypeLocalService;
 	private LayoutSetLocalService _layoutSetLocalService;
 	private LayoutTemplateLocalService _layoutTemplateLocalService;
+	private PortletExportController _portletExportController;
 	private PortletLocalService _portletLocalService;
 	private ResourceLocalService _resourceLocalService;
 

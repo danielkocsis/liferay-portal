@@ -721,6 +721,7 @@ public class PortletExportController implements ExportController {
 
 		portletDataContext.setScopeType(scopeType);
 		portletDataContext.setScopeLayoutUuid(scopeLayoutUuid);
+		portletDataContext.setType("portlet");
 
 		Document document = SAXReaderUtil.createDocument();
 

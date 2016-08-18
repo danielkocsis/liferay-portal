@@ -409,7 +409,7 @@ public class StagedLayoutSetImpl implements StagedLayoutSet {
 		return _layoutSet.toXmlString();
 	}
 
-	private final LayoutSet _layoutSet;
+	private LayoutSet _layoutSet;
 	private String _layoutSetPrototypeName;
 
 }
