@@ -416,6 +416,8 @@ public class LayoutImportController implements ImportController {
 
 		String larType = headerElement.attributeValue("type");
 
+		portletDataContext.setType(larType);
+
 		if (group.isLayoutPrototype() && larType.equals("layout-prototype")) {
 			LayoutPrototype layoutPrototype =
 				_layoutPrototypeLocalService.getLayoutPrototype(
