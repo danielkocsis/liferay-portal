@@ -16,6 +16,7 @@ package com.liferay.layout.set.model.adapter;
 
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.LayoutSet;
+import com.liferay.portal.kernel.model.StagedGroupedModel;
 import com.liferay.portal.kernel.model.StagedModel;
 
 import java.util.Optional;
@@ -23,7 +24,7 @@ import java.util.Optional;
 /**
  * @author Mate Thurzo
  */
-public interface StagedLayoutSet extends LayoutSet, StagedModel {
+public interface StagedLayoutSet extends LayoutSet, StagedGroupedModel {
 
 	public Optional<String> getLayoutSetPrototypeName();
 
