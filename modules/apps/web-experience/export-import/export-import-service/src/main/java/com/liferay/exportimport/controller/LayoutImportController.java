@@ -566,6 +566,10 @@ public class LayoutImportController implements ImportController {
 
 		Element sitePortletsElement = rootElement.element("site-portlets");
 
+		if (sitePortletsElement == null) {
+			return portletElements;
+		}
+
 		portletElements.addAll(sitePortletsElement.elements("portlet"));
 
 		// Layout portlets
