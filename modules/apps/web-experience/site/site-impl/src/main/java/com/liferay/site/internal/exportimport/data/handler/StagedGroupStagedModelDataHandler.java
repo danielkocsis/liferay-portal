@@ -299,8 +299,7 @@ public class StagedGroupStagedModelDataHandler
 
 		Element rootElement = portletDataContext.getImportDataRootElement();
 
-		Element sitePortletsElement = rootElement.element(
-			_SITE_PORTLETS_ELEMENT_LABEL);
+		Element sitePortletsElement = rootElement.element("site-portlets");
 
 		List<Element> sitePortletElements = sitePortletsElement.elements();
 
@@ -426,15 +425,10 @@ public class StagedGroupStagedModelDataHandler
 
 		Element rootElement = portletDataContext.getExportDataRootElement();
 
-		Element portletsElement = rootElement.addElement(
-			_SITE_PORTLETS_ELEMENT_LABEL);
+		Element portletsElement = rootElement.element("site-portlets");
+		Element servicesElement = rootElement.element("site-services");
 
-		Element servicesElement = rootElement.addElement(
-			_SITE_SERVICES_ELEMENT_LABEL);
-
-		Element headerElement = rootElement.element("header");
-
-		String type = headerElement.attributeValue("type");
+		String type = portletDataContext.getType();
 
 		// Export portlets
 
@@ -754,10 +748,6 @@ public class StagedGroupStagedModelDataHandler
 			_log.error(e, e);
 		}
 	}
-
-	private static final String _SITE_PORTLETS_ELEMENT_LABEL = "site-portlets";
-
-	private static final String _SITE_SERVICES_ELEMENT_LABEL = "site-services";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		StagedGroupStagedModelDataHandler.class);
