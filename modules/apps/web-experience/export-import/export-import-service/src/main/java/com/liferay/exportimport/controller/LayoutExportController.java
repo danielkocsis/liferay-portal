@@ -263,6 +263,9 @@ public class LayoutExportController implements ExportController {
 		portletDataContext.setMissingReferencesElement(
 			missingReferencesElement);
 
+		rootElement.addElement("site-portlets");
+		rootElement.addElement("site-services");
+
 		// Export the group
 
 		StagedGroup stagedGroup = ModelAdapterUtil.adapt(
