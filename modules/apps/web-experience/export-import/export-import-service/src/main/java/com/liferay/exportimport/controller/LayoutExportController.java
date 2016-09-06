@@ -689,6 +689,9 @@ public class LayoutExportController implements ExportController {
 		_groupLocalService = groupLocalService;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0
+	 */
 	@Deprecated
 	protected void setImageLocalService(ImageLocalService imageLocalService) {
 	}
@@ -707,11 +710,17 @@ public class LayoutExportController implements ExportController {
 		_layoutPrototypeLocalService = layoutPrototypeLocalService;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0
+	 */
 	@Deprecated
 	protected void setLayoutRevisionLocalService(
 		LayoutRevisionLocalService layoutRevisionLocalService) {
 	}
 
+	/**
+	 * @deprecated As of 7.0.0
+	 */
 	@Deprecated
 	protected void setLayoutSetBranchLocalService(
 		LayoutSetBranchLocalService layoutSetBranchLocalService) {
@@ -751,8 +760,8 @@ public class LayoutExportController implements ExportController {
 	private ExportImportLifecycleManager _exportImportLifecycleManager;
 	private GroupLocalService _groupLocalService;
 	private LayoutLocalService _layoutLocalService;
-	private LayoutSetLocalService _layoutSetLocalService;
 	private LayoutPrototypeLocalService _layoutPrototypeLocalService;
+	private LayoutSetLocalService _layoutSetLocalService;
 	private LayoutSetPrototypeLocalService _layoutSetPrototypeLocalService;
 	private final PermissionExporter _permissionExporter =
 		PermissionExporter.getInstance();
