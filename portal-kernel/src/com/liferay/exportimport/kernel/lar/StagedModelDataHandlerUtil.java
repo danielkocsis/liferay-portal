@@ -17,6 +17,8 @@ package com.liferay.exportimport.kernel.lar;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
@@ -48,10 +50,14 @@ public class StagedModelDataHandlerUtil {
 			StagedModelDataHandlerRegistryUtil.getStagedModelDataHandler(
 				className);
 
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(extraData);
+
+		jsonObject.put("privateLayout", portletDataContext.isPrivateLayout());
+
 		if (stagedModelDataHandler != null) {
 			stagedModelDataHandler.deleteStagedModel(
 				uuid, portletDataContext.getScopeGroupId(), className,
-				extraData);
+				jsonObject.toJSONString());
 		}
 	}
 
