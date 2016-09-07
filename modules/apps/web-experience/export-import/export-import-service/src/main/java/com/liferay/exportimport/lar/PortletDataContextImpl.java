@@ -923,6 +923,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 		return _layoutIds;
 	}
 
+	public String getLayoutSetPrototypeUuid() {
+		return _layoutSetPrototypeUuid;
+	}
+
 	@Override
 	public Map<String, Lock> getLocks() {
 		return _locksMap;
@@ -1772,6 +1776,10 @@ public class PortletDataContextImpl implements PortletDataContext {
 		_layoutIds = layoutIds;
 	}
 
+	public void setLayoutSetPrototypeUuid(String layoutSetPrototypeUuid) {
+		_layoutSetPrototypeUuid = layoutSetPrototypeUuid;
+	}
+
 	@Override
 	public void setManifestSummary(ManifestSummary manifestSummary) {
 		_manifestSummary = manifestSummary;
@@ -2549,6 +2557,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 	private long _groupId;
 	private transient Element _importDataRootElement;
 	private transient long[] _layoutIds;
+	private String _layoutSetPrototypeUuid;
 	private final transient LockManager _lockManager;
 	private final transient Map<String, Lock> _locksMap = new HashMap<>();
 	private transient ManifestSummary _manifestSummary = new ManifestSummary();
