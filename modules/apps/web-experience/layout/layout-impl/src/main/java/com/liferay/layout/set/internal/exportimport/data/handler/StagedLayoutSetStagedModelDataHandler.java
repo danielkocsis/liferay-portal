@@ -239,7 +239,14 @@ public class StagedLayoutSetStagedModelDataHandler
 
 		// Delete Missing Pages
 
-		deleteMissingLayouts(portletDataContext, layoutElements);
+		boolean deleteMissingLayouts = MapUtil.getBoolean(
+			portletDataContext.getParameterMap(),
+			PortletDataHandlerKeys.DELETE_MISSING_LAYOUTS,
+			Boolean.TRUE.booleanValue());
+
+		if (deleteMissingLayouts) {
+			deleteMissingLayouts(portletDataContext, layoutElements);
+		}
 
 		// Remove layouts that were deleted from the layout set prototype
 
