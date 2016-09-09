@@ -51,6 +51,7 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.model.adapter.ModelAdapterUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.PortletLocalService;
@@ -152,13 +153,19 @@ public class StagedGroupStagedModelDataHandler
 			ExportImportHelperUtil.getDataSiteLevelPortlets(
 				portletDataContext.getCompanyId());
 
+		Group liveGroup = group;
+
+		if (liveGroup.isStagingGroup()) {
+			liveGroup = liveGroup.getLiveGroup();
+		}
+
 		Set<String> portletIds = new HashSet<>();
 
 		for (Portlet portlet : dataSiteLevelPortlets) {
 			String portletId = portlet.getRootPortletId();
 
 			if (ExportImportThreadLocal.isStagingInProcess() &&
-				!group.isStagedPortlet(portletId)) {
+				!liveGroup.isStagedPortlet(portletId)) {
 
 				continue;
 			}
@@ -196,17 +203,11 @@ public class StagedGroupStagedModelDataHandler
 			PortletDataContext portletDataContext, StagedGroup stagedGroup)
 		throws Exception {
 
-		Group group = stagedGroup;
-
-		if (group.isStagingGroup()) {
-			group = group.getLiveGroup();
-		}
-
 		long[] layoutIds = portletDataContext.getLayoutIds();
 
-		if (group.isLayoutPrototype()) {
+		if (stagedGroup.isLayoutPrototype()) {
 			layoutIds = ExportImportHelperUtil.getAllLayoutIds(
-				group.getGroupId(), portletDataContext.isPrivateLayout());
+				stagedGroup.getGroupId(), portletDataContext.isPrivateLayout());
 		}
 
 		// Collect site data portlets
@@ -214,7 +215,7 @@ public class StagedGroupStagedModelDataHandler
 		Element rootElement = portletDataContext.getExportDataRootElement();
 
 		Set<String> dataSiteLevelPortletIds = checkDataSiteLevelPortlets(
-			portletDataContext, group);
+			portletDataContext, stagedGroup);
 
 		// Initialize progress bar
 
@@ -235,7 +236,8 @@ public class StagedGroupStagedModelDataHandler
 
 		try {
 			exportPortlets(
-				portletDataContext, group, dataSiteLevelPortletIds, layoutIds);
+				portletDataContext, stagedGroup, dataSiteLevelPortletIds,
+				layoutIds);
 		}
 		finally {
 			portletDataContext.setScopeGroupId(previousScopeGroupId);
@@ -408,7 +410,7 @@ public class StagedGroupStagedModelDataHandler
 	}
 
 	protected void exportPortlets(
-			PortletDataContext portletDataContext, Group group,
+			PortletDataContext portletDataContext, StagedGroup group,
 			Set<String> portletIds, long[] layoutIds)
 		throws Exception {
 
