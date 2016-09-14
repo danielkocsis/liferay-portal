@@ -300,7 +300,7 @@ public class LayoutImportController implements ImportController {
 	}
 
 	/**
-	 * @deprecated As of 7.0.0
+	 * @deprecated As of 4.0.0
 	 */
 	@Deprecated
 	protected void deleteMissingLayouts(
@@ -913,7 +913,7 @@ public class LayoutImportController implements ImportController {
 	}
 
 	/**
-	 * @deprecated As of 7.0.0
+	 * @deprecated As of 4.0.0
 	 */
 	@Deprecated
 	protected void importLayout(
@@ -1105,7 +1105,7 @@ public class LayoutImportController implements ImportController {
 	}
 
 	/**
-	 * @deprecated As of 7.0.0
+	 * @deprecated As of 4.0.0
 	 */
 	@Deprecated
 	protected void updateLayoutPriorities(

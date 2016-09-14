@@ -531,7 +531,7 @@ public class LayoutExportController implements ExportController {
 	}
 
 	/**
-	 * @deprecated As of 7.0.0
+	 * @deprecated As of 4.0.0
 	 */
 	@Deprecated
 	protected void exportLayout(
@@ -690,7 +690,7 @@ public class LayoutExportController implements ExportController {
 	}
 
 	/**
-	 * @deprecated As of 7.0.0
+	 * @deprecated As of 4.0.0
 	 */
 	@Deprecated
 	protected void setImageLocalService(ImageLocalService imageLocalService) {
@@ -711,7 +711,7 @@ public class LayoutExportController implements ExportController {
 	}
 
 	/**
-	 * @deprecated As of 7.0.0
+	 * @deprecated As of 4.0.0
 	 */
 	@Deprecated
 	protected void setLayoutRevisionLocalService(
@@ -719,7 +719,7 @@ public class LayoutExportController implements ExportController {
 	}
 
 	/**
-	 * @deprecated As of 7.0.0
+	 * @deprecated As of 4.0.0
 	 */
 	@Deprecated
 	protected void setLayoutSetBranchLocalService(
