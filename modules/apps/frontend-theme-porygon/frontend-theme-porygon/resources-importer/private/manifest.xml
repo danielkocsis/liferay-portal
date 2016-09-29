@@ -10,13 +10,6 @@
 		<missing-reference class-name="com.liferay.portal.kernel.model.adapter.StagedTheme" class-pk="porygon_WAR_porygontheme" display-name="porygon_WAR_porygontheme" type="dependency" referrer-class-name="com.liferay.portal.kernel.model.LayoutSet" uuid="" company-id="20116"/>
 		<missing-reference class-name="com.liferay.dynamic.data.mapping.model.DDMStructure" class-pk="30000" attached-class-name="com.liferay.journal.model.JournalArticle" display-name="Basic Web Content" group-id="20160" live-group-id="20160" type="dependency" referrer-class-name="com.liferay.portal.kernel.model.Portlet" referrer-display-name="com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet" uuid="7e95637d-33b8-d7e4-6be5-7ccb6fb84cc4" company-id="20116" preloaded="true" referenced-class-name="com.liferay.journal.model.JournalArticle" structure-key="BASIC-WEB-CONTENT"/>
 	</missing-references>
-	<LayoutSet>
-		<staged-model>
-			<references>
-				<reference class-name="com.liferay.portal.kernel.model.adapter.StagedTheme" class-pk="porygon_WAR_porygontheme" type="dependency" uuid="" company-id="20116" missing="true"/>
-			</references>
-		</staged-model>
-	</LayoutSet>
 	<Layout>
 		<staged-model group-id="35202" uuid="3a7c2b43-4085-015d-ab8d-e5a3fdda6b27" layout-uuid="3a7c2b43-4085-015d-ab8d-e5a3fdda6b27" layout-id="1" layout-priority="0" action="add" path="/group/35202/com.liferay.portal.kernel.model.Layout/35205.xml" asset-priority="0.0">
 			<references>
@@ -49,6 +42,19 @@
 			</references>
 		</staged-model>
 	</Layout>
+	<StagedLayoutSet>
+		<staged-model group-id="35202" uuid="false" path="/group/35202/com.liferay.layout.set.model.adapter.StagedLayoutSet/20145.xml">
+			<references>
+				<reference class-name="com.liferay.portal.kernel.model.Layout" class-pk="35205" group-id="35202" live-group-id="35202" type="child" uuid="3a7c2b43-4085-015d-ab8d-e5a3fdda6b27" company-id="20116" private-layout="true" layout-id="1" missing="false"/>
+				<reference class-name="com.liferay.portal.kernel.model.Layout" class-pk="35214" group-id="35202" live-group-id="35202" type="child" uuid="ffffdc14-36e0-08cc-12ac-b5d991852095" company-id="20116" private-layout="true" layout-id="2" missing="false"/>
+				<reference class-name="com.liferay.portal.kernel.model.Layout" class-pk="35221" group-id="35202" live-group-id="35202" type="child" uuid="609c76d4-3d55-694d-a76c-a1b5f6ef5e2f" company-id="20116" private-layout="true" layout-id="3" missing="false"/>
+				<reference class-name="com.liferay.portal.kernel.model.Layout" class-pk="35228" group-id="35202" live-group-id="35202" type="child" uuid="9ee548a8-d98b-bc28-2af0-b5b42fbbc544" company-id="20116" private-layout="true" layout-id="4" missing="false"/>
+				<reference class-name="com.liferay.portal.kernel.model.Layout" class-pk="35235" group-id="35202" live-group-id="35202" type="child" uuid="03b9acea-f37c-1a60-2545-b748d10011d3" company-id="20116" private-layout="true" layout-id="5" missing="false"/>
+				<reference class-name="com.liferay.portal.kernel.model.Layout" class-pk="35242" group-id="35202" live-group-id="35202" type="child" uuid="b2f4b1b0-90d0-91c0-fad5-e716362b501e" company-id="20116" private-layout="true" layout-id="6" missing="false"/>
+				<reference class-name="com.liferay.portal.kernel.model.adapter.StagedTheme" class-pk="porygon_WAR_porygontheme" type="dependency" uuid="" company-id="20116" missing="true"/>
+			</references>
+		</staged-model>
+	</StagedLayoutSet>
 	<LayoutFriendlyURL>
 		<staged-model group-id="35202" uuid="b7173d87-fcbb-b4eb-3439-49b447526ef6" path="/group/35202/com.liferay.portal.kernel.model.LayoutFriendlyURL/35210.xml"/>
 		<staged-model group-id="35202" uuid="8f4c674e-9d3a-e0fb-75d8-ee3778fad5db" path="/group/35202/com.liferay.portal.kernel.model.LayoutFriendlyURL/35220.xml"/>
