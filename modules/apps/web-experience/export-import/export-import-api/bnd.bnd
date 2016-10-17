@@ -6,6 +6,7 @@ Export-Package:\
 	com.liferay.exportimport.content.processor,\
 	com.liferay.exportimport.portlet.data.handler.provider,\
 	com.liferay.exportimport.portlet.preferences.processor,\
+	com.liferay.exportimport.staged.model.reference.processor,\
 	com.liferay.exportimport.staged.model.repository,\
 	com.liferay.exportimport.util.comparator
 Liferay-Releng-Module-Group-Description:
