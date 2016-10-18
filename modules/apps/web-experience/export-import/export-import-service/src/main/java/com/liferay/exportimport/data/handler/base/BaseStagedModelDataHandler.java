@@ -17,25 +17,39 @@ package com.liferay.exportimport.data.handler.base;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.exportimport.content.processor.ExportImportContentProcessor;
+import com.liferay.exportimport.kernel.lar.ExportImportClassedModelUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportDateUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportProcessCallbackRegistryUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
+import com.liferay.exportimport.kernel.lar.PortletDataContextFactoryUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataException;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
+import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
+import com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleManagerUtil;
+import com.liferay.exportimport.staged.model.reference.processor.StageModelReferenceProcessor;
+import com.liferay.exportimport.staged.model.reference.processor.StagedModelReferenceProcessorRegistryUtil;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.StagedGroupedModel;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.DateRange;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.Supplier;
+import com.liferay.portal.kernel.util.TransientValue;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+
+import static com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleConstants.EVENT_STAGED_MODEL_EXPORT_FAILED;
 
 /**
  * @author Daniel Kocsis
@@ -78,6 +92,29 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 		throws PortletDataException {
 
 		super.exportStagedModel(portletDataContext, stagedModel);
+
+		List<StageModelReferenceProcessor<?, ?>> stageModelReferenceProcessors =
+			StagedModelReferenceProcessorRegistryUtil.
+				getStagedModelReferenceProcessors(
+					ExportImportClassedModelUtil.getClassName(stagedModel));
+
+		for (StageModelReferenceProcessor stageModelReferenceProcessor :
+				stageModelReferenceProcessors) {
+
+			Optional<StagedModel> referencedStagedModelOptional =
+				stageModelReferenceProcessor.process(
+					portletDataContext, stagedModel);
+
+			if (referencedStagedModelOptional.isPresent()) {
+				StagedModel referencedStagedModel =
+					referencedStagedModelOptional.get();
+
+				StagedModelDataHandlerUtil.exportReferenceStagedModel(
+					portletDataContext, stagedModel,
+					referencedStagedModel,
+					stageModelReferenceProcessor.getReferenceType());
+			}
+		}
 
 		boolean updateLastPublishDate = MapUtil.getBoolean(
 			portletDataContext.getParameterMap(),
@@ -171,7 +208,6 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 		public UpdateStagedModelLastPublishDateCallable(
 			T stagedModel, DateRange dateRange) {
 
-			_companyId = stagedModel.getCompanyId();
 			_dateRange = dateRange;
 			_groupId = ((StagedGroupedModel)stagedModel).getGroupId();
 			_uuid = stagedModel.getUuid();
@@ -219,7 +255,6 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			return null;
 		}
 
-		private final long _companyId;
 		private final DateRange _dateRange;
 		private final long _groupId;
 		private final String _uuid;
