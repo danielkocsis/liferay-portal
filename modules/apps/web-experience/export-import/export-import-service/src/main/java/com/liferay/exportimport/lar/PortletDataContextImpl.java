@@ -2007,7 +2007,14 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 	@Override
 	public String toXML(Object object) {
-		return _xStream.toXML(object);
+		try {
+			return _xStream.toXML(object);
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+
+			return StringPool.BLANK;
+		}
 	}
 
 	protected void addAssetLinks(Class<?> clazz, Serializable classPK) {

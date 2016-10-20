@@ -258,7 +258,7 @@ public class StagedPortletImpl implements StagedPortlet {
 
 	@Override
 	public Serializable getPrimaryKeyObj() {
-		return _portlet.getPrimaryKeyObj();
+		return _portlet.getPortletId();
 	}
 
 	@Override
@@ -335,7 +335,7 @@ public class StagedPortletImpl implements StagedPortlet {
 
 	@Override
 	public Object clone() {
-		return new StagedPortletImpl((Portlet) _portlet.clone());
+		return new StagedPortletImpl((Portlet)_portlet.clone());
 	}
 
 	@Override
