@@ -1,0 +1,6 @@
+Bundle-Name: Liferay Portlet API
+Bundle-SymbolicName: com.liferay.portlet.api
+Bundle-Version: 1.0.0
+Export-Package: com.liferay.portlet.model.adapter
+Liferay-Releng-Module-Group-Description:
+Liferay-Releng-Module-Group-Title: Site Management
