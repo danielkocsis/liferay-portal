@@ -237,6 +237,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 		if (nameMap != null) {
 			groupKey = nameMap.get(LocaleUtil.getDefault());
+
 			if (groupKey == null) {
 				for (Map.Entry<Locale, String> entry : nameMap.entrySet()) {
 					String value = entry.getValue();
@@ -246,10 +247,15 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 					}
 
 					if (_log.isWarnEnabled()) {
-						_log.warn("No name was found for locale" +
-								LocaleUtil.getSiteDefault() +
-								". Using name available for " + entry.getKey() +
-								" instead.");
+						StringBundler sb = new StringBundler(4);
+
+						sb.append("No name was found for locale");
+						sb.append(LocaleUtil.getSiteDefault());
+						sb.append(". Using name available for ");
+						sb.append(entry.getKey());
+						sb.append(" instead.");
+
+						_log.warn(sb.toString());
 					}
 
 					groupKey = value;
@@ -257,6 +263,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 					break;
 				}
 			}
+
 			friendlyName = nameMap.get(LocaleUtil.getDefault());
 		}
 
