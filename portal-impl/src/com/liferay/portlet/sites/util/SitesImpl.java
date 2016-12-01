@@ -1869,9 +1869,9 @@ public class SitesImpl implements Sites {
 
 		File cacheFile = new File(sb.toString());
 
-		if (cacheFile.exists() && !importData) {
-			Date modifiedDate = layoutSetPrototype.getModifiedDate();
+		Date modifiedDate = layoutSetPrototype.getModifiedDate();
 
+		if (cacheFile.exists() && !importData) {
 			if (cacheFile.lastModified() >= modifiedDate.getTime()) {
 				if (_log.isDebugEnabled()) {
 					_log.debug(
@@ -1934,12 +1934,23 @@ public class SitesImpl implements Sites {
 
 		if (newFile) {
 			try {
-				FileUtil.copyFile(file, cacheFile);
+				if (!cacheFile.exists() ||
+					(cacheFile.lastModified() < modifiedDate.getTime())) {
 
-				if (_log.isDebugEnabled()) {
-					_log.debug(
-						"Copied " + file.getAbsolutePath() + " to " +
-							cacheFile.getAbsolutePath());
+					FileUtil.copyFile(file, cacheFile);
+
+					if (_log.isDebugEnabled()) {
+						_log.debug(
+							"Copied " + file.getAbsolutePath() + " to " +
+								cacheFile.getAbsolutePath());
+					}
+				} else {
+					if (_log.isDebugEnabled()) {
+						_log.debug(
+							"Not copied " + file.getAbsolutePath() + " to " +
+							cacheFile.getAbsolutePath() + " as that " +
+							"existed containing the latest data");
+					}
 				}
 			}
 			catch (Exception e) {
