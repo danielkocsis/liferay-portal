@@ -51,6 +51,8 @@ import com.liferay.ratings.kernel.model.RatingsEntry;
 import com.liferay.ratings.kernel.service.RatingsEntryLocalServiceUtil;
 import com.liferay.trash.kernel.util.TrashUtil;
 
+import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -797,8 +799,7 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 				continue;
 			}
 
-			Long classPK = GetterUtil.getLong(
-				referenceElement.attributeValue("class-pk"));
+			Serializable classPK = referenceElement.attributeValue("class-pk");
 
 			StagedModelDataHandlerUtil.importReferenceStagedModel(
 				portletDataContext, stagedModel, className, classPK);

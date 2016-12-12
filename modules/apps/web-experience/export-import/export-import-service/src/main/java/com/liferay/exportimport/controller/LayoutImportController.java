@@ -82,11 +82,10 @@ import com.liferay.portal.kernel.util.Tuple;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
-import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
-import com.liferay.portal.kernel.xml.XPath;
 import com.liferay.portal.kernel.zip.ZipReader;
 import com.liferay.portal.kernel.zip.ZipReaderFactoryUtil;
+import com.liferay.portlet.model.adapter.StagedPortlet;
 import com.liferay.site.model.adapter.StagedGroup;
 
 import java.io.File;
@@ -534,14 +533,16 @@ public class LayoutImportController implements ImportController {
 				layoutSetPrototypeUuid);
 		}
 
-		List<Element> portletElements = fetchPortletElements(rootElement);
-
 		if (permissions) {
+			List<Element> portletElements = fetchPortletElements(rootElement);
+
 			for (Element portletElement : portletElements) {
-				String portletPath = portletElement.attributeValue("path");
+				String portletManifestPath = portletElement.attributeValue(
+					"portlet-manifest-path");
 
 				Document portletDocument = SAXReaderUtil.read(
-					portletDataContext.getZipEntryAsString(portletPath));
+					portletDataContext.getZipEntryAsString(
+						portletManifestPath));
 
 				_permissionImporter.checkRoles(
 					layoutCache, companyId, portletDataContext.getGroupId(),
@@ -588,34 +589,16 @@ public class LayoutImportController implements ImportController {
 	}
 
 	protected List<Element> fetchPortletElements(Element rootElement) {
-		List<Element> portletElements = new ArrayList<>();
-
-		// Site portlets
-
-		Element sitePortletsElement = rootElement.element("site-portlets");
+		Element portletsElement = rootElement.element(
+			StagedPortlet.class.getSimpleName());
 
 		// LAR compatibility
 
-		if (sitePortletsElement == null) {
-			sitePortletsElement = rootElement.element("portlets");
+		if (portletsElement == null) {
+			portletsElement = rootElement.element("portlets");
 		}
 
-		portletElements.addAll(sitePortletsElement.elements("portlet"));
-
-		// Layout portlets
-
-		XPath xPath = SAXReaderUtil.createXPath(
-			"staged-model/portlets/portlet");
-
-		Element layoutsElement = rootElement.element(
-			Layout.class.getSimpleName());
-
-		List<Node> nodes = xPath.selectNodes(layoutsElement);
-
-		nodes.stream().map(
-			(node) -> (Element)node).forEach(portletElements::add);
-
-		return portletElements;
+		return portletsElement.elements("portlet");
 	}
 
 	protected PortletDataContext getPortletDataContext(

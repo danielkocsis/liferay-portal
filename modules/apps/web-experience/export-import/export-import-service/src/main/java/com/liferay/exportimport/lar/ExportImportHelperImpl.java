@@ -1647,62 +1647,59 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 
 				_manifestSummary.setExportDate(exportDate);
 			}
-			else if (elementName.equals("portlet")) {
-				String portletId = element.attributeValue("portlet-id");
-
-				Portlet portlet = null;
-
-				try {
-					portlet = _portletLocalService.getPortletById(
-						_group.getCompanyId(), portletId);
-				}
-				catch (Exception e) {
-					return;
-				}
-
-				PortletDataHandler portletDataHandler =
-					_portletDataHandlerProvider.provide(portlet);
-
-				if (portletDataHandler == null) {
-					return;
-				}
-
-				String[] configurationPortletOptions = StringUtil.split(
-					element.attributeValue("portlet-configuration"));
-
-				if (!(portletDataHandler instanceof
-						DefaultConfigurationPortletDataHandler) &&
-					portletDataHandler.isDataSiteLevel() &&
-					GetterUtil.getBoolean(
-						element.attributeValue("portlet-data"))) {
-
-					_manifestSummary.addDataPortlet(
-						portlet, configurationPortletOptions);
-				}
-				else {
-					_manifestSummary.addLayoutPortlet(
-						portlet, configurationPortletOptions);
-				}
-			}
 			else if (elementName.equals("staged-model")) {
+				String portletId = element.attributeValue("portlet-id");
 				String manifestSummaryKey = element.attributeValue(
 					"manifest-summary-key");
 
-				if (Validator.isNull(manifestSummaryKey)) {
-					return;
+				if (Validator.isNotNull(portletId)) {
+					Portlet portlet = null;
+
+					try {
+						portlet = _portletLocalService.getPortletById(
+							_group.getCompanyId(), portletId);
+					}
+					catch (Exception e) {
+						return;
+					}
+
+					PortletDataHandler portletDataHandler =
+						_portletDataHandlerProvider.provide(portlet);
+
+					if (portletDataHandler == null) {
+						return;
+					}
+
+					String[] configurationPortletOptions = StringUtil.split(
+						element.attributeValue("portlet-configuration"));
+
+					if (!(portletDataHandler instanceof
+							DefaultConfigurationPortletDataHandler) &&
+						portletDataHandler.isDataSiteLevel() &&
+						GetterUtil.getBoolean(
+							element.attributeValue("portlet-data"))) {
+
+						_manifestSummary.addDataPortlet(
+							portlet, configurationPortletOptions);
+					}
+					else {
+						_manifestSummary.addLayoutPortlet(
+							portlet, configurationPortletOptions);
+					}
 				}
+				else if (Validator.isNotNull(manifestSummaryKey)) {
+					long modelAdditionCount = GetterUtil.getLong(
+						element.attributeValue("addition-count"));
 
-				long modelAdditionCount = GetterUtil.getLong(
-					element.attributeValue("addition-count"));
+					_manifestSummary.addModelAdditionCount(
+						manifestSummaryKey, modelAdditionCount);
 
-				_manifestSummary.addModelAdditionCount(
-					manifestSummaryKey, modelAdditionCount);
+					long modelDeletionCount = GetterUtil.getLong(
+						element.attributeValue("deletion-count"));
 
-				long modelDeletionCount = GetterUtil.getLong(
-					element.attributeValue("deletion-count"));
-
-				_manifestSummary.addModelDeletionCount(
-					manifestSummaryKey, modelDeletionCount);
+					_manifestSummary.addModelDeletionCount(
+						manifestSummaryKey, modelDeletionCount);
+				}
 			}
 		}
 
