@@ -359,26 +359,32 @@ public class ExportImportDateUtilTest {
 	public void testUpdateLastPublishDateWithoutExistingLastPublishDate()
 		throws Exception {
 
-		PortletDataContext portletDataContext = new PortletDataContextImpl(
-			null);
+		Date lastPublishDate = ExportImportDateUtil.getLastPublishDate(
+			_portletPreferences);
 
-		portletDataContext.setGroupId(_group.getGroupId());
+		Assert.assertNull(lastPublishDate);
 
 		Date now = new Date();
 
-		updateLastPublishDate(
-			portletDataContext,
-			ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE, now);
-
-		DateRange dateRange = new DateRange(null, now);
+		DateRange dateRange = new DateRange(now, null);
 
 		ExportImportDateUtil.updateLastPublishDate(
 			PortletKeys.EXPORT_IMPORT, _portletPreferences, dateRange, now);
 
-		Date lastPublishDate = ExportImportDateUtil.getLastPublishDate(
+		lastPublishDate = ExportImportDateUtil.getLastPublishDate(
 			_portletPreferences);
 
-		Assert.assertNotNull(lastPublishDate);
+		Assert.assertNull(lastPublishDate);
+
+		dateRange = new DateRange(null, now);
+
+		ExportImportDateUtil.updateLastPublishDate(
+			PortletKeys.EXPORT_IMPORT, _portletPreferences, dateRange, now);
+
+		lastPublishDate = ExportImportDateUtil.getLastPublishDate(
+			_portletPreferences);
+
+		Assert.assertEquals(now, lastPublishDate);
 	}
 
 	@Test
