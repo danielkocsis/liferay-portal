@@ -98,7 +98,7 @@ public class UserModelListener extends BaseModelListener<User> {
 						sb.append(locale);
 						sb.append(". Using name ");
 						sb.append(oldGroupDefaultName);
-						sb.append("instead.");
+						sb.append(" instead.");
 
 						_log.warn(sb.toString());
 					}
