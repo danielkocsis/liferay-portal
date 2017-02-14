@@ -96,6 +96,22 @@ public class JournalArticleExportImportContentProcessorTest {
 			_group1.getGroupId(), content);
 	}
 
+	@Test
+	public void testValidateContentReferencesForLinkToPortletFriendlyURL()
+		throws Exception {
+
+		ExportImportContentProcessor exportImportContentProcessor =
+			ExportImportContentProcessorRegistryUtil.
+				getExportImportContentProcessor(JournalArticle.class.getName());
+
+		String content = read(
+			"test-journal-content-text-field-with-link-to-portlet-friendly-" +
+				"url.xml");
+
+		exportImportContentProcessor.validateContentReferences(
+			_group2.getGroupId(), content);
+	}
+
 	protected String read(String fileName) throws Exception {
 		Class<?> clazz = getClass();
 
