@@ -19,6 +19,9 @@ import com.liferay.exportimport.content.processor.ExportImportContentProcessor;
 import com.liferay.exportimport.content.processor.ExportImportContentProcessorRegistryUtil;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.rule.Sync;
@@ -26,6 +29,7 @@ import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.util.test.LayoutTestUtil;
 
 import java.io.InputStream;
 
@@ -51,7 +55,18 @@ public class JournalArticleExportImportContentProcessorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_group = GroupTestUtil.addGroup();
+		_group1 = GroupTestUtil.addGroup();
+		_group2 = GroupTestUtil.addGroup();
+
+		_group2.setFriendlyURL("/test-group");
+
+		GroupLocalServiceUtil.updateGroup(_group2);
+
+		_layout = LayoutTestUtil.addLayout(_group2);
+
+		_layout.setFriendlyURL("/test-layout");
+
+		LayoutLocalServiceUtil.updateLayout(_layout);
 	}
 
 	@Test
@@ -63,7 +78,22 @@ public class JournalArticleExportImportContentProcessorTest {
 		String content = read("test-journal-content-web-content-field.xml");
 
 		exportImportContentProcessor.validateContentReferences(
-			_group.getGroupId(), content);
+			_group1.getGroupId(), content);
+	}
+
+	@Test
+	public void testValidateContentReferencesForLinkToOtherSite()
+		throws Exception {
+
+		ExportImportContentProcessor exportImportContentProcessor =
+			ExportImportContentProcessorRegistryUtil.
+				getExportImportContentProcessor(JournalArticle.class.getName());
+
+		String content = read(
+			"test-journal-content-text-field-with-link-to-other-site.xml");
+
+		exportImportContentProcessor.validateContentReferences(
+			_group1.getGroupId(), content);
 	}
 
 	protected String read(String fileName) throws Exception {
@@ -78,6 +108,12 @@ public class JournalArticleExportImportContentProcessorTest {
 	}
 
 	@DeleteAfterTestRun
-	private Group _group;
+	private Group _group1;
+
+	@DeleteAfterTestRun
+	private Group _group2;
+
+	@DeleteAfterTestRun
+	private Layout _layout;
 
 }
