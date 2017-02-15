@@ -82,6 +82,23 @@ public class ExportImportContentProcessorTest {
 			_group1.getGroupId(), content);
 	}
 
+	@Test
+	public void testValidateContentReferencesForLinkToPortletFriendlyURL()
+		throws Exception {
+
+		ExportImportContentProcessor exportImportContentProcessor =
+			ExportImportContentProcessorRegistryUtil.
+				getExportImportContentProcessor(
+					BaseStagedModel.class.getName());
+
+		String content =
+			"<a href=\"http://localhost:8080/web/test-group/test-layout/-" +
+				"/test-portlet\">test</a>";
+
+		exportImportContentProcessor.validateContentReferences(
+			_group2.getGroupId(), content);
+	}
+
 	@DeleteAfterTestRun
 	private Group _group1;
 
