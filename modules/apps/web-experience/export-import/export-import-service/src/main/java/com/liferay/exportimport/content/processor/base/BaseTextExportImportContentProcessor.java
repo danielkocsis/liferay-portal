@@ -1292,6 +1292,9 @@ public class BaseTextExportImportContentProcessor
 
 					url = url.substring(groupFriendlyURL.length());
 				}
+				else {
+					throw new NoSuchLayoutException();
+				}
 			}
 
 			if (Validator.isNull(url)) {
