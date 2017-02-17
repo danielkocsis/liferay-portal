@@ -33,21 +33,19 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 /**
  * @author Michael Bowerman
  */
 @RunWith(Arquillian.class)
-@Sync
 public class ExportImportContentProcessorTest {
 
 	@ClassRule
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			SynchronousDestinationTestRule.INSTANCE);
+		new LiferayIntegrationTestRule();
 
 	@Before
 	public void setUp() throws Exception {
@@ -72,7 +70,7 @@ public class ExportImportContentProcessorTest {
 		ExportImportContentProcessor exportImportContentProcessor =
 			ExportImportContentProcessorRegistryUtil.
 				getExportImportContentProcessor(
-					BaseStagedModel.class.getName());
+					DummyStagedModel.class.getName());
 
 		String content =
 			"<a href=\"http://localhost:8080/web/test-group/test-layout\">" +
@@ -89,7 +87,7 @@ public class ExportImportContentProcessorTest {
 		ExportImportContentProcessor exportImportContentProcessor =
 			ExportImportContentProcessorRegistryUtil.
 				getExportImportContentProcessor(
-					BaseStagedModel.class.getName());
+					DummyStagedModel.class.getName());
 
 		String content =
 			"<a href=\"http://localhost:8080/web/test-group/test-layout/-" +
