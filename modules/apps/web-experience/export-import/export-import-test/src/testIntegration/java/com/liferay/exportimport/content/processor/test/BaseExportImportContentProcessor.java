@@ -24,8 +24,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"content.processor.order=1",
-		"model.class.name=com.liferay.exportimport.content.processor.test.BaseStagedModel"
+		"model.class.name=com.liferay.exportimport.content.processor.test.DummyStagedModel"
 	},
 	service = {ExportImportContentProcessor.class}
 )

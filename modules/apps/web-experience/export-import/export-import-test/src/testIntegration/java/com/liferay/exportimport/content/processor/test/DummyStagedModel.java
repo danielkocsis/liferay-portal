@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * @author Michael Bowerman
  */
-public class BaseStagedModel implements StagedModel {
+public class DummyStagedModel implements StagedModel {
 
 	@Override
 	public Object clone() {
@@ -54,7 +54,7 @@ public class BaseStagedModel implements StagedModel {
 
 	@Override
 	public String getModelClassName() {
-		return BaseStagedModel.class.getName();
+		return DummyStagedModel.class.getName();
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class BaseStagedModel implements StagedModel {
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return new StagedModelType(BaseStagedModel.class);
+		return new StagedModelType(DummyStagedModel.class);
 	}
 
 	@Override
