@@ -28,7 +28,6 @@ import com.liferay.exportimport.kernel.lar.PortletDataContextFactoryUtil;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalServiceUtil;
 import com.liferay.exportimport.kernel.service.ExportImportLocalServiceUtil;
-import com.liferay.exportimport.lar.ExportImportHelperImpl;
 import com.liferay.exportimport.test.util.TestReaderWriter;
 import com.liferay.exportimport.test.util.TestUserIdStrategy;
 import com.liferay.journal.model.JournalArticle;
@@ -330,7 +329,7 @@ public class BaseExportImportContentProcessorTest {
 			BaseTextExportImportContentProcessor.class.getDeclaredField(
 				"PRIVATE_USER_SERVLET_MAPPING"),
 			PropsValues.LAYOUT_FRIENDLY_URL_PRIVATE_USER_SERVLET_MAPPING +
-			StringPool.SLASH);
+				StringPool.SLASH);
 
 		portalUtil.setPortal(new PortalImpl());
 	}
@@ -375,7 +374,7 @@ public class BaseExportImportContentProcessorTest {
 			BaseTextExportImportContentProcessor.class.getDeclaredField(
 				"PRIVATE_USER_SERVLET_MAPPING"),
 			PropsValues.LAYOUT_FRIENDLY_URL_PRIVATE_USER_SERVLET_MAPPING +
-			StringPool.SLASH);
+				StringPool.SLASH);
 	}
 
 	@Test
@@ -731,7 +730,7 @@ public class BaseExportImportContentProcessorTest {
 		String parameters3 = "width=100&height=100&" + timestampParameter;
 		String parameters4 =
 			timestampParameter + "?" + timestampParameter +
-			"&width=100&height=100";
+				"&width=100&height=100";
 
 		List<String> outURLs = new ArrayList<>();
 
