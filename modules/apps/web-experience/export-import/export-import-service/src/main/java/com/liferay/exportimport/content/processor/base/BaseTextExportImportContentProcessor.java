@@ -1275,19 +1275,16 @@ public class BaseTextExportImportContentProcessor
 			while (true) {
 				pos = url.indexOf(StringPool.SLASH, 1);
 
-				Group urlGroup = null;
-
 				if (pos == -1) {
 					break;
 				}
-				else {
-					String groupName = url.substring(1, pos);
 
-					groupFriendlyURL = StringPool.SLASH + groupName;
+				String groupName = url.substring(1, pos);
 
-					urlGroup = GroupLocalServiceUtil.fetchFriendlyURLGroup(
-						group.getCompanyId(), groupFriendlyURL);
-				}
+				groupFriendlyURL = StringPool.SLASH + groupName;
+
+				Group urlGroup = GroupLocalServiceUtil.fetchFriendlyURLGroup(
+					group.getCompanyId(), groupFriendlyURL);
 
 				if (urlGroup != null) {
 					group = urlGroup;
