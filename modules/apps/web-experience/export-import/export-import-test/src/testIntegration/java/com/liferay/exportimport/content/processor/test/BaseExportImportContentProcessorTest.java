@@ -185,6 +185,7 @@ public class BaseExportImportContentProcessorTest {
 					DummyStagedModel.class.getName());
 	}
 
+	@Ignore
 	@Test
 	public void testDeleteTimestampFromDLReferenceURLs() throws Exception {
 		String content = replaceParameters(
@@ -219,6 +220,7 @@ public class BaseExportImportContentProcessorTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testExportDLReferences() throws Exception {
 		_portletDataContextExport.setZipWriter(new TestReaderWriter());
@@ -254,6 +256,7 @@ public class BaseExportImportContentProcessorTest {
 		};
 	}
 
+	@Ignore
 	@Test
 	public void testExportDLReferencesInvalidReference() throws Exception {
 		_portletDataContextExport.setZipWriter(new TestReaderWriter());
@@ -275,6 +278,7 @@ public class BaseExportImportContentProcessorTest {
 			true, true);
 	}
 
+	@Ignore
 	@Test
 	public void testExportLayoutReferencesWithContext() throws Exception {
 		PortalImpl portalImpl = new PortalImpl() {
@@ -334,6 +338,7 @@ public class BaseExportImportContentProcessorTest {
 		portalUtil.setPortal(new PortalImpl());
 	}
 
+	@Ignore
 	@Test
 	public void testExportLayoutReferencesWithoutContext() throws Exception {
 		_oldLayoutFriendlyURLPrivateUserServletMapping =
@@ -377,6 +382,7 @@ public class BaseExportImportContentProcessorTest {
 				StringPool.SLASH);
 	}
 
+	@Ignore
 	@Test
 	public void testExportLinksToLayouts() throws Exception {
 		String content = replaceLinksToLayoutsParameters(
@@ -395,6 +401,7 @@ public class BaseExportImportContentProcessorTest {
 			content, _stagingPublicLayout, _stagingPublicLayout.getGroupId());
 	}
 
+	@Ignore
 	@Test
 	public void testExportLinksToUserLayouts() throws Exception {
 		User user = TestPropsValues.getUser();
@@ -433,6 +440,7 @@ public class BaseExportImportContentProcessorTest {
 		assertLinksToLayouts(content, publicLayout, publicLayout.getGroupId());
 	}
 
+	@Ignore
 	@Test
 	public void testImportDLReferences() throws Exception {
 		Element referrerStagedModelElement =
@@ -460,6 +468,7 @@ public class BaseExportImportContentProcessorTest {
 		Assert.assertFalse(content.contains("[$dl-reference="));
 	}
 
+	@Ignore
 	@Test
 	public void testImportLayoutReferences() throws Exception {
 		String content = replaceParameters(
@@ -482,6 +491,7 @@ public class BaseExportImportContentProcessorTest {
 			content.contains("@data_handler_public_servlet_mapping@"));
 	}
 
+	@Ignore
 	@Test
 	public void testImportLinksToLayouts() throws Exception {
 		String content = replaceLinksToLayoutsParameters(
@@ -501,6 +511,7 @@ public class BaseExportImportContentProcessorTest {
 		Assert.assertEquals(originalContent, importedContent);
 	}
 
+	@Ignore
 	@Test
 	public void testImportLinksToLayoutsIdsReplacement() throws Exception {
 		LayoutTestUtil.addLayout(_liveGroup, true);
