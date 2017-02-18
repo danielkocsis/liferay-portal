@@ -164,10 +164,23 @@ public class BaseExportImportContentProcessorTest {
 		Element missingReferencesElement = rootElement.addElement(
 			"missing-references");
 
+		_portletDataContextExport.setMissingReferencesElement(
+			missingReferencesElement);
+
 		_portletDataContextImport.setMissingReferencesElement(
 			missingReferencesElement);
 
+		_livePrivateLayout = LayoutTestUtil.addLayout(_liveGroup, true);
 		_livePublicLayout = LayoutTestUtil.addLayout(_liveGroup, false);
+
+		Map<Long, Long> layoutPlids =
+			(Map<Long, Long>)_portletDataContextImport.getNewPrimaryKeysMap(
+				Layout.class);
+
+		layoutPlids.put(
+			_stagingPrivateLayout.getPlid(), _livePrivateLayout.getPlid());
+		layoutPlids.put(
+			_stagingPublicLayout.getPlid(), _livePublicLayout.getPlid());
 
 		_portletDataContextImport.setPlid(_livePublicLayout.getPlid());
 
@@ -306,6 +319,9 @@ public class BaseExportImportContentProcessorTest {
 		String content = replaceParameters(
 			getContent("layout_references.txt"), _fileEntry);
 
+		_exportImportContentProcessor.validateContentReferences(
+			_stagingGroup.getGroupId(), content);
+
 		content = _exportImportContentProcessor.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel, content, true,
 			true);
@@ -351,6 +367,9 @@ public class BaseExportImportContentProcessorTest {
 
 		String content = replaceParameters(
 			getContent("layout_references.txt"), _fileEntry);
+
+		_exportImportContentProcessor.validateContentReferences(
+			_stagingGroup.getGroupId(), content);
 
 		content = _exportImportContentProcessor.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel, content, true,
@@ -411,13 +430,19 @@ public class BaseExportImportContentProcessorTest {
 				new Date(System.currentTimeMillis() - Time.HOUR), new Date(),
 				new TestReaderWriter());
 
+		Element rootElement = SAXReaderUtil.createElement("root");
+
+		portletDataContextExport.setExportDataRootElement(rootElement);
+
+		Element missingReferencesElement = rootElement.addElement(
+			"missing-references");
+
+		portletDataContextExport.setMissingReferencesElement(
+			missingReferencesElement);
+
 		JournalArticle journalArticle = JournalTestUtil.addArticle(
 			group.getGroupId(), RandomTestUtil.randomString(),
 			RandomTestUtil.randomString());
-
-		Element rootElement = SAXReaderUtil.createElement("root");
-
-		rootElement.addElement("entry");
 
 		String content = replaceLinksToLayoutsParameters(
 			getContent("layout_links_user_group.txt"), privateLayout,
@@ -465,6 +490,9 @@ public class BaseExportImportContentProcessorTest {
 		String content = replaceParameters(
 			getContent("layout_references.txt"), _fileEntry);
 
+		_exportImportContentProcessor.validateContentReferences(
+			_stagingGroup.getGroupId(), content);
+
 		content = _exportImportContentProcessor.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel, content, true,
 			false);
@@ -488,7 +516,9 @@ public class BaseExportImportContentProcessorTest {
 			getContent("layout_links.txt"), _stagingPrivateLayout,
 			_stagingPublicLayout);
 
-		String originalContent = content;
+		String liveContent = replaceLinksToLayoutsParameters(
+			getContent("layout_links.txt"), _livePrivateLayout,
+			_livePublicLayout);
 
 		content = _exportImportContentProcessor.replaceExportContentReferences(
 			_portletDataContextExport, _referrerStagedModel, content, true,
@@ -498,7 +528,7 @@ public class BaseExportImportContentProcessorTest {
 			_exportImportContentProcessor.replaceImportContentReferences(
 				_portletDataContextImport, _referrerStagedModel, content);
 
-		Assert.assertEquals(originalContent, importedContent);
+		Assert.assertEquals(liveContent, importedContent);
 	}
 
 	@Test
@@ -696,8 +726,9 @@ public class BaseExportImportContentProcessorTest {
 			content,
 			new String[] {
 				"[$GROUP_FRIENDLY_URL$]", "[$GROUP_ID$]", "[$IMAGE_ID$]",
-				"[$LIVE_GROUP_ID$]", "[$PATH_CONTEXT$]",
-				"[$PATH_FRIENDLY_URL_PRIVATE_GROUP$]",
+				"[$PRIVATE_LAYOUT_FRIENDLY_URL$]",
+				"[$PUBLIC_LAYOUT_FRIENDLY_URL$]", "[$LIVE_GROUP_ID$]",
+				"[$PATH_CONTEXT$]", "[$PATH_FRIENDLY_URL_PRIVATE_GROUP$]",
 				"[$PATH_FRIENDLY_URL_PRIVATE_USER$]",
 				"[$PATH_FRIENDLY_URL_PUBLIC$]", "[$TITLE$]", "[$UUID$]"
 			},
@@ -705,6 +736,8 @@ public class BaseExportImportContentProcessorTest {
 				_stagingGroup.getFriendlyURL(),
 				String.valueOf(fileEntry.getGroupId()),
 				String.valueOf(fileEntry.getFileEntryId()),
+				_stagingPrivateLayout.getFriendlyURL(),
+				_stagingPublicLayout.getFriendlyURL(),
 				String.valueOf(fileEntry.getGroupId()),
 				PortalUtil.getPathContext(),
 				PropsValues.LAYOUT_FRIENDLY_URL_PRIVATE_GROUP_SERVLET_MAPPING,
@@ -781,6 +814,7 @@ public class BaseExportImportContentProcessorTest {
 	@DeleteAfterTestRun
 	private Group _liveGroup;
 
+	private Layout _livePrivateLayout;
 	private Layout _livePublicLayout;
 	private final Pattern _pattern = Pattern.compile("href=|\\{|\\[");
 	private PortletDataContext _portletDataContextExport;
