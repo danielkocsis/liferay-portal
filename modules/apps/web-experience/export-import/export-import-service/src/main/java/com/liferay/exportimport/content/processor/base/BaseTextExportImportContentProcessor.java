@@ -685,6 +685,10 @@ public class BaseTextExportImportContentProcessor
 					url = url.substring(groupFriendlyURL.length());
 				}
 
+				if (Validator.isNull(url)) {
+					continue;
+				}
+
 				Element entityElement = portletDataContext.getExportDataElement(
 					stagedModel);
 
