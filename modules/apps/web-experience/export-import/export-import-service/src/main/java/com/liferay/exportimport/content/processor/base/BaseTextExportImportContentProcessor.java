@@ -1027,8 +1027,16 @@ public class BaseTextExportImportContentProcessor
 				newGroupId = layout.getGroupId();
 				newLayoutId = layout.getLayoutId();
 			}
-			else if (_log.isWarnEnabled()) {
-				_log.warn("Unable to get layout with plid " + oldPlid);
+			else if (_log.isDebugEnabled()) {
+				StringBundler sb = new StringBundler(5);
+
+				sb.append("Unable to get layout with plid ");
+				sb.append(oldPlid);
+				sb.append(", using layout id  ");
+				sb.append(newLayoutId);
+				sb.append(" instead");
+
+				_log.debug(sb.toString());
 			}
 
 			String oldLinkToLayout = matcher.group(0);
