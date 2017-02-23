@@ -86,7 +86,6 @@ import java.util.regex.Pattern;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -574,38 +573,6 @@ public class BaseExportImportContentProcessorTest {
 		Assert.assertEquals(expectedContent, importedContent);
 	}
 
-	@Ignore
-	@Test
-	public void testValidateContentReferencesForLinkToOtherSite()
-		throws Exception {
-
-		// reuse the existing layout_references.txt and add new link there
-		// following the pattern
-
-		String content =
-			"<a href=\"http://localhost:8080/web/test-group/test-layout\">" +
-				"test</a>";
-
-		_exportImportContentProcessor.validateContentReferences(
-			_stagingGroup.getGroupId(), content);
-	}
-
-	@Ignore
-	@Test
-	public void testValidateContentReferencesForLinkToPortletFriendlyURL()
-		throws Exception {
-
-		// reuse the existing layout_references.txt and add new link there
-		// following the pattern
-
-		String content =
-			"<a href=\"http://localhost:8080/web/test-group/test-layout/-" +
-				"/test-portlet\">test</a>";
-
-		_exportImportContentProcessor.validateContentReferences(
-			_liveGroup.getGroupId(), content);
-	}
-
 	protected void assertLinksToLayouts(
 		String content, Layout layout, long groupId) {
 
@@ -726,6 +693,8 @@ public class BaseExportImportContentProcessorTest {
 			content,
 			new String[] {
 				"[$GROUP_FRIENDLY_URL$]", "[$GROUP_ID$]", "[$IMAGE_ID$]",
+				"[$LIVE_GROUP_FRIENDLY_URL$]",
+				"[$LIVE_PUBLIC_LAYOUT_FRIENDLY_URL$]",
 				"[$PRIVATE_LAYOUT_FRIENDLY_URL$]",
 				"[$PUBLIC_LAYOUT_FRIENDLY_URL$]", "[$LIVE_GROUP_ID$]",
 				"[$PATH_CONTEXT$]", "[$PATH_FRIENDLY_URL_PRIVATE_GROUP$]",
@@ -736,6 +705,7 @@ public class BaseExportImportContentProcessorTest {
 				_stagingGroup.getFriendlyURL(),
 				String.valueOf(fileEntry.getGroupId()),
 				String.valueOf(fileEntry.getFileEntryId()),
+				_liveGroup.getFriendlyURL(), _livePublicLayout.getFriendlyURL(),
 				_stagingPrivateLayout.getFriendlyURL(),
 				_stagingPublicLayout.getFriendlyURL(),
 				String.valueOf(fileEntry.getGroupId()),
