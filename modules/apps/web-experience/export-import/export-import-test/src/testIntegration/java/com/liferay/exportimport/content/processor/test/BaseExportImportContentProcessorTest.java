@@ -583,8 +583,8 @@ public class BaseExportImportContentProcessorTest {
 		// following the pattern
 
 		String content =
-			"<a href=\"http://localhost:8080/web/test-group/test-layout\">" +
-				"test</a>";
+			"<a href=\"/web" + _liveGroup.getFriendlyURL() +
+				_livePublicLayout.getFriendlyURL() +  "\">test</a>";
 
 		_exportImportContentProcessor.validateContentReferences(
 			_stagingGroup.getGroupId(), content);
@@ -599,11 +599,12 @@ public class BaseExportImportContentProcessorTest {
 		// following the pattern
 
 		String content =
-			"<a href=\"http://localhost:8080/web/test-group/test-layout/-" +
-				"/test-portlet\">test</a>";
+			"<a href=\"/web" + _liveGroup.getFriendlyURL() +
+				_livePublicLayout.getFriendlyURL() +
+					"/-/test-portlet\">test</a>";
 
 		_exportImportContentProcessor.validateContentReferences(
-			_liveGroup.getGroupId(), content);
+			_stagingGroup.getGroupId(), content);
 	}
 
 	protected void assertLinksToLayouts(
