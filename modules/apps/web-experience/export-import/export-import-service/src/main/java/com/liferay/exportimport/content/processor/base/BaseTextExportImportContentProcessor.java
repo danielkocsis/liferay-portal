@@ -1227,6 +1227,10 @@ public class BaseTextExportImportContentProcessor
 				url = url.substring(0, endPos);
 			}
 
+			if (url.endsWith(StringPool.SLASH)) {
+				url = url.substring(0, url.length() - 1);
+			}
+
 			StringBundler urlSB = new StringBundler(1);
 
 			url = replaceExportHostname(groupId, url, urlSB);
