@@ -222,6 +222,8 @@ entriesSearchContainer.setResults(entriesResults);
 				<%@ include file="/blogs_admin/entry_search_columns.jspf" %>
 			</liferay-ui:search-container-row>
 
+			<liferay-staging:export-import-entity-search-container-mapping />
+
 			<liferay-ui:search-iterator displayStyle="<%= displayStyle %>" markupView="lexicon" />
 		</liferay-ui:search-container>
 	</aui:form>
