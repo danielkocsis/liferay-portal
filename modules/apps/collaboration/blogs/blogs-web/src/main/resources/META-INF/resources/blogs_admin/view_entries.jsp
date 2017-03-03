@@ -233,6 +233,7 @@ entriesSearchContainer.setResults(entriesResults);
 
 	<liferay-frontend:add-menu>
 		<liferay-frontend:add-menu-item title='<%= LanguageUtil.get(request, "add-blog-entry") %>' url="<%= addEntryURL %>" />
+		<liferay-staging:import-entity />
 	</liferay-frontend:add-menu>
 </c:if>
 
