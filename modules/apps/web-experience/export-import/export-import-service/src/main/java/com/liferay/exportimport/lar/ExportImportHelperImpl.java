@@ -765,6 +765,10 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 			return false;
 		}
 
+		if (group.isCompany()) {
+			return true;
+		}
+
 		String className = group.getClassName();
 
 		if (className.equals(Layout.class.getName())) {
