@@ -67,4 +67,6 @@ portletURL.setParameter("mvcRenderCommandName", "/blogs/view");
 
 		<liferay-ui:icon-delete trash="<%= TrashUtil.isTrashEnabled(scopeGroupId) %>" url="<%= deleteEntryURL %>" />
 	</c:if>
+
+	<liferay-staging:export-entity className="<%= BlogsEntry.class.getName() %>" classPK="<%= entry.getEntryId() %>" />
 </liferay-ui:icon-menu>
