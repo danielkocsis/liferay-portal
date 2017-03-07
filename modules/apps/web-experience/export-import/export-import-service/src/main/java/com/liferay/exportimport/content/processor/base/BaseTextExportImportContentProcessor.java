@@ -685,6 +685,40 @@ public class BaseTextExportImportContentProcessor
 					url = url.substring(groupFriendlyURL.length());
 				}
 
+				long groupId = group.getGroupId();
+
+				while (true) {
+					pos = url.indexOf(StringPool.SLASH, 1);
+
+					if (pos == -1) {
+						break;
+					}
+
+					String groupName = url.substring(1, pos);
+
+					groupFriendlyURL = StringPool.SLASH + groupName;
+
+					Group urlGroup =
+						GroupLocalServiceUtil.fetchFriendlyURLGroup(
+							group.getCompanyId(), groupFriendlyURL);
+
+					if (urlGroup != null) {
+						group = urlGroup;
+						groupId = urlGroup.getGroupId();
+
+						if (!DATA_HANDLER_GROUP_FRIENDLY_URL.equals(
+								urlSB.stringAt(urlSB.index() - 1))) {
+
+							urlSB.append(DATA_HANDLER_GROUP_FRIENDLY_URL);
+						}
+
+						url = url.substring(groupFriendlyURL.length());
+					}
+					else {
+						throw new NoSuchLayoutException();
+					}
+				}
+
 				if (Validator.isNull(url)) {
 					continue;
 				}
@@ -693,7 +727,7 @@ public class BaseTextExportImportContentProcessor
 					stagedModel);
 
 				Layout layout = LayoutLocalServiceUtil.fetchLayoutByFriendlyURL(
-					group.getGroupId(), privateLayout, url);
+					groupId, privateLayout, url);
 
 				portletDataContext.addReferenceElement(
 					stagedModel, entityElement, layout,
