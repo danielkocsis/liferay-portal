@@ -693,27 +693,27 @@ public class BaseExportImportContentProcessorTest {
 			content,
 			new String[] {
 				"[$GROUP_FRIENDLY_URL$]", "[$GROUP_ID$]", "[$IMAGE_ID$]",
-				"[$LIVE_GROUP_FRIENDLY_URL$]",
-				"[$LIVE_PUBLIC_LAYOUT_FRIENDLY_URL$]",
-				"[$PRIVATE_LAYOUT_FRIENDLY_URL$]",
-				"[$PUBLIC_LAYOUT_FRIENDLY_URL$]", "[$LIVE_GROUP_ID$]",
-				"[$PATH_CONTEXT$]", "[$PATH_FRIENDLY_URL_PRIVATE_GROUP$]",
+				"[$LIVE_GROUP_FRIENDLY_URL$]", "[$LIVE_GROUP_ID$]",
+				"[$LIVE_PUBLIC_LAYOUT_FRIENDLY_URL$]", "[$PATH_CONTEXT$]",
+				"[$PATH_FRIENDLY_URL_PRIVATE_GROUP$]",
 				"[$PATH_FRIENDLY_URL_PRIVATE_USER$]",
-				"[$PATH_FRIENDLY_URL_PUBLIC$]", "[$TITLE$]", "[$UUID$]"
+				"[$PATH_FRIENDLY_URL_PUBLIC$]",
+				"[$PRIVATE_LAYOUT_FRIENDLY_URL$]",
+				"[$PUBLIC_LAYOUT_FRIENDLY_URL$]", "[$TITLE$]", "[$UUID$]"
 			},
 			new String[] {
 				_stagingGroup.getFriendlyURL(),
 				String.valueOf(fileEntry.getGroupId()),
 				String.valueOf(fileEntry.getFileEntryId()),
-				_liveGroup.getFriendlyURL(), _livePublicLayout.getFriendlyURL(),
-				_stagingPrivateLayout.getFriendlyURL(),
-				_stagingPublicLayout.getFriendlyURL(),
-				String.valueOf(fileEntry.getGroupId()),
-				PortalUtil.getPathContext(),
+				_liveGroup.getFriendlyURL(),
+				String.valueOf(_liveGroup.getGroupId()),
+				_livePublicLayout.getFriendlyURL(), PortalUtil.getPathContext(),
 				PropsValues.LAYOUT_FRIENDLY_URL_PRIVATE_GROUP_SERVLET_MAPPING,
 				PropsValues.LAYOUT_FRIENDLY_URL_PRIVATE_USER_SERVLET_MAPPING,
 				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
-				fileEntry.getTitle(), fileEntry.getUuid()
+				_stagingPrivateLayout.getFriendlyURL(),
+				_stagingPublicLayout.getFriendlyURL(), fileEntry.getTitle(),
+				fileEntry.getUuid()
 			});
 
 		if (!content.contains("[$TIMESTAMP")) {
