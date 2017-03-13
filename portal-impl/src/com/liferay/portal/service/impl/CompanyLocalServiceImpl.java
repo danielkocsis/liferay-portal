@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.AccountNameException;
 import com.liferay.portal.kernel.exception.CompanyMxException;
 import com.liferay.portal.kernel.exception.CompanyVirtualHostException;
@@ -70,10 +71,12 @@ import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
@@ -988,6 +991,14 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		user.setTimeZoneId(timeZoneId);
 
 		userPersistence.update(user);
+
+		Locale locale = user.getLocale();
+
+		if (locale.equals(LocaleUtil.getDefault())) {
+			return;
+		}
+
+		verifyGroupsNameMap(user);
 	}
 
 	/**
@@ -1612,6 +1623,47 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 					_log.debug(nsvhe, nsvhe);
 				}
 			}
+		}
+	}
+
+	protected void verifyGroupsNameMap(User user) throws PortalException {
+		List<Group> groups = groupLocalService.getCompanyGroups(
+			user.getCompanyId(), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+
+		for (Group group : groups) {
+			Map<Locale, String> nameMap = group.getNameMap();
+
+			if (MapUtil.isEmpty(nameMap)) {
+				continue;
+			}
+
+			Locale locale = user.getLocale();
+
+			String groupDefaultName = nameMap.get(locale);
+
+			if (Validator.isNotNull(groupDefaultName)) {
+				continue;
+			}
+
+			String oldGroupDefaultName = nameMap.get(LocaleUtil.getDefault());
+
+			if (_log.isWarnEnabled()) {
+				StringBundler sb = new StringBundler(5);
+
+				sb.append("No name was found for locale ");
+				sb.append(locale);
+				sb.append(". Using name ");
+				sb.append(oldGroupDefaultName);
+				sb.append("instead.");
+
+				_log.warn(sb.toString());
+			}
+
+			nameMap.put(locale, oldGroupDefaultName);
+
+			group.setNameMap(nameMap);
+
+			groupLocalService.updateGroup(group);
 		}
 	}
 
