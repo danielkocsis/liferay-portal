@@ -541,6 +541,10 @@ public class BaseTextExportImportContentProcessor
 
 			String url = content.substring(beginPos + offset, endPos);
 
+			if (url.endsWith(StringPool.SLASH)) {
+				url = url.substring(0, url.length() - 1);
+			}
+
 			StringBundler urlSB = new StringBundler(6);
 
 			try {
