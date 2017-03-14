@@ -15,6 +15,15 @@
 package com.liferay.exportimport.kernel.lar;
 
 import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.plugin.Version;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PortletKeys;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import javax.portlet.PortletPreferences;
 
@@ -100,10 +109,69 @@ public interface PortletDataHandler {
 			boolean privateLayout)
 		throws Exception;
 
-	public PortletDataHandlerControl[] getExportConfigurationControls(
+	public default PortletDataHandlerControl[] getExportConfigurationControls(
 			long companyId, long groupId, Portlet portlet, long plid,
 			boolean privateLayout)
-		throws Exception;
+		throws Exception {
+
+		List<PortletDataHandlerBoolean> configurationControls =
+			new ArrayList<>();
+
+		// Setup
+
+		if ((PortletPreferencesLocalServiceUtil.getPortletPreferencesCount(
+				PortletKeys.PREFS_OWNER_ID_DEFAULT,
+				PortletKeys.PREFS_OWNER_TYPE_LAYOUT, plid, portlet, false) >
+					0) ||
+			(PortletPreferencesLocalServiceUtil.getPortletPreferencesCount(
+				groupId, PortletKeys.PREFS_OWNER_TYPE_GROUP,
+				portlet.getRootPortletId(), false) > 0) ||
+			(PortletPreferencesLocalServiceUtil.getPortletPreferencesCount(
+				companyId, PortletKeys.PREFS_OWNER_TYPE_COMPANY,
+				portlet.getRootPortletId(), false) > 0)) {
+
+			PortletDataHandlerControl[] portletDataHandlerControls = null;
+
+			if (isDisplayPortlet()) {
+				portletDataHandlerControls = getExportControls();
+			}
+
+			configurationControls.add(
+				new PortletDataHandlerBoolean(
+					null, PortletDataHandlerKeys.PORTLET_SETUP, "setup", true,
+					false, portletDataHandlerControls, null, null));
+		}
+
+		// Archived setups
+
+		if (PortletPreferencesLocalServiceUtil.getPortletPreferencesCount(
+				-1, PortletKeys.PREFS_OWNER_TYPE_ARCHIVED,
+				portlet.getRootPortletId(), false) > 0) {
+
+			configurationControls.add(
+				new PortletDataHandlerBoolean(
+					null, PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS,
+					"configuration-templates", true, false, null, null, null));
+		}
+
+		// User preferences
+
+		if ((PortletPreferencesLocalServiceUtil.getPortletPreferencesCount(
+				-1, PortletKeys.PREFS_OWNER_TYPE_USER, plid, portlet, false) >
+					0) ||
+			(PortletPreferencesLocalServiceUtil.getPortletPreferencesCount(
+				groupId, PortletKeys.PREFS_OWNER_TYPE_USER,
+				PortletKeys.PREFS_PLID_SHARED, portlet, false) > 0)) {
+
+			configurationControls.add(
+				new PortletDataHandlerBoolean(
+					null, PortletDataHandlerKeys.PORTLET_USER_PREFERENCES,
+					"user-preferences", true, false, null, null, null));
+		}
+
+		return configurationControls.toArray(
+			new PortletDataHandlerBoolean[configurationControls.size()]);
+	}
 
 	/**
 	 * Returns an array of the controls defined for this data handler. These
@@ -144,8 +212,58 @@ public interface PortletDataHandler {
 	public PortletDataHandlerControl[] getImportConfigurationControls(
 		Portlet portlet, ManifestSummary manifestSummary);
 
-	public PortletDataHandlerControl[] getImportConfigurationControls(
-		String[] configurationPortletOptions);
+	public default PortletDataHandlerControl[] getImportConfigurationControls(
+		String[] configurationPortletOptions) {
+
+		List<PortletDataHandlerBoolean> configurationControls =
+			new ArrayList<>();
+
+		// Setup
+
+		if (ArrayUtil.contains(configurationPortletOptions, "setup")) {
+			PortletDataHandlerControl[] portletDataHandlerControls = null;
+
+			if (isDisplayPortlet()) {
+				try {
+					portletDataHandlerControls = getExportControls();
+				}
+				catch (PortletDataException pde) {
+					portletDataHandlerControls =
+						new PortletDataHandlerControl[0];
+				}
+			}
+
+			configurationControls.add(
+				new PortletDataHandlerBoolean(
+					null, PortletDataHandlerKeys.PORTLET_SETUP, "setup", true,
+					false, portletDataHandlerControls, null, null));
+		}
+
+		// Archived setups
+
+		if (ArrayUtil.contains(
+				configurationPortletOptions, "archived-setups")) {
+
+			configurationControls.add(
+				new PortletDataHandlerBoolean(
+					null, PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS,
+					"configuration-templates", true, false, null, null, null));
+		}
+
+		// User preferences
+
+		if (ArrayUtil.contains(
+				configurationPortletOptions, "user-preferences")) {
+
+			configurationControls.add(
+				new PortletDataHandlerBoolean(
+					null, PortletDataHandlerKeys.PORTLET_USER_PREFERENCES,
+					"user-preferences", true, false, null, null, null));
+		}
+
+		return configurationControls.toArray(
+			new PortletDataHandlerBoolean[configurationControls.size()]);
+	}
 
 	/**
 	 * Returns an array of the controls defined for this data handler. These
@@ -208,7 +326,15 @@ public interface PortletDataHandler {
 
 	public boolean isDataSiteLevel();
 
-	public boolean isDisplayPortlet();
+	public default boolean isDisplayPortlet() {
+		if (isDataPortletInstanceLevel() &&
+			!ArrayUtil.isEmpty(getDataPortletPreferences())) {
+
+			return true;
+		}
+
+		return false;
+	}
 
 	/**
 	 * Returns whether the data exported by this handler should be included by
@@ -231,7 +357,16 @@ public interface PortletDataHandler {
 	 *         back their transactions on operations throwing exceptions;
 	 *         <code>false</code> otherwise
 	 */
-	public boolean isRollbackOnException();
+	public default boolean isRollbackOnException() {
+
+		// For now, we are going to throw an exception if one portlet data
+		// handler has an exception to ensure that the transaction is rolled
+		// back for data integrity. We may decide that this is not the best
+		// behavior in the future because a bad plugin could prevent deletion of
+		// groups.
+
+		return true;
+	}
 
 	public boolean isSupportsDataStrategyCopyAsNew();
 
@@ -257,6 +392,37 @@ public interface PortletDataHandler {
 
 	public void setRank(int rank);
 
-	public boolean validateSchemaVersion(String schemaVersion);
+	public default boolean validateSchemaVersion(String schemaVersion) {
+
+		// Major version has to be identical
+
+		Version currentVersion = Version.getInstance(getSchemaVersion());
+		Version importedVersion = Version.getInstance(schemaVersion);
+
+		if (!Objects.equals(
+				currentVersion.getMajor(), importedVersion.getMajor())) {
+
+			return false;
+		}
+
+		// Imported minor version should be less than or equal to the current
+		// minor version
+
+		int currentMinorVersion = GetterUtil.getInteger(
+			currentVersion.getMinor(), -1);
+		int importedMinorVersion = GetterUtil.getInteger(
+			importedVersion.getMinor(), -1);
+
+		if (((currentMinorVersion == -1) && (importedMinorVersion == -1)) ||
+			(currentMinorVersion < importedMinorVersion)) {
+
+			return false;
+		}
+
+		// Import should be compatible with all minor versions if previous
+		// validations pass
+
+		return true;
+	}
 
 }
