@@ -237,6 +237,33 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 		if (nameMap != null) {
 			groupKey = nameMap.get(LocaleUtil.getDefault());
+
+			if (groupKey == null) {
+				for (Map.Entry<Locale, String> entry : nameMap.entrySet()) {
+					String value = entry.getValue();
+
+					if (value == null) {
+						continue;
+					}
+
+					if (_log.isWarnEnabled()) {
+						StringBundler sb = new StringBundler(4);
+
+						sb.append("No name was found for locale");
+						sb.append(LocaleUtil.getSiteDefault());
+						sb.append(". Using name available for ");
+						sb.append(entry.getKey());
+						sb.append(" instead.");
+
+						_log.warn(sb.toString());
+					}
+
+					groupKey = value;
+
+					break;
+				}
+			}
+
 			friendlyName = nameMap.get(LocaleUtil.getDefault());
 		}
 
