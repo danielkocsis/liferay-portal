@@ -968,7 +968,14 @@ public class StagingImpl implements Staging {
 					new String[] {modelResource, referrerDisplayName}, false);
 			}
 			else {
-				errorMessage = e.getLocalizedMessage();
+				errorMessage = LanguageUtil.format(
+					ResourceBundleUtil.getBundle(
+						"content.Language", locale, getClass()),
+					"the-following-error-occured-while-processing-the-x-x-x",
+					new String[] {
+						modelResource, referrerDisplayName,
+						e.getLocalizedMessage()
+					});
 			}
 
 			errorType = ServletResponseConstants.SC_FILE_CUSTOM_EXCEPTION;
