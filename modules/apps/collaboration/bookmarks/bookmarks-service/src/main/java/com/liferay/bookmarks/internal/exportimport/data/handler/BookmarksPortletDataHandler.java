@@ -24,6 +24,8 @@ import com.liferay.exportimport.kernel.lar.PortletDataHandler;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerBoolean;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
+import com.liferay.exportimport.lar.helper.LARHelper;
+import com.liferay.exportimport.portlet.data.handler.PortletDataHandlerHelper;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
@@ -65,6 +67,12 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 		return SCHEMA_VERSION;
 	}
 
+	@Override
+	public boolean validateSchemaVersion(String schemaVersion) {
+		return _portletDataHandlerHelper.validateSchemaVersion(
+			schemaVersion, getSchemaVersion());
+	}
+
 	@Activate
 	protected void activate() {
 		setDataPortletPreferences("rootFolderId");
@@ -104,10 +112,11 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
-		Element rootElement = addExportDataRootElement(portletDataContext);
+		Element rootElement = _larHelper.addExportDataRootElement(
+			portletDataContext);
 
 		if (!portletDataContext.getBooleanParameter(NAMESPACE, "entries")) {
-			return getExportDataRootElementString(rootElement);
+			return _larHelper.getExportDataRootElementString(rootElement);
 		}
 
 		portletDataContext.addPortletPermissions(
@@ -128,7 +137,7 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 
 		entryActionableDynamicQuery.performActions();
 
-		return getExportDataRootElementString(rootElement);
+		return _larHelper.getExportDataRootElementString(rootElement);
 	}
 
 	@Override
@@ -219,5 +228,11 @@ public class BookmarksPortletDataHandler extends BasePortletDataHandler {
 		_bookmarksEntryStagedModelRepository;
 	private StagedModelRepository<BookmarksFolder>
 		_bookmarksFolderStagedModelRepository;
+
+	@Reference
+	private LARHelper _larHelper;
+
+	@Reference
+	private PortletDataHandlerHelper _portletDataHandlerHelper;
 
 }
