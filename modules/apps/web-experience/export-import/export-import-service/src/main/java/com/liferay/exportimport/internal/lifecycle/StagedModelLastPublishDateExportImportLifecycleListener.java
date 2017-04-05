@@ -27,8 +27,10 @@ import com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleListener;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepositoryRegistryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.StagedGroupedModel;
 import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.DateRange;
@@ -42,6 +44,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Daniel Kocsis
@@ -97,6 +100,9 @@ public class StagedModelLastPublishDateExportImportLifecycleListener
 				portletDataContext.getDateRange()));
 	}
 
+	@Reference
+	private GroupLocalService _groupLocalService;
+
 	private class UpdateStagedModelLastPublishDateCallable
 		implements Callable<Void> {
 
@@ -117,6 +123,14 @@ public class StagedModelLastPublishDateExportImportLifecycleListener
 
 			if (stagedModelRepository == null) {
 				return null;
+			}
+
+			Group group = _groupLocalService.getGroup(_groupId);
+
+			if (group.hasStagingGroup()) {
+				Group stagingGroup = group.getStagingGroup();
+
+				_groupId = stagingGroup.getGroupId();
 			}
 
 			StagedModel stagedModel =
@@ -154,7 +168,7 @@ public class StagedModelLastPublishDateExportImportLifecycleListener
 
 		private final String _className;
 		private final DateRange _dateRange;
-		private final long _groupId;
+		private long _groupId;
 		private final String _uuid;
 
 	}
