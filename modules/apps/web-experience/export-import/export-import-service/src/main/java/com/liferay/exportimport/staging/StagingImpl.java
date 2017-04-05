@@ -936,56 +936,52 @@ public class StagingImpl implements Staging {
 					stagedModel);
 			}
 
+			String modelResource = ResourceActionsUtil.getModelResource(
+				locale, referrerClassName);
+
 			if (pde.getType() == PortletDataException.INVALID_GROUP) {
 				errorMessage = LanguageUtil.format(
 					locale,
 					"the-x-x-could-not-be-exported-because-it-is-not-in-the-" +
 						"currently-exported-group",
-					new String[] {
-						ResourceActionsUtil.getModelResource(
-							locale, referrerClassName),
-						referrerDisplayName
-					},
-					false);
+					new String[] {modelResource, referrerDisplayName}, false);
 			}
 			else if (pde.getType() == PortletDataException.MISSING_DEPENDENCY) {
 				errorMessage = LanguageUtil.format(
 					locale,
 					"the-x-x-has-missing-references-that-could-not-be-found-" +
 						"during-the-process",
-					new String[] {
-						ResourceActionsUtil.getModelResource(
-							locale, referrerClassName),
-						referrerDisplayName
-					},
-					false);
+					new String[] {modelResource, referrerDisplayName}, false);
 			}
 			else if (pde.getType() == PortletDataException.STATUS_IN_TRASH) {
 				errorMessage = LanguageUtil.format(
 					locale,
 					"the-x-x-could-not-be-exported-because-it-is-in-the-" +
 						"recycle-bin",
-					new String[] {
-						ResourceActionsUtil.getModelResource(
-							locale, referrerClassName),
-						referrerDisplayName
-					},
-					false);
+					new String[] {modelResource, referrerDisplayName}, false);
 			}
 			else if (pde.getType() == PortletDataException.STATUS_UNAVAILABLE) {
 				errorMessage = LanguageUtil.format(
 					locale,
 					"the-x-x-could-not-be-exported-because-its-workflow-" +
 						"status-is-not-exportable",
-					new String[] {
-						ResourceActionsUtil.getModelResource(
-							locale, referrerClassName),
-						referrerDisplayName
-					},
-					false);
+					new String[] {modelResource, referrerDisplayName}, false);
 			}
 			else {
-				errorMessage = e.getLocalizedMessage();
+				if (!referrerDisplayName.equals(StringPool.BLANK)) {
+					errorMessage = LanguageUtil.format(
+						ResourceBundleUtil.getBundle(
+							"content.Language", locale, getClass()),
+						"the-following-error-occured-while-processing-the-x-" +
+							"x-x",
+						new String[] {
+							modelResource, referrerDisplayName,
+							e.getLocalizedMessage()
+						});
+				}
+				else {
+					errorMessage = e.getLocalizedMessage();
+				}
 			}
 
 			errorType = ServletResponseConstants.SC_FILE_CUSTOM_EXCEPTION;
