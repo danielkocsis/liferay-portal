@@ -970,7 +970,7 @@ public class StagingImpl implements Staging {
 			else if (Validator.isNotNull(referrerDisplayName)) {
 				errorMessage = LanguageUtil.format(
 					resourceBundle,
-					"the-following-error-occured-while-processing-the-x-x-x",
+					"the-following-error-occurred-while-processing-the-x-x-x",
 					new String[] {
 						modelResource, referrerDisplayName,
 						e.getLocalizedMessage()
