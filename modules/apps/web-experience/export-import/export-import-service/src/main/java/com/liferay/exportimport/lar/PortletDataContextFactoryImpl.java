@@ -276,6 +276,22 @@ public class PortletDataContextFactoryImpl
 			portletDataContext.setMissingReferencesElement(
 				missingReferencesElement);
 		}
+
+		xml = portletDataContext.getZipEntryAsString(
+			"/exported-missing-references.xml");
+
+		rootElement = null;
+
+		try {
+			Document document = SAXReaderUtil.read(xml);
+
+			rootElement = document.getRootElement();
+
+			portletDataContext.setExportedMissingReferencesElement(rootElement);
+		}
+		catch (Exception e) {
+			throw new PortletDataException(e);
+		}
 	}
 
 	@Reference(unbind = "-")
