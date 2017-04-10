@@ -17,14 +17,22 @@ package com.liferay.portlet.exportimport.service.impl;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.exportimport.kernel.lar.MissingReferences;
+import com.liferay.exportimport.kernel.lar.PortletDataContext;
+import com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleEvent;
+import com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleManagerUtil;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portlet.exportimport.service.base.StagingServiceBaseImpl;
 
+import java.io.Serializable;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,6 +59,39 @@ public class StagingServiceImpl extends StagingServiceBaseImpl {
 
 		return stagingLocalService.createStagingRequest(
 			getUserId(), groupId, checksum);
+	}
+
+	@Override
+	public void propagateExportImportLifecycleEvent(
+			ExportImportLifecycleEvent exportImportLifecycleEvent)
+		throws PortalException {
+
+		List<Serializable> attributes =
+			exportImportLifecycleEvent.getAttributes();
+
+		Serializable serializable = attributes.get(0);
+
+		long groupId = GroupConstants.DEFAULT_LIVE_GROUP_ID;
+
+		if (serializable instanceof PortletDataContext) {
+			PortletDataContext portletDataContext =
+				(PortletDataContext)serializable;
+
+			groupId = portletDataContext.getGroupId();
+		}
+		else if (serializable instanceof ExportImportConfiguration) {
+			ExportImportConfiguration exportImportConfiguration =
+				(ExportImportConfiguration)serializable;
+
+			groupId = MapUtil.getLong(
+				exportImportConfiguration.getSettingsMap(), "targetGroupId");
+		}
+
+		GroupPermissionUtil.check(
+			getPermissionChecker(), groupId, ActionKeys.EXPORT_IMPORT_LAYOUTS);
+
+		ExportImportLifecycleManagerUtil.fireExportImportLifecycleEvent(
+			exportImportLifecycleEvent);
 	}
 
 	/**
