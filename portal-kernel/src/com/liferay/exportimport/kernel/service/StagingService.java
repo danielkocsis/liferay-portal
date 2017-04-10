@@ -27,6 +27,9 @@ import com.liferay.portal.kernel.service.BaseService;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Transactional;
 
+import java.io.Serializable;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -87,6 +90,9 @@ public interface StagingService extends BaseService {
 
 	public void cleanUpStagingRequest(long stagingRequestId)
 		throws PortalException;
+
+	public void propagateExportImportLifecycleEvent(int code, int processFlag,
+		List<Serializable> arguments) throws PortalException;
 
 	public void updateStagingRequest(long stagingRequestId,
 		java.lang.String fileName, byte[] bytes) throws PortalException;

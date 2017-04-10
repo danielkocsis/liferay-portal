@@ -81,6 +81,20 @@ public class StagingServiceSoap {
 		}
 	}
 
+	public static void propagateExportImportLifecycleEvent(int code,
+		int processFlag, java.util.List<java.io.Serializable> arguments)
+		throws RemoteException {
+		try {
+			StagingServiceUtil.propagateExportImportLifecycleEvent(code,
+				processFlag, arguments);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	public static com.liferay.exportimport.kernel.lar.MissingReferences publishStagingRequest(
 		long stagingRequestId,
 		com.liferay.exportimport.kernel.model.ExportImportConfigurationSoap exportImportConfiguration)
