@@ -59,6 +59,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropertiesParamUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
@@ -379,8 +380,7 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 			enableRemoteStaging(httpPrincipal, remoteGroupId);
 		}
 
-		Group remoteGroup = GroupServiceHttp.getGroup(
-			httpPrincipal, remoteGroupId);
+		Group remoteGroup = fetchRemoteGroup(httpPrincipal, remoteGroupId);
 
 		checkDefaultLayoutSetBranches(
 			userId, stagingGroup, branchingPublic, branchingPrivate, true,
@@ -826,6 +826,24 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 			ree.setURL(httpPrincipal.getUrl());
 
 			throw ree;
+		}
+	}
+
+	protected Group fetchRemoteGroup(HttpPrincipal httpPrincipal, long groupId)
+		throws PortalException {
+
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		try {
+			currentThread.setContextClassLoader(
+				PortalClassLoaderUtil.getClassLoader());
+
+			return GroupServiceHttp.getGroup(httpPrincipal, groupId);
+		}
+		finally {
+			currentThread.setContextClassLoader(contextClassLoader);
 		}
 	}
 
