@@ -100,7 +100,7 @@ public class EventRemotePropagatorExportImportLifecycleListener
 
 		Group sourceGroup = _groupLocalService.fetchGroup(sourceGroupId);
 
-		if (Validator.isNull(sourceGroup)) {
+		if (Validator.isNull(sourceGroup) || !sourceGroup.isStagedRemotely()) {
 			return false;
 		}
 
