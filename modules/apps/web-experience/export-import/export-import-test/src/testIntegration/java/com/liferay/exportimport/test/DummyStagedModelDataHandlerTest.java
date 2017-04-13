@@ -15,11 +15,9 @@
 package com.liferay.exportimport.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepositoryRegistryUtil;
 import com.liferay.exportimport.test.util.Dummy;
-import com.liferay.portal.kernel.exception.NoSuchModelException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -32,7 +30,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
-import org.osgi.service.component.annotations.Reference;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +41,13 @@ import java.util.Map;
 @Sync
 public class DummyStagedModelDataHandlerTest
 	extends BaseStagedModelDataHandlerTestCase {
+
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+
+		stagedModelRepository = (StagedModelRepository<Dummy>)StagedModelRepositoryRegistryUtil.getStagedModelRepository(Dummy.class.getName());
+	}
 
 	@ClassRule
 	@Rule
@@ -72,5 +76,5 @@ public class DummyStagedModelDataHandlerTest
 	}
 
 	protected Dummy dummy;
-	protected StagedModelRepository<Dummy> stagedModelRepository = (StagedModelRepository<Dummy>)StagedModelRepositoryRegistryUtil.getStagedModelRepository(Dummy.class.getName());
+	protected StagedModelRepository<Dummy> stagedModelRepository;
 }

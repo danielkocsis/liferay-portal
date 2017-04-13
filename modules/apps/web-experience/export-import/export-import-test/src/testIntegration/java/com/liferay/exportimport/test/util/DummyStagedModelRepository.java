@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import org.osgi.service.component.annotations.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
 public class DummyStagedModelRepository
 	implements StagedModelRepository<Dummy> {
 
-	private List<Dummy> _dummies;
+	private List<Dummy> _dummies = new ArrayList<>();
 
 
 	@Override
