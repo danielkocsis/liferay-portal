@@ -18,7 +18,6 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.exportimport.kernel.lar.MissingReferences;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
-import com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleEvent;
 import com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleManagerUtil;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -63,13 +62,10 @@ public class StagingServiceImpl extends StagingServiceBaseImpl {
 
 	@Override
 	public void propagateExportImportLifecycleEvent(
-			ExportImportLifecycleEvent exportImportLifecycleEvent)
+			int code, int processFlag, List<Serializable> arguments)
 		throws PortalException {
 
-		List<Serializable> attributes =
-			exportImportLifecycleEvent.getAttributes();
-
-		Serializable serializable = attributes.get(0);
+		Serializable serializable = arguments.get(0);
 
 		long groupId = GroupConstants.DEFAULT_LIVE_GROUP_ID;
 
@@ -91,7 +87,8 @@ public class StagingServiceImpl extends StagingServiceBaseImpl {
 			getPermissionChecker(), groupId, ActionKeys.EXPORT_IMPORT_LAYOUTS);
 
 		ExportImportLifecycleManagerUtil.fireExportImportLifecycleEvent(
-			exportImportLifecycleEvent);
+			code, processFlag,
+			arguments.toArray(new Serializable[arguments.size()]));
 	}
 
 	/**

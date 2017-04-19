@@ -180,7 +180,9 @@ public class EventRemotePropagatorExportImportLifecycleListener
 			httpPrincipal -> {
 				try {
 					StagingServiceHttp.propagateExportImportLifecycleEvent(
-						httpPrincipal, exportImportLifecycleEvent);
+						httpPrincipal, exportImportLifecycleEvent.getCode(),
+						exportImportLifecycleEvent.getProcessFlag(),
+						exportImportLifecycleEvent.getAttributes());
 				}
 				catch (PortalException pe) {
 					_log.error(
