@@ -598,8 +598,7 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 	}
 
 	protected void initImport() throws Exception {
-		System.out.println("--------------------------------------------------------@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		if (1==1) throw new RuntimeException("initImport befrissult");
+		System.out.println(">>>>>>>>>>>>>>>>>>>>1");
 		userIdStrategy = new TestUserIdStrategy();
 
 		zipReader = ZipReaderFactoryUtil.getZipReader(zipWriter.getFile());

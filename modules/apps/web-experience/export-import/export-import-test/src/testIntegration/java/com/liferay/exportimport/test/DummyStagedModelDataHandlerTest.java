@@ -18,8 +18,12 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepositoryRegistryUtil;
 import com.liferay.exportimport.test.util.Dummy;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
@@ -31,8 +35,11 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
+//import static org.mockito.Mockito.when;
 
 /**
  * @author Akos Thurzo
@@ -47,6 +54,36 @@ public class DummyStagedModelDataHandlerTest
 		super.setUp();
 
 		stagedModelRepository = (StagedModelRepository<Dummy>)StagedModelRepositoryRegistryUtil.getStagedModelRepository(Dummy.class.getName());
+
+		PersistedModelLocalServiceRegistryUtil.register(
+			Dummy.class.getName(),
+			new PersistedModelLocalService() {
+				@Override
+				public PersistedModel deletePersistedModel(PersistedModel persistedModel) throws PortalException {
+					return null;
+				}
+
+				@Override
+				public PersistedModel getPersistedModel(Serializable primaryKeyObj) throws PortalException {
+					return null;
+				}
+			});
+
+//		when(
+//			PersistedModelLocalServiceRegistryUtil.getPersistedModelLocalService(Dummy.class.getName())
+//		).thenReturn(
+//			new PersistedModelLocalService() {
+//				@Override
+//				public PersistedModel deletePersistedModel(PersistedModel persistedModel) throws PortalException {
+//					return null;
+//				}
+//
+//				@Override
+//				public PersistedModel getPersistedModel(Serializable primaryKeyObj) throws PortalException {
+//					return null;
+//				}
+//			}
+//		);
 	}
 
 	@ClassRule
