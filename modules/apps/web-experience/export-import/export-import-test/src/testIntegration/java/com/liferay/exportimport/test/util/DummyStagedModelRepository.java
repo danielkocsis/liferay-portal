@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.exception.NoSuchModelException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.StagedGroupedModel;
 import com.liferay.portal.kernel.model.StagedModel;
@@ -46,13 +47,24 @@ public class DummyStagedModelRepository
 
 	private List<Dummy> _dummies = new ArrayList<>();
 
+	public void printDummies(String op) {
+		System.out.println("++++++++++ " + op + "+++++++++++++");
+		for (Dummy d : _dummies)
+			System.out.println(" groupId=" + d.getGroupId() + ",uuid=" + d.getUuid() + ",id=" + d.getId());
+	}
 
 	@Override
 	public Dummy addStagedModel(
 			PortletDataContext portletDataContext, Dummy dummy)
 		throws PortalException {
 
+		if (portletDataContext.getUserIdStrategy() != null) {
+			dummy.setUserId(portletDataContext.getUserId(dummy.getUserUuid()));
+		}
+
 		_dummies.add(dummy);
+
+		printDummies("add");
 
 		return dummy;
 	}
@@ -65,11 +77,14 @@ public class DummyStagedModelRepository
 		_dummies.removeIf(
 			dummy ->
 				dummy.getUuid().equals(uuid) && dummy.getGroupId() == groupId);
+
+		printDummies("delete1");
 	}
 
 	@Override
 	public void deleteStagedModel(Dummy dummy) throws PortalException {
 		_dummies.remove(dummy);
+		printDummies("delete2");
 	}
 
 	@Override
@@ -77,15 +92,18 @@ public class DummyStagedModelRepository
 		throws PortalException {
 
 		_dummies.clear();
+		printDummies("delete3");
 	}
 
 	@Override
 	public Dummy fetchMissingReference(String uuid, long groupId) {
+		printDummies("fetch1 uuid=" + uuid + ",groupId=" + groupId);
 		return fetchStagedModelByUuidAndGroupId(uuid, groupId);
 	}
 
 	@Override
 	public Dummy fetchStagedModelByUuidAndGroupId(String uuid, long groupId) {
+		printDummies("fetch2 uuid=" + uuid + ",groupId=" + groupId);
 		List<Dummy> dummies = _dummies.stream().filter(
 			dummy ->
 				dummy.getUuid().equals(uuid) &&
@@ -102,6 +120,8 @@ public class DummyStagedModelRepository
 	@Override
 	public List<Dummy> fetchStagedModelsByUuidAndCompanyId(
 		String uuid, long companyId) {
+
+		printDummies("fetch3 uuid=" + uuid + ",companyId=" + companyId);
 
 		return _dummies.stream().filter(
 			dummy ->
@@ -240,12 +260,34 @@ public class DummyStagedModelRepository
 	}
 
 	@Override
-	public Dummy saveStagedModel(Dummy stagedModel) throws PortalException {
-		return null;
+	public Dummy saveStagedModel(Dummy dummy) throws PortalException {
+		deleteStagedModel(dummy);
+
+		addStagedModel(null, dummy);
+
+		printDummies("save uuid=" + dummy.getUuid() + ",groupId=" + dummy.getGroupId());
+
+		return dummy;
 	}
 
 	@Override
-	public Dummy updateStagedModel(PortletDataContext portletDataContext, Dummy stagedModel) throws PortalException {
-		return null;
+	public Dummy updateStagedModel(PortletDataContext portletDataContext, Dummy dummy) throws PortalException {
+		Dummy existingDummy = fetchDummy(dummy);
+
+		existingDummy.setUserId(portletDataContext.getUserId(dummy.getUserUuid()));
+
+		printDummies("update uuid=" + dummy.getUuid() + ",groupId=" + dummy.getGroupId());
+
+		return dummy;
+	}
+
+	private Dummy fetchDummy(Dummy dummy) throws NoSuchModelException {
+		int i = _dummies.indexOf(dummy);
+
+		if (i < 0) {
+			throw new NoSuchModelException();
+		}
+
+		return _dummies.get(i);
 	}
 }

@@ -18,8 +18,10 @@ import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
+import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.portal.kernel.xml.Element;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Akos Thurzo
@@ -55,6 +57,42 @@ public class DummyStagedModelDataHandler
 	protected void doImportStagedModel(
 		PortletDataContext portletDataContext, Dummy dummy) throws Exception {
 
+		Dummy importedDummy = (Dummy)dummy.clone();
 
+		importedDummy.setGroupId(portletDataContext.getScopeGroupId());
+
+		Dummy existingDummy =
+			_stagedModelRepository.fetchStagedModelByUuidAndGroupId(
+				importedDummy.getUuid(), portletDataContext.getScopeGroupId());
+
+		if ((existingDummy == null) ||
+			!portletDataContext.isDataStrategyMirror()) {
+
+			_stagedModelRepository.addStagedModel(
+				portletDataContext, importedDummy);
+		}
+		else {
+			importedDummy.setId(existingDummy.getId());
+
+			_stagedModelRepository.updateStagedModel(
+				portletDataContext, importedDummy);
+		}
 	}
+
+	@Override
+	protected StagedModelRepository<Dummy> getStagedModelRepository() {
+		return _stagedModelRepository;
+	}
+
+	@Reference(
+		target = "(model.class.name=com.liferay.exportimport.test.util.Dummy)",
+		unbind = "-"
+	)
+	protected void setStagedModelRepository(
+		StagedModelRepository<Dummy> stagedModelRepository) {
+
+		_stagedModelRepository = stagedModelRepository;
+	}
+
+	private StagedModelRepository<Dummy> _stagedModelRepository;
 }

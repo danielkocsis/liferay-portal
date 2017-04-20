@@ -39,8 +39,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-//import static org.mockito.Mockito.when;
-
 /**
  * @author Akos Thurzo
  */
@@ -68,22 +66,6 @@ public class DummyStagedModelDataHandlerTest
 					return null;
 				}
 			});
-
-//		when(
-//			PersistedModelLocalServiceRegistryUtil.getPersistedModelLocalService(Dummy.class.getName())
-//		).thenReturn(
-//			new PersistedModelLocalService() {
-//				@Override
-//				public PersistedModel deletePersistedModel(PersistedModel persistedModel) throws PortalException {
-//					return null;
-//				}
-//
-//				@Override
-//				public PersistedModel getPersistedModel(Serializable primaryKeyObj) throws PortalException {
-//					return null;
-//				}
-//			}
-//		);
 	}
 
 	@ClassRule
