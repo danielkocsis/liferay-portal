@@ -589,9 +589,16 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 
 		portletDataContext.setMissingReferencesElement(
 			missingReferencesElement);
+
+		exportedMissingReferencesElement = SAXReaderUtil.createElement(
+			"exported-missing-references");
+
+		portletDataContext.setExportedMissingReferencesElement(
+			exportedMissingReferencesElement);
 	}
 
 	protected void initImport() throws Exception {
+		System.out.println(">>>>>>>>>>>>>>>>>>>>1");
 		userIdStrategy = new TestUserIdStrategy();
 
 		zipReader = ZipReaderFactoryUtil.getZipReader(zipWriter.getFile());
@@ -610,12 +617,27 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 			zipReader = ZipReaderFactoryUtil.getZipReader(zipWriter.getFile());
 		}
 
+		xml = zipReader.getEntryAsString("/exported-missing-references.xml");
+
+		if (xml == null) {
+			Document document = SAXReaderUtil.createDocument();
+
+			document.addElement("exported-missing-references");
+
+			zipWriter.addEntry(
+				"/exported-missing-references.xml", document.asXML());
+
+			zipReader = ZipReaderFactoryUtil.getZipReader(zipWriter.getFile());
+		}
+
 		portletDataContext =
 			PortletDataContextFactoryUtil.createImportPortletDataContext(
 				liveGroup.getCompanyId(), liveGroup.getGroupId(),
 				getParameterMap(), userIdStrategy, zipReader);
 
 		portletDataContext.setImportDataRootElement(rootElement);
+
+		portletDataContext.setExportedMissingReferencesElement(exportedMissingReferencesElement);
 
 		Element missingReferencesElement = rootElement.element(
 			"missing-references");
@@ -997,6 +1019,7 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 	@DeleteAfterTestRun
 	protected Group liveGroup;
 
+	protected Element exportedMissingReferencesElement;
 	protected Element missingReferencesElement;
 	protected PortletDataContext portletDataContext;
 	protected Element rootElement;

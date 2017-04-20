@@ -745,6 +745,16 @@ public class PortletExportController implements ExportController {
 
 		portletDataContext.setExportDataRootElement(rootElement);
 
+		Document exportedMissingReferencesDocument =
+			SAXReaderUtil.createDocument();
+
+		Element exportedMissingReferencesElement =
+			exportedMissingReferencesDocument.addElement(
+				"exported-missing-references");
+
+		portletDataContext.setExportedMissingReferencesElement(
+			exportedMissingReferencesElement);
+
 		Element headerElement = rootElement.addElement("header");
 
 		headerElement.addAttribute(
@@ -830,6 +840,13 @@ public class PortletExportController implements ExportController {
 		catch (IOException ioe) {
 			throw new SystemException(ioe);
 		}
+
+		portletDataContext.addZipEntry(
+			"/exported-missing-references.xml",
+			exportedMissingReferencesDocument.formattedString());
+
+		portletDataContext.addZipEntry(
+			"/manifest.xml", document.formattedString());
 
 		ZipWriter zipWriter = portletDataContext.getZipWriter();
 

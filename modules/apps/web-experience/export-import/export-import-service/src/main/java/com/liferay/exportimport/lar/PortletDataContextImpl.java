@@ -597,6 +597,23 @@ public class PortletDataContextImpl implements PortletDataContext {
 				classedModel);
 
 			_missingReferencesElement.remove(missingReferenceElement);
+
+			Element referenceElement = getExportDataElement(classedModel);
+
+			referenceElement = referenceElement.createCopy();
+
+			String classSimpleName =
+				ExportImportClassedModelUtil.getClassSimpleName(classedModel);
+
+			Element element = _exportedMissingReferencesElement.element(
+				classSimpleName);
+
+			if (element == null) {
+				element = _exportedMissingReferencesElement.addElement(
+					classSimpleName);
+			}
+
+			element.add(referenceElement);
 		}
 	}
 
@@ -907,6 +924,11 @@ public class PortletDataContextImpl implements PortletDataContext {
 	@Override
 	public Element getExportDataRootElement() {
 		return _exportDataRootElement;
+	}
+
+	@Override
+	public Element getExportedMissingReferencesElement() {
+		return _exportedMissingReferencesElement;
 	}
 
 	@Override
@@ -1870,6 +1892,13 @@ public class PortletDataContextImpl implements PortletDataContext {
 	}
 
 	@Override
+	public void setExportedMissingReferencesElement(
+		Element exportedMissingReferencesElement) {
+
+		_exportedMissingReferencesElement = exportedMissingReferencesElement;
+	}
+
+	@Override
 	public void setGroupId(long groupId) {
 		_groupId = groupId;
 	}
@@ -2749,6 +2778,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 	private final Map<String, List<ExpandoColumn>> _expandoColumnsMap =
 		new HashMap<>();
 	private transient Element _exportDataRootElement;
+	private transient Element _exportedMissingReferencesElement;
 	private long _groupId;
 	private transient Element _importDataRootElement;
 	private transient long[] _layoutIds;

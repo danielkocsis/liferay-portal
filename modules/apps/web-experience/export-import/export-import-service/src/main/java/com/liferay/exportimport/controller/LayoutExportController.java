@@ -209,6 +209,16 @@ public class LayoutExportController implements ExportController {
 
 		portletDataContext.setExportDataRootElement(rootElement);
 
+		Document exportedMissingReferencesDocument =
+			SAXReaderUtil.createDocument();
+
+		Element exportedMissingReferencesElement =
+			exportedMissingReferencesDocument.addElement(
+				"exported-missing-references");
+
+		portletDataContext.setExportedMissingReferencesElement(
+			exportedMissingReferencesElement);
+
 		Element headerElement = rootElement.addElement("header");
 
 		headerElement.addAttribute(
@@ -333,6 +343,10 @@ public class LayoutExportController implements ExportController {
 		if (_log.isInfoEnabled()) {
 			_log.info("Exporting layouts takes " + stopWatch.getTime() + " ms");
 		}
+
+		portletDataContext.addZipEntry(
+			"/exported-missing-references.xml",
+			exportedMissingReferencesDocument.formattedString());
 
 		portletDataContext.addZipEntry(
 			"/manifest.xml", document.formattedString());

@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.spring.orm.LastSessionRecorderHelperUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.xml.Attribute;
 import com.liferay.portal.kernel.xml.Element;
 
 import java.io.Serializable;
@@ -459,6 +460,30 @@ public class StagedModelDataHandlerUtil {
 		if (missing) {
 			stagedModelDataHandler.importMissingReference(
 				portletDataContext, referenceElement);
+
+			return;
+		}
+
+		Attribute missingAttribute = referenceElement.attribute("missing");
+
+		if ((missingAttribute != null) &&
+			GetterUtil.getBoolean(referenceElement.attributeValue("missing"))) {
+
+			Element importDataRootElement = null;
+
+			try {
+				importDataRootElement =
+					portletDataContext.getImportDataRootElement();
+
+				portletDataContext.setImportDataRootElement(
+					portletDataContext.getExportedMissingReferencesElement());
+
+				importStagedModel(portletDataContext, referenceElement);
+			}
+			finally {
+				portletDataContext.setImportDataRootElement(
+					importDataRootElement);
+			}
 
 			return;
 		}
