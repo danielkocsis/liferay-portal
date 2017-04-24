@@ -18,6 +18,7 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.util.StringPool;
 
 /**
  * @author Raymond Augé
@@ -35,6 +36,14 @@ public class PortletDataException extends PortalException {
 
 	public static final int INVALID_GROUP = 4;
 
+	public static final int KNOWN_REASON_DELETE_PORTLET_DATA = 10;
+
+	public static final int KNOWN_REASON_EXPORT_PORTLET_DATA = 11;
+
+	public static final int KNOWN_REASON_IMPORT_PORTLET_DATA = 12;
+
+	public static final int KNOWN_REASON_PREPARE_MANIFEST_SUMMARY = 13;
+
 	public static final int MISSING_DEPENDENCY = 5;
 
 	public static final int START_DATE_AFTER_END_DATE = 6;
@@ -45,10 +54,24 @@ public class PortletDataException extends PortalException {
 
 	public static final int STATUS_UNAVAILABLE = 9;
 
+	public static final int UNKNOWN_REASON_DELETE_PORTLET_DATA = -10;
+
+	public static final int UNKNOWN_REASON_EXPORT_PORTLET_DATA = -11;
+
+	public static final int UNKNOWN_REASON_IMPORT_PORTLET_DATA = -12;
+
+	public static final int UNKNOWN_REASON_PREPARE_MANIFEST_SUMMARY = -13;
+
 	public PortletDataException() {
 	}
 
 	public PortletDataException(int type) {
+		_type = type;
+	}
+
+	public PortletDataException(int type, Throwable cause) {
+		super(cause);
+
 		_type = type;
 	}
 
@@ -64,12 +87,20 @@ public class PortletDataException extends PortalException {
 		super(cause);
 	}
 
+	public String getPortletId() {
+		return _portletId;
+	}
+
 	public StagedModel getStagedModel() {
 		return _stagedModel;
 	}
 
 	public int getType() {
 		return _type;
+	}
+
+	public void setPortletId(String portletId) {
+		_portletId = portletId;
 	}
 
 	public void setStagedModel(StagedModel stagedModel) {
@@ -80,6 +111,7 @@ public class PortletDataException extends PortalException {
 		_type = type;
 	}
 
+	private String _portletId = StringPool.BLANK;
 	private StagedModel _stagedModel;
 	private int _type = DEFAULT;
 
