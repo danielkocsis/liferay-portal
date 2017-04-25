@@ -1004,6 +1004,9 @@ public class PortletImportController implements ImportController {
 				layout.getCompanyId(), targetGroupId, parameterMap,
 				userIdStrategy, zipReader);
 
+		portletDataContext.setExportImportProcessId(
+			String.valueOf(
+				exportImportConfiguration.getExportImportConfigurationId()));
 		portletDataContext.setOldPlid(targetPlid);
 		portletDataContext.setPlid(targetPlid);
 		portletDataContext.setPortletId(portletId);
