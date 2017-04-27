@@ -219,7 +219,8 @@ public class PortletImportController implements ImportController {
 
 			_exportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PORTLET_IMPORT_STARTED, getProcessFlag(),
-				portletDataContext.getExportImportProcessId(),
+				String.valueOf(
+					exportImportConfiguration.getExportImportConfigurationId()),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext));
 
@@ -234,7 +235,8 @@ public class PortletImportController implements ImportController {
 
 			_exportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PORTLET_IMPORT_SUCCEEDED, getProcessFlag(),
-				portletDataContext.getExportImportProcessId(),
+				String.valueOf(
+					exportImportConfiguration.getExportImportConfigurationId()),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				userId);
@@ -244,7 +246,8 @@ public class PortletImportController implements ImportController {
 
 			_exportImportLifecycleManager.fireExportImportLifecycleEvent(
 				EVENT_PORTLET_IMPORT_FAILED, getProcessFlag(),
-				portletDataContext.getExportImportProcessId(),
+				String.valueOf(
+					exportImportConfiguration.getExportImportConfigurationId()),
 				PortletDataContextFactoryUtil.clonePortletDataContext(
 					portletDataContext),
 				t);
