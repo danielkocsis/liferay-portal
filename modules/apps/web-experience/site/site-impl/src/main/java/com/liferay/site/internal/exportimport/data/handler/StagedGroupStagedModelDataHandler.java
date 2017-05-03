@@ -72,7 +72,6 @@ import com.liferay.site.model.adapter.StagedGroup;
 import com.liferay.sites.kernel.util.SitesUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -89,25 +88,6 @@ public class StagedGroupStagedModelDataHandler
 	extends BaseStagedModelDataHandler<StagedGroup> {
 
 	public static final String[] CLASS_NAMES = {StagedGroup.class.getName()};
-
-	@Override
-	public void deleteStagedModel(StagedGroup stagedGroup) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void deleteStagedModel(
-		String uuid, long groupId, String className, String extraData) {
-
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public List<StagedGroup> fetchStagedModelsByUuidAndCompanyId(
-		String uuid, long companyId) {
-
-		return Collections.emptyList();
-	}
 
 	@Override
 	public String[] getClassNames() {

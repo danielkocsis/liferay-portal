@@ -4121,8 +4121,8 @@ public class PortletImpl extends PortletBaseImpl {
 	/**
 	 * Map of the ready states of all portlets keyed by their root portlet ID.
 	 */
-	private static final ConcurrentMap<String, Readiness> _readinessMap =
-		new ConcurrentHashMap<>();
+	private static final transient ConcurrentMap<String, Readiness>
+		_readinessMap = new ConcurrentHashMap<>();
 
 	/**
 	 * The action timeout of the portlet.
@@ -4149,7 +4149,8 @@ public class PortletImpl extends PortletBaseImpl {
 	/**
 	 * The application types of the portlet.
 	 */
-	private final Set<ApplicationType> _applicationTypes = new HashSet<>();
+	private final transient Set<ApplicationType> _applicationTypes =
+		new HashSet<>();
 
 	/**
 	 * The names of the classes that represents asset types associated with the
@@ -4207,7 +4208,7 @@ public class PortletImpl extends PortletBaseImpl {
 	/**
 	 * Plugin settings associated with the portlet.
 	 */
-	private PluginSetting _defaultPluginSetting;
+	private transient PluginSetting _defaultPluginSetting;
 
 	/**
 	 * The default preferences of the portlet.
@@ -4359,7 +4360,7 @@ public class PortletImpl extends PortletBaseImpl {
 	/**
 	 * Package to which this plugin belongs.
 	 */
-	private PluginPackage _pluginPackage;
+	private transient PluginPackage _pluginPackage;
 
 	/**
 	 * The name of the poller processor class of the portlet.
@@ -4380,7 +4381,7 @@ public class PortletImpl extends PortletBaseImpl {
 	/**
 	 * The application to which this portlet belongs.
 	 */
-	private PortletApp _portletApp;
+	private transient PortletApp _portletApp;
 
 	/**
 	 * The name of the portlet class of the portlet.
@@ -4395,12 +4396,12 @@ public class PortletImpl extends PortletBaseImpl {
 	/**
 	 * The filters of the portlet.
 	 */
-	private Map<String, PortletFilter> _portletFilters;
+	private transient Map<String, PortletFilter> _portletFilters;
 
 	/**
 	 * The portlet info of the portlet.
 	 */
-	private PortletInfo _portletInfo;
+	private transient PortletInfo _portletInfo;
 
 	/**
 	 * The name of the portlet data layout listener class of the portlet.
@@ -4469,20 +4470,20 @@ public class PortletImpl extends PortletBaseImpl {
 	/**
 	 * The public render parameters of the portlet.
 	 */
-	private final Set<PublicRenderParameter> _publicRenderParameters =
+	private final transient Set<PublicRenderParameter> _publicRenderParameters =
 		new HashSet<>();
 
 	/**
 	 * Map of the public render parameters of the portlet keyed by the
 	 * identifier.
 	 */
-	private final Map<String, PublicRenderParameter>
+	private final transient Map<String, PublicRenderParameter>
 		_publicRenderParametersByIdentifier = new HashMap<>();
 
 	/**
 	 * Map of the public render parameters of the portlet keyed by the QName.
 	 */
-	private final Map<String, PublicRenderParameter>
+	private final transient Map<String, PublicRenderParameter>
 		_publicRenderParametersByQName = new HashMap<>();
 
 	/**
@@ -4534,14 +4535,14 @@ public class PortletImpl extends PortletBaseImpl {
 	/**
 	 * The root portlet of this portlet instance.
 	 */
-	private final Portlet _rootPortlet;
+	private final transient Portlet _rootPortlet;
 
 	private String _rootPortletId;
 
 	/**
 	 * The scheduler entries of the portlet.
 	 */
-	private final List<SchedulerEntry> _schedulerEntries;
+	private final transient List<SchedulerEntry> _schedulerEntries;
 
 	/**
 	 * <code>True</code> if the portlet supports scoping of data.
