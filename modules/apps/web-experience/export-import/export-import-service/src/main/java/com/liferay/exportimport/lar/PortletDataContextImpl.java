@@ -85,6 +85,7 @@ import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -1372,8 +1373,11 @@ public class PortletDataContextImpl implements PortletDataContext {
 		Attribute classNameAttribute = element.attribute("attached-class-name");
 
 		if ((object != null) && (classNameAttribute != null)) {
+			String className = classNameAttribute.getText();
+
+			BeanPropertiesUtil.setProperty(object, "className", className);
 			BeanPropertiesUtil.setProperty(
-				object, "className", classNameAttribute.getText());
+				object, "classNameId", PortalUtil.getClassNameId(className));
 		}
 
 		return object;
