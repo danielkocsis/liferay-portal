@@ -83,6 +83,15 @@ public class ExportImportConfigurationHelper {
 					GetterUtil.getLong(
 						taskContextMap.get("exportImportConfigurationId")));
 
+		return getExportImportConfigurationParameter(
+			exportImportConfiguration, parameterName);
+	}
+
+	public static String[] getExportImportConfigurationParameter(
+			ExportImportConfiguration exportImportConfiguration,
+			String parameterName)
+		throws PortalException {
+
 		Map<String, Serializable> settingsMap =
 			exportImportConfiguration.getSettingsMap();
 
