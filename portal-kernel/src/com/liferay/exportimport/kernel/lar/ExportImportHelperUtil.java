@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.zip.ZipWriter;
 
 import java.io.File;
+import java.io.Serializable;
 
 import java.util.Calendar;
 import java.util.List;
@@ -289,6 +290,13 @@ public class ExportImportHelperUtil {
 
 		return _exportImportHelper.getModelDeletionCount(
 			portletDataContext, stagedModelType);
+	}
+
+	public static Map<String, String[]> getParameterMap(
+			Map<String, Serializable> taskContextMap)
+		throws PortalException {
+
+		return _exportImportHelper.getParameterMap(taskContextMap);
 	}
 
 	public static ZipWriter getPortletZipWriter(String portletId) {

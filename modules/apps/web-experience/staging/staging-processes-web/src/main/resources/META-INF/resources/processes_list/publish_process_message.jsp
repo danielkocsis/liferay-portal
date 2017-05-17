@@ -35,9 +35,9 @@ BackgroundTask backgroundTask = (BackgroundTask)row.getObject();
 	<c:if test="<%= backgroundTaskStatus != null %>">
 
 		<%
-		Map<String, Serializable> taskContextMap = backgroundTask.getTaskContextMap();
+		Map<String, String[]> parameterMap = ExportImportHelperUtil.getParameterMap(backgroundTask.getTaskContextMap());
 
-		String cmd = (String)taskContextMap.get(Constants.CMD);
+		String cmd = MapUtil.getString(parameterMap, Constants.CMD);
 
 		int percentage = 100;
 
