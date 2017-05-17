@@ -81,7 +81,7 @@ public class GroupConstants {
 		"/personal_site";
 
 	public static final String USER_PERSONAL_SITE_GROUP_LANGUAGE_KEY =
-			"personal-site";
+		"personal-site";
 
 	public static String getTypeLabel(int type) {
 		if (type == TYPE_SITE_OPEN) {
