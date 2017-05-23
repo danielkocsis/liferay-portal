@@ -1038,8 +1038,10 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 				public void performAction(Group group) {
 					Map<Locale, String> nameMap = group.getNameMap();
 
+					Locale oldCompanyLocale = LocaleUtil.getDefault();
+
 					if (MapUtil.isEmpty(nameMap)) {
-						return;
+						nameMap.put(oldCompanyLocale, group.getName(oldCompanyLocale));
 					}
 
 					Locale locale = user.getLocale();
@@ -1051,7 +1053,7 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 					}
 
 					String oldGroupDefaultName = nameMap.get(
-						LocaleUtil.getDefault());
+						oldCompanyLocale);
 
 					if (_log.isWarnEnabled()) {
 						StringBundler sb = new StringBundler(5);
