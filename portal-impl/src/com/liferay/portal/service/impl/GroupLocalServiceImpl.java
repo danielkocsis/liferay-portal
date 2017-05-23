@@ -501,9 +501,12 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 				GroupConstants.GLOBAL_FRIENDLY_URL, true, true, null);
 		}
 		else {
-			Group companyGroup = groupPersistence.findByC_C_C(companyId, classNameId, companyId);
+			Group companyGroup = groupPersistence.findByC_C_C(
+				companyId, classNameId, companyId);
 
-			companyGroup.setNameMap(_getCompleteLocalizationMap(GroupConstants.GLOBAL_LANGUAGE_KEY));
+			companyGroup.setNameMap(
+				_getCompleteLocalizationMap(
+					GroupConstants.GLOBAL_LANGUAGE_KEY));
 
 			groupLocalService.updateGroup(companyGroup);
 		}
@@ -573,8 +576,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 				type = GroupConstants.TYPE_SITE_PRIVATE;
 				friendlyURL = GroupConstants.CONTROL_PANEL_FRIENDLY_URL;
 				site = false;
-				groupLanguageKey =
-					GroupConstants.CONTROL_PANEL_LANGUAGE_KEY;
+				groupLanguageKey = GroupConstants.CONTROL_PANEL_LANGUAGE_KEY;
 			}
 			else if (groupKey.equals(GroupConstants.FORMS)) {
 				type = GroupConstants.TYPE_SITE_PRIVATE;
@@ -590,8 +592,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 				className = UserPersonalSite.class.getName();
 				classPK = defaultUserId;
 				type = GroupConstants.TYPE_SITE_PRIVATE;
-				friendlyURL =
-					GroupConstants.USER_PERSONAL_SITE_FRIENDLY_URL;
+				friendlyURL = GroupConstants.USER_PERSONAL_SITE_FRIENDLY_URL;
 				site = false;
 				groupLanguageKey =
 					GroupConstants.USER_PERSONAL_SITE_GROUP_LANGUAGE_KEY;
@@ -4464,7 +4465,9 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 	protected File publicLARFile;
 
-	private Map<Locale, String> _getCompleteLocalizationMap(String languageKey) {
+	private Map<Locale, String> _getCompleteLocalizationMap(
+		String languageKey) {
+
 		Map<Locale, String> map = new HashMap<>();
 
 		for (Locale locale : LanguageUtil.getAvailableLocales()) {
