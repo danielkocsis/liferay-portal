@@ -110,6 +110,8 @@ public class PortletDataContextFactoryImpl
 			portletDataContext.getUserIdStrategy());
 		clonePortletDataContext.setUserPersonalSiteGroupId(
 			portletDataContext.getUserPersonalSiteGroupId());
+		clonePortletDataContext.setZipReader(portletDataContext.getZipReader());
+		clonePortletDataContext.setZipWriter(portletDataContext.getZipWriter());
 
 		return clonePortletDataContext;
 	}
