@@ -27,16 +27,12 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.typeconverter.DateArrayConverter;
 import com.liferay.portal.typeconverter.NumberArrayConverter;
 import com.liferay.portal.typeconverter.NumberConverter;
 import com.liferay.portlet.expando.model.impl.ExpandoValueImpl;
 import com.liferay.portlet.expando.service.base.ExpandoValueLocalServiceBaseImpl;
-import com.liferay.registry.Filter;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.collections.ServiceTrackerCollections;
 import com.liferay.registry.collections.ServiceTrackerList;
 
@@ -879,18 +875,10 @@ public class ExpandoValueLocalServiceImpl
 
 		// Notify delete handlers
 
-		long classNameId = value.getClassNameId();
-
-		String className = PortalUtil.getClassName(classNameId);
-
-		Registry registry = RegistryUtil.getRegistry();
-
-		Filter filter = registry.getFilter(
-			"(model.class.name=" + className + ")");
-
 		ServiceTrackerList<ExpandoValueDeleteHandler> serviceTrackerList =
 			ServiceTrackerCollections.openList(
-				ExpandoValueDeleteHandler.class, filter);
+				ExpandoValueDeleteHandler.class,
+				"(model.class.name=" + value.getClassName() + ")");
 
 		for (ExpandoValueDeleteHandler expandoValueDeleteHandler :
 				serviceTrackerList) {
