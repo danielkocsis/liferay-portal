@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutFriendlyURL;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.model.VirtualLayoutConstants;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
@@ -1226,6 +1227,12 @@ public class BaseTextExportImportContentProcessor
 			if (endPos != -1) {
 				url = url.substring(0, endPos);
 			}
+
+			String siteAdminURL =
+				group.getFriendlyURL() +
+					VirtualLayoutConstants.CANONICAL_URL_SEPARATOR;
+
+			url = url.replaceAll(siteAdminURL, StringPool.BLANK);
 
 			if (url.endsWith(StringPool.SLASH)) {
 				url = url.substring(0, url.length() - 1);
