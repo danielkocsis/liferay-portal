@@ -20,6 +20,8 @@ import com.liferay.portal.kernel.util.ServiceProxyFactory;
 
 import java.io.Serializable;
 
+import java.util.List;
+
 /**
  * @author Michael C. Han
  */
@@ -30,6 +32,18 @@ public class ExportImportLifecycleManagerUtil {
 	 * @deprecated As of 7.0.0
 	 */
 	@Deprecated
+	public static void fireExportImportLifecycleEvent(
+		ExportImportLifecycleEvent exportImportLifecycleEvent) {
+
+		List<Serializable> attributes =
+			exportImportLifecycleEvent.getAttributes();
+
+		_exportImportLifecycleManager.fireExportImportLifecycleEvent(
+			exportImportLifecycleEvent.getCode(),
+			exportImportLifecycleEvent.getProcessFlag(),
+			attributes.toArray(new Serializable[attributes.size()]));
+	}
+
 	public static void fireExportImportLifecycleEvent(
 		int code, int processFlag, Serializable... arguments) {
 
