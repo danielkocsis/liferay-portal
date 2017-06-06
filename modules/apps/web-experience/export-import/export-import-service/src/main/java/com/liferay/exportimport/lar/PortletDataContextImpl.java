@@ -612,7 +612,15 @@ public class PortletDataContextImpl implements PortletDataContext {
 			Element missingReferenceElement = getMissingReferenceElement(
 				classedModel);
 
-			_missingReferencesElement.remove(missingReferenceElement);
+			if (classedModel instanceof Layout) {
+				missingReferenceElement.addAttribute(
+					"element-path", "/manifest.xml");
+			}
+			else {
+				missingReferenceElement.addAttribute(
+					"element-path",
+					ExportImportPathUtil.getPortletDataPath(this));
+			}
 		}
 	}
 
@@ -990,6 +998,23 @@ public class PortletDataContextImpl implements PortletDataContext {
 	@Override
 	public ManifestSummary getManifestSummary() {
 		return _manifestSummary;
+	}
+
+	@Override
+	public Element getMissingReferenceElement(ClassedModel classedModel) {
+		StringBundler sb = new StringBundler(5);
+
+		sb.append("missing-reference[@class-name='");
+		sb.append(ExportImportClassedModelUtil.getClassName(classedModel));
+		sb.append("' and @class-pk='");
+		sb.append(String.valueOf(classedModel.getPrimaryKeyObj()));
+		sb.append("']");
+
+		XPath xPath = SAXReaderUtil.createXPath(sb.toString());
+
+		Node node = xPath.selectSingleNode(_missingReferencesElement);
+
+		return (Element)node;
 	}
 
 	@Override
@@ -1758,15 +1783,19 @@ public class PortletDataContextImpl implements PortletDataContext {
 				_missingReferencesElement.elements();
 
 			for (Element missingReferenceElement : missingReferenceElements) {
-				String missingReferenceClassName =
-					missingReferenceElement.attributeValue("class-name");
-				String missingReferenceClassPK =
-					missingReferenceElement.attributeValue("class-pk");
+				if (missingReferenceElement.attributeValue("element-path") ==
+						null) {
 
-				String missingReferenceKey = getReferenceKey(
-					missingReferenceClassName, missingReferenceClassPK);
+					String missingReferenceClassName =
+						missingReferenceElement.attributeValue("class-name");
+					String missingReferenceClassPK =
+						missingReferenceElement.attributeValue("class-pk");
 
-				_missingReferences.add(missingReferenceKey);
+					String missingReferenceKey = getReferenceKey(
+						missingReferenceClassName, missingReferenceClassPK);
+
+					_missingReferences.add(missingReferenceKey);
+				}
 			}
 		}
 
@@ -2431,22 +2460,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 		}
 
 		return groupElement;
-	}
-
-	protected Element getMissingReferenceElement(ClassedModel classedModel) {
-		StringBundler sb = new StringBundler(5);
-
-		sb.append("missing-reference[@class-name='");
-		sb.append(ExportImportClassedModelUtil.getClassName(classedModel));
-		sb.append("' and @class-pk='");
-		sb.append(String.valueOf(classedModel.getPrimaryKeyObj()));
-		sb.append("']");
-
-		XPath xPath = SAXReaderUtil.createXPath(sb.toString());
-
-		Node node = xPath.selectSingleNode(_missingReferencesElement);
-
-		return (Element)node;
 	}
 
 	/**
