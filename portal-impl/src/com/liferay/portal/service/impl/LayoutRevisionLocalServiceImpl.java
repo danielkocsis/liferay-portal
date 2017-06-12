@@ -16,7 +16,6 @@ package com.liferay.portal.service.impl;
 
 import com.liferay.exportimport.kernel.staging.MergeLayoutPrototypesThreadLocal;
 import com.liferay.exportimport.kernel.staging.StagingUtil;
-import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.exception.NoSuchLayoutRevisionException;
 import com.liferay.portal.kernel.exception.NoSuchPortletPreferencesException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -273,14 +272,8 @@ public class LayoutRevisionLocalServiceImpl
 	public LayoutRevision fetchLayoutRevision(
 		long layoutSetBranchId, boolean head, long plid) {
 
-		List<LayoutRevision> layoutRevisions = getLayoutRevisions(
-			layoutSetBranchId, plid, head);
-
-		if (layoutRevisions.isEmpty()) {
-			return null;
-		}
-
-		return layoutRevisions.get(0);
+		return layoutRevisionPersistence.fetchByL_H_P_All_First(
+			layoutSetBranchId, head, plid, null);
 	}
 
 	@Override
@@ -326,14 +319,8 @@ public class LayoutRevisionLocalServiceImpl
 			long layoutSetBranchId, long plid, boolean head)
 		throws PortalException {
 
-		List<LayoutRevision> layoutRevisions = getLayoutRevisions(
-			layoutSetBranchId, plid, head);
-
-		if (layoutRevisions.isEmpty()) {
-			throw new NoSuchLayoutException();
-		}
-
-		return layoutRevisions.get(0);
+		return layoutRevisionPersistence.findByL_H_P_All_First(
+			layoutSetBranchId, head, plid, null);
 	}
 
 	@Override
