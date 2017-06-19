@@ -138,7 +138,7 @@ public class DefaultExportImportContentProcessorTest {
 		_portletDataContextExport =
 			PortletDataContextFactoryUtil.createExportPortletDataContext(
 				_stagingGroup.getCompanyId(), _stagingGroup.getGroupId(),
-				new HashMap<String, String[]>(),
+				new HashMap<>(),
 				new Date(System.currentTimeMillis() - Time.HOUR), new Date(),
 				testReaderWriter);
 
@@ -162,8 +162,7 @@ public class DefaultExportImportContentProcessorTest {
 		_portletDataContextImport =
 			PortletDataContextFactoryUtil.createImportPortletDataContext(
 				_liveGroup.getCompanyId(), _liveGroup.getGroupId(),
-				new HashMap<String, String[]>(), new TestUserIdStrategy(),
-				testReaderWriter);
+				new HashMap<>(), new TestUserIdStrategy(), testReaderWriter);
 
 		_portletDataContextImport.setImportDataRootElement(rootElement);
 
@@ -444,8 +443,7 @@ public class DefaultExportImportContentProcessorTest {
 
 		PortletDataContext portletDataContextExport =
 			PortletDataContextFactoryUtil.createExportPortletDataContext(
-				group.getCompanyId(), group.getGroupId(),
-				new HashMap<String, String[]>(),
+				group.getCompanyId(), group.getGroupId(), new HashMap<>(),
 				new Date(System.currentTimeMillis() - Time.HOUR), new Date(),
 				new TestReaderWriter());
 
@@ -689,7 +687,7 @@ public class DefaultExportImportContentProcessorTest {
 				buildPublishLayoutLocalSettingsMap(
 					user, _stagingGroup.getGroupId(), _liveGroup.getGroupId(),
 					privateLayout, ExportImportHelperUtil.getLayoutIds(layouts),
-					new HashMap<String, String[]>());
+					new HashMap<>());
 
 		ExportImportConfiguration exportImportConfiguration =
 			ExportImportConfigurationLocalServiceUtil.
