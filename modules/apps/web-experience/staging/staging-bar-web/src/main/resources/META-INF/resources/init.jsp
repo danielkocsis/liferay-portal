@@ -92,12 +92,12 @@ page import="javax.portlet.PortletURL" %>
 <portlet:defineObjects />
 
 <%
-layout = (Layout)renderRequest.getAttribute("layout");
-Layout selLayout = (Layout)renderRequest.getAttribute("selLayout");
 group = (Group)renderRequest.getAttribute("group");
-privateLayout = (boolean)renderRequest.getAttribute("privateLayout");
+layout = (Layout)renderRequest.getAttribute("layout");
 LayoutBranchDisplayContext layoutBranchDisplayContext = (LayoutBranchDisplayContext)renderRequest.getAttribute("layoutBranchDisplayContext");
 LayoutSetBranchDisplayContext layoutSetBranchDisplayContext = (LayoutSetBranchDisplayContext)renderRequest.getAttribute("layoutSetBranchDisplayContext");
+privateLayout = (boolean)renderRequest.getAttribute("privateLayout");
+Layout selLayout = (Layout)renderRequest.getAttribute("selLayout");
 %>
 
 <%@ include file="/init-ext.jsp" %>
