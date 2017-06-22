@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.UserConstants;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -363,17 +364,35 @@ public class DLFileEntryTypeStagedModelDataHandler
 
 		DLFileEntryType existingDLFileEntryType = null;
 
+		Group group = _groupLocalService.fetchGroup(groupId);
+
 		if (!preloaded) {
-			existingDLFileEntryType = fetchStagedModelByUuidAndGroupId(
-				uuid, groupId);
+			while (group != null) {
+				existingDLFileEntryType = fetchStagedModelByUuidAndGroupId(
+					uuid, group.getGroupId());
+
+				if (existingDLFileEntryType != null) {
+					return existingDLFileEntryType;
+				}
+
+				group = group.getParentGroup();
+			}
 		}
 		else {
-			existingDLFileEntryType =
-				_dlFileEntryTypeLocalService.fetchFileEntryType(
-					groupId, fileEntryTypeKey);
+			while (group != null) {
+				existingDLFileEntryType =
+					_dlFileEntryTypeLocalService.fetchFileEntryType(
+						group.getGroupId(), fileEntryTypeKey);
+
+				if (existingDLFileEntryType != null) {
+					return existingDLFileEntryType;
+				}
+
+				group = group.getParentGroup();
+			}
 		}
 
-		return existingDLFileEntryType;
+		return null;
 	}
 
 	@Reference(unbind = "-")
@@ -391,6 +410,11 @@ public class DLFileEntryTypeStagedModelDataHandler
 	}
 
 	@Reference(unbind = "-")
+	protected void setGroupLocalService(GroupLocalService groupLocalService) {
+		_groupLocalService = groupLocalService;
+	}
+
+	@Reference(unbind = "-")
 	protected void setUserLocalService(UserLocalService userLocalService) {
 		_userLocalService = userLocalService;
 	}
@@ -405,6 +429,7 @@ public class DLFileEntryTypeStagedModelDataHandler
 
 	private DDMStructureLocalService _ddmStructureLocalService;
 	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
+	private GroupLocalService _groupLocalService;
 	private UserLocalService _userLocalService;
 
 }
