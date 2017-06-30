@@ -496,9 +496,19 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 				defaultUserId, GroupConstants.DEFAULT_PARENT_GROUP_ID,
 				Company.class.getName(), companyId,
 				GroupConstants.DEFAULT_LIVE_GROUP_ID,
-				getLocalizationMap(GroupConstants.GLOBAL), null, 0, true,
-				GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
+				_getCompleteLocalizationMap(GroupConstants.GLOBAL_LANGUAGE_KEY),
+				null, 0, true, GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
 				GroupConstants.GLOBAL_FRIENDLY_URL, true, true, null);
+		}
+		else {
+			Group companyGroup = groupPersistence.findByC_C_C(
+				companyId, classNameId, companyId);
+
+			companyGroup.setNameMap(
+				_getCompleteLocalizationMap(
+					GroupConstants.GLOBAL_LANGUAGE_KEY));
+
+			groupLocalService.updateGroup(companyGroup);
 		}
 	}
 
@@ -555,45 +565,55 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 				group = groupPersistence.fetchByC_GK(companyId, groupKey);
 			}
 
+			String className = null;
+			long classPK = 0;
+			int type = GroupConstants.TYPE_SITE_OPEN;
+			String friendlyURL = null;
+			boolean site = true;
+			String groupLanguageKey = null;
+
+			if (groupKey.equals(GroupConstants.CONTROL_PANEL)) {
+				type = GroupConstants.TYPE_SITE_PRIVATE;
+				friendlyURL = GroupConstants.CONTROL_PANEL_FRIENDLY_URL;
+				site = false;
+				groupLanguageKey = GroupConstants.CONTROL_PANEL_LANGUAGE_KEY;
+			}
+			else if (groupKey.equals(GroupConstants.FORMS)) {
+				type = GroupConstants.TYPE_SITE_PRIVATE;
+				friendlyURL = GroupConstants.FORMS_FRIENDLY_URL;
+				site = false;
+				groupLanguageKey = GroupConstants.FORMS_LANGUAGE_KEY;
+			}
+			else if (groupKey.equals(GroupConstants.GUEST)) {
+				friendlyURL = "/guest";
+				groupLanguageKey = GroupConstants.GUEST_LANGUAGE_KEY;
+			}
+			else if (groupKey.equals(GroupConstants.USER_PERSONAL_SITE)) {
+				className = UserPersonalSite.class.getName();
+				classPK = defaultUserId;
+				type = GroupConstants.TYPE_SITE_PRIVATE;
+				friendlyURL = GroupConstants.USER_PERSONAL_SITE_FRIENDLY_URL;
+				site = false;
+				groupLanguageKey =
+					GroupConstants.USER_PERSONAL_SITE_GROUP_LANGUAGE_KEY;
+			}
+
 			if (group == null) {
-				String className = null;
-				long classPK = 0;
-				int type = GroupConstants.TYPE_SITE_OPEN;
-				String friendlyURL = null;
-				boolean site = true;
-
-				if (groupKey.equals(GroupConstants.CONTROL_PANEL)) {
-					type = GroupConstants.TYPE_SITE_PRIVATE;
-					friendlyURL = GroupConstants.CONTROL_PANEL_FRIENDLY_URL;
-					site = false;
-				}
-				else if (groupKey.equals(GroupConstants.FORMS)) {
-					type = GroupConstants.TYPE_SITE_PRIVATE;
-					friendlyURL = GroupConstants.FORMS_FRIENDLY_URL;
-					site = false;
-				}
-				else if (groupKey.equals(GroupConstants.GUEST)) {
-					friendlyURL = "/guest";
-				}
-				else if (groupKey.equals(GroupConstants.USER_PERSONAL_SITE)) {
-					className = UserPersonalSite.class.getName();
-					classPK = defaultUserId;
-					type = GroupConstants.TYPE_SITE_PRIVATE;
-					friendlyURL =
-						GroupConstants.USER_PERSONAL_SITE_FRIENDLY_URL;
-					site = false;
-				}
-
 				group = groupLocalService.addGroup(
 					defaultUserId, GroupConstants.DEFAULT_PARENT_GROUP_ID,
 					className, classPK, GroupConstants.DEFAULT_LIVE_GROUP_ID,
-					getLocalizationMap(groupKey), null, type, true,
-					GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION, friendlyURL,
-					site, true, null);
+					_getCompleteLocalizationMap(groupLanguageKey), null, type,
+					true, GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
+					friendlyURL, site, true, null);
 
 				if (groupKey.equals(GroupConstants.USER_PERSONAL_SITE)) {
 					initUserPersonalSitePermissions(group);
 				}
+			}
+			else {
+				group.setNameMap(_getCompleteLocalizationMap(groupLanguageKey));
+
+				groupLocalService.updateGroup(group);
 			}
 
 			if (group.isControlPanel()) {
@@ -4444,6 +4464,18 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	protected File publicLARFile;
+
+	private Map<Locale, String> _getCompleteLocalizationMap(
+		String languageKey) {
+
+		Map<Locale, String> map = new HashMap<>();
+
+		for (Locale locale : LanguageUtil.getAvailableLocales()) {
+			map.put(locale, LanguageUtil.get(locale, languageKey));
+		}
+
+		return map;
+	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		GroupLocalServiceImpl.class);

@@ -25,6 +25,8 @@ public class GroupConstants {
 
 	public static final String CONTROL_PANEL_FRIENDLY_URL = "/control_panel";
 
+	public static final String CONTROL_PANEL_LANGUAGE_KEY = "control-panel";
+
 	public static final String DEFAULT = "default";
 
 	public static final long DEFAULT_LIVE_GROUP_ID = 0;
@@ -37,11 +39,17 @@ public class GroupConstants {
 
 	public static final String FORMS_FRIENDLY_URL = "/forms";
 
+	public static final String FORMS_LANGUAGE_KEY = "forms";
+
 	public static final String GLOBAL = "Global";
 
 	public static final String GLOBAL_FRIENDLY_URL = "/global";
 
+	public static final String GLOBAL_LANGUAGE_KEY = "global";
+
 	public static final String GUEST = "Guest";
+
+	public static final String GUEST_LANGUAGE_KEY = "guest";
 
 	public static final int MEMBERSHIP_RESTRICTION_TO_PARENT_SITE_MEMBERS = 1;
 
@@ -71,6 +79,9 @@ public class GroupConstants {
 
 	public static final String USER_PERSONAL_SITE_FRIENDLY_URL =
 		"/personal_site";
+
+	public static final String USER_PERSONAL_SITE_GROUP_LANGUAGE_KEY =
+		"user-personal-site";
 
 	public static String getTypeLabel(int type) {
 		if (type == TYPE_SITE_OPEN) {
