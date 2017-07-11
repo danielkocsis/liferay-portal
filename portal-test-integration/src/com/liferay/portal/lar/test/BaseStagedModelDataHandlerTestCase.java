@@ -245,6 +245,42 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 	}
 
 	@Test
+	public void testDoubleExportImport() throws Exception {
+		Map<String, List<StagedModel>> dependentStagedModelsMap =
+			addDependentStagedModelsMap(stagingGroup);
+
+		StagedModel stagedModel = addStagedModel(
+			stagingGroup, dependentStagedModelsMap);
+
+		ExportImportThreadLocal.setPortletImportInProcess(true);
+
+		try {
+			exportImportStagedModel(stagedModel);
+		}
+		finally {
+			ExportImportThreadLocal.setPortletImportInProcess(false);
+		}
+
+		StagedModel importedStagedModel = getStagedModel(
+			stagedModel.getUuid(), liveGroup);
+
+		Assert.assertNotNull(importedStagedModel);
+
+		ExportImportThreadLocal.setPortletImportInProcess(true);
+
+		try {
+			exportImportStagedModel(stagedModel);
+		}
+		finally {
+			ExportImportThreadLocal.setPortletImportInProcess(false);
+		}
+
+		importedStagedModel = getStagedModel(stagedModel.getUuid(), liveGroup);
+
+		Assert.assertNotNull(importedStagedModel);
+	}
+
+	@Test
 	public void testExportImportWithDefaultData() throws Exception {
 
 		// Export default data
