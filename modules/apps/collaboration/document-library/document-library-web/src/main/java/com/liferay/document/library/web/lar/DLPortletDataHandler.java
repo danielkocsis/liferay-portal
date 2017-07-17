@@ -51,6 +51,7 @@ import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Repository;
+import com.liferay.portal.kernel.model.RepositoryEntry;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileShortcut;
 import com.liferay.portal.kernel.repository.model.Folder;
@@ -89,9 +90,21 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class DLPortletDataHandler extends BasePortletDataHandler {
 
+	public static final String[] CLASS_NAMES = new String[] {
+		DLFileEntryConstants.getClassName(), DLFileEntryType.class.getName(),
+		DLFileShortcutConstants.getClassName(),
+		DLFolderConstants.getClassName(), Repository.class.getName(),
+		RepositoryEntry.class.getName()
+	};
+
 	public static final String NAMESPACE = "document_library";
 
 	public static final String SCHEMA_VERSION = "1.0.0";
+
+	@Override
+	public String[] getClassNames() {
+		return CLASS_NAMES;
+	}
 
 	@Override
 	public String getSchemaVersion() {

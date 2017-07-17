@@ -103,9 +103,19 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class JournalPortletDataHandler extends BasePortletDataHandler {
 
+	public static final String[] CLASS_NAMES = new String[] {
+		JournalArticle.class.getName(), JournalFeed.class.getName(),
+		JournalFolder.class.getName()
+	};
+
 	public static final String NAMESPACE = "journal";
 
 	public static final String SCHEMA_VERSION = "1.1.0";
+
+	@Override
+	public String[] getClassNames() {
+		return CLASS_NAMES;
+	}
 
 	@Override
 	public String getSchemaVersion() {

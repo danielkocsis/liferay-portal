@@ -83,6 +83,8 @@ public interface PortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws PortletDataException;
 
+	public String[] getClassNames();
+
 	public DataLevel getDataLevel();
 
 	/**
