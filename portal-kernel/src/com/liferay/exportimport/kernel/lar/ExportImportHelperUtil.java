@@ -324,6 +324,14 @@ public class ExportImportHelperUtil {
 			portletDataContext, stagedModel);
 	}
 
+	public static boolean isStagedPortletData(
+			long companyId, long groupId, String className)
+		throws Exception {
+
+		return _exportImportHelper.isStagedPortletData(
+			companyId, groupId, className);
+	}
+
 	/**
 	 * @deprecated As of 7.0.0, replaced by
 	 *             com.liferay.exportimport.content.processor.ExportImportContentProcessorr#replaceExportContentReferences(

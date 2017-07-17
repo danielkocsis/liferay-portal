@@ -287,6 +287,10 @@ public interface ExportImportHelper {
 	public boolean isReferenceWithinExportScope(
 		PortletDataContext portletDataContext, StagedModel stagedModel);
 
+	public boolean isStagedPortletData(
+			long companyId, long groupId, String className)
+		throws Exception;
+
 	/**
 	 * @deprecated As of 7.0.0, replaced by
 	 *             com.liferay.exportimport.content.processor.ExportImportContentProcessor#replaceExportContentReferences(
