@@ -60,7 +60,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
@@ -77,28 +76,6 @@ public class MBMessageStagedModelDataHandlerTest
 		new AggregateTestRule(
 			new LiferayIntegrationTestRule(),
 			SynchronousDestinationTestRule.INSTANCE);
-
-	@Test
-	public void testDoubleExportImport() throws Exception {
-		Map<String, List<StagedModel>> dependentStagedModelsMap =
-			addDependentStagedModelsMap(stagingGroup);
-
-		StagedModel stagedModel = addStagedModel(
-			stagingGroup, dependentStagedModelsMap);
-
-		exportImportStagedModel(stagedModel);
-
-		StagedModel importedStagedModel = getStagedModel(
-			stagedModel.getUuid(), liveGroup);
-
-		Assert.assertNotNull(importedStagedModel);
-
-		exportImportStagedModel(stagedModel);
-
-		importedStagedModel = getStagedModel(stagedModel.getUuid(), liveGroup);
-
-		Assert.assertNotNull(importedStagedModel);
-	}
 
 	@Override
 	protected Map<String, List<StagedModel>> addDependentStagedModelsMap(
