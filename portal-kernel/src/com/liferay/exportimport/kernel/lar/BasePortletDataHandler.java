@@ -157,6 +157,11 @@ public abstract class BasePortletDataHandler implements PortletDataHandler {
 	}
 
 	@Override
+	public String[] getClassNames() {
+		return null;
+	}
+
+	@Override
 	public DataLevel getDataLevel() {
 		return _dataLevel;
 	}
