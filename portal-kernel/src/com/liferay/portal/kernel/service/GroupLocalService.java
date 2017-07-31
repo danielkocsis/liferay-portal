@@ -17,6 +17,7 @@ package com.liferay.portal.kernel.service;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.cache.thread.local.ThreadLocalCachable;
+import com.liferay.portal.kernel.cluster.Clusterable;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
@@ -2060,8 +2061,10 @@ public interface GroupLocalService extends BaseLocalService,
 
 	public void deleteUserGroups(long userId, long[] groupIds);
 
+	@Clusterable(onMaster = true)
 	public void disableStaging(long groupId) throws PortalException;
 
+	@Clusterable(onMaster = true)
 	public void enableStaging(long groupId) throws PortalException;
 
 	/**
