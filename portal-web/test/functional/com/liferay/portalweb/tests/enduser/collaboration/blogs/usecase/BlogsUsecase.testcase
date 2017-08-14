@@ -1205,21 +1205,9 @@
 			<var name="sitePagePrivacy" value="Private" />
 		</execute>
 
-		<execute macro="ProductMenuHelper#expandPanelSites" />
-
-		<execute function="Click" locator1="ProductMenu#SITES_COMPASS" />
-
-		<execute function="AssertTextEquals" locator1="ProductMenu#SITES_MODAL_TITLE" value1="Select Site" />
-
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
-
-		<var name="key_cardText" value="www.able.com" />
-
-		<execute function="AssertClick" locator1="Card#SPECIFIC_LARGE_TEXT_LINK" value1="www.able.com" />
-
-		<var name="key_siteName" value="www.able.com" />
-
-		<execute function="AssertTextEquals" locator1="SitePages#SITE_NAME" value1="www.able.com" />
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="www.able.com" />
+		</execute>
 
 		<execute macro="ProductMenu#gotoPrivatePages" />
 
@@ -1250,21 +1238,9 @@
 			<var name="virtualHostsURL" value="http://www.baker.com:8080" />
 		</execute>
 
-		<execute macro="ProductMenuHelper#expandPanelSites" />
-
-		<execute function="Click" locator1="ProductMenu#SITES_COMPASS" />
-
-		<execute function="AssertTextEquals" locator1="ProductMenu#SITES_MODAL_TITLE" value1="Select Site" />
-
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
-
-		<var name="key_cardText" value="www.able.com" />
-
-		<execute function="AssertClick" locator1="Card#SPECIFIC_LARGE_TEXT_LINK" value1="www.able.com" />
-
-		<var name="key_siteName" value="www.able.com" />
-
-		<execute function="AssertTextEquals" locator1="SitePages#SITE_NAME" value1="www.able.com" />
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="www.able.com" />
+		</execute>
 
 		<execute macro="ProductMenu#gotoPrivatePages" />
 
@@ -1832,8 +1808,8 @@
 
 		<execute macro="PortletEntry#publish" />
 
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Not Published (1)">
-			<var name="key_menuItem" value="Not Published (1)" />
+		<execute macro="Navigator#gotoNavItem">
+			<var name="navItem" value="Not Published (1)" />
 		</execute>
 
 		<execute macro="BlogsNavigator#gotoEditPG">
@@ -2075,8 +2051,8 @@
 
 		<execute function="Click" locator1="Icon#BACK" />
 
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Not Published (1)">
-			<var name="key_menuItem" value="Not Published (1)" />
+		<execute macro="Navigator#gotoNavItem">
+			<var name="navItem" value="Not Published (1)" />
 		</execute>
 
 		<execute macro="BlogsEntry#viewPG">
@@ -2094,8 +2070,8 @@
 			<var name="pageName" value="Blogs Page" />
 		</execute>
 
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Not Published (1)">
-			<var name="key_menuItem" value="Not Published (1)" />
+		<execute macro="Navigator#gotoNavItem">
+			<var name="navItem" value="Not Published (1)" />
 		</execute>
 
 		<execute macro="Blogs#editEntryPG">

@@ -333,7 +333,7 @@ public class VerifyPermission extends VerifyProcess {
 
 			long[] companyIds = PortalInstances.getCompanyIdsBySQL();
 
-			if (dbType == DBType.MYSQL) {
+			if ((dbType == DBType.MARIADB) || (dbType == DBType.MYSQL)) {
 				fixUserDefaultRolePermissionsMySQL(
 					userClassNameId, userGroupClassNameId, companyIds);
 
@@ -529,7 +529,7 @@ public class VerifyPermission extends VerifyProcess {
 		new HashMap<>();
 
 	static {
-		String[] deprecatedOrganizationActionIds = new String[] {
+		String[] deprecatedOrganizationActionIds = {
 			ActionKeys.MANAGE_ARCHIVED_SETUPS, ActionKeys.MANAGE_LAYOUTS,
 			ActionKeys.MANAGE_STAGING, ActionKeys.MANAGE_TEAMS,
 			ActionKeys.PUBLISH_STAGING, "APPROVE_PROPOSAL", "ASSIGN_REVIEWER"

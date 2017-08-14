@@ -1843,10 +1843,12 @@ public abstract class BaseBuild implements Build {
 				String upstreamJobName =
 					getJobName().replace("pullrequest", "upstream");
 
+				String url = JenkinsResultsParserUtil.getLocalURL(
+					UPSTREAM_FAILURES_JOB_BASE_URL + upstreamJobName +
+						"/builds/latest/test.results.json");
+
 				upstreamFailuresJobJSONObject =
-					JenkinsResultsParserUtil.toJSONObject(
-						UPSTREAM_FAILURES_JOB_BASE_URL + upstreamJobName +
-							"/builds/latest/test.results.json");
+					JenkinsResultsParserUtil.toJSONObject(url);
 			}
 		}
 		catch (IOException ioe) {
@@ -2050,9 +2052,8 @@ public abstract class BaseBuild implements Build {
 			new GenericFailureMessageGenerator()
 		};
 
-	private static final String[] _HIGH_PRIORITY_CONTENT_FLAGS = new String[] {
-		"compileJSP", "SourceFormatter.format", "Unable to compile JSPs"
-	};
+	private static final String[] _HIGH_PRIORITY_CONTENT_FLAGS =
+		{"compileJSP", "SourceFormatter.format", "Unable to compile JSPs"};
 
 	private int _buildNumber = -1;
 	private int _consoleReadCursor;
