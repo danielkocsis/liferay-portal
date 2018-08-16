@@ -742,8 +742,6 @@ public class PortletPreferencesFactoryImpl
 		boolean uniquePerGroup = portlet.isPreferencesOwnedByGroup();
 		boolean uniquePerLayout = portlet.isPreferencesUniquePerLayout();
 
-		boolean hasUserId = PortletIdCodec.hasUserId(originalPortletId);
-
 		if (uniquePerCompany || (uniquePerGroup && !uniquePerLayout)) {
 			portletId = PortletIdCodec.decodePortletName(portletId);
 		}
@@ -757,7 +755,7 @@ public class PortletPreferencesFactoryImpl
 			plid = group.getClassPK();
 		}
 
-		if (hasUserId) {
+		if (PortletIdCodec.hasUserId(originalPortletId)) {
 			ownerId = PortletIdCodec.decodeUserId(originalPortletId);
 			ownerType = PortletKeys.PREFS_OWNER_TYPE_USER;
 		}
