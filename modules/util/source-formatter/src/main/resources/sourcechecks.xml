@@ -61,6 +61,11 @@
 			<property name="allowLeadingSpaces" value="true" />
 		</check>
 	</source-processor>
+	<source-processor name="DTDSourceProcessor">
+		<check name="WhitespaceCheck">
+			<property name="allowLeadingSpaces" value="true" />
+		</check>
+	</source-processor>
 	<source-processor name="FTLSourceProcessor">
 		<check name="FTLEmptyLinesCheck" />
 		<check name="FTLIfStatementCheck" />
@@ -83,6 +88,12 @@
 		<check name="GradleIndentationCheck" />
 		<check name="GradlePropertiesCheck" />
 		<check name="GradleProvidedDependenciesCheck" />
+		<check name="GradleTestDependencyVersionCheck">
+			<property name="allowedDependencyNames" value="com.liferay.arquillian.arquillian-container-liferay" />
+			<property name="allowedDependencyNames" value="com.liferay.arquillian.arquillian-deployment-generator-bnd" />
+			<property name="allowedDependencyNames" value="com.liferay.arquillian.extension.junit.bridge" />
+			<property name="allowedDependencyNames" value="com.liferay.portal.cache.test.util" />
+		</check>
 		<check name="GradleVersionCheck" />
 		<check name="WhitespaceCheck" />
 	</source-processor>

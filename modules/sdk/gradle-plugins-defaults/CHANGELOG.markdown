@@ -4151,7 +4151,7 @@ the `buildChangeLog` task.
 ## 5.4.90 - 2018-07-23
 
 ### Changed
-- [LPS-82976]: Change marker file name from `.lfrbuild-portal-all` to
+- [LPS-82976]: Change the marker file name `.lfrbuild-portal-all` to
 `.lfrbuild-portal-deprecated`.
 
 ## 5.4.91 - 2018-07-24
@@ -4236,13 +4236,118 @@ OSGi modules.
 ## 5.4.103 - 2018-08-01
 
 ### Added
-- [LPS-84027]: Add support for `SPRING_BOOT_JAVA_OPTS` environment variable.
+- [LPS-84027]: Add support for the `SPRING_BOOT_JAVA_OPTS` environment variable.
 
 ## 5.4.104 - 2018-08-01
 
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.94.
+
+## 5.5.0 - 2018-08-01
+
 ### Added
+- [LPS-83168]: Embed `pom.properties` and `pom.xml` when publishing OSGi modules
+to Maven.
 - [LPS-84055]: Automatically exclude Git ignored projects from executing the
 `writeArtifactPublishCommands` task.
+
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.95.
+
+## 5.5.1 - 2018-08-02
+
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.96.
+
+## 5.5.2 - 2018-08-02
+
+### Changed
+- [LPS-76475]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.97.
+
+### Fixed
+- [LPS-84055]: The `printDependentArtifact` task should print the project
+directory when it has a dependency with version `default`.
+
+## 5.5.3 - 2018-08-05
+
+### Changed
+- [LPS-83705]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.98.
+
+## 5.5.4 - 2018-08-06
+
+### Changed
+- [LPS-78033]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.99.
+
+## 5.5.5 - 2018-08-06
+
+### Changed
+- [LPS-84119]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.100.
+
+## 5.5.6 - 2018-08-06
+
+### Changed
+- [LPS-84213]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.101.
+
+## 5.5.7 - 2018-08-06
+
+### Changed
+- [LPS-84119]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.102.
+
+### Fixed
+- [LPS-84055]: The `printDependentArtifact` task should print the project
+directory when it has a `compile*` dependency with the version `default`.
+
+## 5.5.8 - 2018-08-07
+
+### Changed
+- [LPS-84119]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.103.
+
+## 5.5.9 - 2018-08-08
+
+### Changed
+- [LPS-84119]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.104.
+
+## 5.5.10 - 2018-08-09
+
+### Fixed
+- [LPS-84055]: The `writeArtifactPublishCommands` task should not be skipped if
+it has `test` dependency with the version `default`.
+
+## 5.5.11 - 2018-08-09
+
+### Changed
+- [LPS-84307]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.105.
+
+## 5.5.12 - 2018-08-09
+
+### Changed
+- [LPS-84313]: The `com.liferay.spring.boot.defaults` plugin now automatically
+applies the `com.liferay.test.integration.base` plugin. Configure the
+`check` task to depend on the `testIntegration` task.
+
+## 5.5.13 - 2018-08-10
+
+### Changed
+- [LPS-84039]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.106.
+
+## 5.5.14 - 2018-08-13
+
+### Changed
+- [LPS-84119]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.107.
 
 [Find Security Bugs]: https://github.com/liferay/liferay-portal/tree/master/modules/third-party/com-h3xstream-findsecbugs
 [Gradle Dependency Management]: https://github.com/spring-gradle-plugins/dependency-management-plugin
@@ -4551,6 +4656,7 @@ OSGi modules.
 [LPS-76226]: https://issues.liferay.com/browse/LPS-76226
 [LPS-76256]: https://issues.liferay.com/browse/LPS-76256
 [LPS-76326]: https://issues.liferay.com/browse/LPS-76326
+[LPS-76475]: https://issues.liferay.com/browse/LPS-76475
 [LPS-76601]: https://issues.liferay.com/browse/LPS-76601
 [LPS-76623]: https://issues.liferay.com/browse/LPS-76623
 [LPS-76626]: https://issues.liferay.com/browse/LPS-76626
@@ -4684,6 +4790,7 @@ OSGi modules.
 [LPS-82976]: https://issues.liferay.com/browse/LPS-82976
 [LPS-83067]: https://issues.liferay.com/browse/LPS-83067
 [LPS-83104]: https://issues.liferay.com/browse/LPS-83104
+[LPS-83168]: https://issues.liferay.com/browse/LPS-83168
 [LPS-83220]: https://issues.liferay.com/browse/LPS-83220
 [LPS-83300]: https://issues.liferay.com/browse/LPS-83300
 [LPS-83483]: https://issues.liferay.com/browse/LPS-83483
@@ -4696,6 +4803,10 @@ OSGi modules.
 [LPS-84027]: https://issues.liferay.com/browse/LPS-84027
 [LPS-84039]: https://issues.liferay.com/browse/LPS-84039
 [LPS-84055]: https://issues.liferay.com/browse/LPS-84055
+[LPS-84119]: https://issues.liferay.com/browse/LPS-84119
+[LPS-84213]: https://issues.liferay.com/browse/LPS-84213
+[LPS-84307]: https://issues.liferay.com/browse/LPS-84307
+[LPS-84313]: https://issues.liferay.com/browse/LPS-84313
 [LRDOCS-2594]: https://issues.liferay.com/browse/LRDOCS-2594
 [LRDOCS-2841]: https://issues.liferay.com/browse/LRDOCS-2841
 [LRDOCS-2981]: https://issues.liferay.com/browse/LRDOCS-2981

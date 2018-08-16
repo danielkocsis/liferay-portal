@@ -21,6 +21,7 @@ import com.liferay.apio.architect.documentation.APITitle;
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.apio.architect.impl.documentation.Documentation;
 import com.liferay.apio.architect.impl.entrypoint.EntryPoint;
+import com.liferay.apio.architect.impl.url.ApplicationURL;
 import com.liferay.apio.architect.impl.wiring.osgi.manager.provider.ProviderManager;
 import com.liferay.apio.architect.impl.wiring.osgi.manager.representable.RepresentableManager;
 import com.liferay.apio.architect.impl.wiring.osgi.manager.router.CollectionRouterManager;
@@ -57,10 +58,28 @@ public class RootEndpointImpl implements RootEndpoint {
 		_documentation = new Documentation(
 			() -> _provide(APITitle.class),
 			() -> _provide(APIDescription.class),
+			() -> _provide(ApplicationURL.class),
 			() -> _representableManager.getRepresentors(),
 			() -> _collectionRouterManager.getCollectionRoutes(),
 			() -> _itemRouterManager.getItemRoutes(),
 			() -> _nestedCollectionRouterManager.getNestedCollectionRoutes());
+	}
+
+	@Override
+	public BatchEndpoint batchEndpoint(String name) {
+		return BatchEndpointBuilder.name(
+			name
+		).httpServletRequest(
+			_httpServletRequest
+		).singleModelFunction(
+			id -> _getSingleModelTry(name, id)
+		).representorSupplier(
+			() -> _getRepresentorOrFail(name)
+		).collectionRoutesSupplier(
+			() -> _getCollectionRoutesOrFail(name)
+		).nestedCollectionRoutesFunction(
+			nestedName -> _getNestedCollectionRoutesOrFail(name, nestedName)
+		).build();
 	}
 
 	@Override

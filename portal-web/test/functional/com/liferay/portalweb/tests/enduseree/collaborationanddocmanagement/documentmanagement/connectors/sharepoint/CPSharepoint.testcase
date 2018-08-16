@@ -11,7 +11,7 @@
 	<set-up>
 		<execute macro="TestCase#setUpPortalInstance" />
 
-		<var method="TestPropsUtil#get('cmis.repository.vm.host.name')" name="sharepointVMHostName" />
+		<var method="PropsUtil#get('cmis.repository.vm.host.name')" name="sharepointVMHostName" />
 
 		<execute function="AntCommand" locator1="build-test-sharepoint.xml" value1="clean-sharepoint-repository -Dssh.host=${sharepointVMHostName}" />
 
@@ -81,7 +81,7 @@
 	</set-up>
 
 	<tear-down>
-		<var method="TestPropsUtil#get('test.portal.instance')" name="testPortalInstance" />
+		<var method="PropsUtil#get('test.portal.instance')" name="testPortalInstance" />
 
 		<if>
 			<equals arg1="${testPortalInstance}" arg2="true" />
@@ -348,6 +348,18 @@
 		<execute macro="DMDocument#viewCP">
 			<var name="dmDocumentSize" value="32KB" />
 			<var name="dmDocumentTitle" value="Document_3.doc" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Documents and Media" />
+		</execute>
+
+		<execute macro="DMRepository#gotoCP">
+			<var name="dmRepositoryName" value="Sharepoint Repository Name" />
 		</execute>
 
 		<execute macro="DMDocument#editCP">

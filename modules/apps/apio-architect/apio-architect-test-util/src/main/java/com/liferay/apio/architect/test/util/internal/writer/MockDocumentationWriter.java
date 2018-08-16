@@ -60,7 +60,7 @@ public class MockDocumentationWriter {
 				"name", null,
 				__ -> {
 				},
-				__ -> null);
+				__ -> null, __ -> null);
 
 		ItemRoutes.Builder itemBuilder = new ItemRoutesImpl.BuilderImpl<>(
 			"name", null,
@@ -73,7 +73,7 @@ public class MockDocumentationWriter {
 				"name", null, __ -> null,
 				__ -> {
 				},
-				__ -> null, __ -> Optional.empty());
+				__ -> null, __ -> Optional.empty(), __ -> null);
 
 		Representor<RootModel> rootModelRepresentor =
 			MockRepresentorCreator.createRootModelRepresentor(false);
@@ -90,7 +90,8 @@ public class MockDocumentationWriter {
 
 		Documentation documentation = new Documentation(
 			() -> Optional.of(() -> "Title"),
-			() -> Optional.of(() -> "Description"), () -> root,
+			() -> Optional.of(() -> "Description"),
+			() -> Optional.of(() -> "Entrypoint"), () -> root,
 			() -> Collections.singletonMap("root", collectionRoutes),
 			() -> Collections.singletonMap("root", itemRoutes),
 			() -> Collections.singletonMap("root", nestedCollectionRoutes));

@@ -27,6 +27,7 @@ import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -46,7 +47,6 @@ import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Element;
@@ -435,97 +435,95 @@ public class DLReferencesExportImportContentProcessor
 					groupId, className, classPK);
 			}
 
-			if (!content.contains("[$dl-reference=" + path + "$]")) {
-				continue;
-			}
-
-			try {
-				StagedModelDataHandlerUtil.importReferenceStagedModel(
-					portletDataContext, stagedModel, DLFileEntry.class,
-					classPK);
-			}
-			catch (Exception e) {
-				StringBundler exceptionSB = new StringBundler(6);
-
-				exceptionSB.append("Unable to process file entry ");
-				exceptionSB.append(classPK);
-				exceptionSB.append(" for ");
-				exceptionSB.append(stagedModel.getModelClassName());
-				exceptionSB.append(" with primary key ");
-				exceptionSB.append(stagedModel.getPrimaryKeyObj());
-
-				ExportImportContentProcessorException eicpe =
-					new ExportImportContentProcessorException(
-						exceptionSB.toString(), e);
-
-				if (_log.isDebugEnabled()) {
-					_log.debug(exceptionSB.toString(), eicpe);
+			while (content.contains("[$dl-reference=" + path + "$]")) {
+				try {
+					StagedModelDataHandlerUtil.importReferenceStagedModel(
+						portletDataContext, stagedModel, DLFileEntry.class,
+						classPK);
 				}
-				else if (_log.isWarnEnabled()) {
-					_log.warn(exceptionSB.toString());
+				catch (Exception e) {
+					StringBundler exceptionSB = new StringBundler(6);
+
+					exceptionSB.append("Unable to process file entry ");
+					exceptionSB.append(classPK);
+					exceptionSB.append(" for ");
+					exceptionSB.append(stagedModel.getModelClassName());
+					exceptionSB.append(" with primary key ");
+					exceptionSB.append(stagedModel.getPrimaryKeyObj());
+
+					ExportImportContentProcessorException eicpe =
+						new ExportImportContentProcessorException(
+							exceptionSB.toString(), e);
+
+					if (_log.isDebugEnabled()) {
+						_log.debug(exceptionSB.toString(), eicpe);
+					}
+					else if (_log.isWarnEnabled()) {
+						_log.warn(exceptionSB.toString());
+					}
 				}
-			}
 
-			Map<Long, Long> dlFileEntryIds =
-				(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
-					DLFileEntry.class);
+				Map<Long, Long> dlFileEntryIds =
+					(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+						DLFileEntry.class);
 
-			long fileEntryId = MapUtil.getLong(
-				dlFileEntryIds, classPK, classPK);
+				long fileEntryId = MapUtil.getLong(
+					dlFileEntryIds, classPK, classPK);
 
-			int beginPos = content.indexOf("[$dl-reference=" + path);
+				int beginPos = content.indexOf("[$dl-reference=" + path);
 
-			int endPos = content.indexOf("$]", beginPos) + 2;
+				int endPos = content.indexOf("$]", beginPos) + 2;
 
-			FileEntry importedFileEntry = null;
+				FileEntry importedFileEntry = null;
 
-			try {
-				importedFileEntry = _dlAppLocalService.getFileEntry(
-					fileEntryId);
-			}
-			catch (PortalException pe) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(pe, pe);
+				try {
+					importedFileEntry = _dlAppLocalService.getFileEntry(
+						fileEntryId);
 				}
-				else if (_log.isWarnEnabled()) {
-					_log.warn(pe.getMessage());
+				catch (PortalException pe) {
+					if (_log.isDebugEnabled()) {
+						_log.debug(pe, pe);
+					}
+					else if (_log.isWarnEnabled()) {
+						_log.warn(pe.getMessage());
+					}
+
+					if (content.startsWith("[#dl-reference=", endPos)) {
+						int prefixPos = endPos + "[#dl-reference=".length();
+
+						int postfixPos = content.indexOf("#]", prefixPos);
+
+						String originalReference = content.substring(
+							prefixPos, postfixPos);
+
+						String exportedReference = content.substring(
+							beginPos, postfixPos + 2);
+
+						content = StringUtil.replace(
+							content, exportedReference, originalReference);
+					}
+
+					continue;
 				}
+
+				String url = DLUtil.getPreviewURL(
+					importedFileEntry, importedFileEntry.getFileVersion(), null,
+					StringPool.BLANK, false, false);
+
+				if (url.contains(StringPool.QUESTION)) {
+					content = StringUtil.replace(content, "$]?", "$]&");
+				}
+
+				String exportedReference = "[$dl-reference=" + path + "$]";
 
 				if (content.startsWith("[#dl-reference=", endPos)) {
-					int prefixPos = endPos + "[#dl-reference=".length();
+					endPos = content.indexOf("#]", beginPos) + 2;
 
-					int postfixPos = content.indexOf("#]", prefixPos);
-
-					String originalReference = content.substring(
-						prefixPos, postfixPos);
-
-					String exportedReference = content.substring(
-						beginPos, postfixPos + 2);
-
-					content = StringUtil.replace(
-						content, exportedReference, originalReference);
+					exportedReference = content.substring(beginPos, endPos);
 				}
 
-				continue;
+				content = StringUtil.replace(content, exportedReference, url);
 			}
-
-			String url = DLUtil.getPreviewURL(
-				importedFileEntry, importedFileEntry.getFileVersion(), null,
-				StringPool.BLANK, false, false);
-
-			if (url.contains(StringPool.QUESTION)) {
-				content = StringUtil.replace(content, "$]?", "$]&");
-			}
-
-			String exportedReference = "[$dl-reference=" + path + "$]";
-
-			if (content.startsWith("[#dl-reference=", endPos)) {
-				endPos = content.indexOf("#]", beginPos) + 2;
-
-				exportedReference = content.substring(beginPos, endPos);
-			}
-
-			content = StringUtil.replace(content, exportedReference, url);
 		}
 
 		return content;

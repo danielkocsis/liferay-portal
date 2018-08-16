@@ -10,7 +10,7 @@
 	</set-up>
 
 	<tear-down>
-		<var method="TestPropsUtil#get('test.portal.instance')" name="testPortalInstance" />
+		<var method="PropsUtil#get('test.portal.instance')" name="testPortalInstance" />
 
 		<if>
 			<equals arg1="${testPortalInstance}" arg2="true" />
@@ -212,7 +212,7 @@
 
 		<property name="test.name.skip.portal.instance" value="CPWebcontent#AddStructureViaLocaleURL" />
 
-		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
+		<var method="PropsUtil#get('portal.url')" name="portalURL" />
 
 		<execute macro="Navigator#openSpecificURL">
 			<var name="url" value="${portalURL}/en/" />
@@ -2342,7 +2342,7 @@
 		</execute>
 
 		<execute macro="LAR#exportPortlet">
-			<var name="larFileName" value="WebContent_portlet.lar" />
+			<var name="larFileName" value="WebContent_portlet2.lar" />
 		</execute>
 
 		<execute macro="WebContent#tearDownCP" />
@@ -2376,7 +2376,7 @@
 		</execute>
 
 		<execute macro="LAR#importPortlet">
-			<var name="larFileName" value="WebContent_portlet.lar" />
+			<var name="larFileName" value="WebContent_portlet2.lar" />
 		</execute>
 
 		<execute macro="Navigator#openURL" />

@@ -28,7 +28,6 @@ import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
 import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.model.AssetTag;
-import com.liferay.asset.kernel.model.AssetTagModel;
 import com.liferay.asset.kernel.model.DDMFormValuesReader;
 import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.category.apio.architect.identifier.CategoryIdentifier;
@@ -41,7 +40,6 @@ import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleDisplay;
-import com.liferay.journal.model.JournalArticleModel;
 import com.liferay.journal.service.JournalArticleService;
 import com.liferay.journal.util.JournalContent;
 import com.liferay.media.object.apio.architect.identifier.MediaObjectIdentifier;
@@ -57,6 +55,7 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.structure.apio.architect.identifier.ContentStructureIdentifier;
 import com.liferay.structured.content.apio.architect.identifier.StructuredContentIdentifier;
 import com.liferay.structured.content.apio.architect.util.StructuredContentUtil;
@@ -196,9 +195,9 @@ public class StructuredContentNestedCollectionResource
 				"name", DDMFormFieldValue::getName
 			).build()
 		).addRelatedCollection(
-			"categories", CategoryIdentifier.class
+			"category", CategoryIdentifier.class
 		).addRelatedCollection(
-			"comments", CommentIdentifier.class
+			"comment", CommentIdentifier.class
 		).addStringList(
 			"keywords", this::_getJournalArticleAssetTags
 		).build();
@@ -302,7 +301,7 @@ public class StructuredContentNestedCollectionResource
 			JournalArticle.class.getName(),
 			journalArticle.getResourcePrimKey());
 
-		return ListUtil.toList(assetTags, AssetTagModel::getName);
+		return ListUtil.toList(assetTags, AssetTag::getName);
 	}
 
 	private List<DDMFormFieldValue> _getJournalArticleDDMFormFieldValues(
@@ -393,12 +392,15 @@ public class StructuredContentNestedCollectionResource
 	}
 
 	private PageItems<JournalArticleWrapper> _getPageItems(
-		Pagination pagination, long contentSpaceId, ThemeDisplay themeDisplay) {
+			Pagination pagination, long contentSpaceId,
+			ThemeDisplay themeDisplay)
+		throws PortalException {
 
 		List<JournalArticleWrapper> journalArticleWrappers = Stream.of(
-			_journalArticleService.getArticles(
-				contentSpaceId, 0, pagination.getStartPosition(),
-				pagination.getEndPosition(), null)
+			_journalArticleService.getGroupArticles(
+				contentSpaceId, 0, 0, WorkflowConstants.STATUS_APPROVED,
+				pagination.getStartPosition(), pagination.getEndPosition(),
+				null)
 		).flatMap(
 			List::stream
 		).map(
@@ -407,7 +409,8 @@ public class StructuredContentNestedCollectionResource
 		).collect(
 			Collectors.toList()
 		);
-		int count = _journalArticleService.getArticlesCount(contentSpaceId, 0);
+		int count = _journalArticleService.getGroupArticlesCount(
+			contentSpaceId, 0, 0, WorkflowConstants.STATUS_APPROVED);
 
 		return new PageItems<>(journalArticleWrappers, count);
 	}
@@ -462,7 +465,7 @@ public class StructuredContentNestedCollectionResource
 		).map(
 			this::_getJournalArticle
 		).map(
-			JournalArticleModel::getId
+			JournalArticle::getId
 		).orElse(
 			null
 		);

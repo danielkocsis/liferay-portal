@@ -1257,22 +1257,22 @@ app.server.type=@{app.server.type}]]></echo>
 						</then>
 					</if>
 
-					<get-testcase-property property.name="osgi.app.includes" />
-
 					<if>
-						<and>
-							<isset property="env.CI_TEST_SUITE" />
-							<not>
-								<contains string="${osgi.app.includes}" substring="portal-search-solr" />
-							</not>
-						</and>
+						<isset property="env.CI_TEST_SUITE" />
 						<then>
-							<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="search.engine" silent="true" />
+							<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="suite.search.engine" silent="true" />
+
+							<get-testcase-property property.name="osgi.app.includes" />
 
 							<if>
-								<equals arg1="${search.engine}" arg2="solr" />
+								<and>
+									<equals arg1="${suite.search.engine}" arg2="solr" />
+									<not>
+										<contains string="${osgi.app.includes}" substring="portal-search-solr" />
+									</not>
+								</and>
 								<then>
-									<prepare-search-engine search.engine="${search.engine}" />
+									<ant antfile="build-test-solr.xml" target="prepare-solr-suite" />
 								</then>
 							</if>
 						</then>
@@ -1288,13 +1288,6 @@ app.server.type=@{app.server.type}]]></echo>
 							<antcall target="stop-app-server" />
 
 							<delete failonerror="false" file=".testable.portal.started" />
-						</then>
-					</if>
-
-					<if>
-						<isset property="search.engine" />
-						<then>
-							<stop-search-engine />
 						</then>
 					</if>
 				</test-tear-down>
@@ -1341,18 +1334,23 @@ app.server.type=@{app.server.type}]]></echo>
 					<if>
 						<isset property="env.CI_TEST_SUITE" />
 						<then>
-							<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="search.engine" silent="true" />
+							<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="suite.search.engine" silent="true" />
 
-							<prepare-search-engine search.engine="${search.engine}" />
+							<if>
+								<equals arg1="${suite.search.engine}" arg2="solr" />
+								<then>
+									<ant antfile="build-test-solr.xml" target="prepare-solr-suite" />
+								</then>
+							</if>
 						</then>
 					</if>
 				</test-set-up>
 
 				<test-tear-down>
 					<if>
-						<isset property="search.engine" />
+						<equals arg1="${suite.search.engine}" arg2="solr" />
 						<then>
-							<stop-search-engine />
+							<ant antfile="build-test-solr.xml" target="stop-solr-core" />
 						</then>
 					</if>
 				</test-tear-down>
@@ -2093,16 +2091,34 @@ app.server.type=@{app.server.type}]]></echo>
 
 							<antcall inheritAll="false" target="prepare-system-ext-properties" />
 
-							<print-test-class-group test.class.group.index="${axis.variable}" />
-
 							<get-test-batch-app-server-start-executable-arg-line />
 
-							<gradle-execute dir="modules" refreshdependencies="@{refreshdependencies}" task="testIntegration">
-								<arg value="-Dapp.server.start.executable.arg.line=${test.batch.app.server.start.executable.arg.line}" />
-								<arg value="-Ddatabase.type=@{database.type}" />
-								<arg value="-Dbuild.exclude.ant.plugin=true" />
-								<arg value="-Dtest.class.group.index=${axis.variable}" />
-							</gradle-execute>
+							<if>
+								<equals arg1="@{subrepository.name}" arg2="" />
+								<then>
+									<print-test-class-group test.class.group.index="${axis.variable}" />
+
+									<echo>Executing Gradle task in directory "modules": testIntegration.</echo>
+
+									<gradle-execute dir="modules" refreshdependencies="@{refreshdependencies}" task="testIntegration">
+										<arg value="-Dapp.server.start.executable.arg.line=${test.batch.app.server.start.executable.arg.line}" />
+										<arg value="-Ddatabase.type=@{database.type}" />
+										<arg value="-Dbuild.exclude.ant.plugin=true" />
+										<arg value="-Dtest.class.group.index=${axis.variable}" />
+									</gradle-execute>
+								</then>
+								<else>
+									<get-module-base-dir-from-subrepository-name subrepository.name="@{subrepository.name}" />
+
+									<echo>Executing Gradle task in directory "${module.base.dir}": testIntegration.</echo>
+
+									<gradle-execute dir="${module.base.dir}" refreshdependencies="@{refreshdependencies}" task="testIntegration">
+										<arg value="-Dapp.server.start.executable.arg.line=${test.batch.app.server.start.executable.arg.line}" />
+										<arg value="-Ddatabase.type=@{database.type}" />
+										<arg value="-Dbuild.exclude.ant.plugin=true" />
+									</gradle-execute>
+								</else>
+							</if>
 
 							<if>
 								<and>
@@ -2241,9 +2257,14 @@ app.server.type=@{app.server.type}]]></echo>
 					<if>
 						<isset property="env.CI_TEST_SUITE" />
 						<then>
-							<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="search.engine" silent="true" />
+							<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="suite.search.engine" silent="true" />
 
-							<prepare-search-engine search.engine="${search.engine}" />
+							<if>
+								<equals arg1="${suite.search.engine}" arg2="solr" />
+								<then>
+									<ant antfile="build-test-solr.xml" target="prepare-solr-suite" />
+								</then>
+							</if>
 						</then>
 					</if>
 
@@ -2254,22 +2275,14 @@ app.server.type=@{app.server.type}]]></echo>
 								<param name="test.class.groups.size" value="${test.batch.size}" />
 							</antcall>
 						</then>
-						<else>
-							<get-module-base-dir-from-subrepository-name subrepository.name="@{subrepository.name}" />
-
-							<antcall inheritAll="false" target="record-test-class-file-names">
-								<param name="test.class.modules.base.dir" value="${module.base.dir}" />
-								<param name="test.class.groups.size" value="${test.batch.size}" />
-							</antcall>
-						</else>
 					</if>
 				</test-set-up>
 
 				<test-tear-down>
 					<if>
-						<isset property="search.engine" />
+						<equals arg1="${suite.search.engine}" arg2="solr" />
 						<then>
-							<stop-search-engine />
+							<ant antfile="build-test-solr.xml" target="stop-solr-core" />
 						</then>
 					</if>
 				</test-tear-down>
@@ -4620,7 +4633,51 @@ ${output.content}</echo>
 
 				<record action="start" name="${project.dir}/build.services.output.txt" />
 
-				<ant dir="portal-impl" target="build-services" />
+				<if>
+					<not>
+						<equals arg1="${skip.service.builder.full}" arg2="true" />
+					</not>
+					<then>
+						<ant dir="portal-impl" target="build-services" />
+					</then>
+					<else>
+						<if>
+							<not>
+								<equals arg1="${skip.service.builder.core}" arg2="true" />
+							</not>
+							<then>
+								<ant dir="portal-impl" target="build-service-counter" />
+								<ant dir="portal-impl" target="build-service-portal" />
+								<ant dir="portal-impl" target="build-service-portlets" />
+							</then>
+						</if>
+
+						<if>
+							<isset property="modules.test.class.group" />
+							<then>
+								<loadresource property="modules.build.service.tasks">
+									<filterchain>
+										<tokenfilter>
+											<replaceregex flags="g" pattern="(\S+ )" replace="\0," />
+										</tokenfilter>
+									</filterchain>
+									<propertyresource name="modules.test.class.group" />
+								</loadresource>
+
+								<for list="${modules.build.service.tasks}" param="modules.build.service.task" trim="true">
+									<sequential>
+										<echo>Executing Gradle tasks: @{modules.build.service.task}</echo>
+
+										<gradle-execute dir="modules" forcedcacheenabled="false" task="@{modules.build.service.task}">
+											<arg value="-DbuildService.skipReadOnly=${build.services.skip.read.only}" />
+											<arg value="-Pcom.liferay.portal.tools.service.builder.ignore.local=false" />
+										</gradle-execute>
+									</sequential>
+								</for>
+							</then>
+						</if>
+					</else>
+				</if>
 
 				<record action="stop" name="${project.dir}/build.services.output.txt" />
 

@@ -12,14 +12,14 @@
 			${portalURL}/api/jsonws/mbmessage/add-message \
 				-u test@liferay.com:test \
 				-d parentMessageId=${messageId} \
-				-d subject=${threadSubject} \
-				-d body=${threadBody} \
+				-d subject=<script>alert(123);</script> \
+				-d body=<script>alert(123);</script> \
 				-d format=bbcode \
 				-d inputStreamOVPs=[] \
 				-d anonymous=true \
 				-d priority=0 \
 				-d allowPingbacks=true \
-				-d entryURL='javascript:alert(3)'
+				-d entryURL=javascript:alert(3)
 		]]></var>
 
 		<echo message="## Adding a 'Message' with the following info using JSONWS:" />
@@ -37,7 +37,7 @@
 
 		<var method="selenium#getLocation()" name="messageBoardsThreadURL" />
 
-		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
+		<var method="PropsUtil#get('portal.url')" name="portalURL" />
 
 		<var method="StringUtil#replace('${messageBoardsThreadURL}', '${portalURL}/web/guest/message-boards-page/-/message_boards/message/', '')" name="messageId" />
 

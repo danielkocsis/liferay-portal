@@ -28,6 +28,7 @@ import com.liferay.exportimport.kernel.lar.PortletDataException;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelModifiedDateComparator;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -43,7 +44,6 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Element;
 
@@ -169,6 +169,10 @@ public class DDMTemplateStagedModelDataHandler
 		boolean preloaded = GetterUtil.getBoolean(
 			referenceElement.attributeValue("preloaded"));
 
+		if (!preloaded) {
+			return super.validateMissingReference(uuid, groupId);
+		}
+
 		DDMTemplate existingTemplate = fetchExistingTemplateWithParentGroups(
 			uuid, groupId, classNameId, templateKey, preloaded);
 
@@ -270,8 +274,15 @@ public class DDMTemplateStagedModelDataHandler
 			templateElement, ExportImportPathUtil.getModelPath(template),
 			template);
 
-		portletDataContext.addPermissions(
-			getResourceName(template), template.getPrimaryKey());
+		try {
+			portletDataContext.addPermissions(
+				getResourceName(template), template.getPrimaryKey());
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	@Override
@@ -298,8 +309,15 @@ public class DDMTemplateStagedModelDataHandler
 		boolean preloaded = GetterUtil.getBoolean(
 			referenceElement.attributeValue("preloaded"));
 
-		DDMTemplate existingTemplate = fetchExistingTemplateWithParentGroups(
-			uuid, groupId, classNameId, templateKey, preloaded);
+		DDMTemplate existingTemplate;
+
+		if (!preloaded) {
+			existingTemplate = fetchMissingReference(uuid, groupId);
+		}
+		else {
+			existingTemplate = fetchExistingTemplateWithParentGroups(
+				uuid, groupId, classNameId, templateKey, preloaded);
+		}
 
 		Map<Long, Long> templateIds =
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
@@ -445,9 +463,16 @@ public class DDMTemplateStagedModelDataHandler
 
 			portletDataContext.importClassedModel(template, importedTemplate);
 
-			portletDataContext.importPermissions(
-				getResourceName(template), template.getPrimaryKey(),
-				importedTemplate.getPrimaryKey());
+			try {
+				portletDataContext.importPermissions(
+					getResourceName(template), template.getPrimaryKey(),
+					importedTemplate.getPrimaryKey());
+			}
+			catch (Exception e) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(e, e);
+				}
+			}
 
 			Map<String, String> ddmTemplateKeys =
 				(Map<String, String>)portletDataContext.getNewPrimaryKeysMap(
@@ -486,6 +511,8 @@ public class DDMTemplateStagedModelDataHandler
 
 		Group group = _groupLocalService.fetchGroup(groupId);
 
+		long companyId = group.getCompanyId();
+
 		while (group != null) {
 			DDMTemplate existingTemplate = fetchExistingTemplate(
 				uuid, group.getGroupId(), classNameId, templateKey, preloaded);
@@ -497,7 +524,15 @@ public class DDMTemplateStagedModelDataHandler
 			group = group.getParentGroup();
 		}
 
-		return null;
+		Group companyGroup = _groupLocalService.fetchCompanyGroup(companyId);
+
+		if (companyGroup == null) {
+			return null;
+		}
+
+		return fetchExistingTemplate(
+			uuid, companyGroup.getGroupId(), classNameId, templateKey,
+			preloaded);
 	}
 
 	protected String getResourceName(DDMTemplate template)
