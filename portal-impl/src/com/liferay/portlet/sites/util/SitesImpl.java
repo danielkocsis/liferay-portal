@@ -266,10 +266,9 @@ public class SitesImpl implements Sites {
 			ServiceContextThreadLocal.getServiceContext();
 
 		Serializable originalLayoutPrototypeLinkEnabled =
-			(Serializable)serviceContext.getAttribute(
-				"layoutPrototypeLinkEnabled");
-		Serializable originalLayoutPrototypeUuid =
-			(Serializable)serviceContext.getAttribute("layoutPrototypeUuid");
+			serviceContext.getAttribute("layoutPrototypeLinkEnabled");
+		Serializable originalLayoutPrototypeUuid = serviceContext.getAttribute(
+			"layoutPrototypeUuid");
 
 		try {
 			serviceContext.setAttribute(
