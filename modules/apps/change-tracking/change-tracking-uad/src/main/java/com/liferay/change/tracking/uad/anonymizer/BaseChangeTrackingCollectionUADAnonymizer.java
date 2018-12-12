@@ -60,7 +60,7 @@ public abstract class BaseChangeTrackingCollectionUADAnonymizer
 	@Override
 	public void delete(ChangeTrackingCollection changeTrackingCollection)
 		throws PortalException {
-		changeTrackingCollectionLocalService.deleteChangeTrackingCollection(changeTrackingCollection);
+		changeTrackingCollectionLocalService.deleteCollection(changeTrackingCollection);
 	}
 
 	@Override

@@ -84,6 +84,15 @@ public class ChangeTrackingCollectionLocalServiceUtil {
 			changeTrackingCollectionIds);
 	}
 
+	public static com.liferay.change.tracking.model.ChangeTrackingCollection addCollection(
+		long companyId, long userId, String name, String description,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .addCollection(companyId, userId, name, description,
+			serviceContext);
+	}
+
 	public static void clearChangeTrackingEntryChangeTrackingCollections(
 		long changeTrackingEntryId) {
 		getService()
@@ -156,6 +165,15 @@ public class ChangeTrackingCollectionLocalServiceUtil {
 		getService()
 			.deleteChangeTrackingEntryChangeTrackingCollections(changeTrackingEntryId,
 			changeTrackingCollectionIds);
+	}
+
+	public static com.liferay.change.tracking.model.ChangeTrackingCollection deleteCollection(
+		com.liferay.change.tracking.model.ChangeTrackingCollection collection) {
+		return getService().deleteCollection(collection);
+	}
+
+	public static void deleteCollection(long companyId) {
+		getService().deleteCollection(companyId);
 	}
 
 	/**
@@ -251,6 +269,11 @@ public class ChangeTrackingCollectionLocalServiceUtil {
 				   .fetchChangeTrackingCollection(changeTrackingCollectionId);
 	}
 
+	public static com.liferay.change.tracking.model.ChangeTrackingCollection fetchCollection(
+		long companyId, String name) {
+		return getService().fetchCollection(companyId, name);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return getService().getActionableDynamicQuery();
 	}
@@ -333,6 +356,11 @@ public class ChangeTrackingCollectionLocalServiceUtil {
 				   .getChangeTrackingEntryPrimaryKeys(changeTrackingCollectionId);
 	}
 
+	public static java.util.List<com.liferay.change.tracking.model.ChangeTrackingCollection> getCollections(
+		long companyId) {
+		return getService().getCollections(companyId);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
 		return getService().getIndexableActionableDynamicQuery();
 	}
@@ -382,6 +410,16 @@ public class ChangeTrackingCollectionLocalServiceUtil {
 		com.liferay.change.tracking.model.ChangeTrackingCollection changeTrackingCollection) {
 		return getService()
 				   .updateChangeTrackingCollection(changeTrackingCollection);
+	}
+
+	public static com.liferay.change.tracking.model.ChangeTrackingCollection updateStatus(
+		long userId,
+		com.liferay.change.tracking.model.ChangeTrackingCollection collection,
+		int status,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .updateStatus(userId, collection, status, serviceContext);
 	}
 
 	public static ChangeTrackingCollectionLocalService getService() {

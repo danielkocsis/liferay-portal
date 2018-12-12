@@ -83,6 +83,16 @@ public class ChangeTrackingEntryLocalServiceUtil {
 		return getService().addChangeTrackingEntry(changeTrackingEntry);
 	}
 
+	public static com.liferay.change.tracking.model.ChangeTrackingEntry addEntry(
+		long companyId, long userId, long collectionId, long classNameId,
+		long classPK, long resourcePrimKey,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .addEntry(companyId, userId, collectionId, classNameId,
+			classPK, resourcePrimKey, serviceContext);
+	}
+
 	public static void clearChangeTrackingCollectionChangeTrackingEntries(
 		long changeTrackingCollectionId) {
 		getService()
