@@ -15,8 +15,10 @@
 package com.liferay.change.tracking.internal;
 
 import com.liferay.change.tracking.CTEngineManager;
+import com.liferay.change.tracking.configuration.CTConfiguration;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.change.tracking.internal.configuration.CTConfigurationRegistry;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
@@ -36,6 +38,7 @@ import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.Collections;
@@ -278,7 +281,22 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	public boolean isChangeTrackingSupported(
 		long companyId, Class<BaseModel> clazz) {
 
-		return false;
+		Optional<CTConfiguration<?, ?>> ctConfigurationOptional =
+			_ctConfigurationRegistry.getCTConfigurationOptionalByVersionClass(
+				clazz);
+
+		return ctConfigurationOptional.isPresent();
+	}
+
+	@Override
+	public boolean isChangeTrackingSupported(long companyId, long classNameId) {
+		String className = _portal.getClassName(classNameId);
+
+		Optional<CTConfiguration<?, ?>> ctConfigurationOptional =
+			_ctConfigurationRegistry.
+				getCTConfigurationOptionalByVersionClassName(className);
+
+		return ctConfigurationOptional.isPresent();
 	}
 
 	@Override
@@ -463,7 +481,13 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	private CTCollectionLocalService _ctCollectionLocalService;
 
 	@Reference
+	private CTConfigurationRegistry _ctConfigurationRegistry;
+
+	@Reference
 	private CTEntryLocalService _ctEntryLocalService;
+
+	@Reference
+	private Portal _portal;
 
 	private CTCollection _productionCTCollection;
 	private final TransactionConfig _transactionConfig =
