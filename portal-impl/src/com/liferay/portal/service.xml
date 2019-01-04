@@ -718,6 +718,7 @@
 		<reference entity="LayoutPrototype" package-path="com.liferay.portal" />
 		<reference entity="LayoutSet" package-path="com.liferay.portal" />
 		<reference entity="LayoutSetPrototype" package-path="com.liferay.portal" />
+		<reference entity="LayoutSetResource" package-path="com.liferay.portal" />
 		<reference entity="PluginSetting" package-path="com.liferay.portal" />
 		<reference entity="PortletPreferences" package-path="com.liferay.portal" />
 		<reference entity="Resource" package-path="com.liferay.portal" />
@@ -1005,7 +1006,7 @@
 		<reference entity="User" package-path="com.liferay.portal" />
 		<reference entity="WorkflowInstanceLink" package-path="com.liferay.portal" />
 	</entity>
-	<entity local-service="true" name="LayoutSet" remote-service="true">
+	<entity local-service="true" name="LayoutSet" persistence="false" remote-service="true">
 
 		<!-- PK fields -->
 
@@ -1033,29 +1034,14 @@
 		<column name="layoutSetPrototypeUuid" type="String" />
 		<column name="layoutSetPrototypeLinkEnabled" type="boolean" />
 
-		<!-- Finder methods -->
-
-		<finder name="GroupId" return-type="Collection">
-			<finder-column name="groupId" />
-		</finder>
-		<finder name="LayoutSetPrototypeUuid" return-type="Collection">
-			<finder-column name="layoutSetPrototypeUuid" />
-		</finder>
-		<finder name="G_P" return-type="LayoutSet" unique="true">
-			<finder-column name="groupId" />
-			<finder-column name="privateLayout" />
-		</finder>
-		<finder name="P_L" return-type="Layout">
-			<finder-column name="privateLayout" />
-			<finder-column name="logoId" />
-		</finder>
-
 		<!-- References -->
 
 		<reference entity="Group" package-path="com.liferay.portal" />
 		<reference entity="Image" package-path="com.liferay.portal" />
 		<reference entity="Layout" package-path="com.liferay.portal" />
 		<reference entity="LayoutSetBranch" package-path="com.liferay.portal" />
+		<reference entity="LayoutSetResource" package-path="com.liferay.portal" />
+		<reference entity="LayoutSetVersion" package-path="com.liferay.portal" />
 		<reference entity="PluginSetting" package-path="com.liferay.portal" />
 		<reference entity="VirtualHost" package-path="com.liferay.portal" />
 	</entity>
@@ -1163,9 +1149,71 @@
 
 		<reference entity="Group" package-path="com.liferay.portal" />
 		<reference entity="Layout" package-path="com.liferay.portal" />
-		<reference entity="LayoutSet" package-path="com.liferay.portal" />
 		<reference entity="Resource" package-path="com.liferay.portal" />
 		<reference entity="User" package-path="com.liferay.portal" />
+	</entity>
+	<entity local-service="false" name="LayoutSetResource" persistence="true" remote-service="false">
+
+		<!-- PK fields -->
+
+		<column name="layoutSetResourceId" primary="true" type="long" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="pageCount" type="int" />
+		<column name="privateLayout" type="boolean" />
+
+		<!-- Finder methods -->
+
+		<finder name="GroupId" return-type="Collection">
+			<finder-column name="groupId" />
+		</finder>
+		<finder name="G_P" return-type="LayoutSetResource" unique="true">
+			<finder-column name="groupId" />
+			<finder-column name="privateLayout" />
+		</finder>
+	</entity>
+	<entity local-service="false" name="LayoutSetVersion" persistence="true" remote-service="false">
+
+		<!-- PK fields -->
+
+		<column name="layoutSetVersionId" primary="true" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="layoutSetResourceId" type="long" />
+		<column name="logoId" type="long" />
+		<column name="themeId" type="String" />
+		<column name="colorSchemeId" type="String" />
+		<column name="css" type="String" />
+		<column name="settings" type="String" />
+		<column name="layoutSetPrototypeUuid" type="String" />
+		<column name="layoutSetPrototypeLinkEnabled" type="boolean" />
+
+		<!-- Finder methods -->
+
+		<finder name="LayoutSetResourceId" return-type="Collection">
+			<finder-column name="layoutSetResourceId" />
+		</finder>
+		<finder name="LayoutSetPrototypeUuid" return-type="Collection">
+			<finder-column name="layoutSetPrototypeUuid" />
+		</finder>
 	</entity>
 	<entity local-service="true" name="LayoutTemplate" remote-service="false" tx-manager="none">
 
@@ -3213,7 +3261,7 @@
 
 		<reference entity="Company" package-path="com.liferay.portal" />
 		<reference entity="Group" package-path="com.liferay.portal" />
-		<reference entity="LayoutSet" package-path="com.liferay.portal" />
+		<reference entity="LayoutSetResource" package-path="com.liferay.portal" />
 	</entity>
 	<entity local-service="true" name="WebDAVProps" remote-service="false">
 
