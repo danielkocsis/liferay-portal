@@ -147,9 +147,12 @@ public class LayoutSetPrototypeLocalServiceImpl
 
 		// Group
 
-		if (!CompanyThreadLocal.isDeleteInProcess() &&
-			(layoutSetPersistence.countByLayoutSetPrototypeUuid(
-				layoutSetPrototype.getUuid()) > 0)) {
+		// todo: create a finder
+
+		if (!CompanyThreadLocal.isDeleteInProcess()
+			//&& (layoutSetPersistence.countByLayoutSetPrototypeUuid(
+			//	layoutSetPrototype.getUuid()) > 0)) {
+		) {
 
 			throw new RequiredLayoutSetPrototypeException();
 		}
