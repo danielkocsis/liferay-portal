@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
 import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.LayoutSetLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutSetPrototypeLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
@@ -361,11 +362,6 @@ public class StagedLayoutSetImpl implements StagedLayoutSet {
 	@Override
 	public boolean isPrivateLayout() {
 		return _layoutSet.isPrivateLayout();
-	}
-
-	@Override
-	public void persist() {
-		_layoutSet.persist();
 	}
 
 	@Override

@@ -84,7 +84,6 @@ import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.service.permission.LayoutPermissionUtil;
 import com.liferay.portal.kernel.service.permission.PortalPermissionUtil;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
-import com.liferay.portal.kernel.service.persistence.LayoutSetUtil;
 import com.liferay.portal.kernel.service.persistence.LayoutUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -1415,7 +1414,8 @@ public class SitesImpl implements Sites {
 
 			// Invoke updateImpl so that we do not trigger the listeners
 
-			LayoutSetUtil.updateImpl(layoutSetPrototypeLayoutSet);
+			LayoutSetLocalServiceUtil.updateLayoutSet(
+				layoutSetPrototypeLayoutSet);
 		}
 		finally {
 			MergeLayoutPrototypesThreadLocal.setInProgress(false);

@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -159,7 +160,7 @@ public class StagedLayoutSetStagedModelRepository
 	public List<StagedLayoutSet> fetchStagedModelsByUuidAndCompanyId(
 		String uuid, long companyId) {
 
-		boolean privateLayout = GetterUtil.getBoolean(uuid);
+		/*boolean privateLayout = GetterUtil.getBoolean(uuid);
 
 		DynamicQuery dynamicQuery = _layoutSetLocalService.dynamicQuery();
 
@@ -180,7 +181,11 @@ public class StagedLayoutSetStagedModelRepository
 			layoutSet -> ModelAdapterUtil.adapt(
 				layoutSet, LayoutSet.class, StagedLayoutSet.class));
 
-		return stagedLayoutSetsStream.collect(Collectors.toList());
+		return stagedLayoutSetsStream.collect(Collectors.toList());*/
+
+		// todo: dynamicquery??
+
+		return Collections.emptyList();
 	}
 
 	@Override

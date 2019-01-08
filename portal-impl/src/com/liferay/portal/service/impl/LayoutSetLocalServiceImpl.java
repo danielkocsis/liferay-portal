@@ -43,6 +43,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.ThemeFactoryUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.comparator.LayoutSetVersionCreateDateComparator;
 import com.liferay.portal.model.impl.LayoutSetImpl;
 import com.liferay.portal.model.impl.LayoutSetModelImpl;
 import com.liferay.portal.service.base.LayoutSetLocalServiceBaseImpl;
@@ -54,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -85,6 +87,9 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 		layoutSetResource.setCreateDate(now);
 		layoutSetResource.setModifiedDate(now);
 		layoutSetResource.setPrivateLayout(privateLayout);
+
+		layoutSetVersion.setLayoutSetResourceId(
+			layoutSetResource.getLayoutSetResourceId());
 
 		initLayoutSet(layoutSetResource, layoutSetVersion);
 
@@ -170,6 +175,18 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 				_log.debug(nsvhe, nsvhe);
 			}
 		}
+	}
+
+	@Override
+	public LayoutSet fetchLayoutSet(long layoutSetId) {
+		LayoutSetResource layoutSetResource =
+			layoutSetResourcePersistence.fetchByPrimaryKey(layoutSetId);
+
+		if (layoutSetResource == null) {
+			return null;
+		}
+
+		return _createLayoutSetDTO(layoutSetResource);
 	}
 
 	@Override
@@ -280,12 +297,20 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 	}
 
 	@Override
-	public LayoutSet updateLayoutSet(LayoutSet layoutSet)
-		throws PortalException {
-
+	public LayoutSet updateLayoutSet(LayoutSet layoutSet) {
 		LayoutSetResource layoutSetResource =
-			layoutSetResourcePersistence.findByPrimaryKey(
-				layoutSet.getPrimaryKey());
+			layoutSetResourcePersistence.fetchByPrimaryKey(
+				layoutSet.getLayoutSetId());
+
+		if (layoutSetResource == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to find layout set resource " +
+						layoutSet.getLayoutSetId());
+			}
+
+			return null;
+		}
 
 		LayoutSetVersion layoutSetVersion = _createNewLayoutSetVersion(
 			layoutSetResource);
@@ -748,6 +773,8 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 
 		LayoutSet layoutSet = new LayoutSetImpl();
 
+		layoutSet.setLayoutSetId(layoutSetResource.getLayoutSetResourceId());
+
 		layoutSet.setGroupId(layoutSetResource.getGroupId());
 
 		layoutSet.setCompanyId(layoutSetResource.getCompanyId());
@@ -778,7 +805,7 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 			counterLocalService.increment());
 
 		layoutSetVersion.setLayoutSetResourceId(
-			latestLayoutSetVersion.getLayoutSetResourceId());
+			layoutSetResource.getLayoutSetResourceId());
 		layoutSetVersion.setLogoId(latestLayoutSetVersion.getLogoId());
 		layoutSetVersion.setThemeId(latestLayoutSetVersion.getThemeId());
 		layoutSetVersion.setColorSchemeId(
@@ -798,16 +825,7 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 
 		return layoutSetVersionPersistence.fetchByLayoutSetResourceId_First(
 			layoutSetResource.getLayoutSetResourceId(),
-			new OrderByComparator<LayoutSetVersion>() {
-
-				@Override
-				public int compare(LayoutSetVersion o1, LayoutSetVersion o2) {
-					Date createDate = o1.getCreateDate();
-
-					return createDate.compareTo(o2.getCreateDate());
-				}
-
-			});
+			new LayoutSetVersionCreateDateComparator());
 	}
 
 	private LayoutSetBranch _getLayoutSetBranch(
