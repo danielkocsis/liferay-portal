@@ -657,24 +657,6 @@ create table LayoutRevision (
 	statusDate DATE null
 );
 
-create table LayoutSet (
-	mvccVersion LONG default 0 not null,
-	layoutSetId LONG not null primary key,
-	groupId LONG,
-	companyId LONG,
-	createDate DATE null,
-	modifiedDate DATE null,
-	privateLayout BOOLEAN,
-	logoId LONG,
-	themeId VARCHAR(75) null,
-	colorSchemeId VARCHAR(75) null,
-	css TEXT null,
-	pageCount INTEGER,
-	settings_ TEXT null,
-	layoutSetPrototypeUuid VARCHAR(75) null,
-	layoutSetPrototypeLinkEnabled BOOLEAN
-);
-
 create table LayoutSetBranch (
 	mvccVersion LONG default 0 not null,
 	layoutSetBranchId LONG not null primary key,
