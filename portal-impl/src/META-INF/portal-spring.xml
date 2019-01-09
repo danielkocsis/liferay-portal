@@ -134,13 +134,15 @@
 	<bean class="com.liferay.portal.service.persistence.impl.LayoutRevisionPersistenceImpl" id="com.liferay.portal.kernel.service.persistence.LayoutRevisionPersistence" />
 	<bean class="com.liferay.portal.service.impl.LayoutSetLocalServiceImpl" id="com.liferay.portal.kernel.service.LayoutSetLocalService" />
 	<bean class="com.liferay.portal.service.impl.LayoutSetServiceImpl" id="com.liferay.portal.kernel.service.LayoutSetService" />
-	<bean class="com.liferay.portal.service.persistence.impl.LayoutSetPersistenceImpl" id="com.liferay.portal.kernel.service.persistence.LayoutSetPersistence" />
 	<bean class="com.liferay.portal.service.impl.LayoutSetBranchLocalServiceImpl" id="com.liferay.portal.kernel.service.LayoutSetBranchLocalService" />
 	<bean class="com.liferay.portal.service.impl.LayoutSetBranchServiceImpl" id="com.liferay.portal.kernel.service.LayoutSetBranchService" />
 	<bean class="com.liferay.portal.service.persistence.impl.LayoutSetBranchPersistenceImpl" id="com.liferay.portal.kernel.service.persistence.LayoutSetBranchPersistence" />
 	<bean class="com.liferay.portal.service.impl.LayoutSetPrototypeLocalServiceImpl" id="com.liferay.portal.kernel.service.LayoutSetPrototypeLocalService" />
 	<bean class="com.liferay.portal.service.impl.LayoutSetPrototypeServiceImpl" id="com.liferay.portal.kernel.service.LayoutSetPrototypeService" />
 	<bean class="com.liferay.portal.service.persistence.impl.LayoutSetPrototypePersistenceImpl" id="com.liferay.portal.kernel.service.persistence.LayoutSetPrototypePersistence" />
+	<bean class="com.liferay.portal.service.persistence.impl.LayoutSetResourcePersistenceImpl" id="com.liferay.portal.kernel.service.persistence.LayoutSetResourcePersistence" />
+	<bean class="com.liferay.portal.service.persistence.impl.LayoutSetResourceFinderImpl" id="com.liferay.portal.kernel.service.persistence.LayoutSetResourceFinder" />
+	<bean class="com.liferay.portal.service.persistence.impl.LayoutSetVersionPersistenceImpl" id="com.liferay.portal.kernel.service.persistence.LayoutSetVersionPersistence" />
 	<bean class="com.liferay.portal.service.impl.LayoutTemplateLocalServiceImpl" id="com.liferay.portal.kernel.service.LayoutTemplateLocalService" />
 	<bean class="com.liferay.portal.service.impl.ListTypeLocalServiceImpl" id="com.liferay.portal.kernel.service.ListTypeLocalService" />
 	<bean class="com.liferay.portal.service.impl.ListTypeServiceImpl" id="com.liferay.portal.kernel.service.ListTypeService" />

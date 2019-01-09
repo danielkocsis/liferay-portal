@@ -28,8 +28,9 @@ import com.liferay.portal.kernel.service.persistence.GroupFinder;
 import com.liferay.portal.kernel.service.persistence.GroupPersistence;
 import com.liferay.portal.kernel.service.persistence.LayoutFinder;
 import com.liferay.portal.kernel.service.persistence.LayoutPersistence;
-import com.liferay.portal.kernel.service.persistence.LayoutSetPersistence;
 import com.liferay.portal.kernel.service.persistence.LayoutSetPrototypePersistence;
+import com.liferay.portal.kernel.service.persistence.LayoutSetResourceFinder;
+import com.liferay.portal.kernel.service.persistence.LayoutSetResourcePersistence;
 import com.liferay.portal.kernel.service.persistence.UserFinder;
 import com.liferay.portal.kernel.service.persistence.UserPersistence;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -281,60 +282,41 @@ public abstract class LayoutSetPrototypeServiceBaseImpl extends BaseServiceImpl
 	}
 
 	/**
-	 * Returns the layout set local service.
+	 * Returns the layout set resource persistence.
 	 *
-	 * @return the layout set local service
+	 * @return the layout set resource persistence
 	 */
-	public com.liferay.portal.kernel.service.LayoutSetLocalService getLayoutSetLocalService() {
-		return layoutSetLocalService;
+	public LayoutSetResourcePersistence getLayoutSetResourcePersistence() {
+		return layoutSetResourcePersistence;
 	}
 
 	/**
-	 * Sets the layout set local service.
+	 * Sets the layout set resource persistence.
 	 *
-	 * @param layoutSetLocalService the layout set local service
+	 * @param layoutSetResourcePersistence the layout set resource persistence
 	 */
-	public void setLayoutSetLocalService(
-		com.liferay.portal.kernel.service.LayoutSetLocalService layoutSetLocalService) {
-		this.layoutSetLocalService = layoutSetLocalService;
+	public void setLayoutSetResourcePersistence(
+		LayoutSetResourcePersistence layoutSetResourcePersistence) {
+		this.layoutSetResourcePersistence = layoutSetResourcePersistence;
 	}
 
 	/**
-	 * Returns the layout set remote service.
+	 * Returns the layout set resource finder.
 	 *
-	 * @return the layout set remote service
+	 * @return the layout set resource finder
 	 */
-	public com.liferay.portal.kernel.service.LayoutSetService getLayoutSetService() {
-		return layoutSetService;
+	public LayoutSetResourceFinder getLayoutSetResourceFinder() {
+		return layoutSetResourceFinder;
 	}
 
 	/**
-	 * Sets the layout set remote service.
+	 * Sets the layout set resource finder.
 	 *
-	 * @param layoutSetService the layout set remote service
+	 * @param layoutSetResourceFinder the layout set resource finder
 	 */
-	public void setLayoutSetService(
-		com.liferay.portal.kernel.service.LayoutSetService layoutSetService) {
-		this.layoutSetService = layoutSetService;
-	}
-
-	/**
-	 * Returns the layout set persistence.
-	 *
-	 * @return the layout set persistence
-	 */
-	public LayoutSetPersistence getLayoutSetPersistence() {
-		return layoutSetPersistence;
-	}
-
-	/**
-	 * Sets the layout set persistence.
-	 *
-	 * @param layoutSetPersistence the layout set persistence
-	 */
-	public void setLayoutSetPersistence(
-		LayoutSetPersistence layoutSetPersistence) {
-		this.layoutSetPersistence = layoutSetPersistence;
+	public void setLayoutSetResourceFinder(
+		LayoutSetResourceFinder layoutSetResourceFinder) {
+		this.layoutSetResourceFinder = layoutSetResourceFinder;
 	}
 
 	/**
@@ -502,12 +484,10 @@ public abstract class LayoutSetPrototypeServiceBaseImpl extends BaseServiceImpl
 	protected LayoutPersistence layoutPersistence;
 	@BeanReference(type = LayoutFinder.class)
 	protected LayoutFinder layoutFinder;
-	@BeanReference(type = com.liferay.portal.kernel.service.LayoutSetLocalService.class)
-	protected com.liferay.portal.kernel.service.LayoutSetLocalService layoutSetLocalService;
-	@BeanReference(type = com.liferay.portal.kernel.service.LayoutSetService.class)
-	protected com.liferay.portal.kernel.service.LayoutSetService layoutSetService;
-	@BeanReference(type = LayoutSetPersistence.class)
-	protected LayoutSetPersistence layoutSetPersistence;
+	@BeanReference(type = LayoutSetResourcePersistence.class)
+	protected LayoutSetResourcePersistence layoutSetResourcePersistence;
+	@BeanReference(type = LayoutSetResourceFinder.class)
+	protected LayoutSetResourceFinder layoutSetResourceFinder;
 	@BeanReference(type = com.liferay.portal.kernel.service.ResourceLocalService.class)
 	protected com.liferay.portal.kernel.service.ResourceLocalService resourceLocalService;
 	@BeanReference(type = com.liferay.portal.kernel.service.UserLocalService.class)

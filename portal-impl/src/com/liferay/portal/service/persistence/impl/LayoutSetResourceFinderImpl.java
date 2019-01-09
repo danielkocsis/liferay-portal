@@ -34,7 +34,8 @@ public class LayoutSetResourceFinderImpl
 	extends LayoutSetResourceFinderBaseImpl implements LayoutSetResourceFinder {
 
 	public static final String COUNT_BY_LAYOUT_SET_PROTOTYPE_UUID =
-		LayoutSetResourceFinder.class.getName() + ".countByLayoutSetPrototypeUuid";
+		LayoutSetResourceFinder.class.getName() +
+			".countByLayoutSetPrototypeUuid";
 
 	public static final String FIND_BY_P_L =
 		LayoutSetResourceFinder.class.getName() + ".findByP_L";
@@ -77,9 +78,7 @@ public class LayoutSetResourceFinderImpl
 	}
 
 	@Override
-	public List<LayoutSetResource> findByP_L(
-		boolean privateLayout, long logoId) {
-
+	public LayoutSetResource fetchByP_L(boolean privateLayout, long logoId) {
 		Session session = null;
 
 		try {
@@ -96,7 +95,13 @@ public class LayoutSetResourceFinderImpl
 			qPos.add(privateLayout);
 			qPos.add(logoId);
 
-			return q.list(true);
+			List<LayoutSetResource> layoutSetResources = q.list(true);
+
+			if (!layoutSetResources.isEmpty()) {
+				return layoutSetResources.get(0);
+			}
+
+			return null;
 		}
 		catch (Exception e) {
 			throw new SystemException(e);

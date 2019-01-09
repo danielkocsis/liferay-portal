@@ -447,11 +447,6 @@ public class LayoutSetWrapper extends BaseModelWrapper<LayoutSet>
 		return model.isPrivateLayout();
 	}
 
-	@Override
-	public void persist() {
-		model.persist();
-	}
-
 	/**
 	* Sets the color scheme ID of this layout set.
 	*
