@@ -18,10 +18,7 @@ import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.layout.set.model.adapter.StagedLayoutSet;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.Property;
-import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -35,7 +32,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -160,32 +156,19 @@ public class StagedLayoutSetStagedModelRepository
 	public List<StagedLayoutSet> fetchStagedModelsByUuidAndCompanyId(
 		String uuid, long companyId) {
 
-		/*boolean privateLayout = GetterUtil.getBoolean(uuid);
+		boolean privateLayout = GetterUtil.getBoolean(uuid);
 
-		DynamicQuery dynamicQuery = _layoutSetLocalService.dynamicQuery();
-
-		Property companyIdProperty = PropertyFactoryUtil.forName("companyId");
-
-		dynamicQuery.add(companyIdProperty.eq(companyId));
-
-		Property privateLayoutProperty = PropertyFactoryUtil.forName(
-			"privateLayout");
-
-		dynamicQuery.add(privateLayoutProperty.eq(privateLayout));
-
-		List<LayoutSet> layoutSets = dynamicQuery.list();
+		List<LayoutSet> layoutSets = _layoutSetLocalService.fetchLayoutSets(
+			companyId, privateLayout);
 
 		Stream<LayoutSet> layoutSetsStream = layoutSets.stream();
 
-		Stream<StagedLayoutSet> stagedLayoutSetsStream = layoutSetsStream.map(
+		return layoutSetsStream.map(
 			layoutSet -> ModelAdapterUtil.adapt(
-				layoutSet, LayoutSet.class, StagedLayoutSet.class));
-
-		return stagedLayoutSetsStream.collect(Collectors.toList());*/
-
-		// todo: dynamicquery??
-
-		return Collections.emptyList();
+				layoutSet, LayoutSet.class, StagedLayoutSet.class)
+		).collect(
+			Collectors.toList()
+		);
 	}
 
 	@Override

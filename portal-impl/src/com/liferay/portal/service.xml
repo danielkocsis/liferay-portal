@@ -1182,6 +1182,10 @@
 			<finder-column name="groupId" />
 			<finder-column name="privateLayout" />
 		</finder>
+		<finder name="C_P" return-type="Collection">
+			<finder-column name="companyId" />
+			<finder-column name="privateLayout" />
+		</finder>
 	</entity>
 	<entity local-service="false" name="LayoutSetVersion" persistence="true" remote-service="false">
 
