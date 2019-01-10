@@ -12,9 +12,9 @@
 					SELECT
 						DISTINCT groupId
 					FROM
-						LayoutSet
+						LayoutSetResource
 					WHERE
-						LayoutSet.pageCount > 0
+						LayoutSetResource.pageCount > 0
 				)
 				TEMP_TABLE ON
 					TEMP_TABLE.groupId = Group_.groupId
@@ -96,9 +96,9 @@
 					SELECT
 						DISTINCT groupId
 					FROM
-						LayoutSet
+						LayoutSetResource
 					WHERE
-						LayoutSet.pageCount > 0
+						LayoutSetResource.pageCount > 0
 				)
 				TEMP_TABLE ON
 					TEMP_TABLE.groupId = Group_.groupId
@@ -134,13 +134,13 @@
 			FROM
 				Group_
 			INNER JOIN
-				LayoutSet ON
-					LayoutSet.groupId = Group_.groupId
+				LayoutSetResource ON
+					LayoutSetResource.groupId = Group_.groupId
 			WHERE
 				(Group_.classNameId = ?) AND
 				(Group_.type_ != 4) AND
-				(LayoutSet.privateLayout = ?) AND
-				(LayoutSet.pageCount = 0)
+				(LayoutSetResource.privateLayout = ?) AND
+				(LayoutSetResource.pageCount = 0)
 		]]>
 	</sql>
 	<sql id="com.liferay.portal.kernel.service.persistence.GroupFinder.findByNullFriendlyURL">
@@ -298,12 +298,12 @@
 	<sql id="com.liferay.portal.kernel.service.persistence.GroupFinder.joinByLayoutSet">
 		<![CDATA[
 			INNER JOIN
-				LayoutSet ON
-					LayoutSet.groupId = Group_.groupId
+				LayoutSetResource ON
+					LayoutSetResource.groupId = Group_.groupId
 			WHERE
 				(Group_.liveGroupId = 0) AND
-				(LayoutSet.privateLayout = ?) AND
-				(LayoutSet.pageCount != 0)
+				(LayoutSetResource.privateLayout = ?) AND
+				(LayoutSetResource.pageCount != 0)
 		]]>
 	</sql>
 	<sql id="com.liferay.portal.kernel.service.persistence.GroupFinder.joinByManualMembership">
@@ -321,11 +321,11 @@
 	<sql id="com.liferay.portal.kernel.service.persistence.GroupFinder.joinByPageCount">
 		<![CDATA[
 			INNER JOIN
-				LayoutSet ON
-					LayoutSet.groupId = Group_.groupId
+				LayoutSetResource ON
+					LayoutSetResource.groupId = Group_.groupId
 			WHERE
 				(Group_.liveGroupId = 0) AND
-				(LayoutSet.pageCount != 0)
+				(LayoutSetResource.pageCount != 0)
 		]]>
 	</sql>
 	<sql id="com.liferay.portal.kernel.service.persistence.GroupFinder.joinByRoleResourcePermissions">
