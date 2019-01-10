@@ -460,6 +460,57 @@
 				(CAST_CLOB_TEXT(PortletPreferences.preferences) LIKE ?)
 		]]>
 	</sql>
+	<sql id="com.liferay.portal.kernel.service.persistence.LayoutSetResourceFinder.countByLayoutSetPrototypeUuid">
+		<![CDATA[
+			SELECT
+				COUNT(LayoutSetVersion.layoutSetResourceId) AS COUNT_VALUE
+			FROM
+				LayoutSetVersion
+			INNER JOIN
+				(
+					SELECT
+						layoutSetResourceId, MAX(createDate) AS createDate
+					FROM
+						LayoutSetVersion
+					GROUP BY
+						layoutSetResourceId
+				) TEMP_TABLE ON
+					(LayoutSetVersion.layoutSetResourceId = TEMP_TABLE.layoutSetResourceId) AND
+					(LayoutSetVersion.createDate = TEMP_TABLE.createDate)
+			WHERE
+				layoutSetPrototypeUuid = ?
+		]]>
+	</sql>
+	<sql id="com.liferay.portal.kernel.service.persistence.LayoutSetResourceFinder.findByP_L">
+		<![CDATA[
+			SELECT
+				{LayoutSetResource.*}
+			FROM
+				LayoutSetResource
+			WHERE
+				(privateLayout = ?) AND
+				layoutSetResourceId IN
+				(
+					SELECT
+						LayoutSetVersion.layoutSetResourceId
+					FROM
+						LayoutSetVersion
+					INNER JOIN
+						(
+							SELECT
+								layoutSetResourceId, MAX(createDate) AS createDate
+							FROM
+								LayoutSetVersion
+							GROUP BY
+								layoutSetResourceId
+						) TEMP_TABLE ON
+							(LayoutSetVersion.layoutSetResourceId = TEMP_TABLE.layoutSetResourceId) AND
+							(LayoutSetVersion.createDate = TEMP_TABLE.createDate)
+					WHERE
+						logoId = ?
+				)
+		]]>
+	</sql>
 	<sql id="com.liferay.portal.kernel.service.persistence.OrganizationFinder.countO_ByGroupId">
 		<![CDATA[
 			SELECT

@@ -54,7 +54,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -218,14 +217,13 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 	}
 
 	@Override
-	public LayoutSet fetchLayoutSetByLogoId(boolean privateLayout, long logoId)
-		throws PortalException {
+	public LayoutSet fetchLayoutSetByLogoId(
+		boolean privateLayout, long logoId) {
 
-		// todo: finder!
+		LayoutSetResource layoutSetResource =
+			layoutSetResourceFinder.fetchByP_L(privateLayout, logoId);
 
-		return null;
-
-		//layoutSetResourcePersistence.fetchByP_L(privateLayout, logoId);
+		return _createLayoutSetDTO(layoutSetResource);
 	}
 
 	@Override
