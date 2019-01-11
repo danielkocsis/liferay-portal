@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.model.ColorScheme;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
+import com.liferay.portal.kernel.model.LayoutSetVersion;
 import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.LayoutSetPrototypeLocalServiceUtil;
@@ -241,6 +242,11 @@ public class StagedLayoutSetImpl implements StagedLayoutSet {
 	@Override
 	public long getPrimaryKey() {
 		return _layoutSet.getPrimaryKey();
+	}
+
+	@Override
+	public void populateVersionModel(LayoutSetVersion versionModel) {
+		_layoutSet.populateVersionModel(versionModel);
 	}
 
 	@Override
@@ -480,6 +486,16 @@ public class StagedLayoutSetImpl implements StagedLayoutSet {
 	@Override
 	public void setMvccVersion(long mvccVersion) {
 		_layoutSet.setMvccVersion(mvccVersion);
+	}
+
+	@Override
+	public long getHeadId() {
+		return _layoutSet.getHeadId();
+	}
+
+	@Override
+	public void setHeadId(long headId) {
+		_layoutSet.setHeadId(headId);
 	}
 
 	@Override

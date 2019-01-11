@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.RequiredLayoutException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.lock.Lock;
 import com.liferay.portal.kernel.lock.LockManagerUtil;
@@ -1433,7 +1434,13 @@ public class SitesImpl implements Sites {
 
 		settingsProperties.remove(MERGE_FAIL_FRIENDLY_URL_LAYOUTS);
 
-		LayoutSetLocalServiceUtil.updateLayoutSet(layoutSet);
+		try {
+			LayoutSetLocalServiceUtil.updateLayoutSet(layoutSet);
+		}
+		catch (PortalException e) {
+			throw new SystemException(
+				"Unable to update layout set " + layoutSet.getLayoutSetId(), e);
+		}
 	}
 
 	/**
@@ -1798,7 +1805,13 @@ public class SitesImpl implements Sites {
 		settingsProperties.setProperty(
 			LAST_RESET_TIME, String.valueOf(System.currentTimeMillis()));
 
-		LayoutSetLocalServiceUtil.updateLayoutSet(layoutSet);
+		try {
+			LayoutSetLocalServiceUtil.updateLayoutSet(layoutSet);
+		}
+		catch (PortalException e) {
+			throw new SystemException(
+				"Unable to update layout set " + layoutSet.getLayoutSetId(), e);
+		}
 	}
 
 	protected Map<String, String[]> getLayoutSetPrototypesParameters(
