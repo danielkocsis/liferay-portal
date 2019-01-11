@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.model.Image;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutSetBranch;
 import com.liferay.portal.kernel.model.LayoutSetStagingHandler;
+import com.liferay.portal.kernel.model.LayoutSetVersion;
 import com.liferay.portal.kernel.model.VirtualHost;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
@@ -81,7 +82,7 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 
 		layoutSet = initLayoutSet(layoutSet);
 
-		layoutSetPersistence.update(layoutSet);
+		_updateLayoutSet(layoutSet);
 
 		return layoutSet;
 	}
@@ -129,7 +130,7 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 
 			layoutSet.setLogoId(layoutSet.getLogoId());
 
-			layoutSetPersistence.update(layoutSet);
+			updateLayoutSet(layoutSet);
 		}
 		else {
 			layoutSetPersistence.removeByG_P(groupId, privateLayout);
@@ -214,6 +215,11 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 			layoutSetPrototypeUuid);
 	}
 
+	@Override
+	public LayoutSet updateLayoutSet(LayoutSet layoutSet) {
+		return _updateLayoutSet(layoutSet);
+	}
+
 	/**
 	 * Updates the state of the layout set prototype link.
 	 *
@@ -249,7 +255,7 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 			layoutSet.setLayoutSetPrototypeLinkEnabled(
 				layoutSetPrototypeLinkEnabled);
 
-			layoutSetPersistence.update(layoutSet);
+			updateLayoutSet(layoutSet);
 
 			return;
 		}
@@ -289,7 +295,7 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 
 			PortalUtil.updateImageId(layoutSet, logo, bytes, "logoId", 0, 0, 0);
 
-			return layoutSetPersistence.update(layoutSet);
+			return updateLayoutSet(layoutSet);
 		}
 
 		layoutSetBranch.setModifiedDate(new Date());
@@ -372,7 +378,7 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 			layoutSet.setColorSchemeId(colorSchemeId);
 			layoutSet.setCss(css);
 
-			layoutSetPersistence.update(layoutSet);
+			updateLayoutSet(layoutSet);
 
 			if (PrefsPropsUtil.getBoolean(
 					PropsKeys.THEME_SYNC_ON_GROUP,
@@ -384,7 +390,7 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 				otherLayoutSet.setThemeId(themeId);
 				otherLayoutSet.setColorSchemeId(colorSchemeId);
 
-				layoutSetPersistence.update(otherLayoutSet);
+				updateLayoutSet(otherLayoutSet);
 			}
 
 			return layoutSet;
@@ -448,7 +454,7 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 
 			layoutSet.setSettingsProperties(settingsProperties);
 
-			layoutSetPersistence.update(layoutSet);
+			updateLayoutSet(layoutSet);
 
 			return layoutSet;
 		}
@@ -620,6 +626,32 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 		}
 
 		return null;
+	}
+
+	private LayoutSet _updateLayoutSet(LayoutSet layoutSet) {
+		LayoutSetVersion layoutSetVersion = layoutSetVersionPersistence.create(
+			counterLocalService.increment(LayoutSetVersion.class.getName()));
+
+		int version = 1;
+
+		LayoutSetVersion latestLayoutSetVersion =
+			layoutSetVersionPersistence.fetchByLayoutSetId_First(
+				layoutSet.getLayoutSetId(), null);
+
+		if (latestLayoutSetVersion != null) {
+			version = latestLayoutSetVersion.getVersion() + 1;
+		}
+
+		layoutSetVersion.setVersion(version);
+		layoutSetVersion.setVersionedModelId(layoutSet.getLayoutSetId());
+
+		layoutSet.populateVersionModel(layoutSetVersion);
+
+		layoutSetVersionPersistence.update(layoutSetVersion);
+
+		layoutSet.setHeadId(-layoutSet.getPrimaryKey());
+
+		return layoutSetPersistence.update(layoutSet);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
