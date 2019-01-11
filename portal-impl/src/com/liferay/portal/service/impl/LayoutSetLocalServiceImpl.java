@@ -88,6 +88,11 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 	}
 
 	@Override
+	public LayoutSet deleteDraft(LayoutSet draftLayoutSet) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void deleteLayoutSet(
 			long groupId, boolean privateLayout, ServiceContext serviceContext)
 		throws PortalException {
@@ -153,6 +158,16 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 	}
 
 	@Override
+	public LayoutSet fetchDraft(LayoutSet layoutSet) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public LayoutSet fetchDraft(long primaryKey) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public LayoutSet fetchLayoutSet(long groupId, boolean privateLayout) {
 		return layoutSetPersistence.fetchByG_P(groupId, privateLayout);
 	}
@@ -178,6 +193,16 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 		throws PortalException {
 
 		return layoutSetPersistence.fetchByP_L(privateLayout, logoId);
+	}
+
+	@Override
+	public LayoutSet getDraft(LayoutSet layoutSet) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public LayoutSet getDraft(long primaryKey) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -213,6 +238,16 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 
 		return layoutSetPersistence.findByLayoutSetPrototypeUuid(
 			layoutSetPrototypeUuid);
+	}
+
+	@Override
+	public LayoutSet publishDraft(LayoutSet draftLayoutSet) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public LayoutSet updateDraft(LayoutSet draftLayoutSet) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
