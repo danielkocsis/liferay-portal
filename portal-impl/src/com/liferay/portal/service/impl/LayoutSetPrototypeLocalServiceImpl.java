@@ -148,7 +148,7 @@ public class LayoutSetPrototypeLocalServiceImpl
 		// Group
 
 		if (!CompanyThreadLocal.isDeleteInProcess() &&
-			(layoutSetPersistence.countByLayoutSetPrototypeUuid(
+			(layoutSetResourceFinder.countByLayoutSetPrototypeUuid(
 				layoutSetPrototype.getUuid()) > 0)) {
 
 			throw new RequiredLayoutSetPrototypeException();

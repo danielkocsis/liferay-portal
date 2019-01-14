@@ -18,10 +18,7 @@ import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.layout.set.model.adapter.StagedLayoutSet;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.Property;
-import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -161,26 +158,17 @@ public class StagedLayoutSetStagedModelRepository
 
 		boolean privateLayout = GetterUtil.getBoolean(uuid);
 
-		DynamicQuery dynamicQuery = _layoutSetLocalService.dynamicQuery();
-
-		Property companyIdProperty = PropertyFactoryUtil.forName("companyId");
-
-		dynamicQuery.add(companyIdProperty.eq(companyId));
-
-		Property privateLayoutProperty = PropertyFactoryUtil.forName(
-			"privateLayout");
-
-		dynamicQuery.add(privateLayoutProperty.eq(privateLayout));
-
-		List<LayoutSet> layoutSets = dynamicQuery.list();
+		List<LayoutSet> layoutSets = _layoutSetLocalService.fetchLayoutSets(
+			companyId, privateLayout);
 
 		Stream<LayoutSet> layoutSetsStream = layoutSets.stream();
 
-		Stream<StagedLayoutSet> stagedLayoutSetsStream = layoutSetsStream.map(
+		return layoutSetsStream.map(
 			layoutSet -> ModelAdapterUtil.adapt(
-				layoutSet, LayoutSet.class, StagedLayoutSet.class));
-
-		return stagedLayoutSetsStream.collect(Collectors.toList());
+				layoutSet, LayoutSet.class, StagedLayoutSet.class)
+		).collect(
+			Collectors.toList()
+		);
 	}
 
 	@Override

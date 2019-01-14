@@ -17,7 +17,6 @@ package com.liferay.portal.model.impl;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.model.LayoutSet;
-import com.liferay.portal.kernel.service.LayoutSetLocalServiceUtil;
 
 /**
  * The extended model base implementation for the LayoutSet service. Represents a row in the &quot;LayoutSet&quot; database table, with each column mapped to a property of this class.
@@ -39,13 +38,4 @@ public abstract class LayoutSetBaseImpl extends LayoutSetModelImpl
 	 *
 	 * Never modify or reference this class directly. All methods that expect a layout set model instance should use the {@link LayoutSet} interface instead.
 	 */
-	@Override
-	public void persist() {
-		if (this.isNew()) {
-			LayoutSetLocalServiceUtil.addLayoutSet(this);
-		}
-		else {
-			LayoutSetLocalServiceUtil.updateLayoutSet(this);
-		}
-	}
 }

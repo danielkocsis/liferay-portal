@@ -53,7 +53,6 @@ import com.liferay.portal.kernel.service.BaseLocalServiceImpl;
 import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
 import com.liferay.portal.kernel.service.persistence.ClassNamePersistence;
 import com.liferay.portal.kernel.service.persistence.LayoutPersistence;
-import com.liferay.portal.kernel.service.persistence.LayoutSetPersistence;
 import com.liferay.portal.kernel.service.persistence.UserPersistence;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -711,25 +710,6 @@ public abstract class MDRRuleGroupInstanceLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the layout set persistence.
-	 *
-	 * @return the layout set persistence
-	 */
-	public LayoutSetPersistence getLayoutSetPersistence() {
-		return layoutSetPersistence;
-	}
-
-	/**
-	 * Sets the layout set persistence.
-	 *
-	 * @param layoutSetPersistence the layout set persistence
-	 */
-	public void setLayoutSetPersistence(
-		LayoutSetPersistence layoutSetPersistence) {
-		this.layoutSetPersistence = layoutSetPersistence;
-	}
-
-	/**
 	 * Returns the resource local service.
 	 *
 	 * @return the resource local service
@@ -863,8 +843,6 @@ public abstract class MDRRuleGroupInstanceLocalServiceBaseImpl
 	protected LayoutPersistence layoutPersistence;
 	@ServiceReference(type = com.liferay.portal.kernel.service.LayoutSetLocalService.class)
 	protected com.liferay.portal.kernel.service.LayoutSetLocalService layoutSetLocalService;
-	@ServiceReference(type = LayoutSetPersistence.class)
-	protected LayoutSetPersistence layoutSetPersistence;
 	@ServiceReference(type = com.liferay.portal.kernel.service.ResourceLocalService.class)
 	protected com.liferay.portal.kernel.service.ResourceLocalService resourceLocalService;
 	@ServiceReference(type = com.liferay.portal.kernel.service.UserLocalService.class)

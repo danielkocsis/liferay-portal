@@ -15,11 +15,6 @@
 package com.liferay.portal.service.base;
 
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.dao.db.DB;
-import com.liferay.portal.kernel.dao.db.DBManagerUtil;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.service.BaseServiceImpl;
@@ -30,12 +25,11 @@ import com.liferay.portal.kernel.service.persistence.ImagePersistence;
 import com.liferay.portal.kernel.service.persistence.LayoutFinder;
 import com.liferay.portal.kernel.service.persistence.LayoutPersistence;
 import com.liferay.portal.kernel.service.persistence.LayoutSetBranchPersistence;
-import com.liferay.portal.kernel.service.persistence.LayoutSetPersistence;
+import com.liferay.portal.kernel.service.persistence.LayoutSetResourceFinder;
+import com.liferay.portal.kernel.service.persistence.LayoutSetResourcePersistence;
+import com.liferay.portal.kernel.service.persistence.LayoutSetVersionPersistence;
 import com.liferay.portal.kernel.service.persistence.PluginSettingPersistence;
 import com.liferay.portal.kernel.service.persistence.VirtualHostPersistence;
-import com.liferay.portal.kernel.util.PortalUtil;
-
-import javax.sql.DataSource;
 
 /**
  * Provides the base implementation for the layout set remote service.
@@ -92,25 +86,6 @@ public abstract class LayoutSetServiceBaseImpl extends BaseServiceImpl
 	 */
 	public void setLayoutSetService(LayoutSetService layoutSetService) {
 		this.layoutSetService = layoutSetService;
-	}
-
-	/**
-	 * Returns the layout set persistence.
-	 *
-	 * @return the layout set persistence
-	 */
-	public LayoutSetPersistence getLayoutSetPersistence() {
-		return layoutSetPersistence;
-	}
-
-	/**
-	 * Sets the layout set persistence.
-	 *
-	 * @param layoutSetPersistence the layout set persistence
-	 */
-	public void setLayoutSetPersistence(
-		LayoutSetPersistence layoutSetPersistence) {
-		this.layoutSetPersistence = layoutSetPersistence;
 	}
 
 	/**
@@ -394,6 +369,63 @@ public abstract class LayoutSetServiceBaseImpl extends BaseServiceImpl
 	}
 
 	/**
+	 * Returns the layout set resource persistence.
+	 *
+	 * @return the layout set resource persistence
+	 */
+	public LayoutSetResourcePersistence getLayoutSetResourcePersistence() {
+		return layoutSetResourcePersistence;
+	}
+
+	/**
+	 * Sets the layout set resource persistence.
+	 *
+	 * @param layoutSetResourcePersistence the layout set resource persistence
+	 */
+	public void setLayoutSetResourcePersistence(
+		LayoutSetResourcePersistence layoutSetResourcePersistence) {
+		this.layoutSetResourcePersistence = layoutSetResourcePersistence;
+	}
+
+	/**
+	 * Returns the layout set resource finder.
+	 *
+	 * @return the layout set resource finder
+	 */
+	public LayoutSetResourceFinder getLayoutSetResourceFinder() {
+		return layoutSetResourceFinder;
+	}
+
+	/**
+	 * Sets the layout set resource finder.
+	 *
+	 * @param layoutSetResourceFinder the layout set resource finder
+	 */
+	public void setLayoutSetResourceFinder(
+		LayoutSetResourceFinder layoutSetResourceFinder) {
+		this.layoutSetResourceFinder = layoutSetResourceFinder;
+	}
+
+	/**
+	 * Returns the layout set version persistence.
+	 *
+	 * @return the layout set version persistence
+	 */
+	public LayoutSetVersionPersistence getLayoutSetVersionPersistence() {
+		return layoutSetVersionPersistence;
+	}
+
+	/**
+	 * Sets the layout set version persistence.
+	 *
+	 * @param layoutSetVersionPersistence the layout set version persistence
+	 */
+	public void setLayoutSetVersionPersistence(
+		LayoutSetVersionPersistence layoutSetVersionPersistence) {
+		this.layoutSetVersionPersistence = layoutSetVersionPersistence;
+	}
+
+	/**
 	 * Returns the plugin setting local service.
 	 *
 	 * @return the plugin setting local service
@@ -512,36 +544,10 @@ public abstract class LayoutSetServiceBaseImpl extends BaseServiceImpl
 		return LayoutSet.class.getName();
 	}
 
-	/**
-	 * Performs a SQL query.
-	 *
-	 * @param sql the sql query
-	 */
-	protected void runSQL(String sql) {
-		try {
-			DataSource dataSource = layoutSetPersistence.getDataSource();
-
-			DB db = DBManagerUtil.getDB();
-
-			sql = db.buildSQL(sql);
-			sql = PortalUtil.transformSQL(sql);
-
-			SqlUpdate sqlUpdate = SqlUpdateFactoryUtil.getSqlUpdate(dataSource,
-					sql);
-
-			sqlUpdate.update();
-		}
-		catch (Exception e) {
-			throw new SystemException(e);
-		}
-	}
-
 	@BeanReference(type = com.liferay.portal.kernel.service.LayoutSetLocalService.class)
 	protected com.liferay.portal.kernel.service.LayoutSetLocalService layoutSetLocalService;
 	@BeanReference(type = LayoutSetService.class)
 	protected LayoutSetService layoutSetService;
-	@BeanReference(type = LayoutSetPersistence.class)
-	protected LayoutSetPersistence layoutSetPersistence;
 	@BeanReference(type = com.liferay.counter.kernel.service.CounterLocalService.class)
 	protected com.liferay.counter.kernel.service.CounterLocalService counterLocalService;
 	@BeanReference(type = com.liferay.portal.kernel.service.GroupLocalService.class)
@@ -572,6 +578,12 @@ public abstract class LayoutSetServiceBaseImpl extends BaseServiceImpl
 	protected com.liferay.portal.kernel.service.LayoutSetBranchService layoutSetBranchService;
 	@BeanReference(type = LayoutSetBranchPersistence.class)
 	protected LayoutSetBranchPersistence layoutSetBranchPersistence;
+	@BeanReference(type = LayoutSetResourcePersistence.class)
+	protected LayoutSetResourcePersistence layoutSetResourcePersistence;
+	@BeanReference(type = LayoutSetResourceFinder.class)
+	protected LayoutSetResourceFinder layoutSetResourceFinder;
+	@BeanReference(type = LayoutSetVersionPersistence.class)
+	protected LayoutSetVersionPersistence layoutSetVersionPersistence;
 	@BeanReference(type = com.liferay.portal.kernel.service.PluginSettingLocalService.class)
 	protected com.liferay.portal.kernel.service.PluginSettingLocalService pluginSettingLocalService;
 	@BeanReference(type = com.liferay.portal.kernel.service.PluginSettingService.class)

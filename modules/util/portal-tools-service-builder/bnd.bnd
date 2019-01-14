@@ -18,6 +18,7 @@ Main-Class: com.liferay.portal.tools.service.builder.ServiceBuilder
 	com/liferay/journal/service.xml=../../../modules/apps/journal/journal-service/service.xml,\
 	com/liferay/mobile/device/rules/service.xml=../../../modules/apps/mobile-device-rules/mobile-device-rules-service/service.xml,\
 	com/liferay/portlet/messageboards/service.xml=../../../modules/apps/message-boards/message-boards-service/service.xml,\
+	com/liferay/portal/service.xml=../../../portal-impl/src/com/liferay/portal/service.xml
 	@com.liferay.petra.concurrent-[0-9]*.jar!/com/liferay/petra/concurrent/ConcurrentMapperHashMap.class,\
 	@com.liferay.petra.concurrent-[0-9]*.jar!/com/liferay/petra/concurrent/ConcurrentReferenceKeyHashMap.class,\
 	@com.liferay.petra.concurrent-[0-9]*.jar!/com/liferay/petra/concurrent/ConcurrentReferenceKeyHashMap$*.class,\
@@ -33,7 +34,6 @@ Main-Class: com.liferay.portal.tools.service.builder.ServiceBuilder
 	@com.liferay.petra.xml-[0-9]*.jar!/com/liferay/petra/xml/XMLUtil.class,\
 	@com.liferay.portal.impl-[0-9]*.jar!/com/liferay/mail/service.xml,\
 	@com.liferay.portal.impl-[0-9]*.jar!/com/liferay/portal/model/BaseModelHintsImpl.class,\
-	@com.liferay.portal.impl-[0-9]*.jar!/com/liferay/portal/service.xml,\
 	@com.liferay.portal.impl-[0-9]*.jar!/com/liferay/portal/tools/ArgumentsMap.class,\
 	@com.liferay.portal.impl-[0-9]*.jar!/com/liferay/portal/tools/ArgumentsUtil.class,\
 	@com.liferay.portal.impl-[0-9]*.jar!/com/liferay/portal/tools/BaseImportsFormatter.class,\

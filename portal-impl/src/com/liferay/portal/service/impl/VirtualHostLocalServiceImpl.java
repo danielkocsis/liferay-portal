@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.LayoutSet;
+import com.liferay.portal.kernel.model.LayoutSetResource;
 import com.liferay.portal.kernel.model.VirtualHost;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -97,8 +97,8 @@ public class VirtualHostLocalServiceImpl
 			companyPersistence.clearCache(company);
 		}
 
-		LayoutSet layoutSet = layoutSetPersistence.fetchByPrimaryKey(
-			layoutSetId);
+		LayoutSetResource layoutSet =
+			layoutSetResourcePersistence.fetchByPrimaryKey(layoutSetId);
 
 		if ((layoutSet == null) &&
 			Validator.isNotNull(PropsValues.VIRTUAL_HOSTS_DEFAULT_SITE_NAME)) {
@@ -107,13 +107,13 @@ public class VirtualHostLocalServiceImpl
 				companyId, PropsValues.VIRTUAL_HOSTS_DEFAULT_SITE_NAME);
 
 			if (group != null) {
-				layoutSet = layoutSetPersistence.fetchByG_P(
+				layoutSet = layoutSetResourcePersistence.fetchByG_P(
 					group.getGroupId(), false);
 			}
 		}
 
 		if (layoutSet != null) {
-			layoutSetPersistence.clearCache(layoutSet);
+			layoutSetResourcePersistence.clearCache(layoutSet);
 
 			TransactionCommitCallbackUtil.registerCallback(
 				new Callable<Void>() {

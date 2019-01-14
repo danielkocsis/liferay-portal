@@ -77,9 +77,9 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 			{ "logoId", Types.BIGINT },
 			{ "themeId", Types.VARCHAR },
 			{ "colorSchemeId", Types.VARCHAR },
-			{ "css", Types.CLOB },
+			{ "css", Types.VARCHAR },
 			{ "pageCount", Types.INTEGER },
-			{ "settings_", Types.CLOB },
+			{ "settings_", Types.VARCHAR },
 			{ "layoutSetPrototypeUuid", Types.VARCHAR },
 			{ "layoutSetPrototypeLinkEnabled", Types.BOOLEAN }
 		};
@@ -96,14 +96,14 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 		TABLE_COLUMNS_MAP.put("logoId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("themeId", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("colorSchemeId", Types.VARCHAR);
-		TABLE_COLUMNS_MAP.put("css", Types.CLOB);
+		TABLE_COLUMNS_MAP.put("css", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("pageCount", Types.INTEGER);
-		TABLE_COLUMNS_MAP.put("settings_", Types.CLOB);
+		TABLE_COLUMNS_MAP.put("settings_", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("layoutSetPrototypeUuid", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("layoutSetPrototypeLinkEnabled", Types.BOOLEAN);
 	}
 
-	public static final String TABLE_SQL_CREATE = "create table LayoutSet (mvccVersion LONG default 0 not null,layoutSetId LONG not null primary key,groupId LONG,companyId LONG,createDate DATE null,modifiedDate DATE null,privateLayout BOOLEAN,logoId LONG,themeId VARCHAR(75) null,colorSchemeId VARCHAR(75) null,css TEXT null,pageCount INTEGER,settings_ TEXT null,layoutSetPrototypeUuid VARCHAR(75) null,layoutSetPrototypeLinkEnabled BOOLEAN)";
+	public static final String TABLE_SQL_CREATE = "create table LayoutSet (mvccVersion LONG default 0 not null,layoutSetId LONG not null primary key,groupId LONG,companyId LONG,createDate DATE null,modifiedDate DATE null,privateLayout BOOLEAN,logoId LONG,themeId VARCHAR(75) null,colorSchemeId VARCHAR(75) null,css VARCHAR(75) null,pageCount INTEGER,settings_ VARCHAR(75) null,layoutSetPrototypeUuid VARCHAR(75) null,layoutSetPrototypeLinkEnabled BOOLEAN)";
 	public static final String TABLE_SQL_DROP = "drop table LayoutSet";
 	public static final String ORDER_BY_JPQL = " ORDER BY layoutSet.layoutSetId ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY LayoutSet.layoutSetId ASC";
@@ -116,14 +116,7 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.portal.util.PropsUtil.get(
 				"value.object.finder.cache.enabled.com.liferay.portal.kernel.model.LayoutSet"),
 			true);
-	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.portal.util.PropsUtil.get(
-				"value.object.column.bitmask.enabled.com.liferay.portal.kernel.model.LayoutSet"),
-			true);
-	public static final long GROUPID_COLUMN_BITMASK = 1L;
-	public static final long LAYOUTSETPROTOTYPEUUID_COLUMN_BITMASK = 2L;
-	public static final long LOGOID_COLUMN_BITMASK = 4L;
-	public static final long PRIVATELAYOUT_COLUMN_BITMASK = 8L;
-	public static final long LAYOUTSETID_COLUMN_BITMASK = 16L;
+	public static final boolean COLUMN_BITMASK_ENABLED = false;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -365,19 +358,7 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 
 	@Override
 	public void setGroupId(long groupId) {
-		_columnBitmask |= GROUPID_COLUMN_BITMASK;
-
-		if (!_setOriginalGroupId) {
-			_setOriginalGroupId = true;
-
-			_originalGroupId = _groupId;
-		}
-
 		_groupId = groupId;
-	}
-
-	public long getOriginalGroupId() {
-		return _originalGroupId;
 	}
 
 	@JSON
@@ -433,19 +414,7 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 
 	@Override
 	public void setPrivateLayout(boolean privateLayout) {
-		_columnBitmask |= PRIVATELAYOUT_COLUMN_BITMASK;
-
-		if (!_setOriginalPrivateLayout) {
-			_setOriginalPrivateLayout = true;
-
-			_originalPrivateLayout = _privateLayout;
-		}
-
 		_privateLayout = privateLayout;
-	}
-
-	public boolean getOriginalPrivateLayout() {
-		return _originalPrivateLayout;
 	}
 
 	@JSON
@@ -456,19 +425,7 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 
 	@Override
 	public void setLogoId(long logoId) {
-		_columnBitmask |= LOGOID_COLUMN_BITMASK;
-
-		if (!_setOriginalLogoId) {
-			_setOriginalLogoId = true;
-
-			_originalLogoId = _logoId;
-		}
-
 		_logoId = logoId;
-	}
-
-	public long getOriginalLogoId() {
-		return _originalLogoId;
 	}
 
 	@JSON
@@ -559,17 +516,7 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 
 	@Override
 	public void setLayoutSetPrototypeUuid(String layoutSetPrototypeUuid) {
-		_columnBitmask |= LAYOUTSETPROTOTYPEUUID_COLUMN_BITMASK;
-
-		if (_originalLayoutSetPrototypeUuid == null) {
-			_originalLayoutSetPrototypeUuid = _layoutSetPrototypeUuid;
-		}
-
 		_layoutSetPrototypeUuid = layoutSetPrototypeUuid;
-	}
-
-	public String getOriginalLayoutSetPrototypeUuid() {
-		return GetterUtil.getString(_originalLayoutSetPrototypeUuid);
 	}
 
 	@JSON
@@ -603,10 +550,6 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 	}
 
 	public void setVirtualHostname(String virtualHostname) {
-	}
-
-	public long getColumnBitmask() {
-		return _columnBitmask;
 	}
 
 	@Override
@@ -713,27 +656,11 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 	public void resetOriginalValues() {
 		LayoutSetModelImpl layoutSetModelImpl = this;
 
-		layoutSetModelImpl._originalGroupId = layoutSetModelImpl._groupId;
-
-		layoutSetModelImpl._setOriginalGroupId = false;
-
 		layoutSetModelImpl._setModifiedDate = false;
-
-		layoutSetModelImpl._originalPrivateLayout = layoutSetModelImpl._privateLayout;
-
-		layoutSetModelImpl._setOriginalPrivateLayout = false;
-
-		layoutSetModelImpl._originalLogoId = layoutSetModelImpl._logoId;
-
-		layoutSetModelImpl._setOriginalLogoId = false;
-
-		layoutSetModelImpl._originalLayoutSetPrototypeUuid = layoutSetModelImpl._layoutSetPrototypeUuid;
 
 		setCompanyFallbackVirtualHostname(null);
 
 		setVirtualHostname(null);
-
-		layoutSetModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -942,26 +869,18 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 	private long _mvccVersion;
 	private long _layoutSetId;
 	private long _groupId;
-	private long _originalGroupId;
-	private boolean _setOriginalGroupId;
 	private long _companyId;
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
 	private boolean _privateLayout;
-	private boolean _originalPrivateLayout;
-	private boolean _setOriginalPrivateLayout;
 	private long _logoId;
-	private long _originalLogoId;
-	private boolean _setOriginalLogoId;
 	private String _themeId;
 	private String _colorSchemeId;
 	private String _css;
 	private int _pageCount;
 	private String _settings;
 	private String _layoutSetPrototypeUuid;
-	private String _originalLayoutSetPrototypeUuid;
 	private boolean _layoutSetPrototypeLinkEnabled;
-	private long _columnBitmask;
 	private LayoutSet _escapedModel;
 }
