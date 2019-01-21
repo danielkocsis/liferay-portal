@@ -24,6 +24,8 @@ LayoutSetPrototype layoutSetPrototype = (LayoutSetPrototype)row.getObject();
 long layoutSetPrototypeId = layoutSetPrototype.getLayoutSetPrototypeId();
 
 Group group = layoutSetPrototype.getGroup();
+
+boolean hasUpdatePermission = LayoutSetPrototypePermissionUtil.contains(permissionChecker, layoutSetPrototypeId, ActionKeys.UPDATE);
 %>
 
 <liferay-ui:icon-menu
@@ -33,7 +35,7 @@ Group group = layoutSetPrototype.getGroup();
 	message="<%= StringPool.BLANK %>"
 	showWhenSingleIcon="<%= true %>"
 >
-	<c:if test="<%= LayoutSetPrototypePermissionUtil.contains(permissionChecker, layoutSetPrototypeId, ActionKeys.UPDATE) %>">
+	<c:if test="<%= hasUpdatePermission %>">
 
 		<%
 		PortletURL siteAdministrationURL = null;
@@ -57,6 +59,30 @@ Group group = layoutSetPrototype.getGroup();
 			/>
 		</c:if>
 	</c:if>
+
+	<c:choose>
+		<c:when test="<%= layoutSetPrototype.isActive() && !group.isGuest() && hasUpdatePermission %>">
+			<portlet:actionURL name="deactivate" var="activateURL">
+				<portlet:param name="redirect" value="<%= currentURL %>" />
+				<portlet:param name="layoutSetPrototypeId" value="<%= String.valueOf(layoutSetPrototypeId) %>" />
+			</portlet:actionURL>
+
+			<liferay-ui:icon-deactivate
+				url="<%= activateURL %>"
+			/>
+		</c:when>
+		<c:when test="<%= !layoutSetPrototype.isActive() && hasUpdatePermission %>">
+			<portlet:actionURL name="activate" var="activateURL">
+				<portlet:param name="redirect" value="<%= currentURL %>" />
+				<portlet:param name="layoutSetPrototypeId" value="<%= String.valueOf(layoutSetPrototypeId) %>" />
+			</portlet:actionURL>
+
+			<liferay-ui:icon
+				message="activate"
+				url="<%= activateURL %>"
+			/>
+		</c:when>
+	</c:choose>
 
 	<c:if test="<%= LayoutSetPrototypePermissionUtil.contains(permissionChecker, layoutSetPrototypeId, ActionKeys.PERMISSIONS) %>">
 		<liferay-security:permissionsURL

@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.service.LayoutSetPrototypeService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -78,6 +79,13 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class LayoutSetPrototypePortlet extends MVCPortlet {
 
+	public void activate(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		_updateActive(actionRequest, true);
+	}
+
 	public void changeDisplayStyle(
 		ActionRequest actionRequest, ActionResponse actionResponse) {
 
@@ -92,6 +100,13 @@ public class LayoutSetPrototypePortlet extends MVCPortlet {
 		portalPreferences.setValue(
 			LayoutSetPrototypePortletKeys.LAYOUT_SET_PROTOTYPE, "display-style",
 			displayStyle);
+	}
+
+	public void deactivate(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		_updateActive(actionRequest, false);
 	}
 
 	public void deleteLayoutSetPrototypes(
@@ -240,5 +255,30 @@ public class LayoutSetPrototypePortlet extends MVCPortlet {
 	protected LayoutSetPrototypeService layoutSetPrototypeService;
 	protected PanelAppRegistry panelAppRegistry;
 	protected PanelCategoryRegistry panelCategoryRegistry;
+
+	private void _updateActive(ActionRequest actionRequest, boolean active)
+		throws Exception {
+
+		long layoutSetPrototypeId = ParamUtil.getLong(
+			actionRequest, "layoutSetPrototypeId");
+
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			actionRequest);
+
+		LayoutSetPrototype layoutSetPrototype =
+			layoutSetPrototypeService.getLayoutSetPrototype(
+				layoutSetPrototypeId);
+
+		UnicodeProperties settingsProperties =
+			layoutSetPrototype.getSettingsProperties();
+
+		boolean layoutsUpdateable = GetterUtil.getBoolean(
+			settingsProperties.getProperty("layoutsUpdateable"));
+
+		layoutSetPrototypeService.updateLayoutSetPrototype(
+			layoutSetPrototypeId, layoutSetPrototype.getNameMap(),
+			layoutSetPrototype.getDescriptionMap(), active, layoutsUpdateable,
+			serviceContext);
+	}
 
 }
