@@ -188,6 +188,16 @@ public class CTManagerImpl implements CTManager {
 			int changeType)
 		throws CTException {
 
+		return registerModelChange(
+			userId, classNameId, classPK, resourcePrimKey, changeType, false);
+	}
+
+	@Override
+	public Optional<CTEntry> registerModelChange(
+			long userId, long classNameId, long classPK, long resourcePrimKey,
+			int changeType, boolean force)
+		throws CTException {
+
 		long companyId = _getCompanyId(userId);
 
 		if (companyId <= 0) {
@@ -211,10 +221,14 @@ public class CTManagerImpl implements CTManager {
 		CTCollection ctCollection = ctCollectionOptional.get();
 
 		try {
+			ServiceContext serviceContext = new ServiceContext();
+
+			serviceContext.setAttribute("force", force);
+
 			return Optional.of(
 				_ctEntryLocalService.addCTEntry(
 					userId, classNameId, classPK, resourcePrimKey, changeType,
-					ctCollection.getCtCollectionId(), new ServiceContext()));
+					ctCollection.getCtCollectionId(), serviceContext));
 		}
 		catch (DuplicateCTEntryException dctee) {
 			StringBundler sb = new StringBundler(8);
