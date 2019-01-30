@@ -4,6 +4,7 @@
  * Renders the ChangeList view
  */
 {template .render}
+	{@param  spritemap: string}
 	{@param? description: string}
 	{@param? headerTitle: string}
 	{@param? initFetch: bool}
@@ -13,7 +14,6 @@
 		userMonogram: string,
 		userName: string
 	]}
-	{@param  spritemap: string}
 
 	{let $headerLinkLabel kind="text"}
 		{msg desc=""}production-view{/msg}
@@ -66,6 +66,7 @@
  * This template renders the component's whole content
  */
 {template .glanceCard}
+	{@param  spritemap: string}
 	{@param? cardState: string}
 	{@param? description: string}
 	{@param? descriptionTitle: string}
@@ -82,7 +83,6 @@
 		userName: string
 	]}
 	{@param? publishedByTitle: string}
-	{@param  spritemap: string}
 
 	<div class="glance-card-sheet {$cardState}">
 		{call .glanceCardHeader}
