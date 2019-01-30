@@ -513,8 +513,15 @@ public class CTJournalArticleLocalServiceWrapper
 		return journalArticle;
 	}
 
-	private void _registerChange(
-			JournalArticle journalArticle, int changeType)
+	@Reference(unbind = "-")
+	protected void setJournalArticleLocalService(
+		JournalArticleLocalService journalArticleLocalService) {
+
+		// this is needed because of synchronisation
+
+	}
+
+	private void _registerChange(JournalArticle journalArticle, int changeType)
 		throws CTException {
 
 		_registerChange(journalArticle, changeType, false);
