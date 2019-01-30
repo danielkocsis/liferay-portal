@@ -68,12 +68,12 @@ public class CTEntryLocalServiceWrapper implements CTEntryLocalService,
 
 	@Override
 	public com.liferay.change.tracking.model.CTEntry addCTEntry(long userId,
-		long classNameId, long classPK, long resourcePrimKey,
+		long classNameId, long classPK, long resourcePrimKey, int changeType,
 		long ctCollectionId,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _ctEntryLocalService.addCTEntry(userId, classNameId, classPK,
-			resourcePrimKey, ctCollectionId, serviceContext);
+			resourcePrimKey, changeType, ctCollectionId, serviceContext);
 	}
 
 	@Override

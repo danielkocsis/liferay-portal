@@ -75,12 +75,12 @@ public class CTEntryLocalServiceUtil {
 
 	public static com.liferay.change.tracking.model.CTEntry addCTEntry(
 		long userId, long classNameId, long classPK, long resourcePrimKey,
-		long ctCollectionId,
+		int changeType, long ctCollectionId,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
 				   .addCTEntry(userId, classNameId, classPK, resourcePrimKey,
-			ctCollectionId, serviceContext);
+			changeType, ctCollectionId, serviceContext);
 	}
 
 	public static void clearCTCollectionCTEntries(long ctCollectionId) {
