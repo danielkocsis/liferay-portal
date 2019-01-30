@@ -79,10 +79,12 @@ public class LayoutSetCacheModel implements CacheModel<LayoutSet>,
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(31);
+		StringBundler sb = new StringBundler(33);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
+		sb.append(", headId=");
+		sb.append(headId);
 		sb.append(", layoutSetId=");
 		sb.append(layoutSetId);
 		sb.append(", groupId=");
@@ -121,6 +123,7 @@ public class LayoutSetCacheModel implements CacheModel<LayoutSet>,
 		LayoutSetImpl layoutSetImpl = new LayoutSetImpl();
 
 		layoutSetImpl.setMvccVersion(mvccVersion);
+		layoutSetImpl.setHeadId(headId);
 		layoutSetImpl.setLayoutSetId(layoutSetId);
 		layoutSetImpl.setGroupId(groupId);
 		layoutSetImpl.setCompanyId(companyId);
@@ -195,6 +198,8 @@ public class LayoutSetCacheModel implements CacheModel<LayoutSet>,
 		throws ClassNotFoundException, IOException {
 		mvccVersion = objectInput.readLong();
 
+		headId = objectInput.readLong();
+
 		layoutSetId = objectInput.readLong();
 
 		groupId = objectInput.readLong();
@@ -224,6 +229,8 @@ public class LayoutSetCacheModel implements CacheModel<LayoutSet>,
 	public void writeExternal(ObjectOutput objectOutput)
 		throws IOException {
 		objectOutput.writeLong(mvccVersion);
+
+		objectOutput.writeLong(headId);
 
 		objectOutput.writeLong(layoutSetId);
 
@@ -281,6 +288,7 @@ public class LayoutSetCacheModel implements CacheModel<LayoutSet>,
 	}
 
 	public long mvccVersion;
+	public long headId;
 	public long layoutSetId;
 	public long groupId;
 	public long companyId;
