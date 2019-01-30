@@ -38,12 +38,8 @@ import java.io.Serializable;
 
 import java.sql.Types;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * The base model implementation for the RecentLayoutSetBranch service. Represents a row in the &quot;RecentLayoutSetBranch&quot; database table, with each column mapped to a property of this class.
@@ -149,16 +145,13 @@ public class RecentLayoutSetBranchModelImpl extends BaseModelImpl<RecentLayoutSe
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
-		Map<String, Function<RecentLayoutSetBranch, Object>> attributeGetterFunctions =
-			getAttributeGetterFunctions();
-
-		for (Map.Entry<String, Function<RecentLayoutSetBranch, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<RecentLayoutSetBranch, Object> attributeGetterFunction = entry.getValue();
-
-			attributes.put(attributeName,
-				attributeGetterFunction.apply((RecentLayoutSetBranch)this));
-		}
+		attributes.put("mvccVersion", getMvccVersion());
+		attributes.put("recentLayoutSetBranchId", getRecentLayoutSetBranchId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("layoutSetBranchId", getLayoutSetBranchId());
+		attributes.put("layoutSetId", getLayoutSetId());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
 		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
@@ -168,57 +161,48 @@ public class RecentLayoutSetBranchModelImpl extends BaseModelImpl<RecentLayoutSe
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
-		Map<String, BiConsumer<RecentLayoutSetBranch, Object>> attributeSetterBiConsumers =
-			getAttributeSetterBiConsumers();
+		Long mvccVersion = (Long)attributes.get("mvccVersion");
 
-		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-			String attributeName = entry.getKey();
-
-			BiConsumer<RecentLayoutSetBranch, Object> attributeSetterBiConsumer = attributeSetterBiConsumers.get(attributeName);
-
-			if (attributeSetterBiConsumer != null) {
-				attributeSetterBiConsumer.accept((RecentLayoutSetBranch)this,
-					entry.getValue());
-			}
+		if (mvccVersion != null) {
+			setMvccVersion(mvccVersion);
 		}
-	}
 
-	public Map<String, Function<RecentLayoutSetBranch, Object>> getAttributeGetterFunctions() {
-		return _attributeGetterFunctions;
-	}
+		Long recentLayoutSetBranchId = (Long)attributes.get(
+				"recentLayoutSetBranchId");
 
-	public Map<String, BiConsumer<RecentLayoutSetBranch, Object>> getAttributeSetterBiConsumers() {
-		return _attributeSetterBiConsumers;
-	}
+		if (recentLayoutSetBranchId != null) {
+			setRecentLayoutSetBranchId(recentLayoutSetBranchId);
+		}
 
-	private static final Map<String, Function<RecentLayoutSetBranch, Object>> _attributeGetterFunctions;
-	private static final Map<String, BiConsumer<RecentLayoutSetBranch, Object>> _attributeSetterBiConsumers;
+		Long groupId = (Long)attributes.get("groupId");
 
-	static {
-		Map<String, Function<RecentLayoutSetBranch, Object>> attributeGetterFunctions =
-			new LinkedHashMap<String, Function<RecentLayoutSetBranch, Object>>();
-		Map<String, BiConsumer<RecentLayoutSetBranch, ?>> attributeSetterBiConsumers =
-			new LinkedHashMap<String, BiConsumer<RecentLayoutSetBranch, ?>>();
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
 
+		Long companyId = (Long)attributes.get("companyId");
 
-		attributeGetterFunctions.put("mvccVersion", RecentLayoutSetBranch::getMvccVersion);
-		attributeSetterBiConsumers.put("mvccVersion", (BiConsumer<RecentLayoutSetBranch, Long>)RecentLayoutSetBranch::setMvccVersion);
-		attributeGetterFunctions.put("recentLayoutSetBranchId", RecentLayoutSetBranch::getRecentLayoutSetBranchId);
-		attributeSetterBiConsumers.put("recentLayoutSetBranchId", (BiConsumer<RecentLayoutSetBranch, Long>)RecentLayoutSetBranch::setRecentLayoutSetBranchId);
-		attributeGetterFunctions.put("groupId", RecentLayoutSetBranch::getGroupId);
-		attributeSetterBiConsumers.put("groupId", (BiConsumer<RecentLayoutSetBranch, Long>)RecentLayoutSetBranch::setGroupId);
-		attributeGetterFunctions.put("companyId", RecentLayoutSetBranch::getCompanyId);
-		attributeSetterBiConsumers.put("companyId", (BiConsumer<RecentLayoutSetBranch, Long>)RecentLayoutSetBranch::setCompanyId);
-		attributeGetterFunctions.put("userId", RecentLayoutSetBranch::getUserId);
-		attributeSetterBiConsumers.put("userId", (BiConsumer<RecentLayoutSetBranch, Long>)RecentLayoutSetBranch::setUserId);
-		attributeGetterFunctions.put("layoutSetBranchId", RecentLayoutSetBranch::getLayoutSetBranchId);
-		attributeSetterBiConsumers.put("layoutSetBranchId", (BiConsumer<RecentLayoutSetBranch, Long>)RecentLayoutSetBranch::setLayoutSetBranchId);
-		attributeGetterFunctions.put("layoutSetId", RecentLayoutSetBranch::getLayoutSetId);
-		attributeSetterBiConsumers.put("layoutSetId", (BiConsumer<RecentLayoutSetBranch, Long>)RecentLayoutSetBranch::setLayoutSetId);
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
 
+		Long userId = (Long)attributes.get("userId");
 
-		_attributeGetterFunctions = Collections.unmodifiableMap(attributeGetterFunctions);
-		_attributeSetterBiConsumers = Collections.unmodifiableMap((Map)attributeSetterBiConsumers);
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		Long layoutSetBranchId = (Long)attributes.get("layoutSetBranchId");
+
+		if (layoutSetBranchId != null) {
+			setLayoutSetBranchId(layoutSetBranchId);
+		}
+
+		Long layoutSetId = (Long)attributes.get("layoutSetId");
+
+		if (layoutSetId != null) {
+			setLayoutSetId(layoutSetId);
+		}
 	}
 
 	@Override
@@ -497,28 +481,22 @@ public class RecentLayoutSetBranchModelImpl extends BaseModelImpl<RecentLayoutSe
 
 	@Override
 	public String toString() {
-		Map<String, Function<RecentLayoutSetBranch, Object>> attributeGetterFunctions =
-			getAttributeGetterFunctions();
+		StringBundler sb = new StringBundler(15);
 
-		StringBundler sb = new StringBundler((4 * attributeGetterFunctions.size()) +
-				2);
-
-		sb.append("{");
-
-		for (Map.Entry<String, Function<RecentLayoutSetBranch, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<RecentLayoutSetBranch, Object> attributeGetterFunction = entry.getValue();
-
-			sb.append(attributeName);
-			sb.append("=");
-			sb.append(attributeGetterFunction.apply((RecentLayoutSetBranch)this));
-			sb.append(", ");
-		}
-
-		if (sb.index() > 1) {
-			sb.setIndex(sb.index() - 1);
-		}
-
+		sb.append("{mvccVersion=");
+		sb.append(getMvccVersion());
+		sb.append(", recentLayoutSetBranchId=");
+		sb.append(getRecentLayoutSetBranchId());
+		sb.append(", groupId=");
+		sb.append(getGroupId());
+		sb.append(", companyId=");
+		sb.append(getCompanyId());
+		sb.append(", userId=");
+		sb.append(getUserId());
+		sb.append(", layoutSetBranchId=");
+		sb.append(getLayoutSetBranchId());
+		sb.append(", layoutSetId=");
+		sb.append(getLayoutSetId());
 		sb.append("}");
 
 		return sb.toString();
@@ -526,26 +504,40 @@ public class RecentLayoutSetBranchModelImpl extends BaseModelImpl<RecentLayoutSe
 
 	@Override
 	public String toXmlString() {
-		Map<String, Function<RecentLayoutSetBranch, Object>> attributeGetterFunctions =
-			getAttributeGetterFunctions();
-
-		StringBundler sb = new StringBundler((5 * attributeGetterFunctions.size()) +
-				4);
+		StringBundler sb = new StringBundler(25);
 
 		sb.append("<model><model-name>");
-		sb.append(getModelClassName());
+		sb.append("com.liferay.portal.kernel.model.RecentLayoutSetBranch");
 		sb.append("</model-name>");
 
-		for (Map.Entry<String, Function<RecentLayoutSetBranch, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<RecentLayoutSetBranch, Object> attributeGetterFunction = entry.getValue();
-
-			sb.append("<column><column-name>");
-			sb.append(attributeName);
-			sb.append("</column-name><column-value><![CDATA[");
-			sb.append(attributeGetterFunction.apply((RecentLayoutSetBranch)this));
-			sb.append("]]></column-value></column>");
-		}
+		sb.append(
+			"<column><column-name>mvccVersion</column-name><column-value><![CDATA[");
+		sb.append(getMvccVersion());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>recentLayoutSetBranchId</column-name><column-value><![CDATA[");
+		sb.append(getRecentLayoutSetBranchId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>groupId</column-name><column-value><![CDATA[");
+		sb.append(getGroupId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>companyId</column-name><column-value><![CDATA[");
+		sb.append(getCompanyId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>userId</column-name><column-value><![CDATA[");
+		sb.append(getUserId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>layoutSetBranchId</column-name><column-value><![CDATA[");
+		sb.append(getLayoutSetBranchId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>layoutSetId</column-name><column-value><![CDATA[");
+		sb.append(getLayoutSetId());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 

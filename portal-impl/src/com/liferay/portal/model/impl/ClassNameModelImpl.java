@@ -40,13 +40,9 @@ import java.io.Serializable;
 import java.sql.Types;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * The base model implementation for the ClassName service. Represents a row in the &quot;ClassName_&quot; database table, with each column mapped to a property of this class.
@@ -183,15 +179,9 @@ public class ClassNameModelImpl extends BaseModelImpl<ClassName>
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
-		Map<String, Function<ClassName, Object>> attributeGetterFunctions = getAttributeGetterFunctions();
-
-		for (Map.Entry<String, Function<ClassName, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<ClassName, Object> attributeGetterFunction = entry.getValue();
-
-			attributes.put(attributeName,
-				attributeGetterFunction.apply((ClassName)this));
-		}
+		attributes.put("mvccVersion", getMvccVersion());
+		attributes.put("classNameId", getClassNameId());
+		attributes.put("value", getValue());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
 		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
@@ -201,46 +191,23 @@ public class ClassNameModelImpl extends BaseModelImpl<ClassName>
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
-		Map<String, BiConsumer<ClassName, Object>> attributeSetterBiConsumers = getAttributeSetterBiConsumers();
+		Long mvccVersion = (Long)attributes.get("mvccVersion");
 
-		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-			String attributeName = entry.getKey();
-
-			BiConsumer<ClassName, Object> attributeSetterBiConsumer = attributeSetterBiConsumers.get(attributeName);
-
-			if (attributeSetterBiConsumer != null) {
-				attributeSetterBiConsumer.accept((ClassName)this,
-					entry.getValue());
-			}
+		if (mvccVersion != null) {
+			setMvccVersion(mvccVersion);
 		}
-	}
 
-	public Map<String, Function<ClassName, Object>> getAttributeGetterFunctions() {
-		return _attributeGetterFunctions;
-	}
+		Long classNameId = (Long)attributes.get("classNameId");
 
-	public Map<String, BiConsumer<ClassName, Object>> getAttributeSetterBiConsumers() {
-		return _attributeSetterBiConsumers;
-	}
+		if (classNameId != null) {
+			setClassNameId(classNameId);
+		}
 
-	private static final Map<String, Function<ClassName, Object>> _attributeGetterFunctions;
-	private static final Map<String, BiConsumer<ClassName, Object>> _attributeSetterBiConsumers;
+		String value = (String)attributes.get("value");
 
-	static {
-		Map<String, Function<ClassName, Object>> attributeGetterFunctions = new LinkedHashMap<String, Function<ClassName, Object>>();
-		Map<String, BiConsumer<ClassName, ?>> attributeSetterBiConsumers = new LinkedHashMap<String, BiConsumer<ClassName, ?>>();
-
-
-		attributeGetterFunctions.put("mvccVersion", ClassName::getMvccVersion);
-		attributeSetterBiConsumers.put("mvccVersion", (BiConsumer<ClassName, Long>)ClassName::setMvccVersion);
-		attributeGetterFunctions.put("classNameId", ClassName::getClassNameId);
-		attributeSetterBiConsumers.put("classNameId", (BiConsumer<ClassName, Long>)ClassName::setClassNameId);
-		attributeGetterFunctions.put("value", ClassName::getValue);
-		attributeSetterBiConsumers.put("value", (BiConsumer<ClassName, String>)ClassName::setValue);
-
-
-		_attributeGetterFunctions = Collections.unmodifiableMap(attributeGetterFunctions);
-		_attributeSetterBiConsumers = Collections.unmodifiableMap((Map)attributeSetterBiConsumers);
+		if (value != null) {
+			setValue(value);
+		}
 	}
 
 	@JSON
@@ -433,27 +400,14 @@ public class ClassNameModelImpl extends BaseModelImpl<ClassName>
 
 	@Override
 	public String toString() {
-		Map<String, Function<ClassName, Object>> attributeGetterFunctions = getAttributeGetterFunctions();
+		StringBundler sb = new StringBundler(7);
 
-		StringBundler sb = new StringBundler((4 * attributeGetterFunctions.size()) +
-				2);
-
-		sb.append("{");
-
-		for (Map.Entry<String, Function<ClassName, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<ClassName, Object> attributeGetterFunction = entry.getValue();
-
-			sb.append(attributeName);
-			sb.append("=");
-			sb.append(attributeGetterFunction.apply((ClassName)this));
-			sb.append(", ");
-		}
-
-		if (sb.index() > 1) {
-			sb.setIndex(sb.index() - 1);
-		}
-
+		sb.append("{mvccVersion=");
+		sb.append(getMvccVersion());
+		sb.append(", classNameId=");
+		sb.append(getClassNameId());
+		sb.append(", value=");
+		sb.append(getValue());
 		sb.append("}");
 
 		return sb.toString();
@@ -461,25 +415,24 @@ public class ClassNameModelImpl extends BaseModelImpl<ClassName>
 
 	@Override
 	public String toXmlString() {
-		Map<String, Function<ClassName, Object>> attributeGetterFunctions = getAttributeGetterFunctions();
-
-		StringBundler sb = new StringBundler((5 * attributeGetterFunctions.size()) +
-				4);
+		StringBundler sb = new StringBundler(13);
 
 		sb.append("<model><model-name>");
-		sb.append(getModelClassName());
+		sb.append("com.liferay.portal.kernel.model.ClassName");
 		sb.append("</model-name>");
 
-		for (Map.Entry<String, Function<ClassName, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<ClassName, Object> attributeGetterFunction = entry.getValue();
-
-			sb.append("<column><column-name>");
-			sb.append(attributeName);
-			sb.append("</column-name><column-value><![CDATA[");
-			sb.append(attributeGetterFunction.apply((ClassName)this));
-			sb.append("]]></column-value></column>");
-		}
+		sb.append(
+			"<column><column-name>mvccVersion</column-name><column-value><![CDATA[");
+		sb.append(getMvccVersion());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>classNameId</column-name><column-value><![CDATA[");
+		sb.append(getClassNameId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>value</column-name><column-value><![CDATA[");
+		sb.append(getValue());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 

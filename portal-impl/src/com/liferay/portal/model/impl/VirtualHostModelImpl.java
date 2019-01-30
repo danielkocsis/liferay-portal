@@ -35,12 +35,8 @@ import java.io.Serializable;
 
 import java.sql.Types;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * The base model implementation for the VirtualHost service. Represents a row in the &quot;VirtualHost&quot; database table, with each column mapped to a property of this class.
@@ -141,15 +137,11 @@ public class VirtualHostModelImpl extends BaseModelImpl<VirtualHost>
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
-		Map<String, Function<VirtualHost, Object>> attributeGetterFunctions = getAttributeGetterFunctions();
-
-		for (Map.Entry<String, Function<VirtualHost, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<VirtualHost, Object> attributeGetterFunction = entry.getValue();
-
-			attributes.put(attributeName,
-				attributeGetterFunction.apply((VirtualHost)this));
-		}
+		attributes.put("mvccVersion", getMvccVersion());
+		attributes.put("virtualHostId", getVirtualHostId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("layoutSetId", getLayoutSetId());
+		attributes.put("hostname", getHostname());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
 		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
@@ -159,50 +151,35 @@ public class VirtualHostModelImpl extends BaseModelImpl<VirtualHost>
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
-		Map<String, BiConsumer<VirtualHost, Object>> attributeSetterBiConsumers = getAttributeSetterBiConsumers();
+		Long mvccVersion = (Long)attributes.get("mvccVersion");
 
-		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-			String attributeName = entry.getKey();
-
-			BiConsumer<VirtualHost, Object> attributeSetterBiConsumer = attributeSetterBiConsumers.get(attributeName);
-
-			if (attributeSetterBiConsumer != null) {
-				attributeSetterBiConsumer.accept((VirtualHost)this,
-					entry.getValue());
-			}
+		if (mvccVersion != null) {
+			setMvccVersion(mvccVersion);
 		}
-	}
 
-	public Map<String, Function<VirtualHost, Object>> getAttributeGetterFunctions() {
-		return _attributeGetterFunctions;
-	}
+		Long virtualHostId = (Long)attributes.get("virtualHostId");
 
-	public Map<String, BiConsumer<VirtualHost, Object>> getAttributeSetterBiConsumers() {
-		return _attributeSetterBiConsumers;
-	}
+		if (virtualHostId != null) {
+			setVirtualHostId(virtualHostId);
+		}
 
-	private static final Map<String, Function<VirtualHost, Object>> _attributeGetterFunctions;
-	private static final Map<String, BiConsumer<VirtualHost, Object>> _attributeSetterBiConsumers;
+		Long companyId = (Long)attributes.get("companyId");
 
-	static {
-		Map<String, Function<VirtualHost, Object>> attributeGetterFunctions = new LinkedHashMap<String, Function<VirtualHost, Object>>();
-		Map<String, BiConsumer<VirtualHost, ?>> attributeSetterBiConsumers = new LinkedHashMap<String, BiConsumer<VirtualHost, ?>>();
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
 
+		Long layoutSetId = (Long)attributes.get("layoutSetId");
 
-		attributeGetterFunctions.put("mvccVersion", VirtualHost::getMvccVersion);
-		attributeSetterBiConsumers.put("mvccVersion", (BiConsumer<VirtualHost, Long>)VirtualHost::setMvccVersion);
-		attributeGetterFunctions.put("virtualHostId", VirtualHost::getVirtualHostId);
-		attributeSetterBiConsumers.put("virtualHostId", (BiConsumer<VirtualHost, Long>)VirtualHost::setVirtualHostId);
-		attributeGetterFunctions.put("companyId", VirtualHost::getCompanyId);
-		attributeSetterBiConsumers.put("companyId", (BiConsumer<VirtualHost, Long>)VirtualHost::setCompanyId);
-		attributeGetterFunctions.put("layoutSetId", VirtualHost::getLayoutSetId);
-		attributeSetterBiConsumers.put("layoutSetId", (BiConsumer<VirtualHost, Long>)VirtualHost::setLayoutSetId);
-		attributeGetterFunctions.put("hostname", VirtualHost::getHostname);
-		attributeSetterBiConsumers.put("hostname", (BiConsumer<VirtualHost, String>)VirtualHost::setHostname);
+		if (layoutSetId != null) {
+			setLayoutSetId(layoutSetId);
+		}
 
+		String hostname = (String)attributes.get("hostname");
 
-		_attributeGetterFunctions = Collections.unmodifiableMap(attributeGetterFunctions);
-		_attributeSetterBiConsumers = Collections.unmodifiableMap((Map)attributeSetterBiConsumers);
+		if (hostname != null) {
+			setHostname(hostname);
+		}
 	}
 
 	@Override
@@ -430,27 +407,18 @@ public class VirtualHostModelImpl extends BaseModelImpl<VirtualHost>
 
 	@Override
 	public String toString() {
-		Map<String, Function<VirtualHost, Object>> attributeGetterFunctions = getAttributeGetterFunctions();
+		StringBundler sb = new StringBundler(11);
 
-		StringBundler sb = new StringBundler((4 * attributeGetterFunctions.size()) +
-				2);
-
-		sb.append("{");
-
-		for (Map.Entry<String, Function<VirtualHost, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<VirtualHost, Object> attributeGetterFunction = entry.getValue();
-
-			sb.append(attributeName);
-			sb.append("=");
-			sb.append(attributeGetterFunction.apply((VirtualHost)this));
-			sb.append(", ");
-		}
-
-		if (sb.index() > 1) {
-			sb.setIndex(sb.index() - 1);
-		}
-
+		sb.append("{mvccVersion=");
+		sb.append(getMvccVersion());
+		sb.append(", virtualHostId=");
+		sb.append(getVirtualHostId());
+		sb.append(", companyId=");
+		sb.append(getCompanyId());
+		sb.append(", layoutSetId=");
+		sb.append(getLayoutSetId());
+		sb.append(", hostname=");
+		sb.append(getHostname());
 		sb.append("}");
 
 		return sb.toString();
@@ -458,25 +426,32 @@ public class VirtualHostModelImpl extends BaseModelImpl<VirtualHost>
 
 	@Override
 	public String toXmlString() {
-		Map<String, Function<VirtualHost, Object>> attributeGetterFunctions = getAttributeGetterFunctions();
-
-		StringBundler sb = new StringBundler((5 * attributeGetterFunctions.size()) +
-				4);
+		StringBundler sb = new StringBundler(19);
 
 		sb.append("<model><model-name>");
-		sb.append(getModelClassName());
+		sb.append("com.liferay.portal.kernel.model.VirtualHost");
 		sb.append("</model-name>");
 
-		for (Map.Entry<String, Function<VirtualHost, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<VirtualHost, Object> attributeGetterFunction = entry.getValue();
-
-			sb.append("<column><column-name>");
-			sb.append(attributeName);
-			sb.append("</column-name><column-value><![CDATA[");
-			sb.append(attributeGetterFunction.apply((VirtualHost)this));
-			sb.append("]]></column-value></column>");
-		}
+		sb.append(
+			"<column><column-name>mvccVersion</column-name><column-value><![CDATA[");
+		sb.append(getMvccVersion());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>virtualHostId</column-name><column-value><![CDATA[");
+		sb.append(getVirtualHostId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>companyId</column-name><column-value><![CDATA[");
+		sb.append(getCompanyId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>layoutSetId</column-name><column-value><![CDATA[");
+		sb.append(getLayoutSetId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>hostname</column-name><column-value><![CDATA[");
+		sb.append(getHostname());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 

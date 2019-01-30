@@ -40,12 +40,8 @@ import java.io.Serializable;
 
 import java.sql.Types;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * The base model implementation for the UserNotificationDelivery service. Represents a row in the &quot;UserNotificationDelivery&quot; database table, with each column mapped to a property of this class.
@@ -156,16 +152,16 @@ public class UserNotificationDeliveryModelImpl extends BaseModelImpl<UserNotific
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
-		Map<String, Function<UserNotificationDelivery, Object>> attributeGetterFunctions =
-			getAttributeGetterFunctions();
-
-		for (Map.Entry<String, Function<UserNotificationDelivery, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<UserNotificationDelivery, Object> attributeGetterFunction = entry.getValue();
-
-			attributes.put(attributeName,
-				attributeGetterFunction.apply((UserNotificationDelivery)this));
-		}
+		attributes.put("mvccVersion", getMvccVersion());
+		attributes.put("userNotificationDeliveryId",
+			getUserNotificationDeliveryId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("portletId", getPortletId());
+		attributes.put("classNameId", getClassNameId());
+		attributes.put("notificationType", getNotificationType());
+		attributes.put("deliveryType", getDeliveryType());
+		attributes.put("deliver", isDeliver());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
 		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
@@ -175,62 +171,60 @@ public class UserNotificationDeliveryModelImpl extends BaseModelImpl<UserNotific
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
-		Map<String, BiConsumer<UserNotificationDelivery, Object>> attributeSetterBiConsumers =
-			getAttributeSetterBiConsumers();
+		Long mvccVersion = (Long)attributes.get("mvccVersion");
 
-		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-			String attributeName = entry.getKey();
-
-			BiConsumer<UserNotificationDelivery, Object> attributeSetterBiConsumer =
-				attributeSetterBiConsumers.get(attributeName);
-
-			if (attributeSetterBiConsumer != null) {
-				attributeSetterBiConsumer.accept((UserNotificationDelivery)this,
-					entry.getValue());
-			}
+		if (mvccVersion != null) {
+			setMvccVersion(mvccVersion);
 		}
-	}
 
-	public Map<String, Function<UserNotificationDelivery, Object>> getAttributeGetterFunctions() {
-		return _attributeGetterFunctions;
-	}
+		Long userNotificationDeliveryId = (Long)attributes.get(
+				"userNotificationDeliveryId");
 
-	public Map<String, BiConsumer<UserNotificationDelivery, Object>> getAttributeSetterBiConsumers() {
-		return _attributeSetterBiConsumers;
-	}
+		if (userNotificationDeliveryId != null) {
+			setUserNotificationDeliveryId(userNotificationDeliveryId);
+		}
 
-	private static final Map<String, Function<UserNotificationDelivery, Object>> _attributeGetterFunctions;
-	private static final Map<String, BiConsumer<UserNotificationDelivery, Object>> _attributeSetterBiConsumers;
+		Long companyId = (Long)attributes.get("companyId");
 
-	static {
-		Map<String, Function<UserNotificationDelivery, Object>> attributeGetterFunctions =
-			new LinkedHashMap<String, Function<UserNotificationDelivery, Object>>();
-		Map<String, BiConsumer<UserNotificationDelivery, ?>> attributeSetterBiConsumers =
-			new LinkedHashMap<String, BiConsumer<UserNotificationDelivery, ?>>();
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
 
+		Long userId = (Long)attributes.get("userId");
 
-		attributeGetterFunctions.put("mvccVersion", UserNotificationDelivery::getMvccVersion);
-		attributeSetterBiConsumers.put("mvccVersion", (BiConsumer<UserNotificationDelivery, Long>)UserNotificationDelivery::setMvccVersion);
-		attributeGetterFunctions.put("userNotificationDeliveryId", UserNotificationDelivery::getUserNotificationDeliveryId);
-		attributeSetterBiConsumers.put("userNotificationDeliveryId", (BiConsumer<UserNotificationDelivery, Long>)UserNotificationDelivery::setUserNotificationDeliveryId);
-		attributeGetterFunctions.put("companyId", UserNotificationDelivery::getCompanyId);
-		attributeSetterBiConsumers.put("companyId", (BiConsumer<UserNotificationDelivery, Long>)UserNotificationDelivery::setCompanyId);
-		attributeGetterFunctions.put("userId", UserNotificationDelivery::getUserId);
-		attributeSetterBiConsumers.put("userId", (BiConsumer<UserNotificationDelivery, Long>)UserNotificationDelivery::setUserId);
-		attributeGetterFunctions.put("portletId", UserNotificationDelivery::getPortletId);
-		attributeSetterBiConsumers.put("portletId", (BiConsumer<UserNotificationDelivery, String>)UserNotificationDelivery::setPortletId);
-		attributeGetterFunctions.put("classNameId", UserNotificationDelivery::getClassNameId);
-		attributeSetterBiConsumers.put("classNameId", (BiConsumer<UserNotificationDelivery, Long>)UserNotificationDelivery::setClassNameId);
-		attributeGetterFunctions.put("notificationType", UserNotificationDelivery::getNotificationType);
-		attributeSetterBiConsumers.put("notificationType", (BiConsumer<UserNotificationDelivery, Integer>)UserNotificationDelivery::setNotificationType);
-		attributeGetterFunctions.put("deliveryType", UserNotificationDelivery::getDeliveryType);
-		attributeSetterBiConsumers.put("deliveryType", (BiConsumer<UserNotificationDelivery, Integer>)UserNotificationDelivery::setDeliveryType);
-		attributeGetterFunctions.put("deliver", UserNotificationDelivery::getDeliver);
-		attributeSetterBiConsumers.put("deliver", (BiConsumer<UserNotificationDelivery, Boolean>)UserNotificationDelivery::setDeliver);
+		if (userId != null) {
+			setUserId(userId);
+		}
 
+		String portletId = (String)attributes.get("portletId");
 
-		_attributeGetterFunctions = Collections.unmodifiableMap(attributeGetterFunctions);
-		_attributeSetterBiConsumers = Collections.unmodifiableMap((Map)attributeSetterBiConsumers);
+		if (portletId != null) {
+			setPortletId(portletId);
+		}
+
+		Long classNameId = (Long)attributes.get("classNameId");
+
+		if (classNameId != null) {
+			setClassNameId(classNameId);
+		}
+
+		Integer notificationType = (Integer)attributes.get("notificationType");
+
+		if (notificationType != null) {
+			setNotificationType(notificationType);
+		}
+
+		Integer deliveryType = (Integer)attributes.get("deliveryType");
+
+		if (deliveryType != null) {
+			setDeliveryType(deliveryType);
+		}
+
+		Boolean deliver = (Boolean)attributes.get("deliver");
+
+		if (deliver != null) {
+			setDeliver(deliver);
+		}
 	}
 
 	@Override
@@ -583,29 +577,26 @@ public class UserNotificationDeliveryModelImpl extends BaseModelImpl<UserNotific
 
 	@Override
 	public String toString() {
-		Map<String, Function<UserNotificationDelivery, Object>> attributeGetterFunctions =
-			getAttributeGetterFunctions();
+		StringBundler sb = new StringBundler(19);
 
-		StringBundler sb = new StringBundler((4 * attributeGetterFunctions.size()) +
-				2);
-
-		sb.append("{");
-
-		for (Map.Entry<String, Function<UserNotificationDelivery, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<UserNotificationDelivery, Object> attributeGetterFunction = entry.getValue();
-
-			sb.append(attributeName);
-			sb.append("=");
-			sb.append(attributeGetterFunction.apply(
-					(UserNotificationDelivery)this));
-			sb.append(", ");
-		}
-
-		if (sb.index() > 1) {
-			sb.setIndex(sb.index() - 1);
-		}
-
+		sb.append("{mvccVersion=");
+		sb.append(getMvccVersion());
+		sb.append(", userNotificationDeliveryId=");
+		sb.append(getUserNotificationDeliveryId());
+		sb.append(", companyId=");
+		sb.append(getCompanyId());
+		sb.append(", userId=");
+		sb.append(getUserId());
+		sb.append(", portletId=");
+		sb.append(getPortletId());
+		sb.append(", classNameId=");
+		sb.append(getClassNameId());
+		sb.append(", notificationType=");
+		sb.append(getNotificationType());
+		sb.append(", deliveryType=");
+		sb.append(getDeliveryType());
+		sb.append(", deliver=");
+		sb.append(isDeliver());
 		sb.append("}");
 
 		return sb.toString();
@@ -613,27 +604,48 @@ public class UserNotificationDeliveryModelImpl extends BaseModelImpl<UserNotific
 
 	@Override
 	public String toXmlString() {
-		Map<String, Function<UserNotificationDelivery, Object>> attributeGetterFunctions =
-			getAttributeGetterFunctions();
-
-		StringBundler sb = new StringBundler((5 * attributeGetterFunctions.size()) +
-				4);
+		StringBundler sb = new StringBundler(31);
 
 		sb.append("<model><model-name>");
-		sb.append(getModelClassName());
+		sb.append("com.liferay.portal.kernel.model.UserNotificationDelivery");
 		sb.append("</model-name>");
 
-		for (Map.Entry<String, Function<UserNotificationDelivery, Object>> entry : attributeGetterFunctions.entrySet()) {
-			String attributeName = entry.getKey();
-			Function<UserNotificationDelivery, Object> attributeGetterFunction = entry.getValue();
-
-			sb.append("<column><column-name>");
-			sb.append(attributeName);
-			sb.append("</column-name><column-value><![CDATA[");
-			sb.append(attributeGetterFunction.apply(
-					(UserNotificationDelivery)this));
-			sb.append("]]></column-value></column>");
-		}
+		sb.append(
+			"<column><column-name>mvccVersion</column-name><column-value><![CDATA[");
+		sb.append(getMvccVersion());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>userNotificationDeliveryId</column-name><column-value><![CDATA[");
+		sb.append(getUserNotificationDeliveryId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>companyId</column-name><column-value><![CDATA[");
+		sb.append(getCompanyId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>userId</column-name><column-value><![CDATA[");
+		sb.append(getUserId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>portletId</column-name><column-value><![CDATA[");
+		sb.append(getPortletId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>classNameId</column-name><column-value><![CDATA[");
+		sb.append(getClassNameId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>notificationType</column-name><column-value><![CDATA[");
+		sb.append(getNotificationType());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>deliveryType</column-name><column-value><![CDATA[");
+		sb.append(getDeliveryType());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>deliver</column-name><column-value><![CDATA[");
+		sb.append(isDeliver());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
