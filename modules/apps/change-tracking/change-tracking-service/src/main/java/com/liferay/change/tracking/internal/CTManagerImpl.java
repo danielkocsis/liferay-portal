@@ -230,7 +230,7 @@ public class CTManagerImpl implements CTManager {
 				_ctEntryLocalService.addCTEntry(
 					userId, classNameId, classPK, resourcePrimKey,
 					ctCollection.getCtCollectionId(), changeType,
-					new ServiceContext()));
+					serviceContext));
 		}
 		catch (DuplicateCTEntryException dctee) {
 			StringBundler sb = new StringBundler(8);
