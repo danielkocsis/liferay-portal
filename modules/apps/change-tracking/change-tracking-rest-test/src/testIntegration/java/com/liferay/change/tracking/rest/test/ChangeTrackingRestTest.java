@@ -197,10 +197,102 @@ public class ChangeTrackingRestTest {
 		);
 
 		RestAssured.get(
-			"configurations/{companyId}", "companyId"
+			"configurations/{companyId}", _companyId
 		).then(
 		).statusCode(
 			HttpStatus.SC_FORBIDDEN
+		);
+	}
+
+	@Test
+	public void testGetResponseType() {
+		RestAssured.get(
+			"configurations/{companyId}", _companyId
+		).then(
+		).contentType(
+			ContentType.JSON
+		);
+	}
+
+	@Test
+	public void testPutResponseType() {
+		Map<String, String> jsonBody = new HashMap<>();
+
+		jsonBody.put("changeTrackingEnabled", "false");
+
+		RestAssured.given(
+		).body(
+			jsonBody
+		).when(
+		).contentType(
+			ContentType.JSON
+		).put(
+			"configurations/{companyId}", _companyId
+		).then(
+		).statusCode(
+			HttpStatus.SC_OK
+		).contentType(
+			ContentType.JSON
+		);
+	}
+
+	@Test
+	public void testPutRequestXMLType() {
+		Map<String, String> jsonBody = new HashMap<>();
+
+		jsonBody.put("changeTrackingEnabled", "false");
+
+		RestAssured.given(
+		).body(
+			jsonBody
+		).when(
+		).contentType(
+			ContentType.XML
+		).put(
+			"configurations/{companyId}", _companyId
+		).then(
+		).statusCode(
+			HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE
+		);
+	}
+
+	@Test
+	public void testPutRequestTextType() {
+		Map<String, String> jsonBody = new HashMap<>();
+
+		jsonBody.put("changeTrackingEnabled", "false");
+
+		RestAssured.given(
+		).body(
+			jsonBody
+		).when(
+		).contentType(
+			ContentType.TEXT
+		).put(
+			"configurations/{companyId}", _companyId
+		).then(
+		).statusCode(
+			HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE
+		);
+	}
+
+	@Test
+	public void testPutRequestHTMLType() {
+		Map<String, String> jsonBody = new HashMap<>();
+
+		jsonBody.put("changeTrackingEnabled", "false");
+
+		RestAssured.given(
+		).body(
+			jsonBody
+		).when(
+		).contentType(
+			ContentType.HTML
+		).put(
+			"configurations/{companyId}", _companyId
+		).then(
+		).statusCode(
+			HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE
 		);
 	}
 
