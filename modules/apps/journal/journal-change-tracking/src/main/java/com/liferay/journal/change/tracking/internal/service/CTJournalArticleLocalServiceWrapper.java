@@ -87,7 +87,8 @@ public class CTJournalArticleLocalServiceWrapper
 			smallImage, smallImageURL, smallImageFile, images, articleURL,
 			serviceContext);
 
-		_registerChange(journalArticle, CTConstants.CT_CHANGE_TYPE_ADDITION);
+		_registerChange(
+			journalArticle, CTConstants.CT_CHANGE_TYPE_ADDITION, true);
 
 		return journalArticle;
 	}
@@ -122,7 +123,8 @@ public class CTJournalArticleLocalServiceWrapper
 			reviewDateMinute, neverReview, indexable, smallImage, smallImageURL,
 			smallImageFile, images, articleURL, serviceContext);
 
-		_registerChange(journalArticle, CTConstants.CT_CHANGE_TYPE_ADDITION);
+		_registerChange(
+			journalArticle, CTConstants.CT_CHANGE_TYPE_ADDITION, true);
 
 		return journalArticle;
 	}
@@ -139,7 +141,8 @@ public class CTJournalArticleLocalServiceWrapper
 			userId, groupId, folderId, titleMap, descriptionMap, content,
 			ddmStructureKey, ddmTemplateKey, serviceContext);
 
-		_registerChange(journalArticle, CTConstants.CT_CHANGE_TYPE_ADDITION);
+		_registerChange(
+			journalArticle, CTConstants.CT_CHANGE_TYPE_ADDITION, true);
 
 		return journalArticle;
 	}
@@ -224,7 +227,8 @@ public class CTJournalArticleLocalServiceWrapper
 		JournalArticle journalArticle = super.moveArticleToTrash(
 			userId, article);
 
-		_registerChange(journalArticle, CTConstants.CT_CHANGE_TYPE_DELETION);
+		_registerChange(
+			journalArticle, CTConstants.CT_CHANGE_TYPE_DELETION, true);
 
 		return journalArticle;
 	}
@@ -237,7 +241,8 @@ public class CTJournalArticleLocalServiceWrapper
 		JournalArticle journalArticle = super.moveArticleToTrash(
 			userId, groupId, articleId);
 
-		_registerChange(journalArticle, CTConstants.CT_CHANGE_TYPE_DELETION);
+		_registerChange(
+			journalArticle, CTConstants.CT_CHANGE_TYPE_DELETION, true);
 
 		return journalArticle;
 	}
@@ -469,7 +474,15 @@ public class CTJournalArticleLocalServiceWrapper
 		return journalArticle;
 	}
 
-	private void _registerChange(JournalArticle journalArticle, int changeType)
+	private void _registerChange(
+			JournalArticle journalArticle, int changeType)
+		throws CTException {
+
+		_registerChange(journalArticle, changeType, false);
+	}
+
+	private void _registerChange(
+			JournalArticle journalArticle, int changeType, boolean force)
 		throws CTException {
 
 		try {
@@ -477,7 +490,7 @@ public class CTJournalArticleLocalServiceWrapper
 				PrincipalThreadLocal.getUserId(),
 				_portal.getClassNameId(JournalArticle.class.getName()),
 				journalArticle.getId(), journalArticle.getResourcePrimKey(),
-				changeType);
+				changeType, force);
 		}
 		catch (CTException cte) {
 			if (cte instanceof CTEntryException) {
