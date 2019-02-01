@@ -12,13 +12,13 @@
 		modified: number
 	]}
 	{@param? descriptionActiveChangeList: string}
-	{@param? descriptionProductionChangeList: string}
+	{@param? descriptionProductionInformation: string}
 	{@param? headerDropDownMenu: list<[
 		label: string,
 		link: string
 	]>}
 	{@param? headerTitleActiveChangeList: string}
-	{@param? headerTitleProductionChangeList: string}
+	{@param? headerTitleProductionInformation: string}
 	{@param? initialFetch: bool}
 	{@param? publishedBy: [
 		dateTime: string,
@@ -85,7 +85,7 @@
 				<div class="col-sm-6">
 					{call .overviewCard}
 						{param cardState: 'border-left-green' /}
-						{param description: $descriptionProductionChangeList /}
+						{param description: $descriptionProductionInformation /}
 						{param descriptionTitle kind="text"}
 							{msg desc=""}description{/msg}
 						{/param}
@@ -95,7 +95,7 @@
 						{param headerSubTitle kind="text"}
 							{msg desc=""}published-change-list{/msg}
 						{/param}
-						{param headerTitle: $headerTitleProductionChangeList /}
+						{param headerTitle: $headerTitleProductionInformation /}
 						{param publishedBy: $publishedBy /}
 						{param publishedByTitle kind="text"}
 							{msg desc=""}published-by{/msg}
