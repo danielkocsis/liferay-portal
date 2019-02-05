@@ -1649,7 +1649,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		checkParentLayoutIds.add(LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
 
 		LayoutSet layoutSet = layoutSetPersistence.findByG_P(
-			groupId, privateLayout);
+			groupId, privateLayout, true);
 
 		while (!checkParentLayoutIds.isEmpty()) {
 			long parentLayoutId = checkParentLayoutIds.poll();
@@ -1773,7 +1773,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		throws PortalException {
 
 		LayoutSet layoutSet = layoutSetPersistence.findByG_P(
-			group.getGroupId(), privateLayout);
+			group.getGroupId(), privateLayout, true);
 
 		int count = layoutSet.getPageCount();
 
@@ -1793,7 +1793,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 					group.getCompanyId(), userGroupClassNameId, userGroupId);
 
 				layoutSet = layoutSetPersistence.findByG_P(
-					userGroupGroup.getGroupId(), privateLayout);
+					userGroupGroup.getGroupId(), privateLayout, true);
 
 				count += layoutSet.getPageCount();
 			}
@@ -2127,7 +2127,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		throws PortalException {
 
 		LayoutSet layoutSet = layoutSetPersistence.findByG_P(
-			group.getGroupId(), privateLayout);
+			group.getGroupId(), privateLayout, true);
 
 		if (layoutSet.getPageCount() > 0) {
 			return true;
@@ -2149,7 +2149,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 					group.getCompanyId(), userGroupClassNameId, userGroupId);
 
 				layoutSet = layoutSetPersistence.findByG_P(
-					userGroupGroup.getGroupId(), privateLayout);
+					userGroupGroup.getGroupId(), privateLayout, true);
 
 				if (layoutSet.getPageCount() > 0) {
 					return true;
