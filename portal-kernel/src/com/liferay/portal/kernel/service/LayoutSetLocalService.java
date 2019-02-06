@@ -92,9 +92,6 @@ public interface LayoutSetLocalService extends BaseLocalService,
 	@Override
 	public LayoutSet create();
 
-	@Transactional(enabled = false)
-	public LayoutSet createLayoutSet(long layoutSetId);
-
 	@Indexable(type = IndexableType.DELETE)
 	@Override
 	public LayoutSet delete(LayoutSet publishedLayoutSet)

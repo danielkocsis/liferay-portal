@@ -204,9 +204,10 @@ public class LayoutSetPersistenceTest {
 	@Test
 	public void testCountByG_P() throws Exception {
 		_persistence.countByG_P(RandomTestUtil.nextLong(),
-			RandomTestUtil.randomBoolean());
+			RandomTestUtil.randomBoolean(), RandomTestUtil.randomBoolean());
 
-		_persistence.countByG_P(0L, RandomTestUtil.randomBoolean());
+		_persistence.countByG_P(0L, RandomTestUtil.randomBoolean(),
+			RandomTestUtil.randomBoolean());
 	}
 
 	@Test

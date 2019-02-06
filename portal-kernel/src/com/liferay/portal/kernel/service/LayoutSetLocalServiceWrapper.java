@@ -68,12 +68,6 @@ public class LayoutSetLocalServiceWrapper implements LayoutSetLocalService,
 	}
 
 	@Override
-	public com.liferay.portal.kernel.model.LayoutSet createLayoutSet(
-		long layoutSetId) {
-		return _layoutSetLocalService.createLayoutSet(layoutSetId);
-	}
-
-	@Override
 	public com.liferay.portal.kernel.model.LayoutSet delete(
 		com.liferay.portal.kernel.model.LayoutSet publishedLayoutSet)
 		throws com.liferay.portal.kernel.exception.PortalException {

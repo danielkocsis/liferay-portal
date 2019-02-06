@@ -39,10 +39,14 @@ import java.io.Serializable;
 import java.sql.Types;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * The base model implementation for the LayoutSet service. Represents a row in the &quot;LayoutSet&quot; database table, with each column mapped to a property of this class.
@@ -83,7 +87,8 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 			{ "pageCount", Types.INTEGER },
 			{ "settings_", Types.CLOB },
 			{ "layoutSetPrototypeUuid", Types.VARCHAR },
-			{ "layoutSetPrototypeLinkEnabled", Types.BOOLEAN }
+			{ "layoutSetPrototypeLinkEnabled", Types.BOOLEAN },
+			{ "head", Types.BOOLEAN }
 		};
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP = new HashMap<String, Integer>();
 
@@ -104,9 +109,10 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 		TABLE_COLUMNS_MAP.put("settings_", Types.CLOB);
 		TABLE_COLUMNS_MAP.put("layoutSetPrototypeUuid", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("layoutSetPrototypeLinkEnabled", Types.BOOLEAN);
+		TABLE_COLUMNS_MAP.put("head", Types.BOOLEAN);
 	}
 
-	public static final String TABLE_SQL_CREATE = "create table LayoutSet (mvccVersion LONG default 0 not null,headId LONG,layoutSetId LONG not null primary key,groupId LONG,companyId LONG,createDate DATE null,modifiedDate DATE null,privateLayout BOOLEAN,logoId LONG,themeId VARCHAR(75) null,colorSchemeId VARCHAR(75) null,css TEXT null,pageCount INTEGER,settings_ TEXT null,layoutSetPrototypeUuid VARCHAR(75) null,layoutSetPrototypeLinkEnabled BOOLEAN)";
+	public static final String TABLE_SQL_CREATE = "create table LayoutSet (mvccVersion LONG default 0 not null,headId LONG,layoutSetId LONG not null primary key,groupId LONG,companyId LONG,createDate DATE null,modifiedDate DATE null,privateLayout BOOLEAN,logoId LONG,themeId VARCHAR(75) null,colorSchemeId VARCHAR(75) null,css TEXT null,pageCount INTEGER,settings_ TEXT null,layoutSetPrototypeUuid VARCHAR(75) null,layoutSetPrototypeLinkEnabled BOOLEAN,head BOOLEAN)";
 	public static final String TABLE_SQL_DROP = "drop table LayoutSet";
 	public static final String ORDER_BY_JPQL = " ORDER BY layoutSet.layoutSetId ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY LayoutSet.layoutSetId ASC";
@@ -123,11 +129,12 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 				"value.object.column.bitmask.enabled.com.liferay.portal.kernel.model.LayoutSet"),
 			true);
 	public static final long GROUPID_COLUMN_BITMASK = 1L;
-	public static final long HEADID_COLUMN_BITMASK = 2L;
-	public static final long LAYOUTSETPROTOTYPEUUID_COLUMN_BITMASK = 4L;
-	public static final long LOGOID_COLUMN_BITMASK = 8L;
-	public static final long PRIVATELAYOUT_COLUMN_BITMASK = 16L;
-	public static final long LAYOUTSETID_COLUMN_BITMASK = 32L;
+	public static final long HEAD_COLUMN_BITMASK = 2L;
+	public static final long HEADID_COLUMN_BITMASK = 4L;
+	public static final long LAYOUTSETPROTOTYPEUUID_COLUMN_BITMASK = 8L;
+	public static final long LOGOID_COLUMN_BITMASK = 16L;
+	public static final long PRIVATELAYOUT_COLUMN_BITMASK = 32L;
+	public static final long LAYOUTSETID_COLUMN_BITMASK = 64L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -222,23 +229,15 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
-		attributes.put("mvccVersion", getMvccVersion());
-		attributes.put("headId", getHeadId());
-		attributes.put("layoutSetId", getLayoutSetId());
-		attributes.put("groupId", getGroupId());
-		attributes.put("companyId", getCompanyId());
-		attributes.put("createDate", getCreateDate());
-		attributes.put("modifiedDate", getModifiedDate());
-		attributes.put("privateLayout", isPrivateLayout());
-		attributes.put("logoId", getLogoId());
-		attributes.put("themeId", getThemeId());
-		attributes.put("colorSchemeId", getColorSchemeId());
-		attributes.put("css", getCss());
-		attributes.put("pageCount", getPageCount());
-		attributes.put("settings", getSettings());
-		attributes.put("layoutSetPrototypeUuid", getLayoutSetPrototypeUuid());
-		attributes.put("layoutSetPrototypeLinkEnabled",
-			isLayoutSetPrototypeLinkEnabled());
+		Map<String, Function<LayoutSet, Object>> attributeGetterFunctions = getAttributeGetterFunctions();
+
+		for (Map.Entry<String, Function<LayoutSet, Object>> entry : attributeGetterFunctions.entrySet()) {
+			String attributeName = entry.getKey();
+			Function<LayoutSet, Object> attributeGetterFunction = entry.getValue();
+
+			attributes.put(attributeName,
+				attributeGetterFunction.apply((LayoutSet)this));
+		}
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
 		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
@@ -248,112 +247,97 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
-		Long mvccVersion = (Long)attributes.get("mvccVersion");
+		Map<String, BiConsumer<LayoutSet, Object>> attributeSetterBiConsumers = getAttributeSetterBiConsumers();
 
-		if (mvccVersion != null) {
-			setMvccVersion(mvccVersion);
+		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+			String attributeName = entry.getKey();
+
+			BiConsumer<LayoutSet, Object> attributeSetterBiConsumer = attributeSetterBiConsumers.get(attributeName);
+
+			if (attributeSetterBiConsumer != null) {
+				attributeSetterBiConsumer.accept((LayoutSet)this,
+					entry.getValue());
+			}
 		}
+	}
 
-		Long headId = (Long)attributes.get("headId");
+	public Map<String, Function<LayoutSet, Object>> getAttributeGetterFunctions() {
+		return _attributeGetterFunctions;
+	}
 
-		if (headId != null) {
-			setHeadId(headId);
-		}
+	public Map<String, BiConsumer<LayoutSet, Object>> getAttributeSetterBiConsumers() {
+		return _attributeSetterBiConsumers;
+	}
 
-		Long layoutSetId = (Long)attributes.get("layoutSetId");
+	private static final Map<String, Function<LayoutSet, Object>> _attributeGetterFunctions;
+	private static final Map<String, BiConsumer<LayoutSet, Object>> _attributeSetterBiConsumers;
 
-		if (layoutSetId != null) {
-			setLayoutSetId(layoutSetId);
-		}
+	static {
+		Map<String, Function<LayoutSet, Object>> attributeGetterFunctions = new LinkedHashMap<String, Function<LayoutSet, Object>>();
+		Map<String, BiConsumer<LayoutSet, ?>> attributeSetterBiConsumers = new LinkedHashMap<String, BiConsumer<LayoutSet, ?>>();
 
-		Long groupId = (Long)attributes.get("groupId");
 
-		if (groupId != null) {
-			setGroupId(groupId);
-		}
+		attributeGetterFunctions.put("mvccVersion", LayoutSet::getMvccVersion);
+		attributeSetterBiConsumers.put("mvccVersion", (BiConsumer<LayoutSet, Long>)LayoutSet::setMvccVersion);
+		attributeGetterFunctions.put("headId", LayoutSet::getHeadId);
+		attributeSetterBiConsumers.put("headId", (BiConsumer<LayoutSet, Long>)LayoutSet::setHeadId);
+		attributeGetterFunctions.put("layoutSetId", LayoutSet::getLayoutSetId);
+		attributeSetterBiConsumers.put("layoutSetId", (BiConsumer<LayoutSet, Long>)LayoutSet::setLayoutSetId);
+		attributeGetterFunctions.put("groupId", LayoutSet::getGroupId);
+		attributeSetterBiConsumers.put("groupId", (BiConsumer<LayoutSet, Long>)LayoutSet::setGroupId);
+		attributeGetterFunctions.put("companyId", LayoutSet::getCompanyId);
+		attributeSetterBiConsumers.put("companyId", (BiConsumer<LayoutSet, Long>)LayoutSet::setCompanyId);
+		attributeGetterFunctions.put("createDate", LayoutSet::getCreateDate);
+		attributeSetterBiConsumers.put("createDate", (BiConsumer<LayoutSet, Date>)LayoutSet::setCreateDate);
+		attributeGetterFunctions.put("modifiedDate", LayoutSet::getModifiedDate);
+		attributeSetterBiConsumers.put("modifiedDate", (BiConsumer<LayoutSet, Date>)LayoutSet::setModifiedDate);
+		attributeGetterFunctions.put("privateLayout", LayoutSet::getPrivateLayout);
+		attributeSetterBiConsumers.put("privateLayout", (BiConsumer<LayoutSet, Boolean>)LayoutSet::setPrivateLayout);
+		attributeGetterFunctions.put("logoId", LayoutSet::getLogoId);
+		attributeSetterBiConsumers.put("logoId", (BiConsumer<LayoutSet, Long>)LayoutSet::setLogoId);
+		attributeGetterFunctions.put("themeId", LayoutSet::getThemeId);
+		attributeSetterBiConsumers.put("themeId", (BiConsumer<LayoutSet, String>)LayoutSet::setThemeId);
+		attributeGetterFunctions.put("colorSchemeId", LayoutSet::getColorSchemeId);
+		attributeSetterBiConsumers.put("colorSchemeId", (BiConsumer<LayoutSet, String>)LayoutSet::setColorSchemeId);
+		attributeGetterFunctions.put("css", LayoutSet::getCss);
+		attributeSetterBiConsumers.put("css", (BiConsumer<LayoutSet, String>)LayoutSet::setCss);
+		attributeGetterFunctions.put("pageCount", LayoutSet::getPageCount);
+		attributeSetterBiConsumers.put("pageCount", (BiConsumer<LayoutSet, Integer>)LayoutSet::setPageCount);
+		attributeGetterFunctions.put("settings", LayoutSet::getSettings);
+		attributeSetterBiConsumers.put("settings", (BiConsumer<LayoutSet, String>)LayoutSet::setSettings);
+		attributeGetterFunctions.put("layoutSetPrototypeUuid", LayoutSet::getLayoutSetPrototypeUuid);
+		attributeSetterBiConsumers.put("layoutSetPrototypeUuid", (BiConsumer<LayoutSet, String>)LayoutSet::setLayoutSetPrototypeUuid);
+		attributeGetterFunctions.put("layoutSetPrototypeLinkEnabled", LayoutSet::getLayoutSetPrototypeLinkEnabled);
+		attributeSetterBiConsumers.put("layoutSetPrototypeLinkEnabled", (BiConsumer<LayoutSet, Boolean>)LayoutSet::setLayoutSetPrototypeLinkEnabled);
 
-		Long companyId = (Long)attributes.get("companyId");
 
-		if (companyId != null) {
-			setCompanyId(companyId);
-		}
+		_attributeGetterFunctions = Collections.unmodifiableMap(attributeGetterFunctions);
+		_attributeSetterBiConsumers = Collections.unmodifiableMap((Map)attributeSetterBiConsumers);
+	}
 
-		Date createDate = (Date)attributes.get("createDate");
-
-		if (createDate != null) {
-			setCreateDate(createDate);
-		}
-
-		Date modifiedDate = (Date)attributes.get("modifiedDate");
-
-		if (modifiedDate != null) {
-			setModifiedDate(modifiedDate);
-		}
-
-		Boolean privateLayout = (Boolean)attributes.get("privateLayout");
-
-		if (privateLayout != null) {
-			setPrivateLayout(privateLayout);
-		}
-
-		Long logoId = (Long)attributes.get("logoId");
-
-		if (logoId != null) {
-			setLogoId(logoId);
-		}
-
-		String themeId = (String)attributes.get("themeId");
-
-		if (themeId != null) {
-			setThemeId(themeId);
-		}
-
-		String colorSchemeId = (String)attributes.get("colorSchemeId");
-
-		if (colorSchemeId != null) {
-			setColorSchemeId(colorSchemeId);
-		}
-
-		String css = (String)attributes.get("css");
-
-		if (css != null) {
-			setCss(css);
-		}
-
-		Integer pageCount = (Integer)attributes.get("pageCount");
-
-		if (pageCount != null) {
-			setPageCount(pageCount);
-		}
-
-		String settings = (String)attributes.get("settings");
-
-		if (settings != null) {
-			setSettings(settings);
-		}
-
-		String layoutSetPrototypeUuid = (String)attributes.get(
-				"layoutSetPrototypeUuid");
-
-		if (layoutSetPrototypeUuid != null) {
-			setLayoutSetPrototypeUuid(layoutSetPrototypeUuid);
-		}
-
-		Boolean layoutSetPrototypeLinkEnabled = (Boolean)attributes.get(
-				"layoutSetPrototypeLinkEnabled");
-
-		if (layoutSetPrototypeLinkEnabled != null) {
-			setLayoutSetPrototypeLinkEnabled(layoutSetPrototypeLinkEnabled);
-		}
+	public boolean getHead() {
+		return _head;
 	}
 
 	@Override
 	public boolean isHead() {
-		if (getHeadId() > 0) {
-			return false;
+		return _head;
+	}
+
+	public boolean getOriginalHead() {
+		return _originalHead;
+	}
+
+	public void setHead(boolean head) {
+		_columnBitmask |= HEAD_COLUMN_BITMASK;
+
+		if (!_setOriginalHead) {
+			_setOriginalHead = true;
+
+			_originalHead = _head;
 		}
 
-		return true;
+		_head = head;
 	}
 
 	@Override
@@ -398,6 +382,13 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 			_setOriginalHeadId = true;
 
 			_originalHeadId = _headId;
+		}
+
+		if (headId >= 0) {
+			setHead(false);
+		}
+		else {
+			setHead(true);
 		}
 
 		_headId = headId;
@@ -795,6 +786,10 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 
 		layoutSetModelImpl._originalLayoutSetPrototypeUuid = layoutSetModelImpl._layoutSetPrototypeUuid;
 
+		layoutSetModelImpl._originalHead = layoutSetModelImpl._head;
+
+		layoutSetModelImpl._setOriginalHead = false;
+
 		setCompanyFallbackVirtualHostname(null);
 
 		setVirtualHostname(null);
@@ -883,6 +878,8 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 
 		layoutSetCacheModel.layoutSetPrototypeLinkEnabled = isLayoutSetPrototypeLinkEnabled();
 
+		layoutSetCacheModel.head = isHead();
+
 		layoutSetCacheModel._companyFallbackVirtualHostname = getCompanyFallbackVirtualHostname();
 
 		layoutSetCacheModel._virtualHostname = getVirtualHostname();
@@ -892,40 +889,27 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(33);
+		Map<String, Function<LayoutSet, Object>> attributeGetterFunctions = getAttributeGetterFunctions();
 
-		sb.append("{mvccVersion=");
-		sb.append(getMvccVersion());
-		sb.append(", headId=");
-		sb.append(getHeadId());
-		sb.append(", layoutSetId=");
-		sb.append(getLayoutSetId());
-		sb.append(", groupId=");
-		sb.append(getGroupId());
-		sb.append(", companyId=");
-		sb.append(getCompanyId());
-		sb.append(", createDate=");
-		sb.append(getCreateDate());
-		sb.append(", modifiedDate=");
-		sb.append(getModifiedDate());
-		sb.append(", privateLayout=");
-		sb.append(isPrivateLayout());
-		sb.append(", logoId=");
-		sb.append(getLogoId());
-		sb.append(", themeId=");
-		sb.append(getThemeId());
-		sb.append(", colorSchemeId=");
-		sb.append(getColorSchemeId());
-		sb.append(", css=");
-		sb.append(getCss());
-		sb.append(", pageCount=");
-		sb.append(getPageCount());
-		sb.append(", settings=");
-		sb.append(getSettings());
-		sb.append(", layoutSetPrototypeUuid=");
-		sb.append(getLayoutSetPrototypeUuid());
-		sb.append(", layoutSetPrototypeLinkEnabled=");
-		sb.append(isLayoutSetPrototypeLinkEnabled());
+		StringBundler sb = new StringBundler((4 * attributeGetterFunctions.size()) +
+				2);
+
+		sb.append("{");
+
+		for (Map.Entry<String, Function<LayoutSet, Object>> entry : attributeGetterFunctions.entrySet()) {
+			String attributeName = entry.getKey();
+			Function<LayoutSet, Object> attributeGetterFunction = entry.getValue();
+
+			sb.append(attributeName);
+			sb.append("=");
+			sb.append(attributeGetterFunction.apply((LayoutSet)this));
+			sb.append(", ");
+		}
+
+		if (sb.index() > 1) {
+			sb.setIndex(sb.index() - 1);
+		}
+
 		sb.append("}");
 
 		return sb.toString();
@@ -933,76 +917,25 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(52);
+		Map<String, Function<LayoutSet, Object>> attributeGetterFunctions = getAttributeGetterFunctions();
+
+		StringBundler sb = new StringBundler((5 * attributeGetterFunctions.size()) +
+				4);
 
 		sb.append("<model><model-name>");
-		sb.append("com.liferay.portal.kernel.model.LayoutSet");
+		sb.append(getModelClassName());
 		sb.append("</model-name>");
 
-		sb.append(
-			"<column><column-name>mvccVersion</column-name><column-value><![CDATA[");
-		sb.append(getMvccVersion());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>headId</column-name><column-value><![CDATA[");
-		sb.append(getHeadId());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>layoutSetId</column-name><column-value><![CDATA[");
-		sb.append(getLayoutSetId());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>groupId</column-name><column-value><![CDATA[");
-		sb.append(getGroupId());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>companyId</column-name><column-value><![CDATA[");
-		sb.append(getCompanyId());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>createDate</column-name><column-value><![CDATA[");
-		sb.append(getCreateDate());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>modifiedDate</column-name><column-value><![CDATA[");
-		sb.append(getModifiedDate());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>privateLayout</column-name><column-value><![CDATA[");
-		sb.append(isPrivateLayout());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>logoId</column-name><column-value><![CDATA[");
-		sb.append(getLogoId());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>themeId</column-name><column-value><![CDATA[");
-		sb.append(getThemeId());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>colorSchemeId</column-name><column-value><![CDATA[");
-		sb.append(getColorSchemeId());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>css</column-name><column-value><![CDATA[");
-		sb.append(getCss());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>pageCount</column-name><column-value><![CDATA[");
-		sb.append(getPageCount());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>settings</column-name><column-value><![CDATA[");
-		sb.append(getSettings());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>layoutSetPrototypeUuid</column-name><column-value><![CDATA[");
-		sb.append(getLayoutSetPrototypeUuid());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>layoutSetPrototypeLinkEnabled</column-name><column-value><![CDATA[");
-		sb.append(isLayoutSetPrototypeLinkEnabled());
-		sb.append("]]></column-value></column>");
+		for (Map.Entry<String, Function<LayoutSet, Object>> entry : attributeGetterFunctions.entrySet()) {
+			String attributeName = entry.getKey();
+			Function<LayoutSet, Object> attributeGetterFunction = entry.getValue();
+
+			sb.append("<column><column-name>");
+			sb.append(attributeName);
+			sb.append("</column-name><column-value><![CDATA[");
+			sb.append(attributeGetterFunction.apply((LayoutSet)this));
+			sb.append("]]></column-value></column>");
+		}
 
 		sb.append("</model>");
 
@@ -1039,6 +972,9 @@ public class LayoutSetModelImpl extends BaseModelImpl<LayoutSet>
 	private String _layoutSetPrototypeUuid;
 	private String _originalLayoutSetPrototypeUuid;
 	private boolean _layoutSetPrototypeLinkEnabled;
+	private boolean _head;
+	private boolean _originalHead;
+	private boolean _setOriginalHead;
 	private long _columnBitmask;
 	private LayoutSet _escapedModel;
 }
