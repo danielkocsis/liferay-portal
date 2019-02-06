@@ -317,54 +317,60 @@ public interface LayoutSetPersistence extends BasePersistence<LayoutSet> {
 	public int countByLayoutSetPrototypeUuid(String layoutSetPrototypeUuid);
 
 	/**
-	* Returns the layout set where groupId = &#63; and privateLayout = &#63; or throws a {@link NoSuchLayoutSetException} if it could not be found.
+	* Returns the layout set where groupId = &#63; and privateLayout = &#63; and head = &#63; or throws a {@link NoSuchLayoutSetException} if it could not be found.
 	*
 	* @param groupId the group ID
 	* @param privateLayout the private layout
+	* @param head the head
 	* @return the matching layout set
 	* @throws NoSuchLayoutSetException if a matching layout set could not be found
 	*/
-	public LayoutSet findByG_P(long groupId, boolean privateLayout)
+	public LayoutSet findByG_P(long groupId, boolean privateLayout, boolean head)
 		throws NoSuchLayoutSetException;
 
 	/**
-	* Returns the layout set where groupId = &#63; and privateLayout = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	* Returns the layout set where groupId = &#63; and privateLayout = &#63; and head = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
 	*
 	* @param groupId the group ID
 	* @param privateLayout the private layout
+	* @param head the head
 	* @return the matching layout set, or <code>null</code> if a matching layout set could not be found
 	*/
-	public LayoutSet fetchByG_P(long groupId, boolean privateLayout);
+	public LayoutSet fetchByG_P(long groupId, boolean privateLayout,
+		boolean head);
 
 	/**
-	* Returns the layout set where groupId = &#63; and privateLayout = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	* Returns the layout set where groupId = &#63; and privateLayout = &#63; and head = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
 	*
 	* @param groupId the group ID
 	* @param privateLayout the private layout
+	* @param head the head
 	* @param retrieveFromCache whether to retrieve from the finder cache
 	* @return the matching layout set, or <code>null</code> if a matching layout set could not be found
 	*/
 	public LayoutSet fetchByG_P(long groupId, boolean privateLayout,
-		boolean retrieveFromCache);
+		boolean head, boolean retrieveFromCache);
 
 	/**
-	* Removes the layout set where groupId = &#63; and privateLayout = &#63; from the database.
+	* Removes the layout set where groupId = &#63; and privateLayout = &#63; and head = &#63; from the database.
 	*
 	* @param groupId the group ID
 	* @param privateLayout the private layout
+	* @param head the head
 	* @return the layout set that was removed
 	*/
-	public LayoutSet removeByG_P(long groupId, boolean privateLayout)
-		throws NoSuchLayoutSetException;
+	public LayoutSet removeByG_P(long groupId, boolean privateLayout,
+		boolean head) throws NoSuchLayoutSetException;
 
 	/**
-	* Returns the number of layout sets where groupId = &#63; and privateLayout = &#63;.
+	* Returns the number of layout sets where groupId = &#63; and privateLayout = &#63; and head = &#63;.
 	*
 	* @param groupId the group ID
 	* @param privateLayout the private layout
+	* @param head the head
 	* @return the number of matching layout sets
 	*/
-	public int countByG_P(long groupId, boolean privateLayout);
+	public int countByG_P(long groupId, boolean privateLayout, boolean head);
 
 	/**
 	* Returns the layout set where privateLayout = &#63; and logoId = &#63; or throws a {@link NoSuchLayoutSetException} if it could not be found.

@@ -183,6 +183,7 @@ public class LayoutSetCacheModel implements CacheModel<LayoutSet>,
 		}
 
 		layoutSetImpl.setLayoutSetPrototypeLinkEnabled(layoutSetPrototypeLinkEnabled);
+		layoutSetImpl.setHead(head);
 
 		layoutSetImpl.resetOriginalValues();
 
@@ -220,6 +221,8 @@ public class LayoutSetCacheModel implements CacheModel<LayoutSet>,
 		layoutSetPrototypeUuid = objectInput.readUTF();
 
 		layoutSetPrototypeLinkEnabled = objectInput.readBoolean();
+
+		head = objectInput.readBoolean();
 
 		_companyFallbackVirtualHostname = (String)objectInput.readObject();
 		_virtualHostname = (String)objectInput.readObject();
@@ -283,6 +286,8 @@ public class LayoutSetCacheModel implements CacheModel<LayoutSet>,
 
 		objectOutput.writeBoolean(layoutSetPrototypeLinkEnabled);
 
+		objectOutput.writeBoolean(head);
+
 		objectOutput.writeObject(_companyFallbackVirtualHostname);
 		objectOutput.writeObject(_virtualHostname);
 	}
@@ -303,6 +308,7 @@ public class LayoutSetCacheModel implements CacheModel<LayoutSet>,
 	public String settings;
 	public String layoutSetPrototypeUuid;
 	public boolean layoutSetPrototypeLinkEnabled;
+	public boolean head;
 	public String _companyFallbackVirtualHostname;
 	public String _virtualHostname;
 }
