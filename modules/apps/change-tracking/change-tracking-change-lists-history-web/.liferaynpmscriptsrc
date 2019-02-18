@@ -1,0 +1,10 @@
+{
+	"build": {
+		"dependencies": [
+			"clay-management-toolbar",
+			"clay-portal",
+			"com.liferay.frontend.js.web",
+			"com.liferay.frontend.taglib"
+		]
+	}
+}
