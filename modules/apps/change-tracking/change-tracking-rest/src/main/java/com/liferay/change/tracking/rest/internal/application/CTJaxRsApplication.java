@@ -27,6 +27,7 @@ import org.osgi.service.component.annotations.Component;
 		"auth.verifier.auth.verifier.PortalSessionAuthVerifier.urls.includes=/*",
 		"osgi.jaxrs.application.base=/change-tracking",
 		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=jaxb-json)",
+		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=Liferay.Vulcan)",
 		"osgi.jaxrs.name=change-tracking-application"
 	},
 	service = Application.class
