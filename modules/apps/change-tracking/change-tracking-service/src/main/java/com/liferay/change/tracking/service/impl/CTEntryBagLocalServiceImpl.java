@@ -14,25 +14,74 @@
 
 package com.liferay.change.tracking.service.impl;
 
+import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.model.CTEntryBag;
 import com.liferay.change.tracking.service.base.CTEntryBagLocalServiceBaseImpl;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
+
+import java.util.Date;
+import java.util.List;
 
 /**
- * The implementation of the ct entry bag local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>com.liferay.change.tracking.service.CTEntryBagLocalService</code> interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
- * @author Brian Wing Shun Chan
- * @see CTEntryBagLocalServiceBaseImpl
+ * @author Daniel Kocsis
  */
 public class CTEntryBagLocalServiceImpl extends CTEntryBagLocalServiceBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Use <code>com.liferay.change.tracking.service.CTEntryBagLocalService</code> via injection or a <code>org.osgi.util.tracker.ServiceTracker</code> or use <code>com.liferay.change.tracking.service.CTEntryBagLocalServiceUtil</code>.
-	 */
+
+	@Override
+	public void addCTEntry(CTEntryBag ctEntryBag, CTEntry ctEntry) {
+		if ((ctEntryBag == null) || (ctEntry == null)) {
+			return;
+		}
+
+		ctEntryBagPersistence.addCTEntry(
+			ctEntryBag.getCtEntryBagId(), ctEntry.getCtEntryId());
+	}
+
+	@Override
+	public CTEntryBag createCTEntryBag(
+			long userId, long ownerCTEntryId, long ctCollectionId,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		long ctBagId = counterLocalService.increment();
+
+		CTEntryBag ctEntryBag = ctEntryBagPersistence.create(ctBagId);
+
+		User user = userLocalService.getUser(userId);
+
+		ctEntryBag.setCompanyId(user.getCompanyId());
+		ctEntryBag.setUserId(user.getUserId());
+		ctEntryBag.setUserName(user.getFullName());
+
+		Date now = new Date();
+
+		ctEntryBag.setCreateDate(serviceContext.getCreateDate(now));
+		ctEntryBag.setModifiedDate(serviceContext.getModifiedDate(now));
+
+		ctEntryBag.setOwnerCTEntryId(ownerCTEntryId);
+		ctEntryBag.setCtCollectionId(ctCollectionId);
+
+		return ctEntryBagPersistence.update(ctEntryBag);
+	}
+
+	@Override
+	public List<CTEntryBag> fetchCTEntryBags(
+		long ownerCTEntryId, long ctCollectionId) {
+
+		return ctEntryBagPersistence.findByO_C(ownerCTEntryId, ctCollectionId);
+	}
+
+	@Override
+	public CTEntryBag fetchLatestCTEntryBag(
+		long ownerCTEntryId, long ctCollectionId) {
+
+		return ctEntryBagPersistence.fetchByO_C_Last(
+			ownerCTEntryId, ctCollectionId,
+			OrderByComparatorFactoryUtil.create(
+				"CTEntryBag", "createDate", false));
+	}
+
 }

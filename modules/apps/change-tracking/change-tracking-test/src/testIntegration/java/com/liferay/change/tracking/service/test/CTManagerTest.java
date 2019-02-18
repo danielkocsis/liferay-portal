@@ -23,6 +23,8 @@ import com.liferay.change.tracking.configuration.builder.CTConfigurationBuilder;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.model.CTEntryBag;
+import com.liferay.change.tracking.service.CTEntryBagLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ClassName;
@@ -108,6 +110,57 @@ public class CTManagerTest {
 		}
 
 		_ctEngineManager.disableChangeTracking(TestPropsValues.getCompanyId());
+	}
+
+	@Test
+	public void testAddRelatedEntry() throws Exception {
+		Optional<CTCollection> ctCollectionOptional =
+			_ctEngineManager.getActiveCTCollectionOptional(_user.getUserId());
+
+		Assert.assertTrue(ctCollectionOptional.isPresent());
+
+		long ctCollectionId = ctCollectionOptional.map(
+			CTCollection::getCtCollectionId
+		).get();
+
+		CTEntry ownerCTEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			RandomTestUtil.nextLong(), _TEST_RESOURCE_CLASS_ENTITY_ID,
+			CTConstants.CT_CHANGE_TYPE_ADDITION, ctCollectionId,
+			new ServiceContext());
+
+		CTEntryBag ctEntryBag = _ctEntryBagLocalService.fetchLatestCTEntryBag(
+			ownerCTEntry.getCtEntryId(), ctCollectionId);
+
+		Assert.assertNull(ctEntryBag);
+
+		CTEntry ctEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			RandomTestUtil.nextLong(), _TEST_RESOURCE_CLASS_ENTITY_ID,
+			CTConstants.CT_CHANGE_TYPE_ADDITION, ctCollectionId,
+			new ServiceContext());
+
+		_ctManager.addRelatedCTEntry(_user.getUserId(), ownerCTEntry, ctEntry);
+
+		ctEntryBag = _ctEntryBagLocalService.fetchLatestCTEntryBag(
+			ownerCTEntry.getCtEntryId(), ctCollectionId);
+
+		Assert.assertNotNull(ctEntryBag);
+
+		List<CTEntry> relatedCTEntries = ctEntryBag.getRelatedCTEntries();
+
+		Assert.assertEquals(
+			"There must be one change tracking entry", 1,
+			relatedCTEntries.size());
+		Assert.assertEquals(ctEntry, relatedCTEntries.get(0));
+
+		ctEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			RandomTestUtil.nextLong(), _TEST_RESOURCE_CLASS_ENTITY_ID,
+			CTConstants.CT_CHANGE_TYPE_ADDITION, ctCollectionId,
+			new ServiceContext());
+
+		_ctManager.addRelatedCTEntry(_user.getUserId(), ownerCTEntry, ctEntry);
 	}
 
 	@Test
@@ -344,6 +397,9 @@ public class CTManagerTest {
 
 	@Inject
 	private CTEngineManager _ctEngineManager;
+
+	@Inject
+	private CTEntryBagLocalService _ctEntryBagLocalService;
 
 	@Inject
 	private CTEntryLocalService _ctEntryLocalService;

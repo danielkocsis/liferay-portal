@@ -338,12 +338,24 @@ public class CTEntryBagLocalServiceUtil {
 		return getService().getPersistedModel(primaryKeyObj);
 	}
 
+	public static boolean hasCTEntry(
+		com.liferay.change.tracking.model.CTEntryBag ctEntryBag,
+		com.liferay.change.tracking.model.CTEntry ctEntry) {
+		return getService().hasCTEntry(ctEntryBag, ctEntry);
+	}
+
 	public static boolean hasCTEntryCTEntryBag(long ctEntryId, long ctEntryBagId) {
 		return getService().hasCTEntryCTEntryBag(ctEntryId, ctEntryBagId);
 	}
 
 	public static boolean hasCTEntryCTEntryBags(long ctEntryId) {
 		return getService().hasCTEntryCTEntryBags(ctEntryId);
+	}
+
+	public static void removeCTEntry(
+		com.liferay.change.tracking.model.CTEntryBag ctEntryBag,
+		com.liferay.change.tracking.model.CTEntry ctEntry) {
+		getService().removeCTEntry(ctEntryBag, ctEntry);
 	}
 
 	public static void setCTEntryCTEntryBags(long ctEntryId,

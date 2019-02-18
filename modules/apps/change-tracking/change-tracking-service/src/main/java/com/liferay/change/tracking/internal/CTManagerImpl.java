@@ -22,6 +22,8 @@ import com.liferay.change.tracking.exception.DuplicateCTEntryException;
 import com.liferay.change.tracking.internal.util.ChangeTrackingThreadLocal;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.model.CTEntryBag;
+import com.liferay.change.tracking.service.CTEntryBagLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.util.comparator.CTEntryCreateDateComparator;
 import com.liferay.petra.function.UnsafeSupplier;
@@ -49,27 +51,35 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = CTManager.class)
 public class CTManagerImpl implements CTManager {
 
-	@Override
-	public <T> T executeModelUpdate(
-			UnsafeSupplier<T, PortalException> modelUpdateSupplier)
+	public Optional<CTEntryBag> addRelatedCTEntry(
+			long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry)
 		throws PortalException {
 
-		boolean resetFlag = false;
+		Optional<CTCollection> activeCTCollectionOptional =
+			_ctEngineManager.getActiveCTCollectionOptional(userId);
 
-		try {
-			if (!ChangeTrackingThreadLocal.isModelUpdateInProgress()) {
-				resetFlag = true;
-
-				ChangeTrackingThreadLocal.setModelUpdateInProgress(true);
-			}
-
-			return modelUpdateSupplier.get();
+		if (!activeCTCollectionOptional.isPresent()) {
+			return Optional.empty();
 		}
-		finally {
-			if (resetFlag) {
-				ChangeTrackingThreadLocal.setModelUpdateInProgress(false);
-			}
+
+		long activeCTCollectionId = activeCTCollectionOptional.map(
+			CTCollection::getCtCollectionId
+		).orElse(
+			0L
+		);
+
+		CTEntryBag ctEntryBag = _ctEntryBagLocalService.fetchLatestCTEntryBag(
+			ownerCTEntry.getCtEntryId(), activeCTCollectionId);
+
+		if (ctEntryBag == null) {
+			ctEntryBag = _ctEntryBagLocalService.createCTEntryBag(
+				userId, ownerCTEntry.getCtEntryId(), activeCTCollectionId,
+				new ServiceContext());
 		}
+
+		_ctEntryBagLocalService.addCTEntry(ctEntryBag, relatedCTEntry);
+
+		return Optional.ofNullable(ctEntryBag);
 	}
 
 	@Override
@@ -317,6 +327,29 @@ public class CTManagerImpl implements CTManager {
 			ctEntry -> _ctEntryLocalService.deleteCTEntry(ctEntry));
 	}
 
+	@Override
+	public <T> T updateModelInContext(
+			UnsafeSupplier<T, PortalException> modelVersionSupplier)
+		throws PortalException {
+
+		boolean resetFlag = false;
+
+		try {
+			if (!ChangeTrackingThreadLocal.isModelUpdateInProgress()) {
+				resetFlag = true;
+
+				ChangeTrackingThreadLocal.setModelUpdateInProgress(true);
+			}
+
+			return modelVersionSupplier.get();
+		}
+		finally {
+			if (resetFlag) {
+				ChangeTrackingThreadLocal.setModelUpdateInProgress(false);
+			}
+		}
+	}
+
 	private long _getCompanyId(long userId) {
 		long companyId = 0;
 
@@ -356,6 +389,9 @@ public class CTManagerImpl implements CTManager {
 
 	@Reference
 	private CTEngineManager _ctEngineManager;
+
+	@Reference
+	private CTEntryBagLocalService _ctEntryBagLocalService;
 
 	@Reference
 	private CTEntryLocalService _ctEntryLocalService;

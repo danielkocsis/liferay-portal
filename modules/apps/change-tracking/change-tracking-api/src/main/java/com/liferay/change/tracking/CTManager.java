@@ -18,6 +18,7 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.change.tracking.exception.CTException;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.model.CTEntryBag;
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -35,18 +36,8 @@ import java.util.Optional;
 @ProviderType
 public interface CTManager {
 
-	/**
-	 * Executes a model addition or update using the given supplier, with
-	 * setting and un-setting the flag that indicates the update before and
-	 * after the operation. Therefore during the execution {@link
-	 * #isModelUpdateInProgress()} will return <code>true</code>.
-	 *
-	 * @param  modelUpdateSupplier The supplier that performs the add or update
-	 *         and supplies the resulting model
-	 * @return The created or updated model of type T
-	 */
-	public <T> T executeModelUpdate(
-			UnsafeSupplier<T, PortalException> modelUpdateSupplier)
+	public Optional<CTEntryBag> addRelatedCTEntry(
+			long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry)
 		throws PortalException;
 
 	/**
@@ -126,13 +117,13 @@ public interface CTManager {
 	/**
 	 * Indicates whether an add or update is in progress for a model. This will
 	 * only return <code>true</code> if the add or update is being executed with
-	 * {@link #executeModelUpdate(UnsafeSupplier)} and the execution is in
+	 * {@link #updateModelInContext(UnsafeSupplier)} and the execution is in
 	 * progress. Useful to be able to bypass change tracking consideration when
 	 * a get or fetch is executed for a model during it's own addition or
 	 * update.
 	 *
 	 * @return <code>true</code> if an add or update is in progress for a model
-	 *         using {@link #executeModelUpdate(UnsafeSupplier)}
+	 *         using {@link #updateModelInContext(UnsafeSupplier)}
 	 */
 	public boolean isModelUpdateInProgress();
 
@@ -186,5 +177,19 @@ public interface CTManager {
 	 */
 	public Optional<CTEntry> unregisterModelChange(
 		long userId, long classNameId, long classPK);
+
+	/**
+	 * Executes a model addition or update using the given supplier, with
+	 * setting and un-setting the flag that indicates the update before and
+	 * after the operation. Therefore during the execution {@link
+	 * #isModelUpdateInProgress()} will return <code>true</code>.
+	 *
+	 * @param  modelUpdateSupplier The supplier that performs the add or update
+	 *         and supplies the resulting model
+	 * @return The created or updated model of type T
+	 */
+	public <T> T updateModelInContext(
+			UnsafeSupplier<T, PortalException> modelUpdateSupplier)
+		throws PortalException;
 
 }

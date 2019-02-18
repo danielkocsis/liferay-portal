@@ -370,6 +370,13 @@ public class CTEntryBagLocalServiceWrapper implements CTEntryBagLocalService,
 	}
 
 	@Override
+	public boolean hasCTEntry(
+		com.liferay.change.tracking.model.CTEntryBag ctEntryBag,
+		com.liferay.change.tracking.model.CTEntry ctEntry) {
+		return _ctEntryBagLocalService.hasCTEntry(ctEntryBag, ctEntry);
+	}
+
+	@Override
 	public boolean hasCTEntryCTEntryBag(long ctEntryId, long ctEntryBagId) {
 		return _ctEntryBagLocalService.hasCTEntryCTEntryBag(ctEntryId,
 			ctEntryBagId);
@@ -378,6 +385,13 @@ public class CTEntryBagLocalServiceWrapper implements CTEntryBagLocalService,
 	@Override
 	public boolean hasCTEntryCTEntryBags(long ctEntryId) {
 		return _ctEntryBagLocalService.hasCTEntryCTEntryBags(ctEntryId);
+	}
+
+	@Override
+	public void removeCTEntry(
+		com.liferay.change.tracking.model.CTEntryBag ctEntryBag,
+		com.liferay.change.tracking.model.CTEntry ctEntry) {
+		_ctEntryBagLocalService.removeCTEntry(ctEntryBag, ctEntry);
 	}
 
 	@Override

@@ -282,10 +282,15 @@ public interface CTEntryBagLocalService extends BaseLocalService,
 		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public boolean hasCTEntry(CTEntryBag ctEntryBag, CTEntry ctEntry);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean hasCTEntryCTEntryBag(long ctEntryId, long ctEntryBagId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean hasCTEntryCTEntryBags(long ctEntryId);
+
+	public void removeCTEntry(CTEntryBag ctEntryBag, CTEntry ctEntry);
 
 	public void setCTEntryCTEntryBags(long ctEntryId, long[] ctEntryBagIds);
 
