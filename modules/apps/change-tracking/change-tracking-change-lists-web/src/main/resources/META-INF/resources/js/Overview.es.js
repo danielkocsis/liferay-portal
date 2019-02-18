@@ -119,10 +119,10 @@ class Overview extends PortletBase {
 			changeEntry => {
 				let changeTypeStr = Liferay.Language.get('added');
 
-				if (changeEntry.changeType === 2) {
+				if (changeEntry.changeType === 1) {
 					changeTypeStr = Liferay.Language.get('deleted');
 				}
-				else if (changeEntry.changeType === 3) {
+				else if (changeEntry.changeType === 2) {
 					changeTypeStr = Liferay.Language.get('modified');
 				}
 
@@ -188,7 +188,7 @@ class Overview extends PortletBase {
 
 		// Production Information Description
 
-		this.descriptionProductionInformation = productionInformation.ctcollection.description;
+		this.descriptionProductionInformation = productionInformation.CTCollection.description;
 
 		// Change Lists dropdown Menu
 
@@ -213,7 +213,7 @@ class Overview extends PortletBase {
 
 		// Production Information Header Title
 
-		this.headerTitleProductionInformation = productionInformation.ctcollection.name;
+		this.headerTitleProductionInformation = productionInformation.CTCollection.name;
 
 		// Initial Fetch
 
