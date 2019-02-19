@@ -113,7 +113,74 @@ public class CTManagerTest {
 	}
 
 	@Test
-	public void testAddRelatedEntry() throws Exception {
+	public void testAddRelatedEntryWhenDifferentResource() throws Exception {
+		Optional<CTCollection> ctCollectionOptional =
+			_ctEngineManager.getActiveCTCollectionOptional(_user.getUserId());
+
+		Assert.assertTrue(ctCollectionOptional.isPresent());
+
+		long ctCollectionId = ctCollectionOptional.map(
+			CTCollection::getCtCollectionId
+		).get();
+
+		CTEntry ownerCTEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			RandomTestUtil.nextLong(), _TEST_RESOURCE_CLASS_ENTITY_ID,
+			CTConstants.CT_CHANGE_TYPE_ADDITION, ctCollectionId,
+			new ServiceContext());
+
+		CTEntryBag ctEntryBag = _ctEntryBagLocalService.fetchLatestCTEntryBag(
+			ownerCTEntry.getCtEntryId(), ctCollectionId);
+
+		Assert.assertNull(ctEntryBag);
+
+		CTEntry ctEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			RandomTestUtil.nextLong(), 1L, CTConstants.CT_CHANGE_TYPE_ADDITION,
+			ctCollectionId, new ServiceContext());
+
+		Optional<CTEntryBag> ctEntryBagOptionalA = _ctManager.addRelatedCTEntry(
+			_user.getUserId(), ownerCTEntry, ctEntry);
+
+		Assert.assertTrue(ctEntryBagOptionalA.isPresent());
+
+		int ctEntryBagSize = ctEntryBagOptionalA.map(
+			CTEntryBag::getRelatedCTEntries
+		).map(
+			List::size
+		).orElse(
+			0
+		);
+
+		Assert.assertEquals(
+			"There must be two change tracking entries", 2, ctEntryBagSize);
+
+		ctEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			RandomTestUtil.nextLong(), 2L, CTConstants.CT_CHANGE_TYPE_ADDITION,
+			ctCollectionId, new ServiceContext());
+
+		Optional<CTEntryBag> ctEntryBagOptionalB = _ctManager.addRelatedCTEntry(
+			_user.getUserId(), ownerCTEntry, ctEntry);
+
+		Assert.assertTrue(ctEntryBagOptionalB.isPresent());
+
+		ctEntryBagSize = ctEntryBagOptionalB.map(
+			CTEntryBag::getRelatedCTEntries
+		).map(
+			List::size
+		).orElse(
+			0
+		);
+
+		Assert.assertEquals(
+			"There must be three change tracking entries", 3, ctEntryBagSize);
+
+		Assert.assertEquals(ctEntryBagOptionalA, ctEntryBagOptionalB);
+	}
+
+	@Test
+	public void testAddRelatedEntryWhenSameResource() throws Exception {
 		Optional<CTCollection> ctCollectionOptional =
 			_ctEngineManager.getActiveCTCollectionOptional(_user.getUserId());
 
@@ -140,19 +207,21 @@ public class CTManagerTest {
 			CTConstants.CT_CHANGE_TYPE_ADDITION, ctCollectionId,
 			new ServiceContext());
 
-		_ctManager.addRelatedCTEntry(_user.getUserId(), ownerCTEntry, ctEntry);
+		Optional<CTEntryBag> ctEntryBagOptionalA = _ctManager.addRelatedCTEntry(
+			_user.getUserId(), ownerCTEntry, ctEntry);
 
-		ctEntryBag = _ctEntryBagLocalService.fetchLatestCTEntryBag(
-			ownerCTEntry.getCtEntryId(), ctCollectionId);
+		Assert.assertTrue(ctEntryBagOptionalA.isPresent());
 
-		Assert.assertNotNull(ctEntryBag);
-
-		List<CTEntry> relatedCTEntries = ctEntryBag.getRelatedCTEntries();
+		int ctEntryBagSize = ctEntryBagOptionalA.map(
+			CTEntryBag::getRelatedCTEntries
+		).map(
+			List::size
+		).orElse(
+			0
+		);
 
 		Assert.assertEquals(
-			"There must be one change tracking entry", 1,
-			relatedCTEntries.size());
-		Assert.assertEquals(ctEntry, relatedCTEntries.get(0));
+			"There must be two change tracking entries", 2, ctEntryBagSize);
 
 		ctEntry = _ctEntryLocalService.addCTEntry(
 			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
@@ -160,7 +229,24 @@ public class CTManagerTest {
 			CTConstants.CT_CHANGE_TYPE_ADDITION, ctCollectionId,
 			new ServiceContext());
 
-		_ctManager.addRelatedCTEntry(_user.getUserId(), ownerCTEntry, ctEntry);
+		Optional<CTEntryBag> ctEntryBagOptionalB =
+			_ctManager.addRelatedCTEntry(
+				_user.getUserId(), ownerCTEntry, ctEntry);
+
+		Assert.assertTrue(ctEntryBagOptionalB.isPresent());
+
+		ctEntryBagSize = ctEntryBagOptionalB.map(
+			CTEntryBag::getRelatedCTEntries
+		).map(
+			List::size
+		).orElse(
+			0
+		);
+
+		Assert.assertEquals(
+			"There must be two change tracking entries", 2, ctEntryBagSize);
+
+		Assert.assertEquals(ctEntryBagOptionalA, ctEntryBagOptionalB);
 	}
 
 	@Test
