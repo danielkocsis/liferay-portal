@@ -121,7 +121,6 @@
 
 		<!-- References -->
 
-		<reference entity="CTCollection" package-path="com.liferay.change.tracking" />
 		<reference entity="CTEntry" package-path="com.liferay.change.tracking" />
 	</entity>
 	<entity local-service="true" name="CTProcess" remote-service="false" trash-enabled="false" uuid="false">

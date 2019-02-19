@@ -34,13 +34,18 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.transaction.TransactionConfig;
+import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -52,8 +57,7 @@ import org.osgi.service.component.annotations.Reference;
 public class CTManagerImpl implements CTManager {
 
 	public Optional<CTEntryBag> addRelatedCTEntry(
-			long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry)
-		throws PortalException {
+		long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry) {
 
 		Optional<CTCollection> activeCTCollectionOptional =
 			_ctEngineManager.getActiveCTCollectionOptional(userId);
@@ -68,18 +72,20 @@ public class CTManagerImpl implements CTManager {
 			0L
 		);
 
-		CTEntryBag ctEntryBag = _ctEntryBagLocalService.fetchLatestCTEntryBag(
-			ownerCTEntry.getCtEntryId(), activeCTCollectionId);
+		try {
+			CTEntryBag ctEntryBag = TransactionInvokerUtil.invoke(
+				_transactionConfig,
+				() -> _createCTEntryBag(
+					userId, ownerCTEntry, relatedCTEntry,
+					activeCTCollectionId));
 
-		if (ctEntryBag == null) {
-			ctEntryBag = _ctEntryBagLocalService.createCTEntryBag(
-				userId, ownerCTEntry.getCtEntryId(), activeCTCollectionId,
-				new ServiceContext());
+			return Optional.of(ctEntryBag);
 		}
+		catch (Throwable t) {
+			_log.error("Unable to create change tracking entry bag", t);
 
-		_ctEntryBagLocalService.addCTEntry(ctEntryBag, relatedCTEntry);
-
-		return Optional.ofNullable(ctEntryBag);
+			return Optional.empty();
+		}
 	}
 
 	@Override
@@ -350,6 +356,65 @@ public class CTManagerImpl implements CTManager {
 		}
 	}
 
+	private boolean _containsResource(
+		CTEntryBag ctEntryBag, long resourcePrimKey) {
+
+		List<CTEntry> relatedCTEntries = ctEntryBag.getRelatedCTEntries();
+
+		Stream<CTEntry> relatedCTEntriesStream = relatedCTEntries.stream();
+
+		if (relatedCTEntriesStream.anyMatch(
+				ctEntry -> ctEntry.getResourcePrimKey() == resourcePrimKey)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private CTEntryBag _copyCTEntryBag(CTEntryBag ctEntryBag)
+		throws PortalException {
+
+		CTEntryBag ctEntryBagCopy = _ctEntryBagLocalService.createCTEntryBag(
+			PrincipalThreadLocal.getUserId(), ctEntryBag.getOwnerCTEntryId(),
+			ctEntryBag.getCtCollectionId(), new ServiceContext());
+
+		_ctEntryLocalService.addCTEntryBagCTEntries(
+			ctEntryBagCopy.getCtEntryBagId(),
+			_ctEntryBagLocalService.getCTEntryPrimaryKeys(
+				ctEntryBag.getCtEntryBagId()));
+
+		return ctEntryBagCopy;
+	}
+
+	private CTEntryBag _createCTEntryBag(
+			long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry,
+			long activeCTCollectionId)
+		throws PortalException {
+
+		CTEntryBag ctEntryBag = _ctEntryBagLocalService.fetchLatestCTEntryBag(
+			ownerCTEntry.getCtEntryId(), activeCTCollectionId);
+
+		if (ctEntryBag == null) {
+			ctEntryBag = _ctEntryBagLocalService.createCTEntryBag(
+				userId, ownerCTEntry.getCtEntryId(), activeCTCollectionId,
+				new ServiceContext());
+
+			_ctEntryBagLocalService.addCTEntry(ctEntryBag, relatedCTEntry);
+		}
+		else if (!_containsResource(
+					ctEntryBag, relatedCTEntry.getResourcePrimKey())) {
+
+			_ctEntryBagLocalService.addCTEntry(ctEntryBag, relatedCTEntry);
+		}
+		else {
+			_updateCTEntryInCTEntryBag(
+				_copyCTEntryBag(ctEntryBag), relatedCTEntry);
+		}
+
+		return ctEntryBag;
+	}
+
 	private long _getCompanyId(long userId) {
 		long companyId = 0;
 
@@ -385,6 +450,29 @@ public class CTManagerImpl implements CTManager {
 			ctCollectionId, classNameId, classPK);
 	}
 
+	private void _updateCTEntryInCTEntryBag(
+		CTEntryBag ctEntryBag, CTEntry ctEntry) {
+
+		List<CTEntry> relatedCTEntries = ctEntryBag.getRelatedCTEntries();
+
+		Stream<CTEntry> relatedCTEntriesStream = relatedCTEntries.stream();
+
+		Optional<CTEntry> previousCTEntryOptional =
+			relatedCTEntriesStream.filter(
+				relatedCTEntry ->
+					relatedCTEntry.getResourcePrimKey() ==
+						ctEntry.getResourcePrimKey()
+			).findFirst();
+
+		previousCTEntryOptional.ifPresent(
+			previousCTEntry -> {
+				_ctEntryBagLocalService.removeCTEntry(
+					ctEntryBag, previousCTEntry);
+
+				_ctEntryBagLocalService.addCTEntry(ctEntryBag, ctEntry);
+			});
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(CTManagerImpl.class);
 
 	@Reference
@@ -395,6 +483,10 @@ public class CTManagerImpl implements CTManager {
 
 	@Reference
 	private CTEntryLocalService _ctEntryLocalService;
+
+	private final TransactionConfig _transactionConfig =
+		TransactionConfig.Factory.create(
+			Propagation.REQUIRED, new Class<?>[] {Exception.class});
 
 	@Reference
 	private UserLocalService _userLocalService;

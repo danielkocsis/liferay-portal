@@ -22,8 +22,10 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.LongStream;
 
 /**
  * @author Daniel Kocsis
@@ -32,7 +34,9 @@ public class CTEntryBagLocalServiceImpl extends CTEntryBagLocalServiceBaseImpl {
 
 	@Override
 	public void addCTEntry(CTEntryBag ctEntryBag, CTEntry ctEntry) {
-		if ((ctEntryBag == null) || (ctEntry == null)) {
+		if ((ctEntryBag == null) || (ctEntry == null) ||
+			hasCTEntry(ctEntryBag, ctEntry)) {
+
 			return;
 		}
 
@@ -64,7 +68,12 @@ public class CTEntryBagLocalServiceImpl extends CTEntryBagLocalServiceBaseImpl {
 		ctEntryBag.setOwnerCTEntryId(ownerCTEntryId);
 		ctEntryBag.setCtCollectionId(ctCollectionId);
 
-		return ctEntryBagPersistence.update(ctEntryBag);
+		ctEntryBagPersistence.update(ctEntryBag);
+
+		ctEntryBagPersistence.addCTEntry(
+			ctEntryBag.getCtEntryBagId(), ownerCTEntryId);
+
+		return ctEntryBag;
 	}
 
 	@Override
@@ -82,6 +91,31 @@ public class CTEntryBagLocalServiceImpl extends CTEntryBagLocalServiceBaseImpl {
 			ownerCTEntryId, ctCollectionId,
 			OrderByComparatorFactoryUtil.create(
 				"CTEntryBag", "createDate", false));
+	}
+
+	@Override
+	public boolean hasCTEntry(CTEntryBag ctEntryBag, CTEntry ctEntry) {
+		LongStream ctEntryIdsStream = Arrays.stream(
+			ctEntryBagLocalService.getCTEntryPrimaryKeys(
+				ctEntryBag.getCtEntryBagId()));
+
+		if (ctEntryIdsStream.anyMatch(
+				bagCTEntryId -> bagCTEntryId == ctEntry.getCtEntryId())) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public void removeCTEntry(CTEntryBag ctEntryBag, CTEntry ctEntry) {
+		if (!hasCTEntry(ctEntryBag, ctEntry)) {
+			return;
+		}
+
+		ctEntryBagPersistence.removeCTEntry(
+			ctEntryBag.getCtEntryBagId(), ctEntry.getCtEntryId());
 	}
 
 }
