@@ -14,6 +14,27 @@ class Overview extends PortletBase {
 
 	created() {
 		this._render();
+
+		this._fetchProductionCollection();
+	}
+
+	_fetchProductionCollection() {
+		let headers = new Headers();
+		headers.append('Content-Type', 'application/json');
+
+		let init = {
+			credentials: 'include',
+			headers,
+			method: 'GET'
+		};
+
+		let url = this.urlCollectionsBase + '?type=production&companyId=' + Liferay.ThemeDisplay.getCompanyId();
+
+		fetch(url, init)
+			.then(r => r.json())
+			.then(response => {
+				this.productionCTCollectionId = response[0].ctCollectionId;
+			});
 	}
 
 	_fetchAll(urls, init) {
@@ -107,6 +128,8 @@ class Overview extends PortletBase {
 				changeListDescription: this.descriptionActiveChangeList,
 				changeListName: this.headerTitleActiveChangeList,
 				spritemap: themeDisplay.getPathThemeImages() + '/lexicon/icons.svg',
+				urlChangeListsHistory: this.urlChangeListsHistory,
+				urlCheckoutProduction: this.urlCollectionsBase + '/' + this.productionCTCollectionId + '/checkout?userId=' + Liferay.ThemeDisplay.getUserId(),
 				urlPublishChangeList: this.urlActiveCollectionPublish
 			}
 		);
@@ -192,7 +215,7 @@ class Overview extends PortletBase {
 								minute: 'numeric',
 								month: 'numeric',
 								year: 'numeric'
-							}).format(changeEntry.modifiedDate),
+							}).format(new Date(changeEntry.modifiedDate)),
 						site: changeEntry.siteName,
 						title: changeEntry.title,
 						userName: changeEntry.userName,
@@ -254,10 +277,6 @@ class Overview extends PortletBase {
 
 		this.descriptionActiveChangeList = activeCollection.description;
 
-		// Production Information Description
-
-		this.descriptionProductionInformation = productionInformation.ctcollection.description;
-
 		// Change Lists dropdown Menu
 
 		let urlRecentCollections = this.urlCollectionsBase + '?companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&limit=5&sort=modifiedDate:desc';
@@ -268,32 +287,44 @@ class Overview extends PortletBase {
 
 		this.headerTitleActiveChangeList = activeCollection.name;
 
-		// Production Information Header Title
-
-		this.headerTitleProductionInformation = productionInformation.ctcollection.name;
-
 		// Initial Fetch
 
 		this.initialFetch = true;
 
-		// Production Information Published By
+		if ((productionInformation !== undefined) && (productionInformation.ctcollection !== undefined) && (productionInformation.ctcollection.name !== null)) {
 
-		let publishDate = new Date(productionInformation.date);
+			// Production Information Description
 
-		this.publishedBy = {
-			dateTime: new Intl.DateTimeFormat(
-				Liferay.ThemeDisplay.getBCP47LanguageId(),
-				{
-					day: 'numeric',
-					hour: 'numeric',
-					minute: 'numeric',
-					month: 'numeric',
-					year: 'numeric'
-				}).format(publishDate),
-			userInitials: productionInformation.userInitials,
-			userName: productionInformation.userName,
-			userPortraitURL: productionInformation.userPortraitURL
-		};
+			this.descriptionProductionInformation = productionInformation.ctcollection.description;
+
+			// Production Information Header Title
+
+			this.headerTitleProductionInformation = productionInformation.ctcollection.name;
+
+			// Production Information Published By
+
+			let publishDate = new Date(productionInformation.date);
+
+			this.publishedBy = {
+				dateTime: new Intl.DateTimeFormat(
+					Liferay.ThemeDisplay.getBCP47LanguageId(),
+					{
+						day: 'numeric',
+						hour: 'numeric',
+						minute: 'numeric',
+						month: 'numeric',
+						year: 'numeric'
+					}).format(publishDate),
+				userInitials: productionInformation.userInitials,
+				userName: productionInformation.userName,
+				userPortraitURL: productionInformation.userPortraitURL
+			};
+
+			this.productionFound = true;
+		}
+		else {
+			this.productionFound = false;
+		}
 	}
 
 	_render() {
@@ -477,6 +508,10 @@ Overview.STATE = {
 
 	initialFetch: Config.bool().value(false),
 
+	productionCTCollectionId: Config.number(),
+
+	productionFound: Config.bool().value(false),
+
 	/**
 	 * Information of who published to production
 	 * @instance
@@ -506,6 +541,8 @@ Overview.STATE = {
 	urlCollectionsBase: Config.string(),
 
 	urlActiveCollectionPublish: Config.object(),
+
+	urlChangeListsHistory: Config.string().required(),
 
 	/**
 	 * The URL for the REST service to the change entries

@@ -85,10 +85,16 @@ public class ChangeListsDisplayContext {
 			StringBundler.concat(
 				_themeDisplay.getPortalURL(),
 				"/o/change-tracking/processes?companyId=",
-				_themeDisplay.getCompanyId(), "&published=true"));
+				_themeDisplay.getCompanyId(), "&type=published-latest"));
 		soyContext.put("urlProductionView", _themeDisplay.getPortalURL());
 
 		PortletURL portletURL = PortletURLFactoryUtil.create(
+			_renderRequest, CTPortletKeys.CHANGE_LISTS_HISTORY,
+			PortletRequest.RENDER_PHASE);
+
+		soyContext.put("urlChangeListsHistory", portletURL.toString());
+
+		portletURL = PortletURLFactoryUtil.create(
 			_renderRequest, CTPortletKeys.CHANGE_LISTS,
 			PortletRequest.RENDER_PHASE);
 
@@ -209,7 +215,7 @@ public class ChangeListsDisplayContext {
 
 		sortingURL.setParameter(
 			"orderByType",
-			Objects.equals(getOrderByType(), "asc") ? "desc" : "asc");
+			Objects.equals(getOrderByType(), "desc") ? "desc" : "asc");
 
 		return sortingURL.toString();
 	}
