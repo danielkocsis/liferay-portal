@@ -28,14 +28,11 @@ import com.liferay.portal.kernel.model.LayoutSetVersion;
 import com.liferay.portal.kernel.model.LayoutSetVersionModel;
 import com.liferay.portal.kernel.model.ModelWrapper;
 import com.liferay.portal.kernel.model.impl.BaseModelImpl;
-import com.liferay.portal.kernel.model.version.VersionedModelInvocationHandler;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 
 import java.io.Serializable;
-
-import java.lang.reflect.Method;
 
 import java.sql.Types;
 
@@ -286,14 +283,14 @@ public class LayoutSetVersionModelImpl extends BaseModelImpl<LayoutSetVersion>
 
 	@Override
 	public LayoutSet toVersionedModel() {
-		if (_layoutSet == null) {
-			_layoutSet = (LayoutSet)ProxyUtil.newProxyInstance(_classLoader,
-					_versionedModelInterfaces,
-					new VersionedModelInvocationHandler(this,
-						_versionedModelMethodsMap));
-		}
+		LayoutSet layoutSet = new LayoutSetImpl();
 
-		return _layoutSet;
+		layoutSet.setPrimaryKey(getVersionedModelId());
+		layoutSet.setHeadId(-getVersionedModelId());
+
+		populateVersionedModel(layoutSet);
+
+		return layoutSet;
 	}
 
 	@Override
@@ -857,85 +854,6 @@ public class LayoutSetVersionModelImpl extends BaseModelImpl<LayoutSetVersion>
 	private static final Class<?>[] _escapedModelInterfaces = new Class[] {
 			LayoutSetVersion.class, ModelWrapper.class
 		};
-	private static final Map<Method, Method> _versionedModelMethodsMap = new HashMap<Method, Method>();
-	private static final Class<?>[] _versionedModelInterfaces = new Class<?>[] {
-			LayoutSet.class
-		};
-
-	static {
-		try {
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getPrimaryKey"),
-				LayoutSetVersion.class.getMethod("getVersionedModelId"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getLayoutSetId"),
-				LayoutSetVersion.class.getMethod("getLayoutSetId"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getGroupId"),
-				LayoutSetVersion.class.getMethod("getGroupId"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getCompanyId"),
-				LayoutSetVersion.class.getMethod("getCompanyId"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getCreateDate"),
-				LayoutSetVersion.class.getMethod("getCreateDate"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getModifiedDate"),
-				LayoutSetVersion.class.getMethod("getModifiedDate"));
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"isPrivateLayout"),
-				LayoutSetVersion.class.getMethod("isPrivateLayout"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getPrivateLayout"),
-				LayoutSetVersion.class.getMethod("getPrivateLayout"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod("getLogoId"),
-				LayoutSetVersion.class.getMethod("getLogoId"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getThemeId"),
-				LayoutSetVersion.class.getMethod("getThemeId"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getColorSchemeId"),
-				LayoutSetVersion.class.getMethod("getColorSchemeId"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod("getCss"),
-				LayoutSetVersion.class.getMethod("getCss"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getPageCount"),
-				LayoutSetVersion.class.getMethod("getPageCount"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getSettings"),
-				LayoutSetVersion.class.getMethod("getSettings"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getLayoutSetPrototypeUuid"),
-				LayoutSetVersion.class.getMethod("getLayoutSetPrototypeUuid"));
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"isLayoutSetPrototypeLinkEnabled"),
-				LayoutSetVersion.class.getMethod(
-					"isLayoutSetPrototypeLinkEnabled"));
-
-			_versionedModelMethodsMap.put(LayoutSet.class.getMethod(
-					"getLayoutSetPrototypeLinkEnabled"),
-				LayoutSetVersion.class.getMethod(
-					"getLayoutSetPrototypeLinkEnabled"));
-		}
-		catch (ReflectiveOperationException roe) {
-			throw new ExceptionInInitializerError(roe);
-		}
-	}
-
-	private volatile LayoutSet _layoutSet;
 	private long _layoutSetVersionId;
 	private int _version;
 	private int _originalVersion;
