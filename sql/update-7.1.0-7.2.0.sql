@@ -26,41 +26,6 @@ create table LayoutSetVersion (
 	layoutSetPrototypeLinkEnabled BOOLEAN
 );
 
-insert into LayoutSetVersion
-
-select
-	layoutSetId as layoutSetVersionId,
-	1 as version,
-	layoutSetId,
-	groupId,
-	companyId,
-	createDate,
-	modifiedDate,
-	privateLayout,
-	logoId,
-	themeId,
-	colorSchemeId,
-	css,
-	pageCount,
-	settings_,
-	layoutSetPrototypeUuid,
-	layoutSetPrototypeLinkEnabled
-from LayoutSet;
-
-insert into Counter (name, currentId)
-
-select
-	'com.liferay.portal.kernel.model.LayoutSet' as name,
-	max(layoutSetId) as currentId
-from LayoutSet;
-
-insert into Counter (name, currentId)
-
-select
-	'com.liferay.portal.kernel.model.LayoutSetVersion' as name,
-	max(layoutSetVersionId) as currentId
-from LayoutSetVersion;
-
 alter table LayoutSet add head BOOLEAN;
 alter table LayoutSet add headId LONG;
 
