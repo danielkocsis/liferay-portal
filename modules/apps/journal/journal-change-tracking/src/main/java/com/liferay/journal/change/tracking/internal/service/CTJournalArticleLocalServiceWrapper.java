@@ -45,6 +45,7 @@ import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -258,6 +259,17 @@ public class CTJournalArticleLocalServiceWrapper
 		_unregisterChange(journalArticle);
 
 		return journalArticle;
+	}
+
+	@Override
+	public JournalArticle fetchJournalArticle(long id) {
+		JournalArticle journalArticle = super.fetchJournalArticle(id);
+
+		if (_isRetrievable(journalArticle)) {
+			return journalArticle;
+		}
+
+		return null;
 	}
 
 	@Override
@@ -1822,9 +1834,11 @@ public class CTJournalArticleLocalServiceWrapper
 
 		DynamicQuery journalArticleDynamicQuery = dynamicQuery();
 
-		Property idProperty = PropertyFactoryUtil.forName("id");
+		if (ListUtil.isNotEmpty(classPKs)) {
+			Property idProperty = PropertyFactoryUtil.forName("id");
 
-		journalArticleDynamicQuery.add(idProperty.in(classPKs));
+			journalArticleDynamicQuery.add(idProperty.in(classPKs));
+		}
 
 		return journalArticleDynamicQuery;
 	}
