@@ -28,6 +28,10 @@ import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
 import com.liferay.asset.util.AssetHelper;
 import com.liferay.asset.util.AssetPublisherAddItemHolder;
+import com.liferay.change.tracking.CTEngineManager;
+import com.liferay.change.tracking.CTManager;
+import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.dynamic.data.mapping.kernel.DDMStructureManager;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
@@ -54,6 +58,7 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchContextFactory;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.SortFactoryUtil;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.theme.PortletDisplay;
@@ -269,13 +274,22 @@ public class AssetHelperImpl implements AssetHelper {
 			AssetEntry assetEntry = _assetEntryLocalService.fetchEntry(
 				className, classPK);
 
-			if (assetEntry != null) {
+			long userId =
+				PermissionThreadLocal.getPermissionChecker().getUserId();
+
+			List<CTEntry> ctEntries = _ctManager.getModelChangeCTEntries(
+				userId, classPK);
+
+			if (assetEntry != null && !ctEntries.isEmpty()) {
 				assetEntries.add(assetEntry);
 			}
 		}
 
 		return assetEntries;
 	}
+
+	@Reference
+	private CTManager _ctManager;
 
 	@Override
 	public String getAssetKeywords(String className, long classPK) {
