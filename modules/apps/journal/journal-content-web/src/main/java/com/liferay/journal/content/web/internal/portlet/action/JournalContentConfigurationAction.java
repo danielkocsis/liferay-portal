@@ -19,6 +19,9 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.change.tracking.CTEngineManager;
+import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.model.CTCollectionModel;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.journal.constants.JournalContentPortletKeys;
@@ -40,6 +43,8 @@ import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+
+import java.util.Optional;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -115,13 +120,27 @@ public class JournalContentConfigurationAction
 			ActionResponse actionResponse)
 		throws Exception {
 
-		String articleId = getArticleId(actionRequest);
-
-		setPreference(actionRequest, "articleId", articleId);
-
 		long articleGroupId = getArticleGroupId(actionRequest);
 
 		setPreference(actionRequest, "groupId", String.valueOf(articleGroupId));
+
+		String articleId = getArticleId(actionRequest);
+
+		if (!_isChangeTrackingEnabled(actionRequest)) {
+			setPreference(actionRequest, "articleId", articleId);
+
+			super.processAction(portletConfig, actionRequest, actionResponse);
+
+			return;
+		}
+
+		long ctCollectionId = _getCTCollectionId(actionRequest);
+
+		setPreference(
+			actionRequest, "ctCollectionId", String.valueOf(ctCollectionId));
+
+		setPreference(
+			actionRequest, "ctCollectionArticleId" + ctCollectionId, articleId);
 
 		super.processAction(portletConfig, actionRequest, actionResponse);
 	}
@@ -175,6 +194,29 @@ public class JournalContentConfigurationAction
 		return StringUtil.toUpperCase(article.getArticleId());
 	}
 
+	private long _getCTCollectionId(ActionRequest actionRequest) {
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		Optional<CTCollection> activeCTCollectionOptional =
+			_ctEngineManager.getActiveCTCollectionOptional(
+				themeDisplay.getUserId());
+
+		return activeCTCollectionOptional.map(
+			CTCollectionModel::getCtCollectionId
+		).orElse(
+			0L
+		);
+	}
+
+	private boolean _isChangeTrackingEnabled(ActionRequest actionRequest) {
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		return _ctEngineManager.isChangeTrackingEnabled(
+			themeDisplay.getCompanyId());
+	}
+
 	private static final long _CLASS_NAME_ID = PortalUtil.getClassNameId(
 		DDMStructure.class);
 
@@ -183,6 +225,9 @@ public class JournalContentConfigurationAction
 
 	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;
+
+	@Reference
+	private CTEngineManager _ctEngineManager;
 
 	@Reference(
 		target = "(model.class.name=com.liferay.dynamic.data.mapping.model.DDMTemplate)"

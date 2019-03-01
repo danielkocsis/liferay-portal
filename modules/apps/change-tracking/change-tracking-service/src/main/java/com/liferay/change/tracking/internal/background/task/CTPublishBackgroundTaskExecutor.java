@@ -25,6 +25,7 @@ import com.liferay.change.tracking.model.CTProcess;
 import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
 import com.liferay.change.tracking.service.CTEntryLocalServiceUtil;
 import com.liferay.change.tracking.service.CTProcessLocalServiceUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
@@ -38,11 +39,15 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.io.IOException;
@@ -52,6 +57,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import javax.portlet.PortletPreferences;
+import javax.portlet.ReadOnlyException;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -155,6 +163,8 @@ public class CTPublishBackgroundTaskExecutor
 			_publishCTEntries(
 				backgroundTask.getUserId(), ctCollectionId, ctEntries);
 
+			_updatePortletPreferences(ctCollectionId);
+
 			_attachLogs(backgroundTask);
 		}
 		catch (Exception e) {
@@ -231,9 +241,110 @@ public class CTPublishBackgroundTaskExecutor
 			ctEntry.getCtEntryId(), WorkflowConstants.STATUS_APPROVED);
 	}
 
+	private void _updatePortletPreferences(final long ctCollectionId) {
+		List<com.liferay.portal.kernel.model.PortletPreferences>
+			portletPreferencesList =
+				PortletPreferencesLocalServiceUtil.getPortletPreferences();
+
+		Stream<com.liferay.portal.kernel.model.PortletPreferences> stream =
+			portletPreferencesList.parallelStream();
+
+		stream.filter(
+			pp -> pp.getOwnerType() == 3
+		).filter(
+			pp -> StringUtil.startsWith(
+				pp.getPortletId(),
+				"com_liferay_journal_content_web_portlet_" +
+					"JournalContentPortlet_")
+		).map(
+			pp -> {
+				PortletPreferences portletPreferences =
+					PortletPreferencesLocalServiceUtil.fetchPreferences(
+						pp.getCompanyId(), pp.getOwnerId(), pp.getOwnerType(),
+						pp.getPlid(), pp.getPortletId());
+
+				return new PortletPreferencesWrapper(
+					portletPreferences, pp.getCompanyId(), pp.getOwnerId(),
+					pp.getOwnerType(), pp.getPlid(), pp.getPortletId());
+			}
+		).forEach(
+			pp -> {
+				PortletPreferences portletPreferences =
+					pp.getPortletPreferences();
+
+				String ctCollectionArticleId = portletPreferences.getValue(
+					"ctCollectionArticleId" + ctCollectionId, StringPool.BLANK);
+
+				try {
+					if (Validator.isNotNull(ctCollectionArticleId)) {
+						portletPreferences.setValue(
+							"articleId", ctCollectionArticleId);
+					}
+				}
+				catch (ReadOnlyException roe) {
+					roe.printStackTrace();
+				}
+
+				String xml = PortletPreferencesFactoryUtil.toXML(
+					portletPreferences);
+
+				PortletPreferencesLocalServiceUtil.updatePreferences(
+					pp.getOwnerId(), pp.getOwnerType(), pp.getPlid(),
+					pp.getPortletId(), xml);
+			}
+		);
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTPublishBackgroundTaskExecutor.class);
 
 	private final CTEngineManager _ctEngineManager;
+
+	private class PortletPreferencesWrapper {
+
+		public PortletPreferencesWrapper(
+			PortletPreferences portletPreferences, long companyId, long ownerId,
+			int ownerType, long plid, String portletId) {
+
+			_portletPreferences = portletPreferences;
+			_companyId = companyId;
+			_ownerId = ownerId;
+			_ownerType = ownerType;
+			_plid = plid;
+			_portletId = portletId;
+		}
+
+		public long getCompanyId() {
+			return _companyId;
+		}
+
+		public long getOwnerId() {
+			return _ownerId;
+		}
+
+		public int getOwnerType() {
+			return _ownerType;
+		}
+
+		public long getPlid() {
+			return _plid;
+		}
+
+		public String getPortletId() {
+			return _portletId;
+		}
+
+		public PortletPreferences getPortletPreferences() {
+			return _portletPreferences;
+		}
+
+		private final long _companyId;
+		private final long _ownerId;
+		private final int _ownerType;
+		private final long _plid;
+		private final String _portletId;
+		private final PortletPreferences _portletPreferences;
+
+	}
 
 }
