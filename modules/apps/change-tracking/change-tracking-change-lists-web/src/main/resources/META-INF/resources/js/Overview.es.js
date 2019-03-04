@@ -21,6 +21,69 @@ class Overview extends PortletBase {
 		this._fetchProductionCollection();
 	}
 
+	_checkoutCollection(ctCollectionId, render, production) {
+		if (render == 'undefined') {
+			render = true;
+		}
+
+		let headers = new Headers();
+		headers.append('Content-Type', 'application/json');
+		headers.append('X-CSRF-Token', Liferay.authToken);
+
+		let body = {
+			credentials: 'include',
+			headers,
+			method: 'POST'
+		};
+
+		let url = this.urlCollectionsBase + '/' + ctCollectionId + '/checkout?companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&userId=' + Liferay.ThemeDisplay.getUserId();
+
+		fetch(url, body)
+			.then(
+				response => {
+					if (response.status === 202) {
+						Liferay.fire('refreshChangeTrackingIndicator');
+
+						if (production) {
+							Liferay.Util.navigate(this.urlSelectProduction);
+						}
+						else {
+							this._render();
+						}
+					}
+					else if (response.status === 400) {
+						response.json()
+							.then(
+								data => {
+									openToast(
+										{
+											message: Liferay.Util.sub(Liferay.Language.get('an-error-occured-when-trying-to-check-x-out-x'), this.changeListName, data.message),
+											title: Liferay.Language.get('error'),
+											type: 'danger'
+										}
+									);
+								}
+							);
+					}
+				}
+			)
+			.catch(
+				error => {
+					const message = typeof error === 'string' ?
+						error :
+						Liferay.Util.sub(Liferay.Language.get('an-error-occured-when-trying-to-check-x-out'), this.changeListName);
+
+					openToast(
+						{
+							message,
+							title: Liferay.Language.get('error'),
+							type: 'danger'
+						}
+					);
+				}
+			);
+	}
+
 	_fetchProductionCollection() {
 		let headers = new Headers();
 		headers.append('Content-Type', 'application/json');
@@ -188,67 +251,63 @@ class Overview extends PortletBase {
 		}
 
 		if (ok) {
-			let headers = new Headers();
-			headers.append('Content-Type', 'application/json');
-			headers.append('X-CSRF-Token', Liferay.authToken);
-
-			let body = {
-				credentials: 'include',
-				headers,
-				method: 'POST'
-			};
 
 			let collectionId = event.target.getAttribute('data-collection-id');
 
 			let production = event.target.getAttribute('data-production');
 
-			let url = this.urlCollectionsBase + '/' + collectionId + '/checkout?companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&userId=' + Liferay.ThemeDisplay.getUserId();
+			this._checkoutCollection(collectionId, true, production);
+		}
+	}
 
-			fetch(url, body)
-				.then(
-					response => {
-						if (response.status === 202) {
-							Liferay.fire('refreshChangeTrackingIndicator');
+	_handleClickTrash() {
+		let headers = new Headers();
+		headers.append('Content-Type', 'application/json');
+		headers.append('X-CSRF-Token', Liferay.authToken);
 
-							if (production) {
-								Liferay.Util.navigate(this.urlSelectProduction);
-							}
-							else {
-								this._render();
-							}
-						}
-						else if (response.status === 400) {
-							response.json()
-								.then(
-									data => {
-										openToast(
-											{
-												message: Liferay.Util.sub(Liferay.Language.get('an-error-occured-when-trying-to-check-x-out-x'), this.changeListName, data.message),
-												title: Liferay.Language.get('error'),
-												type: 'danger'
-											}
-										);
-									}
-								);
-						}
+		let body = {
+			credentials: 'include',
+			headers,
+			method: 'DELETE'
+		};
+
+		let url = this.urlCollectionsBase + '/' + this.activeCTCollectionId;
+
+		fetch(url, body)
+			.then(
+				response => {
+					if (response.status === 204) {
+						this._checkoutCollection(this.productionCTCollectionId, false);
 					}
-				)
-				.catch(
-					error => {
-						const message = typeof error === 'string' ?
-							error :
-							Liferay.Util.sub(Liferay.Language.get('an-error-occured-when-trying-to-check-x-out'), this.changeListName);
-
+					else if (response.status === 404) {
 						openToast(
 							{
-								message,
+								message: this._sub(Liferay.Language.get('cannot-delete-x-no-such-change-list-found'), this.changeListName),
 								title: Liferay.Language.get('error'),
 								type: 'danger'
 							}
 						);
 					}
-				);
-		}
+				}
+			).then(
+				response => {
+					Liferay.Util.navigate(this.urlSelectChangeList);
+				}
+			).catch(
+				error => {
+					const message = typeof error === 'string' ?
+						error :
+						this._sub(Liferay.Language.get('an-error-occured-when-trying-to-delete-x'), this.changeListName);
+
+					openToast(
+						{
+							message,
+							title: Liferay.Language.get('error'),
+							type: 'danger'
+						}
+					);
+				}
+			);
 	}
 
 	_populateChangeEntries(changeEntriesResult) {
@@ -339,6 +398,8 @@ class Overview extends PortletBase {
 		let activeCollection = requestResult[0];
 		let productionInformation = requestResult[1];
 		let userSettings = requestResult[2];
+
+		this.activeCTCollectionId = activeCollection[0].ctCollectionId;
 
 		if (activeCollection !== undefined && activeCollection.length == 1) {
 			activeCollection = activeCollection[0];
