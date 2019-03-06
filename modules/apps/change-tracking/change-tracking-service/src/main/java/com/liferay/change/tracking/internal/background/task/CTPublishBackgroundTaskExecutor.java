@@ -165,7 +165,7 @@ public class CTPublishBackgroundTaskExecutor
 			List<CTEntryAggregate> ctEntryAggregates =
 				_ctEngineManager.getCTEntryAggregates(ctCollectionId);
 
-			_publishCTEntriesAndAggregates(
+			_publishCTEntriesAndCTEntryAggregates(
 				backgroundTask.getUserId(), ctCollectionId, ctEntries,
 				ctEntryAggregates);
 
@@ -188,7 +188,7 @@ public class CTPublishBackgroundTaskExecutor
 		}
 	}
 
-	private void _publishCTEntriesAndAggregates(
+	private void _publishCTEntriesAndCTEntryAggregates(
 			long userId, long ctCollectionId, List<CTEntry> ctEntries,
 			List<CTEntryAggregate> ctEntryAggregates)
 		throws Exception {
