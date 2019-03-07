@@ -262,6 +262,10 @@ public class CTPublishBackgroundTaskExecutor
 
 		CTEntryAggregateLocalServiceUtil.addCTCollectionCTEntryAggregate(
 			productionCTCollectionId, ctEntryAggregate);
+
+		CTEntryAggregateLocalServiceUtil.updateStatus(
+			ctEntryAggregate.getCtEntryAggregateId(),
+			WorkflowConstants.STATUS_APPROVED);
 	}
 
 	private void _updatePortletPreferences(final long ctCollectionId) {
