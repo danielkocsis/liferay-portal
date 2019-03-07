@@ -20,6 +20,7 @@ import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.change.tracking.CTEngineManager;
+import com.liferay.change.tracking.CTManager;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTCollectionModel;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
@@ -199,7 +200,7 @@ public class JournalContentConfigurationAction
 			WebKeys.THEME_DISPLAY);
 
 		Optional<CTCollection> activeCTCollectionOptional =
-			_ctEngineManager.getActiveCTCollectionOptional(
+			_ctManager.getActiveCTCollectionOptional(
 				themeDisplay.getUserId());
 
 		return activeCTCollectionOptional.map(
@@ -222,6 +223,9 @@ public class JournalContentConfigurationAction
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		JournalContentConfigurationAction.class);
+
+	@Reference
+	private CTManager _ctManager;
 
 	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;

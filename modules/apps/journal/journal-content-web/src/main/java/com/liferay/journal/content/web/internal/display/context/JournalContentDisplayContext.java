@@ -21,6 +21,7 @@ import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetEntryServiceUtil;
 import com.liferay.change.tracking.CTEngineManager;
+import com.liferay.change.tracking.CTManager;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTCollectionModel;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
@@ -283,7 +284,7 @@ public class JournalContentDisplayContext {
 			_portletRequest.getAttribute(WebKeys.USER_ID));
 
 		Optional<CTCollection> activeCTCollectionOptional =
-			_ctEngineManager.getActiveCTCollectionOptional(userId);
+			_ctManager.getActiveCTCollectionOptional(userId);
 
 		String ctCollectionArticleIdKey = activeCTCollectionOptional.map(
 			CTCollectionModel::getCtCollectionId
@@ -1036,6 +1037,7 @@ public class JournalContentDisplayContext {
 		<String, ContentMetadataAssetAddonEntry>
 			_contentMetadataAssetAddonEntryMap;
 	private static CTEngineManager _ctEngineManager;
+	private static CTManager _ctManager;
 	private static final ServiceTrackerMap<String, UserToolAssetAddonEntry>
 		_userToolAssetAddonEntryMap;
 
@@ -1043,13 +1045,23 @@ public class JournalContentDisplayContext {
 		Bundle bundle = FrameworkUtil.getBundle(
 			JournalContentDisplayContext.class);
 
-		ServiceTracker<CTEngineManager, CTEngineManager> serviceTracker =
-			new ServiceTracker<>(
-				bundle.getBundleContext(), CTEngineManager.class, null);
+		ServiceTracker<CTEngineManager, CTEngineManager>
+			ctEngineManagerServiceTracker =
+				new ServiceTracker<>(
+					bundle.getBundleContext(), CTEngineManager.class, null);
 
-		serviceTracker.open();
+		ctEngineManagerServiceTracker.open();
 
-		_ctEngineManager = serviceTracker.getService();
+		_ctEngineManager = ctEngineManagerServiceTracker.getService();
+
+		ServiceTracker<CTManager, CTManager>
+			ctManagerServiceTracker =
+				new ServiceTracker<>(
+					bundle.getBundleContext(), CTManager.class, null);
+
+		ctManagerServiceTracker.open();
+
+		_ctManager = ctManagerServiceTracker.getService();
 
 		BundleContext bundleContext = bundle.getBundleContext();
 
