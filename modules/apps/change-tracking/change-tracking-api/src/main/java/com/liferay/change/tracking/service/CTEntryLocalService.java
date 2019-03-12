@@ -16,6 +16,7 @@ package com.liferay.change.tracking.service;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -81,6 +82,7 @@ public interface CTEntryLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public CTEntry addCTEntry(CTEntry ctEntry);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public CTEntry addCTEntry(
 			long userId, long modelClassNameId, long modelClassPK,
 			long resourcePrimKey, int changeType, long ctCollectionId,
@@ -346,6 +348,7 @@ public interface CTEntryLocalService
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException;
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<CTEntry> getRelatedOwnerCTEntries(long ctEntryId);
 
@@ -367,6 +370,18 @@ public interface CTEntryLocalService
 	public boolean hasCTEntryAggregateCTEntry(
 		long ctEntryAggregateId, long ctEntryId);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<CTEntry> search(
+		CTCollection ctCollection, long[] groupIds, long[] userIds,
+		long[] classNameIds, int[] changeTypes, boolean collision,
+		long otherCTCollectionId, QueryDefinition<CTEntry> queryDefinition);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public long searchCount(
+		CTCollection ctCollection, long[] groupIds, long[] userIds,
+		long[] classNameIds, int[] changeTypes, boolean collision,
+		long otherCTCollectionId, QueryDefinition<CTEntry> queryDefinition);
+
 	public void setCTCollectionCTEntries(
 		long ctCollectionId, long[] ctEntryIds);
 
@@ -382,6 +397,7 @@ public interface CTEntryLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public CTEntry updateCTEntry(CTEntry ctEntry);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public CTEntry updateStatus(long ctEntryId, int status);
 
 }
