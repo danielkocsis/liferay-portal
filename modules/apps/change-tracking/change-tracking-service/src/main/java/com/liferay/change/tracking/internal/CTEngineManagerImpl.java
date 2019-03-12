@@ -22,6 +22,7 @@ import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.exception.CTException;
 import com.liferay.change.tracking.internal.util.ChangeTrackingThreadLocal;
 import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.model.CTCollectionModel;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.model.CTEntryAggregate;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
@@ -290,6 +291,31 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	}
 
 	@Override
+	public List<CTEntry> getCTEntries(
+		CTCollection ctCollection, long[] groupIds, long[] userIds,
+		long[] classNameIds, int[] changeTypes, Boolean collision,
+		QueryDefinition<CTEntry> queryDefinition) {
+
+		long otherCTCollectionId = 0L;
+
+		if (collision != null) {
+			Optional<CTCollection> productionCTCollectionOptional =
+				getProductionCTCollectionOptional(ctCollection.getCompanyId());
+
+			otherCTCollectionId = productionCTCollectionOptional.map(
+				CTCollectionModel::getCtCollectionId
+			).orElse(
+				0L
+			);
+		}
+
+		return _ctEntryLocalService.search(
+			ctCollection, groupIds, userIds, classNameIds, changeTypes,
+			Boolean.TRUE.equals(collision), otherCTCollectionId,
+			queryDefinition);
+	}
+
+	@Override
 	public List<CTEntry> getCTEntries(long ctCollectionId) {
 		return _ctEntryLocalService.getCTCollectionCTEntries(ctCollectionId);
 	}
@@ -309,9 +335,28 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	}
 
 	@Override
-	public int getCTEntriesCount(long ctCollectionId) {
-		return _ctEntryLocalService.getCTCollectionCTEntriesCount(
-			ctCollectionId);
+	public int getCTEntriesCount(
+		CTCollection ctCollection, long[] groupIds, long[] userIds,
+		long[] classNameIds, int[] changeTypes, Boolean collision,
+		QueryDefinition<CTEntry> queryDefinition) {
+
+		long otherCTCollectionId = 0L;
+
+		if (collision != null) {
+			Optional<CTCollection> productionCTCollectionOptional =
+				getProductionCTCollectionOptional(ctCollection.getCompanyId());
+
+			otherCTCollectionId = productionCTCollectionOptional.map(
+				CTCollectionModel::getCtCollectionId
+			).orElse(
+				0L
+			);
+		}
+
+		return (int)_ctEntryLocalService.searchCount(
+			ctCollection, groupIds, userIds, classNameIds, changeTypes,
+			Boolean.TRUE.equals(collision), otherCTCollectionId,
+			queryDefinition);
 	}
 
 	@Override
@@ -688,6 +733,14 @@ public class CTEngineManagerImpl implements CTEngineManager {
 
 	private void _updateRecentCTCollectionId(long userId, long ctCollectionId) {
 		User user = _userLocalService.fetchUser(userId);
+
+		if (user == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Unable to find user " + userId);
+			}
+
+			return;
+		}
 
 		PortalPreferences portalPreferences =
 			PortletPreferencesFactoryUtil.getPortalPreferences(

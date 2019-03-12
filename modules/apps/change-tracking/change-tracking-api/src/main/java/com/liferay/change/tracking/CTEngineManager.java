@@ -118,6 +118,27 @@ public interface CTEngineManager {
 	public List<CTCollection> getCTCollections(long companyId);
 
 	/**
+	 * Returns the filtered list of change entries associated with the given
+	 * change collection.
+	 *
+	 * @param  ctCollection the primary key of the change collection
+	 * @param  groupIds the array of the group primary keys
+	 * @param  userIds the array of the user primary keys
+	 * @param  classNameIds the array of the class name primary keys
+	 * @param  changeTypes the array of the change types
+	 * @param  collision whether or not the change entries collide with the
+	 *         production change collection
+	 * @param  queryDefinition the object contains settings regarding
+	 *         pagination, order and status filtering
+	 * @return the filtered list of change entries associated with the given
+	 *         change collection.
+	 */
+	public List<CTEntry> getCTEntries(
+		CTCollection ctCollection, long[] groupIds, long[] userIds,
+		long[] classNameIds, int[] changeTypes, Boolean collision,
+		QueryDefinition<CTEntry> queryDefinition);
+
+	/**
 	 * Returns all the change entries associated with the given change
 	 * collection.
 	 *
@@ -132,20 +153,32 @@ public interface CTEngineManager {
 	 *
 	 * @param  ctCollectionId the primary key of the change collection
 	 * @param  queryDefinition the object contains settings regarding
-	 *         pagination, order and filter
+	 *         pagination, order and status filtering
 	 * @return the list of change entries
 	 */
 	public List<CTEntry> getCTEntries(
 		long ctCollectionId, QueryDefinition<CTEntry> queryDefinition);
 
 	/**
-	 * Returns the number of all the change entries associated with the given
-	 * change collection.
+	 * Returns the number of the filtered change entries associated with the
+	 * given change collection.
 	 *
-	 * @param  ctCollectionId the primary key of the change collection
-	 * @return the list of change entries
+	 * @param  ctCollection the primary key of the change collection
+	 * @param  groupIds the array of the group primary keys
+	 * @param  userIds the array of the user primary keys
+	 * @param  classNameIds the array of the class name primary keys
+	 * @param  changeTypes the array of the change types
+	 * @param  collision whether or not the change entries collide with the
+	 *         production change collection
+	 * @param  queryDefinition the object contains settings regarding the status
+	 *         filtering
+	 * @return the number of filtered change tracking entries associated with
+	 *         the given change collection.
 	 */
-	public int getCTEntriesCount(long ctCollectionId);
+	public int getCTEntriesCount(
+		CTCollection ctCollection, long[] groupIds, long[] userIds,
+		long[] classNameIds, int[] changeTypes, Boolean collision,
+		QueryDefinition<CTEntry> queryDefinition);
 
 	/**
 	 * Returns all the change entry aggregates associated with the given change
@@ -157,8 +190,8 @@ public interface CTEngineManager {
 	public List<CTEntryAggregate> getCTEntryAggregates(long ctCollectionId);
 
 	/**
-	 * Returns all the non production change tracking collection associated
-	 * with the given company.
+	 * Returns all the non production change tracking collection associated with
+	 * the given company.
 	 *
 	 * @param  companyId the primary key of the company
 	 * @param  queryDefinition the object contains settings regarding
@@ -179,9 +212,10 @@ public interface CTEngineManager {
 		long companyId);
 
 	/**
-	 * Returns the recent change tracking collection id for a specific user.
-	 * @param userId the user id of the user
-	 * @return the recent change tracking collection id
+	 * Returns the recent change tracking collection ID for a specific user.
+	 *
+	 * @param  userId the user ID of the user
+	 * @return the recent change tracking collection ID
 	 */
 	public long getRecentCTCollectionId(long userId);
 
