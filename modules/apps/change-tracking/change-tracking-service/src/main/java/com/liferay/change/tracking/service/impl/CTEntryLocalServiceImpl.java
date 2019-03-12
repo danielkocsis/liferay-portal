@@ -22,14 +22,42 @@ import com.liferay.change.tracking.service.base.CTEntryLocalServiceBaseImpl;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistry;
+import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.search.SearchException;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.document.Document;
+import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
+import com.liferay.portal.search.query.BooleanQuery;
+import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.search.query.Query;
+import com.liferay.portal.search.query.TermsQuery;
+import com.liferay.portal.search.searcher.SearchRequest;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.searcher.Searcher;
+import com.liferay.portal.search.sort.Sort;
+import com.liferay.portal.search.sort.SortOrder;
+import com.liferay.portal.search.sort.Sorts;
+import com.liferay.portal.spring.extender.service.ServiceReference;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Brian Wing Shun Chan
@@ -37,6 +65,7 @@ import java.util.List;
  */
 public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public CTEntry addCTEntry(
 			long userId, long modelClassNameId, long modelClassPK,
@@ -136,6 +165,7 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 			ctCollectionId, queryDefinition);
 	}
 
+	@Indexable(type = IndexableType.REINDEX)
 	public List<CTEntry> getRelatedOwnerCTEntries(long ctEntryId) {
 		return getRelatedOwnerCTEntries(
 			ctEntryId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
@@ -155,6 +185,36 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		return ctEntryFinder.findByRelatedCTEntries(ctEntryId, queryDefinition);
 	}
 
+	@Override
+	public List<CTEntry> search(
+		CTCollection ctCollection, long[] groupIds, long[] userIds,
+		long[] classNameIds, int[] changeTypes, boolean collision,
+		long otherCTCollectionId, QueryDefinition<CTEntry> queryDefinition) {
+
+		Query query = _buildQuery(
+			ctCollection, groupIds, userIds, classNameIds, changeTypes,
+			queryDefinition.getStatus(), queryDefinition.isExcludeStatus());
+
+		SearchResponse searchResponse = _search(
+			ctCollection.getCompanyId(), query, queryDefinition);
+
+		return _getCTEntries(searchResponse);
+	}
+
+	@Override
+	public long searchCount(
+		CTCollection ctCollection, long[] groupIds, long[] userIds,
+		long[] classNameIds, int[] changeTypes, boolean collision,
+		long otherCTCollectionId, QueryDefinition<CTEntry> queryDefinition) {
+
+		Query query = _buildQuery(
+			ctCollection, groupIds, userIds, classNameIds, changeTypes,
+			queryDefinition.getStatus(), queryDefinition.isExcludeStatus());
+
+		return _searchCount(ctCollection.getCompanyId(), query);
+	}
+
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public CTEntry updateStatus(long ctEntryId, int status) {
 		if ((status != WorkflowConstants.STATUS_APPROVED) &&
@@ -210,6 +270,132 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		return ctEntry;
 	}
 
+	private Query _buildQuery(
+		CTCollection ctCollection, long[] groupIds, long[] userIds,
+		long[] classNameIds, int[] changeTypes, int status,
+		boolean excludeStatus) {
+
+		BooleanQuery booleanQuery = _queries.booleanQuery();
+
+		booleanQuery.addFilterQueryClauses(
+			_queries.term("ctCollectionId", ctCollection.getCtCollectionId()));
+		booleanQuery.addFilterQueryClauses(
+			_queries.term(Field.COMPANY_ID, ctCollection.getCompanyId()));
+
+		if (!ArrayUtil.isEmpty(groupIds)) {
+			booleanQuery.addMustQueryClauses(
+				_getTermSetQuery(
+					Field.GROUP_ID,
+					_getTermValues(ArrayUtil.toArray(groupIds))));
+		}
+
+		if (!ArrayUtil.isEmpty(userIds)) {
+			booleanQuery.addMustQueryClauses(
+				_getTermSetQuery(
+					Field.USER_ID, _getTermValues(ArrayUtil.toArray(userIds))));
+		}
+
+		if (!ArrayUtil.isEmpty(classNameIds)) {
+			booleanQuery.addMustQueryClauses(
+				_getTermSetQuery(
+					"modelClassNameId",
+					_getTermValues(ArrayUtil.toArray(classNameIds))));
+		}
+
+		if (!ArrayUtil.isEmpty(changeTypes)) {
+			booleanQuery.addMustQueryClauses(
+				_getTermSetQuery(
+					"changeType",
+					_getTermValues(ArrayUtil.toArray(changeTypes))));
+		}
+
+		if (WorkflowConstants.STATUS_ANY != status) {
+			if (excludeStatus) {
+				booleanQuery.addMustNotQueryClauses(
+					_queries.term(Field.STATUS, status));
+			}
+			else {
+				booleanQuery.addMustQueryClauses(
+					_queries.term(Field.STATUS, status));
+			}
+		}
+
+		return booleanQuery;
+	}
+
+	private List<CTEntry> _getCTEntries(SearchResponse searchResponse) {
+		Stream<Document> documentsStream = searchResponse.getDocumentsStream();
+
+		return documentsStream.map(
+			document -> document.getFieldValue(Field.ENTRY_CLASS_PK)
+		).map(
+			GetterUtil::getLong
+		).map(
+			ctEntryLocalService::fetchCTEntry
+		).filter(
+			Objects::nonNull
+		).collect(
+			Collectors.toList()
+		);
+	}
+
+	private Sort[] _getSortsFromQueryDefinition(
+		QueryDefinition<CTEntry> queryDefinition) {
+
+		if (queryDefinition == null) {
+			return new Sort[0];
+		}
+
+		OrderByComparator<CTEntry> orderByComparator =
+			queryDefinition.getOrderByComparator();
+
+		if (orderByComparator == null) {
+			return new Sort[0];
+		}
+
+		Stream<String> stream = Arrays.stream(
+			orderByComparator.getOrderByFields());
+
+		return stream.map(
+			orderByCol -> {
+				if (orderByCol.equals(Field.CREATE_DATE) ||
+					orderByCol.equals(Field.MODIFIED_DATE) ||
+					orderByCol.equals(Field.TITLE)) {
+
+					orderByCol = Field.getSortableFieldName(orderByCol);
+				}
+
+				SortOrder sortOrder = SortOrder.ASC;
+
+				if (!orderByComparator.isAscending()) {
+					sortOrder = SortOrder.DESC;
+				}
+
+				return _sorts.field(orderByCol, sortOrder);
+			}
+		).toArray(
+			Sort[]::new
+		);
+	}
+
+	private TermsQuery _getTermSetQuery(String field, Object[] values) {
+		TermsQuery termsQuery = _queries.terms(field);
+
+		termsQuery.addValues(values);
+
+		return termsQuery;
+	}
+
+	private String[] _getTermValues(Number[] idsArray) {
+		Stream<Number> stream = Arrays.stream(idsArray);
+
+		return stream.map(
+			String::valueOf
+		).toArray(
+			String[]::new
+		);
+	}
+
 	private boolean _isProductionCTCollectionId(long ctCollectionId) {
 		CTCollection ctCollection = ctCollectionLocalService.fetchCTCollection(
 			ctCollectionId);
@@ -219,6 +405,55 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		}
 
 		return ctCollection.isProduction();
+	}
+
+	private SearchResponse _search(
+		long companyId, Query query, QueryDefinition<CTEntry> queryDefinition) {
+
+		SearchRequestBuilder searchRequestBuilder =
+			_searchRequestBuilderFactory.getSearchRequestBuilder(
+				new SearchContext());
+
+		SearchRequest searchRequest = searchRequestBuilder.entryClassNames(
+			CTEntry.class.getName()
+		).query(
+			query
+		).modelIndexerClasses(
+			CTEntry.class
+		).sorts(
+			_getSortsFromQueryDefinition(queryDefinition)
+		).withSearchContext(
+			searchContext -> {
+				searchContext.setCompanyId(companyId);
+				searchContext.setEnd(queryDefinition.getEnd());
+				searchContext.setStart(queryDefinition.getStart());
+			}
+		).build();
+
+		return _searcher.search(searchRequest);
+	}
+
+	private long _searchCount(long companyId, Query query) {
+		Indexer<CTEntry> indexer = _indexerRegistry.getIndexer(CTEntry.class);
+
+		SearchContext searchContext = new SearchContext();
+
+		searchContext.setCompanyId(companyId);
+		searchContext.setEntryClassNames(
+			new String[] {CTEntry.class.getName()});
+		searchContext.setAttribute("search.request.query", query);
+		searchContext.setSorts();
+
+		try {
+			return indexer.searchCount(searchContext);
+		}
+		catch (SearchException se) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Unable to execute change entries count search", se);
+			}
+
+			return 0L;
+		}
 	}
 
 	private CTEntry _updateCTEntry(
@@ -251,5 +486,23 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 			throw new IllegalArgumentException("Change type value is invalid");
 		}
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		CTEntryLocalServiceImpl.class);
+
+	@ServiceReference(type = IndexerRegistry.class)
+	private IndexerRegistry _indexerRegistry;
+
+	@ServiceReference(type = Queries.class)
+	private Queries _queries;
+
+	@ServiceReference(type = Searcher.class)
+	private Searcher _searcher;
+
+	@ServiceReference(type = SearchRequestBuilderFactory.class)
+	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
+
+	@ServiceReference(type = Sorts.class)
+	private Sorts _sorts;
 
 }
