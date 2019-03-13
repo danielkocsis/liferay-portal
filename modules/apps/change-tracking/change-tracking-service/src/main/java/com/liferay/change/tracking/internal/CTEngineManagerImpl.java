@@ -29,7 +29,6 @@ import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTEntryAggregateLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.service.CTProcessLocalService;
-import com.liferay.change.tracking.util.comparator.CTEntryCreateDateComparator;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -52,13 +51,11 @@ import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.io.Serializable;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -221,56 +218,6 @@ public class CTEngineManagerImpl implements CTEngineManager {
 		finally {
 			ChangeTrackingThreadLocal.setModelUpdateInProgress(false);
 		}
-	}
-
-	@Override
-	public List<CTEntry> getCollidingCTEntries(long ctCollectionId) {
-		CTCollection ctCollection = _ctCollectionLocalService.fetchCTCollection(
-			ctCollectionId);
-
-		Optional<CTCollection> productionCTCollectionOptional =
-			getProductionCTCollectionOptional(ctCollection.getCompanyId());
-
-		return productionCTCollectionOptional.map(
-			CTCollection::getCtCollectionId
-		).map(
-			productionCTCollectionID -> getCollidingCTEntries(
-				ctCollectionId, productionCTCollectionID)
-		).orElse(
-			Collections.emptyList()
-		);
-	}
-
-	@Override
-	public List<CTEntry> getCollidingCTEntries(
-		long sourceCTCollectionId, long targetCTCollectionId) {
-
-		List<CTEntry> sourceCTEntries = _ctEntryLocalService.fetchCTEntries(
-			sourceCTCollectionId, new QueryDefinition<>());
-
-		if (ListUtil.isEmpty(sourceCTEntries)) {
-			return Collections.emptyList();
-		}
-
-		List<CTEntry> collidingCTEntries = new ArrayList<>();
-
-		for (CTEntry ctEntry : sourceCTEntries) {
-			Optional<CTEntry> latestTargetCTEntryOptional = _getLatestCTEntry(
-				targetCTCollectionId, ctEntry.getModelResourcePrimKey());
-
-			if (!latestTargetCTEntryOptional.isPresent()) {
-				continue;
-			}
-
-			latestTargetCTEntryOptional.filter(
-				latestTargetCTEntry -> _isColliding(
-					ctEntry, latestTargetCTEntry)
-			).ifPresent(
-				latestTargetCTEntry -> collidingCTEntries.add(ctEntry)
-			);
-		}
-
-		return collidingCTEntries;
 	}
 
 	@Override
@@ -702,33 +649,6 @@ public class CTEngineManagerImpl implements CTEngineManager {
 		}
 
 		return companyId;
-	}
-
-	private Optional<CTEntry> _getLatestCTEntry(
-		long ctCollectionId, long resourcePrimKey) {
-
-		QueryDefinition<CTEntry> queryDefinition = new QueryDefinition<>();
-
-		queryDefinition.setEnd(1);
-		queryDefinition.setOrderByComparator(new CTEntryCreateDateComparator());
-		queryDefinition.setStart(0);
-
-		List<CTEntry> ctEntries = _ctEntryLocalService.fetchCTEntries(
-			ctCollectionId, resourcePrimKey, queryDefinition);
-
-		if (ListUtil.isEmpty(ctEntries)) {
-			return Optional.empty();
-		}
-
-		return Optional.of(ctEntries.get(0));
-	}
-
-	private boolean _isColliding(CTEntry ctEntry, CTEntry productionCTEntry) {
-		if (ctEntry.getModelClassPK() < productionCTEntry.getModelClassPK()) {
-			return true;
-		}
-
-		return false;
 	}
 
 	private void _updateRecentCTCollectionId(long userId, long ctCollectionId) {
