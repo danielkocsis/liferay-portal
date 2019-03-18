@@ -241,7 +241,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	@Override
 	public List<CTEntry> getCTEntries(
 		CTCollection ctCollection, long[] groupIds, long[] userIds,
-		long[] classNameIds, int[] changeTypes, Boolean collision,
+		long[] modelClassNameIds, int[] changeTypes, Boolean collision,
 		QueryDefinition<CTEntry> queryDefinition) {
 
 		long otherCTCollectionId = 0L;
@@ -258,7 +258,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 		}
 
 		return _ctEntryLocalService.search(
-			ctCollection, groupIds, userIds, classNameIds, changeTypes,
+			ctCollection, groupIds, userIds, modelClassNameIds, changeTypes,
 			Boolean.TRUE.equals(collision), otherCTCollectionId,
 			queryDefinition);
 	}
@@ -285,7 +285,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	@Override
 	public int getCTEntriesCount(
 		CTCollection ctCollection, long[] groupIds, long[] userIds,
-		long[] classNameIds, int[] changeTypes, Boolean collision,
+		long[] modelClassNameIds, int[] changeTypes, Boolean collision,
 		QueryDefinition<CTEntry> queryDefinition) {
 
 		long otherCTCollectionId = 0L;
@@ -302,7 +302,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 		}
 
 		return (int)_ctEntryLocalService.searchCount(
-			ctCollection, groupIds, userIds, classNameIds, changeTypes,
+			ctCollection, groupIds, userIds, modelClassNameIds, changeTypes,
 			Boolean.TRUE.equals(collision), otherCTCollectionId,
 			queryDefinition);
 	}
@@ -384,12 +384,14 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	}
 
 	@Override
-	public boolean isChangeTrackingSupported(long companyId, long classNameId) {
-		String className = _portal.getClassName(classNameId);
+	public boolean isChangeTrackingSupported(
+		long companyId, long modelClassNameId) {
+
+		String modelClassName = _portal.getClassName(modelClassNameId);
 
 		Optional<CTConfiguration<?, ?>> ctConfigurationOptional =
 			_ctConfigurationRegistry.
-				getCTConfigurationOptionalByVersionClassName(className);
+				getCTConfigurationOptionalByVersionClassName(modelClassName);
 
 		return ctConfigurationOptional.isPresent();
 	}
