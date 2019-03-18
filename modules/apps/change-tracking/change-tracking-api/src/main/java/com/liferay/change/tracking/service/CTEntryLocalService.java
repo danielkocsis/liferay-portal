@@ -85,7 +85,7 @@ public interface CTEntryLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public CTEntry addCTEntry(
 			long userId, long modelClassNameId, long modelClassPK,
-			long resourcePrimKey, int changeType, long ctCollectionId,
+			long modelResourcePrimKey, int changeType, long ctCollectionId,
 			ServiceContext serviceContext)
 		throws PortalException;
 
@@ -233,7 +233,7 @@ public interface CTEntryLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<CTEntry> fetchCTEntries(
-		long ctCollectionId, long resourcePrimKey,
+		long ctCollectionId, long modelResourcePrimKey,
 		QueryDefinition<CTEntry> queryDefinition);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
