@@ -14,18 +14,12 @@
 
 package com.liferay.document.library.change.tracking.service.internal.service;
 
-import com.liferay.change.tracking.CTEngineManager;
-import com.liferay.change.tracking.CTManager;
-import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.document.library.kernel.service.DLFileVersionLocalService;
 import com.liferay.document.library.kernel.service.DLFileVersionLocalServiceWrapper;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 
 import java.util.Optional;
@@ -54,66 +48,29 @@ public class CTDLFileVersionLocalServiceWrapper
 	public DLFileVersion getLatestFileVersion(long userId, long fileEntryId)
 		throws PortalException {
 
-		// TODO low duplicate
-
 		DLFileEntry dlFileEntry = _dlFileEntryLocalService.fetchDLFileEntry(
 			fileEntryId);
 
-		if (!_isChangeTrackingEnabled(dlFileEntry.getGroupId())) {
+		if (!_ctdlFileEntryManager.isChangeTrackingEnabled(
+				dlFileEntry.getGroupId())) {
+
 			super.getLatestFileVersion(userId, fileEntryId);
 		}
 
-		Optional<CTEntry> ctEntryOptional =
-			_ctManager.getLatestModelChangeCTEntryOptional(
-				PrincipalThreadLocal.getUserId(), fileEntryId);
-
-		if (!ctEntryOptional.isPresent()) {
-			super.getLatestFileVersion(userId, fileEntryId);
-		}
-
-		Optional<DLFileVersion> fileVersionOptional = ctEntryOptional.map(
-			CTEntry::getModelClassPK
-		).map(
-			_dlFileVersionLocalService::fetchDLFileVersion
-		);
+		Optional<DLFileVersion> fileVersionOptional =
+			_ctdlFileEntryManager.getLatestFileVersion(userId, fileEntryId);
 
 		if (!fileVersionOptional.isPresent()) {
-			super.getLatestFileVersion(userId, fileEntryId);
+			return super.getLatestFileVersion(userId, fileEntryId);
 		}
 
 		return fileVersionOptional.get();
 	}
 
-	// TODO low duplicate
-
-	private boolean _isChangeTrackingEnabled(long groupId)
-		throws PortalException {
-
-		Group group = _groupLocalService.getGroup(groupId);
-
-		if (_ctEngineManager.isChangeTrackingEnabled(group.getCompanyId()) &&
-			_ctEngineManager.isChangeTrackingSupported(
-				group.getCompanyId(), DLFileVersion.class)) {
-
-			return true;
-		}
-
-		return false;
-	}
-
 	@Reference
-	private CTEngineManager _ctEngineManager;
-
-	@Reference
-	private CTManager _ctManager;
+	private CTDLFileEntryManager _ctdlFileEntryManager;
 
 	@Reference
 	private DLFileEntryLocalService _dlFileEntryLocalService;
-
-	@Reference
-	private DLFileVersionLocalService _dlFileVersionLocalService;
-
-	@Reference
-	private GroupLocalService _groupLocalService;
 
 }

@@ -14,18 +14,15 @@
 
 package com.liferay.document.library.change.tracking.service.impl;
 
-import com.liferay.change.tracking.CTManager;
-import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.document.library.change.tracking.service.base.CTDLFolderServiceBaseImpl;
+import com.liferay.document.library.change.tracking.service.internal.service.CTDLFileEntryManager;
 import com.liferay.document.library.change.tracking.service.persistence.CTDLFolderFinderOverride;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.model.DLFolder;
-import com.liferay.document.library.kernel.service.DLFileVersionLocalService;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermissionFactory;
@@ -121,19 +118,9 @@ public class CTDLFolderServiceImpl extends CTDLFolderServiceBaseImpl {
 
 		DLFileEntry fileEntry = (DLFileEntry)object;
 
-		Optional<CTEntry> ctEntryOptional =
-			_ctManager.getLatestModelChangeCTEntryOptional(
-				PrincipalThreadLocal.getUserId(), fileEntry.getFileEntryId());
-
-		if (!ctEntryOptional.isPresent()) {
-			return object;
-		}
-
-		Optional<DLFileVersion> fileVersionOptional = ctEntryOptional.map(
-			CTEntry::getModelClassPK
-		).map(
-			_dlFileVersionLocalService::fetchDLFileVersion
-		);
+		Optional<DLFileVersion> fileVersionOptional =
+			_ctdlFileEntryManager.getLatestFileVersion(
+				fileEntry.getUserId(), fileEntry.getFileEntryId());
 
 		if (!fileVersionOptional.isPresent()) {
 			return object;
@@ -161,11 +148,8 @@ public class CTDLFolderServiceImpl extends CTDLFolderServiceBaseImpl {
 				CTDLFolderServiceImpl.class, "_dlFolderModelResourcePermission",
 				DLFolder.class);
 
-	@ServiceReference(type = CTManager.class)
-	private CTManager _ctManager;
-
-	@ServiceReference(type = DLFileVersionLocalService.class)
-	private DLFileVersionLocalService _dlFileVersionLocalService;
+	@ServiceReference(type = CTDLFileEntryManager.class)
+	private CTDLFileEntryManager _ctdlFileEntryManager;
 
 	@BeanReference(type = CTDLFolderFinderOverride.class)
 	private CTDLFolderFinderOverride _dlFolderFinder;
