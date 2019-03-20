@@ -20,12 +20,15 @@ import com.liferay.change.tracking.CTManager;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.document.library.constants.DLPortletKeys;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.portletfilerepository.PortletFileRepository;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -124,6 +127,24 @@ public class DLFileEntryChangesRegisterCTEntityTest {
 	}
 
 	@Test
+	public void testPortletFileRepositoryDoNotCreateCTEntry()
+		throws PortalException {
+
+		FileEntry fileEntry = _portletFileRepository.addPortletFileEntry(
+			_group.getGroupId(), _userId, User.class.getName(), _userId,
+			DLPortletKeys.DOCUMENT_LIBRARY_ADMIN,
+			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, _createInputStream(),
+			"file.txt", "text/plain", false);
+
+		List<CTEntry> modelChangeCTEntries = _ctManager.getModelChangeCTEntries(
+			_userId, fileEntry.getPrimaryKey());
+
+		Assert.assertEquals(
+			"Amount of model change CTEntry is incorrect", 0,
+			modelChangeCTEntries.size());
+	}
+
+	@Test
 	public void testUpdateAssetTagRegisterChange() throws PortalException {
 		FileEntry fileEntry = _addFileEntry();
 
@@ -172,13 +193,12 @@ public class DLFileEntryChangesRegisterCTEntityTest {
 	}
 
 	private FileEntry _addFileEntry() throws PortalException {
-		String content = StringUtil.randomString();
+		ByteArrayInputStream inputStream = _createInputStream();
 
 		return _dlAppService.addFileEntry(
 			_group.getGroupId(), DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			"file.txt", ContentTypes.TEXT_PLAIN, "file.txt", StringPool.BLANK,
-			StringPool.BLANK, new ByteArrayInputStream(content.getBytes()), 0,
-			_getServiceContext());
+			StringPool.BLANK, inputStream, 0, _getServiceContext());
 	}
 
 	private void _assertCTEntry(
@@ -198,6 +218,12 @@ public class DLFileEntryChangesRegisterCTEntityTest {
 		Assert.assertEquals(
 			"Incorrect classPK", fileVersion.getFileVersionId(),
 			ctEntry.getModelClassPK());
+	}
+
+	private ByteArrayInputStream _createInputStream() {
+		String content = StringUtil.randomString();
+
+		return new ByteArrayInputStream(content.getBytes());
 	}
 
 	private void _deleteCTCollections() throws PortalException {
@@ -227,6 +253,9 @@ public class DLFileEntryChangesRegisterCTEntityTest {
 
 	@DeleteAfterTestRun
 	private Group _group;
+
+	@Inject
+	private PortletFileRepository _portletFileRepository;
 
 	private long _userId;
 
