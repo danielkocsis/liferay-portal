@@ -18,6 +18,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.change.tracking.CTEngineManager;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.kernel.service.DLAppServiceUtil;
 import com.liferay.petra.string.StringPool;
@@ -35,11 +36,13 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.repository.liferayrepository.model.LiferayFileEntry;
 import com.liferay.portal.service.test.ServiceTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import java.util.List;
 import java.util.Optional;
@@ -91,6 +94,30 @@ public class DLFileEntryFilterTest {
 	}
 
 	@Test
+	public void testProductionChangelistDoNotHavePendingChanges()
+		throws PortalException {
+
+		_checkoutProductionCt(_user1);
+
+		FileEntry fileEntry = _addFileEntry(_user1);
+
+		_ctEngineManager.checkoutCTCollection(
+			_user1.getUserId(), _ctCollectionUser1.getCtCollectionId());
+
+		_dlAppService.updateFileEntry(
+			fileEntry.getFileEntryId(), "file.txt", fileEntry.getMimeType(),
+			"testfile updated.txt", StringPool.BLANK, StringPool.BLANK,
+			DLVersionNumberIncrease.MAJOR, _getInputStream(), 0,
+			_getServiceContext(_user1));
+
+		_assertFileTitle("testfile updated.txt");
+
+		_checkoutProductionCt(_user1);
+
+		_assertFileTitle("testfile.txt");
+	}
+
+	@Test
 	public void testUsersDoNotSeeChangesOfEachOtherChangeList()
 		throws PortalException {
 
@@ -127,15 +154,25 @@ public class DLFileEntryFilterTest {
 	private FileEntry _addFileEntry(User user) throws PortalException {
 		PrincipalThreadLocal.setName(user.getUserId());
 
-		String content = StringUtil.randomString();
-
 		String fileName = user.getScreenName() + "file.txt";
 
 		return _dlAppService.addFileEntry(
 			_group.getGroupId(), DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			fileName, ContentTypes.TEXT_PLAIN, fileName, StringPool.BLANK,
-			StringPool.BLANK, new ByteArrayInputStream(content.getBytes()), 0,
-			_getServiceContext(user));
+			StringPool.BLANK, _getInputStream(), 0, _getServiceContext(user));
+	}
+
+	private void _assertFileTitle(String fileTitle) throws PortalException {
+		List<Object> files =
+			DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcuts(
+				_group.getGroupId(), 0, -1, true, 0, Integer.MAX_VALUE);
+
+		Assert.assertEquals(
+			"Amount of files fetches is incorrect", 1, files.size());
+
+		LiferayFileEntry file = (LiferayFileEntry)files.get(0);
+
+		Assert.assertEquals("Incorrect file title", fileTitle, file.getTitle());
 	}
 
 	private void _assertUserFetchedFiles(User user, FileEntry fileEntry)
@@ -153,6 +190,18 @@ public class DLFileEntryFilterTest {
 		Assert.assertEquals(
 			"Incorrect file fetched", fileEntry.getFileName(),
 			((FileEntry)filesUser.get(0)).getFileName());
+	}
+
+	private void _checkoutProductionCt(User user) throws PortalException {
+		Optional<CTCollection> productionCTCollectionOptional =
+			_ctEngineManager.getProductionCTCollectionOptional(
+				TestPropsValues.getCompanyId());
+
+		CTCollection productionCtCollection =
+			productionCTCollectionOptional.get();
+
+		_ctEngineManager.checkoutCTCollection(
+			user.getUserId(), productionCtCollection.getCtCollectionId());
 	}
 
 	private CTCollection _createCtCollection(User user) {
@@ -176,6 +225,12 @@ public class DLFileEntryFilterTest {
 		for (CTCollection c : ctCollections) {
 			_ctEngineManager.deleteCTCollection(c.getCtCollectionId());
 		}
+	}
+
+	private InputStream _getInputStream() {
+		String content = StringUtil.randomString();
+
+		return new ByteArrayInputStream(content.getBytes());
 	}
 
 	private ServiceContext _getServiceContext(User user)
