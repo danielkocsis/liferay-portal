@@ -14,15 +14,11 @@
 
 package com.liferay.document.library.change.tracking.service.internal.service;
 
-import com.liferay.change.tracking.CTEngineManager;
 import com.liferay.document.library.change.tracking.service.CTDLFolderService;
-import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.service.DLFolderService;
 import com.liferay.document.library.kernel.service.DLFolderServiceWrapper;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 
 import java.util.List;
@@ -50,7 +46,7 @@ public class CTDLFolderServiceWrapper extends DLFolderServiceWrapper {
 			boolean includeMountFolders, QueryDefinition<?> queryDefinition)
 		throws PortalException {
 
-		if (!_isChangeTrackingEnabled(groupId)) {
+		if (!_ctdlFileEntryManager.isChangeTrackingEnabled(groupId)) {
 			return super.getFoldersAndFileEntriesAndFileShortcuts(
 				groupId, folderId, mimeTypes, includeMountFolders,
 				queryDefinition);
@@ -66,7 +62,7 @@ public class CTDLFolderServiceWrapper extends DLFolderServiceWrapper {
 			boolean includeMountFolders, QueryDefinition<?> queryDefinition)
 		throws PortalException {
 
-		if (!_isChangeTrackingEnabled(groupId)) {
+		if (!_ctdlFileEntryManager.isChangeTrackingEnabled(groupId)) {
 			return super.getFoldersAndFileEntriesAndFileShortcutsCount(
 				groupId, folderId, mimeTypes, includeMountFolders,
 				queryDefinition);
@@ -78,28 +74,10 @@ public class CTDLFolderServiceWrapper extends DLFolderServiceWrapper {
 				queryDefinition);
 	}
 
-	private boolean _isChangeTrackingEnabled(long groupId)
-		throws PortalException {
-
-		Group group = _groupLocalService.getGroup(groupId);
-
-		if (_ctEngineManager.isChangeTrackingEnabled(group.getCompanyId()) &&
-			_ctEngineManager.isChangeTrackingSupported(
-				group.getCompanyId(), DLFileVersion.class)) {
-
-			return true;
-		}
-
-		return false;
-	}
+	@Reference
+	private CTDLFileEntryManager _ctdlFileEntryManager;
 
 	@Reference
 	private CTDLFolderService _ctDLFolderLocalService;
-
-	@Reference
-	private CTEngineManager _ctEngineManager;
-
-	@Reference
-	private GroupLocalService _groupLocalService;
 
 }
