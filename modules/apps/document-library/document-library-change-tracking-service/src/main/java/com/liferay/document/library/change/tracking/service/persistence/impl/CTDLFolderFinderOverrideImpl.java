@@ -79,10 +79,10 @@ public class CTDLFolderFinderOverrideImpl
 	@Override
 	protected void setFileVersionQueryParameters(
 		QueryDefinition<?> queryDefinition, QueryPos qPos, long groupId,
-		long folderId, String[] mimeTypes) {
+		long folderId) {
 
 		super.setFileVersionQueryParameters(
-			queryDefinition, qPos, groupId, folderId, mimeTypes);
+			queryDefinition, qPos, groupId, folderId);
 
 		long userId = queryDefinition.getOwnerUserId();
 

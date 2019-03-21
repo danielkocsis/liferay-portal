@@ -307,7 +307,11 @@ public class DLFolderFinderImpl
 			qPos.add(folderId);
 
 			setFileVersionQueryParameters(
-				queryDefinition, qPos, groupId, folderId, mimeTypes);
+				queryDefinition, qPos, groupId, folderId);
+
+			if (mimeTypes != null) {
+				qPos.add(mimeTypes);
+			}
 
 			qPos.add(groupId);
 			qPos.add(true);
@@ -554,7 +558,11 @@ public class DLFolderFinderImpl
 			qPos.add(folderId);
 
 			setFileVersionQueryParameters(
-				queryDefinition, qPos, groupId, folderId, mimeTypes);
+				queryDefinition, qPos, groupId, folderId);
+
+			if (mimeTypes != null) {
+				qPos.add(mimeTypes);
+			}
 
 			qPos.add(groupId);
 			qPos.add(true);
@@ -860,7 +868,7 @@ public class DLFolderFinderImpl
 
 	protected void setFileVersionQueryParameters(
 		QueryDefinition<?> queryDefinition, QueryPos qPos, long groupId,
-		long folderId, String[] mimeTypes) {
+		long folderId) {
 
 		qPos.add(groupId);
 		qPos.add(queryDefinition.getStatus());
@@ -873,10 +881,6 @@ public class DLFolderFinderImpl
 		}
 
 		qPos.add(folderId);
-
-		if (mimeTypes != null) {
-			qPos.add(mimeTypes);
-		}
 	}
 
 	protected String updateSQL(
