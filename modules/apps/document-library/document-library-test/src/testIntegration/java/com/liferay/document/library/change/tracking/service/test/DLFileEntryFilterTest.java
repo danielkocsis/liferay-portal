@@ -94,7 +94,7 @@ public class DLFileEntryFilterTest {
 	}
 
 	@Test
-	public void testProductionChangelistDoNotHavePendingChanges()
+	public void testGetFileEntryProductionChangelistDoNotHavePendingChanges()
 		throws PortalException {
 
 		_checkoutProductionCt(_user1);
@@ -110,11 +110,67 @@ public class DLFileEntryFilterTest {
 			DLVersionNumberIncrease.MAJOR, _getInputStream(), 0,
 			_getServiceContext(_user1));
 
-		_assertFileTitle("testfile updated.txt");
+		List<Object> filesCollection1 =
+			DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcuts(
+				_group.getGroupId(), 0, -1, true, 0, Integer.MAX_VALUE);
+
+		Assert.assertEquals(
+			"Amount of files fetches is incorrect", 1, filesCollection1.size());
+
+		LiferayFileEntry fileCollection1 =
+			(LiferayFileEntry)filesCollection1.get(0);
+
+		Assert.assertEquals(
+			"Incorrect file title", "testfile updated.txt",
+			fileCollection1.getTitle());
 
 		_checkoutProductionCt(_user1);
 
-		_assertFileTitle("testfile.txt");
+		List<Object> filesProduction =
+			DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcuts(
+				_group.getGroupId(), 0, -1, true, 0, Integer.MAX_VALUE);
+
+		Assert.assertEquals(
+			"Amount of files fetches is incorrect", 1, filesProduction.size());
+
+		LiferayFileEntry fileProduction = (LiferayFileEntry)filesProduction.get(
+			0);
+
+		Assert.assertEquals(
+			"Incorrect file title", "testfile.txt", fileProduction.getTitle());
+	}
+
+	@Test
+	public void testGetListProductionChangelistDoNotHavePendingChanges()
+		throws PortalException {
+
+		_checkoutProductionCt(_user1);
+
+		FileEntry fileEntry = _addFileEntry(_user1);
+
+		_ctEngineManager.checkoutCTCollection(
+			_user1.getUserId(), _ctCollectionUser1.getCtCollectionId());
+
+		_dlAppService.updateFileEntry(
+			fileEntry.getFileEntryId(), "file.txt", fileEntry.getMimeType(),
+			"testfile updated.txt", StringPool.BLANK, StringPool.BLANK,
+			DLVersionNumberIncrease.MAJOR, _getInputStream(), 0,
+			_getServiceContext(_user1));
+
+		FileEntry fileCollection1 = _dlAppService.getFileEntry(
+			fileEntry.getFileEntryId());
+
+		Assert.assertEquals(
+			"Incorrect file title", "testfile updated.txt",
+			fileCollection1.getTitle());
+
+		_checkoutProductionCt(_user1);
+
+		FileEntry fileProduction = _dlAppService.getFileEntry(
+			fileEntry.getFileEntryId());
+
+		Assert.assertEquals(
+			"Incorrect file title", "testfile.txt", fileProduction.getTitle());
 	}
 
 	@Test
@@ -160,19 +216,6 @@ public class DLFileEntryFilterTest {
 			_group.getGroupId(), DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			fileName, ContentTypes.TEXT_PLAIN, fileName, StringPool.BLANK,
 			StringPool.BLANK, _getInputStream(), 0, _getServiceContext(user));
-	}
-
-	private void _assertFileTitle(String fileTitle) throws PortalException {
-		List<Object> files =
-			DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcuts(
-				_group.getGroupId(), 0, -1, true, 0, Integer.MAX_VALUE);
-
-		Assert.assertEquals(
-			"Amount of files fetches is incorrect", 1, files.size());
-
-		LiferayFileEntry file = (LiferayFileEntry)files.get(0);
-
-		Assert.assertEquals("Incorrect file title", fileTitle, file.getTitle());
 	}
 
 	private void _assertUserFetchedFiles(User user, FileEntry fileEntry)

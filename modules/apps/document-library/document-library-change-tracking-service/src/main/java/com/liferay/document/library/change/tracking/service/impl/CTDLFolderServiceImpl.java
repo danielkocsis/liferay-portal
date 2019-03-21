@@ -18,7 +18,6 @@ import com.liferay.document.library.change.tracking.service.base.CTDLFolderServi
 import com.liferay.document.library.change.tracking.service.internal.service.CTDLFileEntryHelper;
 import com.liferay.document.library.change.tracking.service.persistence.CTDLFolderFinderOverride;
 import com.liferay.document.library.kernel.model.DLFileEntry;
-import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
@@ -31,7 +30,6 @@ import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,28 +101,8 @@ public class CTDLFolderServiceImpl extends CTDLFolderServiceBaseImpl {
 
 		DLFileEntry fileEntry = (DLFileEntry)object;
 
-		Optional<DLFileVersion> fileVersionOptional =
-			_ctDLFileEntryHelper.getLatestFileVersion(
-				fileEntry.getFileEntryId());
-
-		if (!fileVersionOptional.isPresent()) {
-			return object;
-		}
-
-		DLFileVersion fileVersion = fileVersionOptional.get();
-
-		fileEntry.setModifiedDate(fileVersion.getModifiedDate());
-		fileEntry.setFileName(fileVersion.getFileName());
-		fileEntry.setExtension(fileVersion.getExtension());
-		fileEntry.setMimeType(fileVersion.getMimeType());
-		fileEntry.setTitle(fileVersion.getTitle());
-		fileEntry.setDescription(fileVersion.getDescription());
-		fileEntry.setExtraSettings(fileVersion.getExtraSettings());
-		fileEntry.setVersion(fileVersion.getVersion());
-		fileEntry.setSize(fileVersion.getSize());
-		fileEntry.setLastPublishDate(fileVersion.getLastPublishDate());
-
-		return fileEntry;
+		return _ctDLFileEntryHelper.populateFileEntryWithLatestCTVersion(
+			fileEntry);
 	}
 
 	private static volatile ModelResourcePermission<DLFolder>

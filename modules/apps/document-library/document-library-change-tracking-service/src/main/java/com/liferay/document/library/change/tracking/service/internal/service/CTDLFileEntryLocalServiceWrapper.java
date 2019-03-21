@@ -89,6 +89,20 @@ public class CTDLFileEntryLocalServiceWrapper
 	}
 
 	@Override
+	public DLFileEntry getFileEntry(long fileEntryId) throws PortalException {
+		DLFileEntry fileEntry = super.getFileEntry(fileEntryId);
+
+		if (!_ctDLFileEntryHelper.isChangeTrackingEnabled(
+				fileEntry.getGroupId())) {
+
+			return fileEntry;
+		}
+
+		return _ctDLFileEntryHelper.populateFileEntryWithLatestCTVersion(
+			fileEntry);
+	}
+
+	@Override
 	public DLFileEntry updateFileEntry(
 			long userId, long fileEntryId, String sourceFileName,
 			String mimeType, String title, String description, String changeLog,
@@ -162,6 +176,9 @@ public class CTDLFileEntryLocalServiceWrapper
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTDLFileEntryLocalServiceWrapper.class);
+
+	@Reference
+	private CTDLFileEntryHelper _ctDLFileEntryHelper;
 
 	@Reference
 	private CTManager _ctManager;
