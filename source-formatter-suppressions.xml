@@ -13,7 +13,7 @@
 		<suppress checks="JavadocCheck" files="portal-kernel/src/com/liferay/portal/kernel/cal/DayAndPosition\.java" />
 		<suppress checks="JavadocCheck" files="portal-kernel/src/com/liferay/portal/kernel/cal/Duration\.java" />
 		<suppress checks="JavadocCheck" files="portal-kernel/src/com/liferay/portal/kernel/cal/Recurrence\.java" />
-		<suppress checks="JSONNamingCheck" files="portal-impl/src/com/liferay/portal/action/JSONServiceAction\.java" />
+		<suppress checks="JSONNamingCheck" files="portal-impl/src/com/liferJavaModuleServiceReferenceCheckay/portal/action/JSONServiceAction\.java" />
 		<suppress checks="JSONNamingCheck" files="portal-kernel/src/com/liferay/portal/kernel/backgroundtask/display/BaseBackgroundTaskDisplay\.java" />
 		<suppress checks="JSONNamingCheck" files="util-java/src/com/liferay/util/Autocomplete\.java" />
 		<suppress checks="MemberNameCheck" files=".*ContextContributor\.java" />
@@ -94,6 +94,7 @@
 		<suppress checks="JavaFinderImplCustomSQLCheck" files="portal-impl/src/com/liferay/portlet/asset/service/persistence/impl/AssetCategoryPropertyFinderImpl\.java" />
 		<suppress checks="JavaIllegalImportsCheck" files="util-slf4j/src/com/liferay/util/sl4fj/LiferayLoggerFactory\.java" />
 		<suppress checks="JavaLogParametersCheck" files="portal-impl/test/integration/com/liferay/portal/kernel/log/SanitizerLogWrapperTest\.java" />
+		<suppress checks="JavaModuleServiceReferenceCheck" files="modules/apps/document-library/document-library-change-tracking-service/src/main/java/com/liferay/document/library/change/tracking/service/impl/CTDLFolderServiceImpl\.java" />
 		<suppress checks="JavaStringBundlerConcatCheck" files="portal-kernel/test/unit/com/liferay/portal/kernel/util/StringBundlerTest\.java" />
 		<suppress checks="JavaStringBundlerInitialCapacityCheck" files="portal-kernel/test/unit/com/liferay/portal/kernel/util/StringBundlerTest\.java" />
 		<suppress checks="JavaUnsafeCastingCheck" files="portal-impl/src/com/liferay/portal/util/PortalImpl\.java" />
