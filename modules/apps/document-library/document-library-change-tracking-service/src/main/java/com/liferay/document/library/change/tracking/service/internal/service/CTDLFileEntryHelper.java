@@ -17,6 +17,7 @@ package com.liferay.document.library.change.tracking.service.internal.service;
 import com.liferay.change.tracking.CTEngineManager;
 import com.liferay.change.tracking.CTManager;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.service.DLFileVersionLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -60,6 +61,32 @@ public class CTDLFileEntryHelper {
 		}
 
 		return false;
+	}
+
+	public DLFileEntry populateFileEntryWithLatestCTVersion(
+		DLFileEntry fileEntry) {
+
+		Optional<DLFileVersion> fileVersionOptional = getLatestFileVersion(
+			fileEntry.getFileEntryId());
+
+		if (!fileVersionOptional.isPresent()) {
+			return fileEntry;
+		}
+
+		DLFileVersion fileVersion = fileVersionOptional.get();
+
+		fileEntry.setModifiedDate(fileVersion.getModifiedDate());
+		fileEntry.setFileName(fileVersion.getFileName());
+		fileEntry.setExtension(fileVersion.getExtension());
+		fileEntry.setMimeType(fileVersion.getMimeType());
+		fileEntry.setTitle(fileVersion.getTitle());
+		fileEntry.setDescription(fileVersion.getDescription());
+		fileEntry.setExtraSettings(fileVersion.getExtraSettings());
+		fileEntry.setVersion(fileVersion.getVersion());
+		fileEntry.setSize(fileVersion.getSize());
+		fileEntry.setLastPublishDate(fileVersion.getLastPublishDate());
+
+		return fileEntry;
 	}
 
 	@Reference
