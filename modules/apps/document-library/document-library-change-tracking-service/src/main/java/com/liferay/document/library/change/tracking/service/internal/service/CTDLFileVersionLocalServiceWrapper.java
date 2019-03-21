@@ -14,9 +14,7 @@
 
 package com.liferay.document.library.change.tracking.service.internal.service;
 
-import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileVersion;
-import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.document.library.kernel.service.DLFileVersionLocalService;
 import com.liferay.document.library.kernel.service.DLFileVersionLocalServiceWrapper;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -48,29 +46,22 @@ public class CTDLFileVersionLocalServiceWrapper
 	public DLFileVersion getLatestFileVersion(long userId, long fileEntryId)
 		throws PortalException {
 
-		DLFileEntry dlFileEntry = _dlFileEntryLocalService.fetchDLFileEntry(
-			fileEntryId);
+		DLFileVersion latestFileVersion = super.getLatestFileVersion(
+			userId, fileEntryId);
 
-		if (!_ctdlFileEntryManager.isChangeTrackingEnabled(
-				dlFileEntry.getGroupId())) {
+		if (!_ctDLFileEntryHelper.isChangeTrackingEnabled(
+				latestFileVersion.getGroupId())) {
 
-			super.getLatestFileVersion(userId, fileEntryId);
+			return latestFileVersion;
 		}
 
 		Optional<DLFileVersion> fileVersionOptional =
-			_ctdlFileEntryManager.getLatestFileVersion(userId, fileEntryId);
+			_ctDLFileEntryHelper.getLatestFileVersion(fileEntryId);
 
-		if (!fileVersionOptional.isPresent()) {
-			return super.getLatestFileVersion(userId, fileEntryId);
-		}
-
-		return fileVersionOptional.get();
+		return fileVersionOptional.orElse(latestFileVersion);
 	}
 
 	@Reference
-	private CTDLFileEntryManager _ctdlFileEntryManager;
-
-	@Reference
-	private DLFileEntryLocalService _dlFileEntryLocalService;
+	private CTDLFileEntryHelper _ctDLFileEntryHelper;
 
 }

@@ -15,7 +15,7 @@
 package com.liferay.document.library.change.tracking.service.impl;
 
 import com.liferay.document.library.change.tracking.service.base.CTDLFolderServiceBaseImpl;
-import com.liferay.document.library.change.tracking.service.internal.service.CTDLFileEntryManager;
+import com.liferay.document.library.change.tracking.service.internal.service.CTDLFileEntryHelper;
 import com.liferay.document.library.change.tracking.service.persistence.CTDLFolderFinderOverride;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileVersion;
@@ -36,17 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * The implementation of the ctdl folder remote service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>com.liferay.document.library.change.tracking.service.CTDLFolderService</code> interface.
- *
- * <p>
- * This is a remote service. Methods of this service are expected to have security checks based on the propagated JAAS credentials because this service can be accessed remotely.
- * </p>
- *
- * @author Brian Wing Shun Chan
- * @see CTDLFolderServiceBaseImpl
+ * @author Luiz Marins
  */
 public class CTDLFolderServiceImpl extends CTDLFolderServiceBaseImpl {
 
@@ -83,11 +73,6 @@ public class CTDLFolderServiceImpl extends CTDLFolderServiceBaseImpl {
 		return objects;
 	}
 
-	/**
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use <code>com.liferay.document.library.change.tracking.service.CTDLFolderServiceUtil</code> to access the ctdl folder remote service.
-	 */
 	@Override
 	public int getFoldersAndFileEntriesAndFileShortcutsCount(
 			long groupId, long folderId, String[] mimeTypes,
@@ -119,8 +104,8 @@ public class CTDLFolderServiceImpl extends CTDLFolderServiceBaseImpl {
 		DLFileEntry fileEntry = (DLFileEntry)object;
 
 		Optional<DLFileVersion> fileVersionOptional =
-			_ctdlFileEntryManager.getLatestFileVersion(
-				fileEntry.getUserId(), fileEntry.getFileEntryId());
+			_ctDLFileEntryHelper.getLatestFileVersion(
+				fileEntry.getFileEntryId());
 
 		if (!fileVersionOptional.isPresent()) {
 			return object;
@@ -148,8 +133,8 @@ public class CTDLFolderServiceImpl extends CTDLFolderServiceBaseImpl {
 				CTDLFolderServiceImpl.class, "_dlFolderModelResourcePermission",
 				DLFolder.class);
 
-	@ServiceReference(type = CTDLFileEntryManager.class)
-	private CTDLFileEntryManager _ctdlFileEntryManager;
+	@ServiceReference(type = CTDLFileEntryHelper.class)
+	private CTDLFileEntryHelper _ctDLFileEntryHelper;
 
 	@BeanReference(type = CTDLFolderFinderOverride.class)
 	private CTDLFolderFinderOverride _dlFolderFinder;

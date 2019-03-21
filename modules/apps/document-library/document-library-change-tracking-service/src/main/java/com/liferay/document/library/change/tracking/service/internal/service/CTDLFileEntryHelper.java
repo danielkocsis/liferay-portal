@@ -32,27 +32,19 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Luiz Marins
  */
-@Component(immediate = true, service = CTDLFileEntryManager.class)
-public class CTDLFileEntryManager {
+@Component(immediate = true, service = CTDLFileEntryHelper.class)
+public class CTDLFileEntryHelper {
 
-	public Optional<DLFileVersion> getLatestFileVersion(
-		long userId, long fileEntryId) {
-
+	public Optional<DLFileVersion> getLatestFileVersion(long fileEntryId) {
 		Optional<CTEntry> ctEntryOptional =
 			_ctManager.getLatestModelChangeCTEntryOptional(
 				PrincipalThreadLocal.getUserId(), fileEntryId);
 
-		if (!ctEntryOptional.isPresent()) {
-			Optional.empty();
-		}
-
-		Optional<DLFileVersion> fileVersionOptional = ctEntryOptional.map(
+		return ctEntryOptional.map(
 			CTEntry::getModelClassPK
 		).map(
 			_dlFileVersionLocalService::fetchDLFileVersion
 		);
-
-		return fileVersionOptional;
 	}
 
 	public boolean isChangeTrackingEnabled(long groupId)

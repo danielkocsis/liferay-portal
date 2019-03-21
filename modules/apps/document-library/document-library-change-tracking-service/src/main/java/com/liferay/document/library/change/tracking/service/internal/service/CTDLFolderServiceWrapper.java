@@ -46,7 +46,7 @@ public class CTDLFolderServiceWrapper extends DLFolderServiceWrapper {
 			boolean includeMountFolders, QueryDefinition<?> queryDefinition)
 		throws PortalException {
 
-		if (!_ctdlFileEntryManager.isChangeTrackingEnabled(groupId)) {
+		if (!_ctDLFileEntryHelper.isChangeTrackingEnabled(groupId)) {
 			return super.getFoldersAndFileEntriesAndFileShortcuts(
 				groupId, folderId, mimeTypes, includeMountFolders,
 				queryDefinition);
@@ -62,7 +62,7 @@ public class CTDLFolderServiceWrapper extends DLFolderServiceWrapper {
 			boolean includeMountFolders, QueryDefinition<?> queryDefinition)
 		throws PortalException {
 
-		if (!_ctdlFileEntryManager.isChangeTrackingEnabled(groupId)) {
+		if (!_ctDLFileEntryHelper.isChangeTrackingEnabled(groupId)) {
 			return super.getFoldersAndFileEntriesAndFileShortcutsCount(
 				groupId, folderId, mimeTypes, includeMountFolders,
 				queryDefinition);
@@ -75,7 +75,7 @@ public class CTDLFolderServiceWrapper extends DLFolderServiceWrapper {
 	}
 
 	@Reference
-	private CTDLFileEntryManager _ctdlFileEntryManager;
+	private CTDLFileEntryHelper _ctDLFileEntryHelper;
 
 	@Reference
 	private CTDLFolderService _ctDLFolderLocalService;
