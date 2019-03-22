@@ -23,6 +23,7 @@ import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceWrapper;
+import com.liferay.document.library.kernel.util.DLAppHelperThreadLocal;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -80,13 +81,7 @@ public class CTDLFileEntryLocalServiceWrapper
 				mimeType, title, description, changeLog, fileEntryTypeId,
 				ddmFormValuesMap, file, is, size, serviceContext));
 
-		Repository repository = _getRepository(repositoryId);
-
-		com.liferay.portal.kernel.model.Repository repositoryModel =
-			_repositoryLocalService.fetchRepository(
-				repository.getRepositoryId());
-
-		if (repositoryModel != null) {
+		if (!DLAppHelperThreadLocal.isEnabled()) {
 			return fileEntry;
 		}
 
