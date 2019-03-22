@@ -24,13 +24,19 @@ import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceWrapper;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
+import com.liferay.portal.kernel.exception.NoSuchGroupException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.repository.InvalidRepositoryIdException;
+import com.liferay.portal.kernel.repository.Repository;
+import com.liferay.portal.kernel.repository.RepositoryProvider;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.service.RepositoryLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.io.File;
@@ -73,6 +79,16 @@ public class CTDLFileEntryLocalServiceWrapper
 				userId, groupId, repositoryId, folderId, sourceFileName,
 				mimeType, title, description, changeLog, fileEntryTypeId,
 				ddmFormValuesMap, file, is, size, serviceContext));
+
+		Repository repository = _getRepository(repositoryId);
+
+		com.liferay.portal.kernel.model.Repository repositoryModel =
+			_repositoryLocalService.fetchRepository(
+				repository.getRepositoryId());
+
+		if (repositoryModel != null) {
+			return fileEntry;
+		}
 
 		_registerChange(fileEntry, CTConstants.CT_CHANGE_TYPE_ADDITION, true);
 
@@ -121,6 +137,23 @@ public class CTDLFileEntryLocalServiceWrapper
 		_registerChange(fileEntry, CTConstants.CT_CHANGE_TYPE_MODIFICATION);
 
 		return fileEntry;
+	}
+
+	private Repository _getRepository(long repositoryId)
+		throws PortalException {
+
+		try {
+			return _repositoryProvider.getRepository(repositoryId);
+		}
+		catch (InvalidRepositoryIdException irie) {
+			StringBundler sb = new StringBundler(3);
+
+			sb.append("No Group exists with the key {repositoryId=");
+			sb.append(repositoryId);
+			sb.append("}");
+
+			throw new NoSuchGroupException(sb.toString(), irie);
+		}
 	}
 
 	private void _registerChange(DLFileEntry fileEntry, int changeType)
@@ -185,5 +218,11 @@ public class CTDLFileEntryLocalServiceWrapper
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private RepositoryLocalService _repositoryLocalService;
+
+	@Reference
+	private RepositoryProvider _repositoryProvider;
 
 }
