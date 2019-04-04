@@ -20,6 +20,7 @@ import com.liferay.exportimport.test.util.lar.BaseExportImportTestCase;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
+import com.liferay.portal.kernel.model.LayoutVersion;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -114,8 +115,13 @@ public class PortletImportControllerTest extends BaseExportImportTestCase {
 		Assert.assertEquals(
 			PortletKeys.PREFS_OWNER_TYPE_LAYOUT,
 			portletPreferencesImpl1.getOwnerType());
+
+		LayoutVersion latestLayoutVersion =
+			LayoutLocalServiceUtil.fetchLatestVersion(layout);
+
 		Assert.assertEquals(
-			layout.getPlid(), portletPreferencesImpl1.getPlid());
+			latestLayoutVersion.getLayoutVersionId(),
+			portletPreferencesImpl1.getPlid());
 
 		PortletPreferencesImpl portletPreferencesImpl2 = setLastPublishDate(
 			importedGroup, lastPublishDate2, importedGroupLayout);
@@ -126,8 +132,13 @@ public class PortletImportControllerTest extends BaseExportImportTestCase {
 		Assert.assertEquals(
 			PortletKeys.PREFS_OWNER_TYPE_LAYOUT,
 			portletPreferencesImpl2.getOwnerType());
+
+		latestLayoutVersion =
+			LayoutLocalServiceUtil.fetchLatestVersion(importedGroupLayout);
+
 		Assert.assertEquals(
-			importedGroupLayout.getPlid(), portletPreferencesImpl2.getPlid());
+			latestLayoutVersion.getLayoutVersionId(),
+			portletPreferencesImpl2.getPlid());
 
 		exportLayouts(
 			new long[] {layout.getLayoutId()}, getExportParameterMap());
@@ -157,7 +168,13 @@ public class PortletImportControllerTest extends BaseExportImportTestCase {
 		Assert.assertEquals(
 			PortletKeys.PREFS_OWNER_TYPE_LAYOUT,
 			portletPreferencesImpl.getOwnerType());
-		Assert.assertEquals(layout.getPlid(), portletPreferencesImpl.getPlid());
+
+		LayoutVersion latestLayoutVersion =
+			LayoutLocalServiceUtil.fetchLatestVersion(layout);
+
+		Assert.assertEquals(
+			latestLayoutVersion.getLayoutVersionId(),
+			portletPreferencesImpl.getPlid());
 
 		exportLayouts(
 			new long[] {layout.getLayoutId()}, getExportParameterMap());
@@ -185,8 +202,13 @@ public class PortletImportControllerTest extends BaseExportImportTestCase {
 		Assert.assertEquals(
 			PortletKeys.PREFS_OWNER_TYPE_LAYOUT,
 			portletPreferencesImpl.getOwnerType());
+
+		LayoutVersion latestLayoutVersion =
+			LayoutLocalServiceUtil.fetchLatestVersion(importedGroupLayout);
+
 		Assert.assertEquals(
-			importedGroupLayout.getPlid(), portletPreferencesImpl.getPlid());
+			latestLayoutVersion.getLayoutVersionId(),
+			portletPreferencesImpl.getPlid());
 
 		exportLayouts(
 			new long[] {layout.getLayoutId()}, getExportParameterMap());
