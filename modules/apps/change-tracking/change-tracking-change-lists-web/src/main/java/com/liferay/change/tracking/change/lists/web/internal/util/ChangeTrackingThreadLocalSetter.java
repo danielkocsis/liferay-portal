@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Máté Thurzó
  */
-@Component(immediate = true, service = {})
+//@Component(immediate = true, service = {})
 public class ChangeTrackingThreadLocalSetter {
 
 	@Activate
