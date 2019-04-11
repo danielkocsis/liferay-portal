@@ -14,6 +14,7 @@
 
 package com.liferay.portal.service.impl;
 
+import com.liferay.change.tracking.kernel.util.ChangeTrackingThreadLocal;
 import com.liferay.exportimport.kernel.staging.LayoutStagingUtil;
 import com.liferay.exportimport.kernel.staging.MergeLayoutPrototypesThreadLocal;
 import com.liferay.exportimport.kernel.staging.StagingUtil;
@@ -23,8 +24,10 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutRevision;
 import com.liferay.portal.kernel.model.LayoutStagingHandler;
+import com.liferay.portal.kernel.model.LayoutVersion;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.model.PortletPreferences;
@@ -180,7 +183,7 @@ public class PortletPreferencesLocalServiceImpl
 		}
 
 		return portletPreferencesPersistence.fetchByO_O_P_P(
-			ownerId, ownerType, _swapPlidForPortletPreferences(plid),
+			ownerId, ownerType, _swapPlidForPortletPreferences(ownerType, plid),
 			portletId);
 	}
 
@@ -287,7 +290,7 @@ public class PortletPreferencesLocalServiceImpl
 		}
 
 		long plid = _swapPlidForPortletPreferences(
-			portletInstanceSettingsLocator.getPlid());
+			ownerType, portletInstanceSettingsLocator.getPlid());
 
 		return new PortletPreferencesSettings(
 			_getStrictPreferences(
@@ -306,7 +309,8 @@ public class PortletPreferencesLocalServiceImpl
 		int ownerType, long plid, String portletId) {
 
 		return portletPreferencesPersistence.findByO_P_P(
-			ownerType, _swapPlidForPortletPreferences(plid), portletId);
+			ownerType, _swapPlidForPortletPreferences(ownerType, plid),
+			portletId);
 	}
 
 	@Override
@@ -314,7 +318,8 @@ public class PortletPreferencesLocalServiceImpl
 		long ownerId, int ownerType, long plid) {
 
 		return portletPreferencesPersistence.findByO_O_P(
-			ownerId, ownerType, _swapPlidForPortletPreferences(plid));
+			ownerId, ownerType,
+			_swapPlidForPortletPreferences(ownerType, plid));
 	}
 
 	@Override
@@ -323,7 +328,7 @@ public class PortletPreferencesLocalServiceImpl
 		throws PortalException {
 
 		return portletPreferencesPersistence.findByO_O_P_P(
-			ownerId, ownerType, _swapPlidForPortletPreferences(plid),
+			ownerId, ownerType, _swapPlidForPortletPreferences(ownerType, plid),
 			portletId);
 	}
 
@@ -350,7 +355,9 @@ public class PortletPreferencesLocalServiceImpl
 		long plid, String portletId) {
 
 		return portletPreferencesPersistence.findByP_P(
-			_swapPlidForPortletPreferences(plid), portletId);
+			_swapPlidForPortletPreferences(
+				PortletKeys.PREFS_OWNER_TYPE_LAYOUT, plid),
+			portletId);
 	}
 
 	@Override
@@ -374,7 +381,8 @@ public class PortletPreferencesLocalServiceImpl
 		}
 
 		return portletPreferencesPersistence.countByO_P_P(
-			ownerType, _swapPlidForPortletPreferences(plid), portletId);
+			ownerType, _swapPlidForPortletPreferences(ownerType, plid),
+			portletId);
 	}
 
 	@Override
@@ -387,7 +395,7 @@ public class PortletPreferencesLocalServiceImpl
 		long ownerId, int ownerType, long plid, Portlet portlet,
 		boolean excludeDefaultPreferences) {
 
-		plid = _swapPlidForPortletPreferences(plid);
+		plid = _swapPlidForPortletPreferences(ownerType, plid);
 
 		String portletId = portlet.getPortletId();
 
@@ -440,7 +448,7 @@ public class PortletPreferencesLocalServiceImpl
 		long companyId, long ownerId, int ownerType, long plid,
 		String portletId, String defaultPreferences) {
 
-		plid = _swapPlidForPreferences(plid);
+		plid = _swapPlidForPreferences(ownerType, plid);
 
 		PortletPreferences portletPreferences =
 			portletPreferencesPersistence.fetchByO_O_P_P(
@@ -488,7 +496,8 @@ public class PortletPreferencesLocalServiceImpl
 
 		long plid = layout.getPlid();
 
-		plid = _swapPlidForPreferences(plid);
+		plid = _swapPlidForPreferences(
+			PortletKeys.PREFS_OWNER_TYPE_LAYOUT, plid);
 
 		Map<String, javax.portlet.PortletPreferences> portletPreferencesMap =
 			new HashMap<>();
@@ -560,7 +569,7 @@ public class PortletPreferencesLocalServiceImpl
 				PortletConstants.DEFAULT_PREFERENCES);
 		}
 
-		plid = _swapPlidForPreferences(plid);
+		plid = _swapPlidForPreferences(ownerType, plid);
 
 		PortletPreferences portletPreferences =
 			portletPreferencesPersistence.fetchByO_O_P_P(
@@ -590,7 +599,7 @@ public class PortletPreferencesLocalServiceImpl
 	public javax.portlet.PortletPreferences getStrictPreferences(
 		PortletPreferencesIds portletPreferencesIds) {
 
-		return getStrictPreferences(
+		return portletPreferencesLocalService.getStrictPreferences(
 			portletPreferencesIds.getCompanyId(),
 			portletPreferencesIds.getOwnerId(),
 			portletPreferencesIds.getOwnerType(),
@@ -612,7 +621,7 @@ public class PortletPreferencesLocalServiceImpl
 	public PortletPreferences updatePreferences(
 		long ownerId, int ownerType, long plid, String portletId, String xml) {
 
-		plid = _swapPlidForUpdatePreferences(plid);
+		plid = _swapPlidForUpdatePreferences(ownerType, plid);
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
@@ -701,6 +710,29 @@ public class PortletPreferencesLocalServiceImpl
 		return null;
 	}
 
+	private long _getLayoutVersionId(int ownerType, long plid) {
+		if ((ownerType != PortletKeys.PREFS_OWNER_TYPE_LAYOUT) ||
+			(plid == LayoutConstants.DEFAULT_PLID)) {
+
+			return plid;
+		}
+
+		try {
+			LayoutVersion layoutVersion = layoutLocalService.fetchLatestVersion(
+				layoutLocalService.getLayout(plid));
+
+			return layoutVersion.getLayoutVersionId();
+		}
+		catch (PortalException pe) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to find any layout version for layout " + plid, pe);
+			}
+
+			return plid;
+		}
+	}
+
 	private javax.portlet.PortletPreferences _getStrictPreferences(
 		long companyId, long ownerId, int ownerType, long plid,
 		String portletId, String defaultPreferences) {
@@ -720,7 +752,11 @@ public class PortletPreferencesLocalServiceImpl
 			portletPreferences.getPreferences());
 	}
 
-	private long _swapPlidForPortletPreferences(long plid) {
+	private long _swapPlidForPortletPreferences(int ownerType, long plid) {
+		if (ChangeTrackingThreadLocal.isLayoutTrackingEnabled()) {
+			return _getLayoutVersionId(ownerType, plid);
+		}
+
 		if (!StagingAdvicesThreadLocal.isEnabled()) {
 			return plid;
 		}
@@ -734,7 +770,11 @@ public class PortletPreferencesLocalServiceImpl
 		return layoutRevision.getLayoutRevisionId();
 	}
 
-	private long _swapPlidForPreferences(long plid) {
+	private long _swapPlidForPreferences(int ownerType, long plid) {
+		if (ChangeTrackingThreadLocal.isLayoutTrackingEnabled()) {
+			return _getLayoutVersionId(ownerType, plid);
+		}
+
 		if (!StagingAdvicesThreadLocal.isEnabled()) {
 			return plid;
 		}
@@ -762,7 +802,11 @@ public class PortletPreferencesLocalServiceImpl
 		}
 	}
 
-	private long _swapPlidForUpdatePreferences(long plid) {
+	private long _swapPlidForUpdatePreferences(int ownerType, long plid) {
+		if (ChangeTrackingThreadLocal.isLayoutTrackingEnabled()) {
+			return _getLayoutVersionId(ownerType, plid);
+		}
+
 		if (!StagingAdvicesThreadLocal.isEnabled()) {
 			return plid;
 		}

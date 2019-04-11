@@ -14,6 +14,7 @@
 
 package com.liferay.portal.model;
 
+import com.liferay.change.tracking.kernel.util.ChangeTrackingThreadLocal;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModelListener;
@@ -21,6 +22,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutRevision;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
+import com.liferay.portal.kernel.model.LayoutVersion;
 import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
@@ -122,14 +124,25 @@ public class PortletPreferencesModelListener
 						PortletKeys.PREFS_OWNER_TYPE_LAYOUT) &&
 					 (portletPreferences.getPlid() > 0)) {
 
+				if (ChangeTrackingThreadLocal.isLayoutUpdateInProgress()) {
+					return;
+				}
+
 				Layout layout = LayoutLocalServiceUtil.fetchLayout(
 					portletPreferences.getPlid());
 
 				if (layout == null) {
-					return;
-				}
+					LayoutVersion layoutVersion =
+						LayoutLocalServiceUtil.fetchLayoutVersion(
+							portletPreferences.getPlid());
 
-				layout.setModifiedDate(new Date());
+					if (layoutVersion == null) {
+						return;
+					}
+
+					layout = LayoutLocalServiceUtil.getLayout(
+						layoutVersion.getPlid());
+				}
 
 				LayoutLocalServiceUtil.updateLayout(
 					layout.getGroupId(), layout.isPrivateLayout(),

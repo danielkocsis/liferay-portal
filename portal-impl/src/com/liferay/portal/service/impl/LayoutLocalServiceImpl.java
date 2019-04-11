@@ -14,6 +14,7 @@
 
 package com.liferay.portal.service.impl;
 
+import com.liferay.change.tracking.kernel.util.ChangeTrackingThreadLocal;
 import com.liferay.exportimport.kernel.lar.MissingReferences;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.staging.MergeLayoutPrototypesThreadLocal;
@@ -47,6 +48,7 @@ import com.liferay.portal.kernel.model.LayoutType;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.LayoutVersion;
 import com.liferay.portal.kernel.model.PortletConstants;
+import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.model.SystemEventConstants;
@@ -2926,6 +2928,30 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public Layout publishDraft(Layout draftLayout) throws PortalException {
+		ChangeTrackingThreadLocal.setLayoutUpdateInProgress(true);
+
+		try {
+			LayoutVersion oldLayoutVersion = fetchLatestVersion(draftLayout);
+
+			if (oldLayoutVersion == null) {
+				return super.publishDraft(draftLayout);
+			}
+
+			Layout layout = super.publishDraft(draftLayout);
+
+			LayoutVersion newLayoutVersion = fetchLatestVersion(layout);
+
+			_copyPortletPreferences(oldLayoutVersion, newLayoutVersion);
+
+			return layout;
+		}
+		finally {
+			ChangeTrackingThreadLocal.setLayoutUpdateInProgress(false);
+		}
+	}
+
 	/**
 	 * Sets the layouts for the group, replacing and prioritizing all layouts of
 	 * the parent layout.
@@ -4080,6 +4106,24 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		queryConfig.setScoreEnabled(false);
 
 		return searchContext;
+	}
+
+	private void _copyPortletPreferences(
+		LayoutVersion oldLayoutVersion, LayoutVersion newLayoutVersion) {
+
+		List<PortletPreferences> portletPreferencesList =
+			portletPreferencesLocalService.getPortletPreferencesByPlid(
+				oldLayoutVersion.getLayoutVersionId());
+
+		for (PortletPreferences portletPreferences : portletPreferencesList) {
+			portletPreferencesLocalService.addPortletPreferences(
+				newLayoutVersion.getCompanyId(),
+				portletPreferences.getOwnerId(),
+				portletPreferences.getOwnerType(),
+				newLayoutVersion.getLayoutVersionId(),
+				portletPreferences.getPortletId(), null,
+				portletPreferences.getPreferences());
+		}
 	}
 
 	private List<Layout> _getChildLayouts(
