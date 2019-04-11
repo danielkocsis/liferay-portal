@@ -142,28 +142,9 @@ PortletURL histotryURL = PortletURLFactoryUtil.create(request, CTPortletKeys.CHA
 									<liferay-portlet:param name="ctCollectionId" value="<%= String.valueOf(curCTCollection.getCtCollectionId()) %>" />
 								</liferay-portlet:renderURL>
 
-								<script>
-									function handleClickPublish() {
-										Liferay.Util.openWindow(
-											{
-												dialog: {
-													destroyOnHide: false,
-													height: 400,
-													width: 500
-												},
-												dialogIframe: {
-													bodyCssClass: 'dialog-with-footer'
-												},
-												id: '<portlet:namespace/>publishIconDialog',
-												title: '<%= LanguageUtil.get(request, "publish-change-list") %>',
-												uri: '<%= publishModalURL %>'
-											});
-									}
-								</script>
-
 								<liferay-ui:icon
 									message="publish"
-									onClick="javascript:handleClickPublish();"
+									onClick='<%= "javascript:handleClickPublish(\'" + publishModalURL.toString() + "\');" %>'
 									url="#"
 								/>
 
@@ -310,28 +291,9 @@ PortletURL histotryURL = PortletURLFactoryUtil.create(request, CTPortletKeys.CHA
 													<liferay-portlet:param name="ctCollectionId" value="<%= String.valueOf(curCTCollection.getCtCollectionId()) %>" />
 												</liferay-portlet:renderURL>
 
-												<script>
-													function handleClickPublish() {
-														Liferay.Util.openWindow(
-															{
-																dialog: {
-																	destroyOnHide: false,
-																	height: 400,
-																	width: 500
-																},
-																dialogIframe: {
-																	bodyCssClass: 'dialog-with-footer'
-																},
-																id: '<portlet:namespace/>publishIconDialog',
-																title: '<%= LanguageUtil.get(request, "publish-change-list") %>',
-																uri: '<%= publishModalURL %>'
-															});
-													}
-												</script>
-
 												<liferay-ui:icon
 													message="publish"
-													onClick="javascript:handleClickPublish();"
+													onClick='<%= "javascript:handleClickPublish(\'" + publishModalURL.toString() + "\');" %>'
 													url="#"
 												/>
 
@@ -361,6 +323,7 @@ PortletURL histotryURL = PortletURLFactoryUtil.create(request, CTPortletKeys.CHA
 </div>
 
 <script>
+
 	Liferay.on(
 		'refreshSelectChangeList',
 		function(event) {
@@ -370,4 +333,22 @@ PortletURL histotryURL = PortletURLFactoryUtil.create(request, CTPortletKeys.CHA
 				},
 				1000);
 	});
+
+	function handleClickPublish(url) {
+
+		Liferay.Util.openWindow(
+			{
+				dialog: {
+					destroyOnHide: false,
+					height: 400,
+					width: 500
+				},
+				dialogIframe: {
+					bodyCssClass: 'dialog-with-footer'
+				},
+				id: '<portlet:namespace/>publishIconDialog',
+				title: '<%= LanguageUtil.get(request, "publish-change-list") %>',
+				uri: url
+			});
+	}
 </script>
