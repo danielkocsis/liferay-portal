@@ -148,8 +148,8 @@ PortletURL histotryURL = PortletURLFactoryUtil.create(request, CTPortletKeys.CHA
 											{
 												dialog: {
 													destroyOnHide: false,
-													width: 500,
-													height: 400
+													height: 400,
+													width: 500
 												},
 												dialogIframe: {
 													bodyCssClass: 'dialog-with-footer'
@@ -316,8 +316,8 @@ PortletURL histotryURL = PortletURLFactoryUtil.create(request, CTPortletKeys.CHA
 															{
 																dialog: {
 																	destroyOnHide: false,
-																	width: 500,
-																	height: 400
+																	height: 400,
+																	width: 500
 																},
 																dialogIframe: {
 																	bodyCssClass: 'dialog-with-footer'
