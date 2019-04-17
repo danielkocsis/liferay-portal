@@ -112,7 +112,7 @@ public class DLFileEntryFilterTest {
 		PrincipalThreadLocal.setName(_user1.getUserId());
 
 		_ctEngineManager.publishCTCollection(
-			_user1.getUserId(), _ctCollectionUser1.getCtCollectionId());
+			_user1.getUserId(), _ctCollectionUser1.getCtCollectionId(), false);
 
 		PrincipalThreadLocal.setName(_user2.getUserId());
 
