@@ -151,9 +151,7 @@ public class ManifestSummaryTest
 	}
 
 	@Override
-	protected AssetEntry fetchAssetEntry(StagedModel stagedModel, Group group)
-		throws Exception {
-
+	protected AssetEntry fetchAssetEntry(StagedModel stagedModel, Group group) {
 		return null;
 	}
 

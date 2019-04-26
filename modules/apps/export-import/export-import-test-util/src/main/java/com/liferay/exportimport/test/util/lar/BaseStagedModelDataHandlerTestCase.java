@@ -108,7 +108,6 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 		ServiceContextThreadLocal.popServiceContext();
 	}
 
-	@Ignore
 	@Test
 	public void testCleanAssetCategoriesAndTags() throws Exception {
 		Map<String, List<StagedModel>> dependentStagedModelsMap =
@@ -131,7 +130,7 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 
 		AssetTag assetTag = AssetTestUtil.addTag(stagingGroup.getGroupId());
 
-		assetEntry = AssetEntryLocalServiceUtil.updateEntry(
+		AssetEntryLocalServiceUtil.updateEntry(
 			TestPropsValues.getUserId(), stagingGroup.getGroupId(),
 			assetEntry.getCreateDate(), assetEntry.getModifiedDate(),
 			assetEntry.getClassName(), assetEntry.getClassPK(),
@@ -170,7 +169,7 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 
 		assetEntry = fetchAssetEntry(stagedModel, stagingGroup);
 
-		assetEntry = AssetEntryLocalServiceUtil.updateEntry(
+		AssetEntryLocalServiceUtil.updateEntry(
 			TestPropsValues.getUserId(), stagingGroup.getGroupId(),
 			assetEntry.getCreateDate(), assetEntry.getModifiedDate(),
 			assetEntry.getClassName(), assetEntry.getClassPK(),
@@ -650,9 +649,7 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 			portletDataContext, exportedStagedModel);
 	}
 
-	protected AssetEntry fetchAssetEntry(StagedModel stagedModel, Group group)
-		throws Exception {
-
+	protected AssetEntry fetchAssetEntry(StagedModel stagedModel, Group group) {
 		return AssetEntryLocalServiceUtil.fetchEntry(
 			group.getGroupId(), stagedModel.getUuid());
 	}

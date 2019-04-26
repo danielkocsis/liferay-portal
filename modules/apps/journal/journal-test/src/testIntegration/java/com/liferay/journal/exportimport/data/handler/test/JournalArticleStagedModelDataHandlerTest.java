@@ -362,14 +362,19 @@ public class JournalArticleStagedModelDataHandlerTest
 	}
 
 	@Override
-	protected AssetEntry fetchAssetEntry(StagedModel stagedModel, Group group)
-		throws Exception {
-
+	protected AssetEntry fetchAssetEntry(StagedModel stagedModel, Group group) {
 		JournalArticle article = (JournalArticle)stagedModel;
 
-		JournalArticleResource articleResource =
-			JournalArticleResourceLocalServiceUtil.getArticleResource(
-				article.getResourcePrimKey());
+		JournalArticleResource articleResource = null;
+
+		try {
+			articleResource =
+				JournalArticleResourceLocalServiceUtil.getArticleResource(
+					article.getResourcePrimKey());
+		}
+		catch (PortalException e) {
+			Assert.fail();
+		}
 
 		return AssetEntryLocalServiceUtil.fetchEntry(
 			group.getGroupId(), articleResource.getUuid());
