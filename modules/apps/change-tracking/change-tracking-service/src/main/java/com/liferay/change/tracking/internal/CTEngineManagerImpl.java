@@ -127,7 +127,8 @@ public class CTEngineManagerImpl implements CTEngineManager {
 
 	@Override
 	public Optional<CTCollection> createCTCollection(
-		long userId, String name, String description) {
+			long userId, String name, String description)
+		throws PortalException {
 
 		long companyId = _getCompanyId(userId);
 
@@ -495,7 +496,8 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	}
 
 	private Optional<CTCollection> _createCTCollection(
-		long userId, String name, String description) {
+			long userId, String name, String description)
+		throws PortalException {
 
 		CTCollection ctCollection = null;
 
@@ -513,6 +515,10 @@ public class CTEngineManagerImpl implements CTEngineManager {
 				});
 		}
 		catch (Throwable t) {
+			if (t instanceof PortalException) {
+				throw (PortalException)t;
+			}
+
 			_log.error(
 				"Unable to create change tracking collection with name " + name,
 				t);
@@ -521,7 +527,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 		return Optional.ofNullable(ctCollection);
 	}
 
-	private void _enableChangeTracking(long userId) throws CTException {
+	private void _enableChangeTracking(long userId) throws PortalException {
 		Optional<CTCollection> ctCollectionOptional = _createCTCollection(
 			userId, CTConstants.CT_COLLECTION_NAME_PRODUCTION,
 			StringPool.BLANK);
