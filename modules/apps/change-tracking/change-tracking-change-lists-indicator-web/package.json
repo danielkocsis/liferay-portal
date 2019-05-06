@@ -2,6 +2,7 @@
 	"dependencies": {
 		"clay-icon": "2.14.2",
 		"clay-tooltip": "2.14.2",
+		"escape-html": "^1.0.3",
 		"metal-component": "2.16.8",
 		"metal-dom": "2.16.8",
 		"metal-soy": "2.16.8",
