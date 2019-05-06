@@ -2163,6 +2163,10 @@ public class StagingImpl implements Staging {
 
 	@Override
 	public boolean isIncomplete(Layout layout, long layoutSetBranchId) {
+		if (layout.isSystem()) {
+			return false;
+		}
+
 		LayoutRevision layoutRevision = LayoutStagingUtil.getLayoutRevision(
 			layout);
 
