@@ -114,7 +114,7 @@ public class LayoutStagingImpl implements LayoutStaging {
 
 	@Override
 	public boolean isBranchingLayout(Layout layout) {
-		if (layout.isSystem()) {
+		if ((layout == null) || layout.isSystem()) {
 			return false;
 		}
 
