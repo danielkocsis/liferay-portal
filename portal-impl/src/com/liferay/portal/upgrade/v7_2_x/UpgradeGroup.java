@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +35,29 @@ public class UpgradeGroup extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		updateLanguageSettings();
+		_updateLanguageSettings();
 	}
 
-	protected void updateLanguageSettings() throws Exception {
+	private List<String> _checkLanguageIds(
+		UnicodeProperties typeSettingsProperties) {
+
+		String[] languageIdsArray = StringUtil.split(
+			typeSettingsProperties.getProperty("locales"));
+
+		List<String> languageIds = new ArrayList<>();
+
+		for (String languageId : languageIdsArray) {
+			if (!LanguageUtil.isAvailableLocale(
+					LocaleUtil.fromLanguageId(languageId))) {
+
+				languageIds.add(languageId);
+			}
+		}
+
+		return languageIds;
+	}
+
+	private void _updateLanguageSettings() throws Exception {
 		try (PreparedStatement selectStatement = connection.prepareStatement(
 				"select groupId, typeSettings from Group_")) {
 
@@ -57,37 +77,28 @@ public class UpgradeGroup extends UpgradeProcess {
 						continue;
 					}
 
-					long groupId = rs.getLong("groupId");
-
-					String[] languageIdsArray = StringUtil.split(
-						typeSettingsProperties.getProperty("locales"));
-
-					List<String> languageIds = new ArrayList<>();
-
-					for (String languageId : languageIdsArray) {
-						if (!LanguageUtil.isAvailableLocale(
-								LocaleUtil.fromLanguageId(languageId))) {
-
-							languageIds.add(languageId);
-						}
-					}
-
-					typeSettingsProperties.put(
-						"locales", StringUtil.merge(languageIds));
-
-					try (PreparedStatement updateStatement =
-							connection.prepareStatement(
-								"update Group_ set typeSettings = ? where " +
-									"groupId = ?")) {
-
-						updateStatement.setString(
-							1, typeSettingsProperties.toString());
-						updateStatement.setLong(2, groupId);
-
-						updateStatement.executeUpdate();
-					}
+					_updateTypeSettings(
+						rs.getLong("groupId"), typeSettingsProperties);
 				}
 			}
+		}
+	}
+
+	private void _updateTypeSettings(
+			long groupId, UnicodeProperties typeSettingsProperties)
+		throws SQLException {
+
+		List<String> languageIds = _checkLanguageIds(typeSettingsProperties);
+
+		typeSettingsProperties.put("locales", StringUtil.merge(languageIds));
+
+		try (PreparedStatement updateStatement = connection.prepareStatement(
+				"update Group_ set typeSettings = ? where groupId = ?")) {
+
+			updateStatement.setString(1, typeSettingsProperties.toString());
+			updateStatement.setLong(2, groupId);
+
+			updateStatement.executeUpdate();
 		}
 	}
 
