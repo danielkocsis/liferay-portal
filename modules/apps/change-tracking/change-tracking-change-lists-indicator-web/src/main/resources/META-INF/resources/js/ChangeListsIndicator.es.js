@@ -5,6 +5,7 @@ import {Config} from 'metal-state';
 import {dom} from 'metal-dom';
 import {EventHandler} from 'metal-events';
 import {openToast} from 'frontend-js-web/liferay/toast/commands/OpenToast.es';
+import escapeHtml from 'escape-html';
 
 import templates from './ChangeListsIndicator.soy';
 
@@ -31,7 +32,7 @@ class ChangeListsIndicator extends PortletBase {
 			urlActiveCollection,
 			response => {
 				if (response) {
-					this.activeChangeListName = response[0].name;
+					this.activeChangeListName = escapeHtml(response[0].name);
 					this._setTooltipCssClassName(this.activeChangeListName);
 					this._setEventHandlers();
 				}
