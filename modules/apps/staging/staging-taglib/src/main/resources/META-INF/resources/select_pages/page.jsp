@@ -181,5 +181,36 @@
 				</aui:fieldset>
 			</li>
 		</ul>
+		<ul class="flex-container layout-selector deletions" id="<portlet:namespace />pagedeletions">
+			<li class="layout-selector-options">
+				<aui:fieldset label="page-deletions">
+					<%
+					DateRange dateRange = null;
+
+					if (useRequestValues) {
+						dateRange = ExportImportDateUtil.getDateRange(renderRequest, selectPagesGroupId, selectPagesPrivteLayout, 0, null, ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE);
+					}
+					else {
+						dateRange = ExportImportDateUtil.getDateRange(exportImportConfiguration);
+					}
+
+					PortletDataContext portletDataContext = PortletDataContextFactoryUtil.createPreparePortletDataContext(company.getCompanyId(), selectPagesGroupId, (range != null) ? range : ExportImportDateUtil.RANGE_FROM_LAST_PUBLISH_DATE, dateRange.getStartDate(), dateRange.getEndDate());
+
+					long layoutModelDeletionCount = ExportImportHelperUtil.getLayoutModelDeletionCount(portletDataContext, selectPagesPrivteLayout);
+					%>
+
+					<span>
+						<liferay-staging:checkbox
+							checked="<%= MapUtil.getBoolean(parameterMap, PortletDataHandlerKeys.DELETE_LAYOUTS, false) %>"
+							deletions="<%= layoutModelDeletionCount %>"
+							disabled="<%= disableInputs %>"
+							label="publish-page-deletions"
+							name="<%= PortletDataHandlerKeys.DELETE_LAYOUTS %>"
+							popover="affected-by-the-content-sections-date-range-selector"
+						/>
+					</span>
+				</aui:fieldset>
+			</li>
+		</ul>
 	</div>
 </aui:fieldset>
