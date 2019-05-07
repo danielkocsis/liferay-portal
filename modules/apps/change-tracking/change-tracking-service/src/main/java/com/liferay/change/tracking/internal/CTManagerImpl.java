@@ -437,17 +437,27 @@ public class CTManagerImpl implements CTManager {
 		return ChangeTrackingThreadLocal.isModelUpdateInProgress();
 	}
 
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
 	@Override
 	public Optional<CTEntry> registerModelChange(
 			long userId, long modelClassNameId, long modelClassPK,
 			long modelResourcePrimKey, int changeType)
 		throws CTException {
 
+		long companyId = _getCompanyId(userId);
+
 		return registerModelChange(
-			userId, modelClassNameId, modelClassPK, modelResourcePrimKey,
-			changeType, false);
+			companyId, userId, modelClassNameId, modelClassPK,
+			modelResourcePrimKey, changeType);
 	}
 
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
 	@Override
 	public Optional<CTEntry> registerModelChange(
 			long userId, long modelClassNameId, long modelClassPK,
@@ -455,6 +465,29 @@ public class CTManagerImpl implements CTManager {
 		throws CTException {
 
 		long companyId = _getCompanyId(userId);
+
+		return registerModelChange(
+			companyId, userId, modelClassNameId, modelClassPK,
+			modelResourcePrimKey, changeType, force);
+	}
+
+	@Override
+	public Optional<CTEntry> registerModelChange(
+			long companyId, long userId, long modelClassNameId,
+			long modelClassPK, long modelResourcePrimKey, int changeType)
+		throws CTException {
+
+		return registerModelChange(
+			companyId, userId, modelClassNameId, modelClassPK,
+			modelResourcePrimKey, changeType, false);
+	}
+
+	@Override
+	public Optional<CTEntry> registerModelChange(
+			long companyId, long userId, long modelClassNameId,
+			long modelClassPK, long modelResourcePrimKey, int changeType,
+			boolean force)
+		throws CTException {
 
 		if (!_ctEngineManager.isChangeTrackingEnabled(companyId) ||
 			!_ctEngineManager.isChangeTrackingSupported(
@@ -493,19 +526,44 @@ public class CTManagerImpl implements CTManager {
 		return ctEntryOptional;
 	}
 
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
 	@Override
 	public <V extends BaseModel> void registerRelatedChanges(
 		long userId, long classNameId, long classPK) {
 
-		registerRelatedChanges(userId, classNameId, classPK, false);
+		long companyId = _getCompanyId(userId);
+
+		registerRelatedChanges(companyId, userId, classNameId, classPK);
+	}
+
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
+	@Override
+	public <V extends BaseModel> void registerRelatedChanges(
+		long userId, long classNameId, long classPK, boolean force) {
+
+		long companyId = _getCompanyId(userId);
+
+		registerRelatedChanges(companyId, userId, classNameId, classPK, force);
+	}
+
+	@Override
+	public <V extends BaseModel> void registerRelatedChanges(
+		long companyId, long userId, long classNameId, long classPK) {
+
+		registerRelatedChanges(companyId, userId, classNameId, classPK, false);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <V extends BaseModel> void registerRelatedChanges(
-		long userId, long classNameId, long classPK, boolean force) {
-
-		long companyId = _getCompanyId(userId);
+		long companyId, long userId, long classNameId, long classPK,
+		boolean force) {
 
 		if (!_ctEngineManager.isChangeTrackingEnabled(companyId) ||
 			!_ctEngineManager.isChangeTrackingSupported(
@@ -540,7 +598,10 @@ public class CTManagerImpl implements CTManager {
 				relatedEntitiesFunction, force));
 	}
 
-	@Override
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
 	public Optional<CTEntry> unregisterModelChange(
 		long userId, long modelClassNameId, long modelClassPK) {
 
@@ -549,6 +610,14 @@ public class CTManagerImpl implements CTManager {
 		if (companyId <= 0) {
 			return Optional.empty();
 		}
+
+		return unregisterModelChange(
+			companyId, userId, modelClassNameId, modelClassPK);
+	}
+
+	@Override
+	public Optional<CTEntry> unregisterModelChange(
+		long companyId, long userId, long modelClassNameId, long modelClassPK) {
 
 		if (!_ctEngineManager.isChangeTrackingEnabled(companyId) ||
 			!_ctEngineManager.isChangeTrackingSupported(
