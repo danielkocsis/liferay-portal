@@ -73,4 +73,12 @@ else {
 }
 
 String selectedLayoutIds = StringUtil.merge(selectedLayoutIdsArray);
+
+String range = ParamUtil.getString(portletRequest, ExportImportDateUtil.RANGE, null);
+
+boolean useRequestValues = false;
+
+if ((range != null) || (exportImportConfiguration == null)) {
+	useRequestValues = true;
+}
 %>
