@@ -39,13 +39,13 @@ if (ctCollection != null) {
 		<h4><liferay-ui:message key="change-list" /></h4>
 
 		<div class="sheet-text">
-			<%= changeListName %>
+			<%= HtmlUtil.escape(changeListName) %>
 		</div>
 
 		<h4><liferay-ui:message key="description" /></h4>
 
 		<div class="sheet-text">
-			<%= changeListDescription %>
+			<%= HtmlUtil.escape(changeListDescription) %>
 		</div>
 
 		<aui:input label="ignore-collision" name="ignoreCollision" type="checkbox" />
