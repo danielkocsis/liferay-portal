@@ -18,6 +18,7 @@ import com.liferay.change.tracking.CTEngineManager;
 import com.liferay.change.tracking.configuration.CTConfigurationRegistryUtil;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
@@ -36,6 +37,7 @@ import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.template.soy.util.SoyContext;
 import com.liferay.portal.template.soy.util.SoyContextFactoryUtil;
 
@@ -304,6 +306,21 @@ public class ChangeListsDisplayContext {
 				addTableViewTypeItem();
 			}
 		};
+	}
+
+	public boolean hasCTEntries(long ctCollectionId) {
+		QueryDefinition<CTEntry> queryDefinition = new QueryDefinition<>();
+		
+		queryDefinition.setStatus(WorkflowConstants.STATUS_DRAFT);
+
+		int ctEntriesCount = _ctEngineManager.getCTEntriesCount(
+			ctCollectionId, queryDefinition);
+
+		if (ctEntriesCount > 0) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public boolean isChangeListActive(long ctCollectionId) {
