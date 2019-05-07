@@ -14,7 +14,6 @@
 
 package com.liferay.change.tracking.change.lists.web.internal.portlet.action;
 
-import com.liferay.change.tracking.CTManager;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 
@@ -23,7 +22,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Máté Thurzó
@@ -45,8 +43,5 @@ public class PublishModalMVCRenderCommand implements MVCRenderCommand {
 
 		return "/publish_modal.jsp";
 	}
-
-	@Reference
-	private CTManager _ctManager;
 
 }

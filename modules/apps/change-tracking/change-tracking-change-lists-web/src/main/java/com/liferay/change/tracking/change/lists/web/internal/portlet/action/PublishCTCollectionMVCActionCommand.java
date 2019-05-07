@@ -60,11 +60,11 @@ public class PublishCTCollectionMVCActionCommand extends BaseMVCActionCommand {
 		_ctEngineManager.publishCTCollection(
 			themeDisplay.getUserId(), ctCollectionId, ignoreCollision);
 
-		Optional<CTCollection> productionOptional =
+		Optional<CTCollection> productionCTCollectionOptional =
 			_ctEngineManager.getProductionCTCollectionOptional(
 				themeDisplay.getCompanyId());
 
-		productionOptional.ifPresent(
+		productionCTCollectionOptional.ifPresent(
 			ctCollection -> _ctEngineManager.checkoutCTCollection(
 				themeDisplay.getUserId(), ctCollection.getCtCollectionId()));
 	}
