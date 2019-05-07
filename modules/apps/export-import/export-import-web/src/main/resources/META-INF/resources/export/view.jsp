@@ -51,6 +51,17 @@ String searchContainerId = "exportLayoutProcesses";
 	<c:otherwise>
 		<liferay-util:include page="/export/navigation.jsp" servletContext="<%= application %>" />
 
+		<liferay-util:include page="/toolbar.jsp" servletContext="<%= application %>">
+			<liferay-util:param name="mvcRenderCommandName" value="exportLayoutsView" />
+			<liferay-util:param name="groupId" value="<%= String.valueOf(liveGroupId) %>" />
+			<liferay-util:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" />
+			<liferay-util:param name="displayStyle" value="<%= displayStyle %>" />
+			<liferay-util:param name="navigation" value="<%= navigation %>" />
+			<liferay-util:param name="orderByCol" value="<%= orderByCol %>" />
+			<liferay-util:param name="orderByType" value="<%= orderByType %>" />
+			<liferay-util:param name="searchContainerId" value="<%= searchContainerId %>" />
+		</liferay-util:include>
+
 		<liferay-util:include page="/export/processes_list/view.jsp" servletContext="<%= application %>">
 			<liferay-util:param name="liveGroupId" value="<%= String.valueOf(liveGroupId) %>" />
 			<liferay-util:param name="displayStyle" value="<%= displayStyle %>" />
