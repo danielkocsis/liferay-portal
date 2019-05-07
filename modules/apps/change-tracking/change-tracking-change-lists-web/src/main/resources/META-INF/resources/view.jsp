@@ -134,20 +134,20 @@ renderResponse.setTitle(title);
 									message="edit"
 									url="<%= editCollectionURL %>"
 								/>
-								
+
 								<c:choose>
 									<c:when test="<%= changeListsDisplayContext.hasCTEntries(curCTCollection.getCtCollectionId()) %>">
 										<liferay-portlet:renderURL var="publishModalURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
 											<liferay-portlet:param name="mvcRenderCommandName" value="/change_lists/publish_modal" />
 											<liferay-portlet:param name="ctCollectionId" value="<%= String.valueOf(curCTCollection.getCtCollectionId()) %>" />
 										</liferay-portlet:renderURL>
-									
+
 										<liferay-ui:icon
 											message="publish"
 											onClick='<%= "javascript:" + renderResponse.getNamespace() + "handleClickPublish(\'" + publishModalURL.toString() + "\');" %>'
 											url="#"
 										/>
-									</c:when>    
+									</c:when>
 									<c:otherwise>
 										<liferay-ui:icon
 											cssClass="disabled"
@@ -309,20 +309,20 @@ renderResponse.setTitle(title);
 													message="edit"
 													url="<%= editCollectionURL %>"
 												/>
-												
+
 												<c:choose>
 													<c:when test="<%= changeListsDisplayContext.hasCTEntries(curCTCollection.getCtCollectionId()) %>">
 														<liferay-portlet:renderURL var="publishModalURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
 															<liferay-portlet:param name="mvcRenderCommandName" value="/change_lists/publish_modal" />
 															<liferay-portlet:param name="ctCollectionId" value="<%= String.valueOf(curCTCollection.getCtCollectionId()) %>" />
 														</liferay-portlet:renderURL>
-												
+
 														<liferay-ui:icon
 															message="publish"
 															onClick='<%= "javascript:" + renderResponse.getNamespace() + "handleClickPublish(\'" + publishModalURL.toString() + "\');" %>'
 															url="#"
 														/>
-													</c:when>    
+													</c:when>
 													<c:otherwise>
 														<liferay-ui:icon
 															cssClass="disabled"

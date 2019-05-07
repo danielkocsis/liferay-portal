@@ -310,7 +310,7 @@ public class ChangeListsDisplayContext {
 
 	public boolean hasCTEntries(long ctCollectionId) {
 		QueryDefinition<CTEntry> queryDefinition = new QueryDefinition<>();
-		
+
 		queryDefinition.setStatus(WorkflowConstants.STATUS_DRAFT);
 
 		int ctEntriesCount = _ctEngineManager.getCTEntriesCount(
