@@ -261,6 +261,7 @@ public class CTDDMTemplateLocalServiceWrapper
 
 		try {
 			_ctManager.registerModelChange(
+				ddmTemplateVersion.getCompanyId(),
 				PrincipalThreadLocal.getUserId(),
 				_portal.getClassNameId(DDMTemplateVersion.class.getName()),
 				ddmTemplateVersion.getTemplateVersionId(),

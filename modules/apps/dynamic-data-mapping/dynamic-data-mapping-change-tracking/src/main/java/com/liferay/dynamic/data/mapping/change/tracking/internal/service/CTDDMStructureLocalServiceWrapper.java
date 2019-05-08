@@ -335,6 +335,7 @@ public class CTDDMStructureLocalServiceWrapper
 
 		try {
 			_ctManager.registerModelChange(
+				ddmStructureVersion.getCompanyId(),
 				PrincipalThreadLocal.getUserId(),
 				_portal.getClassNameId(DDMStructureVersion.class.getName()),
 				ddmStructureVersion.getStructureVersionId(),
