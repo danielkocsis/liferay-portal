@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 
@@ -38,7 +39,7 @@ public class UpgradeGroup extends UpgradeProcess {
 	private String _checkLocales(UnicodeProperties typeSettingsProperties) {
 		String[] locales = ArrayUtil.filter(
 			StringUtil.split(
-				typeSettingsProperties.getProperty("locales")),
+				typeSettingsProperties.getProperty(PropsKeys.LOCALES)),
 			inheritLocale -> !LanguageUtil.isAvailableLocale(
 				LocaleUtil.fromLanguageId(inheritLocale)));
 
@@ -71,7 +72,7 @@ public class UpgradeGroup extends UpgradeProcess {
 		throws SQLException {
 
 		typeSettingsProperties.put(
-			"locales", _checkLocales(typeSettingsProperties));
+			PropsKeys.LOCALES, _checkLocales(typeSettingsProperties));
 
 		try (PreparedStatement updateStatement = connection.prepareStatement(
 				"update Group_ set typeSettings = ? where groupId = ?")) {
