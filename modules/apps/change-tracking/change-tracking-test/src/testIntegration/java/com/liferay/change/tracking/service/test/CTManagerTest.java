@@ -533,7 +533,8 @@ public class CTManagerTest {
 	@Test
 	public void testRegisterModelChange() throws PortalException {
 		Optional<CTEntry> ctEntryOptional = _ctManager.registerModelChange(
-			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			_user.getCompanyId(), _user.getUserId(),
+			_testVersionClassClassName.getClassNameId(),
 			_TEST_VERSION_CLASS_ENTITY_ID, _TEST_RESOURCE_CLASS_ENTITY_ID,
 			CTConstants.CT_CHANGE_TYPE_ADDITION);
 
@@ -557,7 +558,8 @@ public class CTManagerTest {
 		_ctEngineManager.disableChangeTracking(TestPropsValues.getCompanyId());
 
 		Optional<CTEntry> ctEntryOptional = _ctManager.registerModelChange(
-			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			_user.getCompanyId(), _user.getUserId(),
+			_testVersionClassClassName.getClassNameId(),
 			_TEST_VERSION_CLASS_ENTITY_ID, _TEST_RESOURCE_CLASS_ENTITY_ID,
 			CTConstants.CT_CHANGE_TYPE_ADDITION);
 
@@ -589,8 +591,9 @@ public class CTManagerTest {
 
 		Optional<CTEntry> productionCTEntryOptional =
 			_ctManager.registerModelChange(
-				_user.getUserId(), _testVersionClassClassName.getClassNameId(),
-				1L, _TEST_RESOURCE_CLASS_ENTITY_ID,
+				_user.getCompanyId(), _user.getUserId(),
+				_testVersionClassClassName.getClassNameId(), 1L,
+				_TEST_RESOURCE_CLASS_ENTITY_ID,
 				CTConstants.CT_CHANGE_TYPE_ADDITION);
 
 		Assert.assertTrue(productionCTEntryOptional.isPresent());
@@ -607,7 +610,8 @@ public class CTManagerTest {
 	@Test
 	public void testRegisterModelChangeWhenCTEntryAggregate() throws Exception {
 		Optional<CTEntry> ctEntryOptionalA = _ctManager.registerModelChange(
-			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			_user.getCompanyId(), _user.getUserId(),
+			_testVersionClassClassName.getClassNameId(),
 			_TEST_VERSION_CLASS_ENTITY_ID, 0L,
 			CTConstants.CT_CHANGE_TYPE_ADDITION);
 
@@ -616,7 +620,8 @@ public class CTManagerTest {
 		CTEntry ctEntryA = ctEntryOptionalA.get();
 
 		Optional<CTEntry> ctEntryOptionalB = _ctManager.registerModelChange(
-			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			_user.getCompanyId(), _user.getUserId(),
+			_testVersionClassClassName.getClassNameId(),
 			RandomTestUtil.nextLong(), 1L, CTConstants.CT_CHANGE_TYPE_ADDITION);
 
 		Assert.assertTrue(ctEntryOptionalB.isPresent());
@@ -629,7 +634,8 @@ public class CTManagerTest {
 		Assert.assertTrue(ctEntryAggregateOptional.isPresent());
 
 		Optional<CTEntry> ctEntryOptionalC = _ctManager.registerModelChange(
-			_user.getUserId(), _testVersionClassClassName.getClassNameId(),
+			_user.getCompanyId(), _user.getUserId(),
+			_testVersionClassClassName.getClassNameId(),
 			RandomTestUtil.nextLong(), 1L, CTConstants.CT_CHANGE_TYPE_ADDITION);
 
 		Assert.assertTrue(ctEntryOptionalC.isPresent());
