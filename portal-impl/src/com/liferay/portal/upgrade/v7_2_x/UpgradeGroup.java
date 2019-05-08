@@ -40,7 +40,7 @@ public class UpgradeGroup extends UpgradeProcess {
 		String[] locales = ArrayUtil.filter(
 			StringUtil.split(
 				typeSettingsProperties.getProperty(PropsKeys.LOCALES)),
-			inheritLocale -> !LanguageUtil.isAvailableLocale(
+			inheritLocale -> LanguageUtil.isAvailableLocale(
 				LocaleUtil.fromLanguageId(inheritLocale)));
 
 		return StringUtil.merge(locales);
