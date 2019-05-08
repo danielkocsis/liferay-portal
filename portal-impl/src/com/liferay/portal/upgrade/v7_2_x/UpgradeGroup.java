@@ -16,7 +16,6 @@ package com.liferay.portal.upgrade.v7_2_x;
 
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -59,7 +58,8 @@ public class UpgradeGroup extends UpgradeProcess {
 
 	private void _updateLanguageSettings() throws Exception {
 		try (PreparedStatement selectStatement = connection.prepareStatement(
-				"select groupId, typeSettings from Group_")) {
+				"select groupId, typeSettings from Group_ where typeSettings " +
+					"like '%inheritLocales=true%'")) {
 
 			try (ResultSet rs = selectStatement.executeQuery()) {
 				while (rs.next()) {
@@ -69,13 +69,6 @@ public class UpgradeGroup extends UpgradeProcess {
 						new UnicodeProperties(true);
 
 					typeSettingsProperties.load(typeSettings);
-
-					if (!GetterUtil.getBoolean(
-							typeSettingsProperties.getProperty(
-								"inheritLocales"))) {
-
-						continue;
-					}
 
 					_updateTypeSettings(
 						rs.getLong("groupId"), typeSettingsProperties);
