@@ -26,6 +26,13 @@ Group group = GroupLocalServiceUtil.fetchGroup(groupId);
 FileEntry fileEntry = ExportImportHelperUtil.getTempFileEntry(groupId, themeDisplay.getUserId(), ExportImportHelper.TEMP_FOLDER_NAME + selPortlet.getPortletId());
 
 ManifestSummary manifestSummary = ExportImportHelperUtil.getManifestSummary(themeDisplay.getUserId(), groupId, new HashMap<String, String[]>(), fileEntry);
+
+if (layout instanceof VirtualLayout && layout.isTypeControlPanel()) {
+	VirtualLayout virtualLayout = (VirtualLayout)layout;
+
+	long targetGroupId = virtualLayout.getVirtualGroupId();
+	plid = LayoutLocalServiceUtil.getDefaultPlid(targetGroupId);
+}
 %>
 
 <portlet:actionURL name="exportImport" var="importPortletActionURL">
