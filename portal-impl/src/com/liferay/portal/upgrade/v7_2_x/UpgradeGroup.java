@@ -16,6 +16,7 @@ package com.liferay.portal.upgrade.v7_2_x;
 
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -23,9 +24,6 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Zoltan Csaszi
@@ -37,23 +35,14 @@ public class UpgradeGroup extends UpgradeProcess {
 		_updateLanguageSettings();
 	}
 
-	private List<String> _checkLanguageIds(
-		UnicodeProperties typeSettingsProperties) {
+	private String _checkLocales(UnicodeProperties typeSettingsProperties) {
+		String[] locales = ArrayUtil.filter(
+			StringUtil.split(
+				typeSettingsProperties.getProperty("locales")),
+			inheritLocale -> !LanguageUtil.isAvailableLocale(
+				LocaleUtil.fromLanguageId(inheritLocale)));
 
-		String[] languageIdsArray = StringUtil.split(
-			typeSettingsProperties.getProperty("locales"));
-
-		List<String> languageIds = new ArrayList<>();
-
-		for (String languageId : languageIdsArray) {
-			if (!LanguageUtil.isAvailableLocale(
-					LocaleUtil.fromLanguageId(languageId))) {
-
-				languageIds.add(languageId);
-			}
-		}
-
-		return languageIds;
+		return StringUtil.merge(locales);
 	}
 
 	private void _updateLanguageSettings() throws Exception {
@@ -81,9 +70,8 @@ public class UpgradeGroup extends UpgradeProcess {
 			long groupId, UnicodeProperties typeSettingsProperties)
 		throws SQLException {
 
-		List<String> languageIds = _checkLanguageIds(typeSettingsProperties);
-
-		typeSettingsProperties.put("locales", StringUtil.merge(languageIds));
+		typeSettingsProperties.put(
+			"locales", _checkLocales(typeSettingsProperties));
 
 		try (PreparedStatement updateStatement = connection.prepareStatement(
 				"update Group_ set typeSettings = ? where groupId = ?")) {
