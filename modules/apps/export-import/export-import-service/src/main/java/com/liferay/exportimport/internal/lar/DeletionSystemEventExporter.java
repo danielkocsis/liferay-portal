@@ -72,6 +72,14 @@ public class DeletionSystemEventExporter {
 				portletDataContext.getParameterMap(),
 				PortletDataHandlerKeys.DELETIONS)) {
 
+			if (!MapUtil.getBoolean(
+					portletDataContext.getParameterMap(),
+					PortletDataHandlerKeys.DELETE_LAYOUTS)) {
+
+				deletionSystemEventStagedModelTypes.remove(
+					new StagedModelType(Layout.class));
+			}
+
 			doExportDeletionSystemEvents(
 				portletDataContext, rootElement,
 				deletionSystemEventStagedModelTypes);
