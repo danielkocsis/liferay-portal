@@ -42,6 +42,7 @@ import com.liferay.portal.template.soy.util.SoyContext;
 import com.liferay.portal.template.soy.util.SoyContextFactoryUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -148,6 +149,16 @@ public class ChangeListsDisplayContext {
 			});
 
 		return creationMenu;
+	}
+
+	public long getCTCollectionAge(CTCollection ctCollection) {
+		if (ctCollection == null) {
+			return 0L;
+		}
+
+		Date modifiedDate = ctCollection.getModifiedDate();
+
+		return System.currentTimeMillis() - modifiedDate.getTime();
 	}
 
 	public Map<Integer, Long> getCTCollectionChangeTypeCounts(
