@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.SystemEvent;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.service.SystemEventLocalServiceUtil;
@@ -119,6 +120,9 @@ public class DeletionSystemEventExporter {
 			Property classNameIdProperty = PropertyFactoryUtil.forName(
 				"classNameId");
 
+			Property extraDataProperty = PropertyFactoryUtil.forName(
+				"extraData");
+
 			Property referrerClassNameIdProperty = PropertyFactoryUtil.forName(
 				"referrerClassNameId");
 
@@ -137,6 +141,17 @@ public class DeletionSystemEventExporter {
 					conjunction.add(
 						referrerClassNameIdProperty.eq(
 							stagedModelType.getReferrerClassNameId()));
+				}
+
+				String className = stagedModelType.getClassName();
+
+				if (className.equals(Layout.class.getName())) {
+					boolean privateLayout = MapUtil.getBoolean(
+						portletDataContext.getParameterMap(), "privateLayout");
+
+					conjunction.add(
+						extraDataProperty.like(
+							"%\"privateLayout\":\"" + privateLayout + "\"%"));
 				}
 
 				referrerClassNameIdDisjunction.add(conjunction);
