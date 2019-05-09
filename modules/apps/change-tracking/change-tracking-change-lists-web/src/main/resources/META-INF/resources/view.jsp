@@ -378,7 +378,7 @@ renderResponse.setTitle(title);
 			{
 				dialog: {
 					center: true,
-					destroyOnHide: false,
+					destroyOnHide: true,
 					height: 400,
 					modal: true,
 					width: 500
