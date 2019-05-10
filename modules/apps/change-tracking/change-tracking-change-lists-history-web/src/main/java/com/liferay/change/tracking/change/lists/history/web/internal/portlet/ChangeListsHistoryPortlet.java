@@ -72,21 +72,27 @@ public class ChangeListsHistoryPortlet extends MVCPortlet {
 		long ctProcessId = ParamUtil.getLong(
 			renderRequest, CTWebKeys.CT_PROCESS_ID);
 
-		if (ctProcessId > 0) {
-			try {
+		long ctCollectionId = ParamUtil.getLong(
+			renderRequest, CTWebKeys.CT_COLLECTION_ID);
+
+		try {
+			if (ctProcessId > 0) {
 				CTProcess ctProcess = _ctProcessLocalService.getCTProcess(
 					ctProcessId);
 
+				ctCollectionId = ctProcess.getCtCollectionId();
+			}
+
+			if (ctCollectionId > 0) {
 				CTCollection ctCollection =
-					_ctCollectionLocalService.getCTCollection(
-						ctProcess.getCtCollectionId());
+					_ctCollectionLocalService.getCTCollection(ctCollectionId);
 
 				renderRequest.setAttribute(
 					CTWebKeys.CT_COLLECTION, ctCollection);
 			}
-			catch (PortalException pe) {
-				SessionErrors.add(renderRequest, pe.getClass());
-			}
+		}
+		catch (PortalException pe) {
+			SessionErrors.add(renderRequest, pe.getClass());
 		}
 
 		super.render(renderRequest, renderResponse);

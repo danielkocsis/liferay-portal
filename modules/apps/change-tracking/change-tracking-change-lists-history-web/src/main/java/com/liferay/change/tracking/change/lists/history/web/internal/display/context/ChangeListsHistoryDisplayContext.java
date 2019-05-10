@@ -119,9 +119,14 @@ public class ChangeListsHistoryDisplayContext {
 			SearchContainer.DEFAULT_CUR_PARAM, 0, SearchContainer.DEFAULT_DELTA,
 			_getIteratorURL(), null, "there-are-no-change-entries");
 
+		DisplayTerms displayTerms = searchContainer.getDisplayTerms();
+
+		String keywords = displayTerms.getKeywords();
+
 		OrderByComparator<CTEntry> orderByComparator =
 			OrderByComparatorFactoryUtil.create(
-				"CTEntry", _getOrderByCol(), getOrderByType().equals("asc"));
+				"CTEntry", _getDetailsOrderByCol(),
+				getOrderByType().equals("asc"));
 
 		QueryDefinition<CTEntry> queryDefinition = new QueryDefinition<>(
 			WorkflowConstants.STATUS_DRAFT, true, searchContainer.getStart(),
@@ -133,13 +138,46 @@ public class ChangeListsHistoryDisplayContext {
 		queryDefinition.setStatus(WorkflowConstants.STATUS_APPROVED);
 
 		searchContainer.setResults(
-			_ctEngineManager.getCTEntries(
-				ctCollection.getCtCollectionId(), queryDefinition));
+			_ctManager.search(ctCollection, keywords, queryDefinition));
 		searchContainer.setTotal(
-			_ctEngineManager.getCTEntriesCount(
-				ctCollection.getCtCollectionId(), queryDefinition));
+			_ctManager.searchCount(ctCollection, keywords, queryDefinition));
 
 		return searchContainer;
+	}
+
+	public List<DropdownItem> getDetailsFilterDropdownItems() {
+		return new DropdownItemList() {
+			{
+				addGroup(
+					dropdownGroupItem -> {
+						dropdownGroupItem.setDropdownItems(
+							_getDetailsOrderByDropdownItems());
+						dropdownGroupItem.setLabel(
+							LanguageUtil.get(_httpServletRequest, "order-by"));
+					});
+			}
+		};
+	}
+
+	public String getDetailsSearchActionURL(long ctCollectionId) {
+		PortletURL portletURL = _getIteratorURL();
+
+		portletURL.setParameter(
+			"mvcRenderCommandName", "/change_lists_history/view_details");
+		portletURL.setParameter(
+			CTWebKeys.CT_COLLECTION_ID, String.valueOf(ctCollectionId));
+
+		return portletURL.toString();
+	}
+
+	public String getDetailsSortingURL() {
+		PortletURL sortingURL = _getIteratorURL();
+
+		sortingURL.setParameter(
+			"orderByType",
+			Objects.equals(getOrderByType(), "asc") ? "desc" : "asc");
+
+		return sortingURL.toString();
 	}
 
 	public List<DropdownItem> getFilterDropdownItems() {
@@ -197,6 +235,33 @@ public class ChangeListsHistoryDisplayContext {
 		PortletURL portletURL = _renderResponse.createRenderURL();
 
 		return portletURL.toString();
+	}
+
+	private String _getDetailsOrderByCol() {
+		if (_orderByCol != null) {
+			return _orderByCol;
+		}
+
+		_orderByCol = ParamUtil.getString(
+			_httpServletRequest, "orderByCol", "title");
+
+		return _orderByCol;
+	}
+
+	private List<DropdownItem> _getDetailsOrderByDropdownItems() {
+		return new DropdownItemList() {
+			{
+				add(
+					dropdownItem -> {
+						dropdownItem.setActive(
+							Objects.equals(_getOrderByCol(), "name"));
+						dropdownItem.setHref(
+							_getIteratorURL(), "orderByCol", "title");
+						dropdownItem.setLabel(
+							LanguageUtil.get(_httpServletRequest, "name"));
+					});
+			}
+		};
 	}
 
 	private String _getFilterByStatus() {
@@ -295,13 +360,17 @@ public class ChangeListsHistoryDisplayContext {
 		long ctProcessId = ParamUtil.getLong(
 			_renderRequest, CTWebKeys.CT_PROCESS_ID);
 
+		String backURL = ParamUtil.getString(_renderRequest, "backURL");
+
 		PortletURL iteratorURL = _renderResponse.createRenderURL();
 
-		iteratorURL.setParameter("mvcPath", "/details.jsp");
-		iteratorURL.setParameter("redirect", currentURL.toString());
-		iteratorURL.setParameter("displayStyle", "list");
 		iteratorURL.setParameter(
 			CTWebKeys.CT_PROCESS_ID, String.valueOf(ctProcessId));
+		iteratorURL.setParameter("backURL", backURL);
+		iteratorURL.setParameter("displayStyle", "list");
+		iteratorURL.setParameter(
+			"mvcRenderCommandName", "/change_lists_history/view_details");
+		iteratorURL.setParameter("redirect", currentURL.toString());
 
 		return iteratorURL;
 	}
@@ -312,7 +381,7 @@ public class ChangeListsHistoryDisplayContext {
 		}
 
 		_orderByCol = ParamUtil.getString(
-			_httpServletRequest, "orderByCol", "modifiedDate");
+			_httpServletRequest, "orderByCol", "modified");
 
 		return _orderByCol;
 	}
@@ -325,7 +394,7 @@ public class ChangeListsHistoryDisplayContext {
 						dropdownItem.setActive(
 							Objects.equals(_getOrderByCol(), "modifiedDate"));
 						dropdownItem.setHref(
-							_getPortletURL(), "orderByCol", "modifiedDate");
+							_getPortletURL(), "orderByCol", "modified");
 						dropdownItem.setLabel(
 							LanguageUtil.get(
 								_httpServletRequest, "modified-date"));
@@ -335,7 +404,7 @@ public class ChangeListsHistoryDisplayContext {
 						dropdownItem.setActive(
 							Objects.equals(_getOrderByCol(), "name"));
 						dropdownItem.setHref(
-							_getPortletURL(), "orderByCol", "name");
+							_getPortletURL(), "orderByCol", "title");
 						dropdownItem.setLabel(
 							LanguageUtil.get(_httpServletRequest, "name"));
 					});
