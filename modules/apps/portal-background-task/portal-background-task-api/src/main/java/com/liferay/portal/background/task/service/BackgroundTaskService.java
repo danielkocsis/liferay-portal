@@ -58,7 +58,11 @@ public interface BackgroundTaskService extends BaseService {
 	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getBackgroundTasksCount(
-		long groupId, String taskExecutorClassName, String completed);
+		long groupId, String taskExecutorClassName, boolean completed);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getBackgroundTasksCount(
+		long groupId, String name, String taskExecutorClassName);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String getBackgroundTaskStatusJSON(long backgroundTaskId);

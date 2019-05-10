@@ -37,10 +37,18 @@ public class BackgroundTaskServiceWrapper
 
 	@Override
 	public int getBackgroundTasksCount(
-		long groupId, String taskExecutorClassName, String completed) {
+		long groupId, String taskExecutorClassName, boolean completed) {
 
 		return _backgroundTaskService.getBackgroundTasksCount(
 			groupId, taskExecutorClassName, completed);
+	}
+
+	@Override
+	public int getBackgroundTasksCount(
+		long groupId, String name, String taskExecutorClassName) {
+
+		return _backgroundTaskService.getBackgroundTasksCount(
+			groupId, name, taskExecutorClassName);
 	}
 
 	@Override
