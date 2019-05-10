@@ -21,12 +21,16 @@ CTCollection ctCollection = (CTCollection)request.getAttribute(CTWebKeys.CT_COLL
 
 SearchContainer<CTEntry> ctEntrySearchContainer = changeListsHistoryDisplayContext.getCTCollectionDetailsSearchContainer(ctCollection);
 
+long ctCollectionId = 0;
+
 if (ctCollection != null) {
 	String title = HtmlUtil.escape(ctCollection.getName());
 
 	portletDisplay.setTitle(title);
 
 	renderResponse.setTitle(title);
+
+	ctCollectionId = ctCollection.getCtCollectionId();
 }
 
 String backURL = ParamUtil.getString(request, "backURL");
@@ -36,10 +40,10 @@ portletDisplay.setShowBackIcon(true);
 %>
 
 <clay:management-toolbar
-	clearResultsURL="<%= changeListsHistoryDisplayContext.getViewSearchActionURL() %>"
+	clearResultsURL="<%= changeListsHistoryDisplayContext.getDetailsSearchActionURL(ctCollectionId) %>"
 	filterDropdownItems="<%= changeListsHistoryDisplayContext.getFilterDropdownItems() %>"
 	itemsTotal="<%= ctEntrySearchContainer.getTotal() %>"
-	searchActionURL="<%= changeListsHistoryDisplayContext.getViewSearchActionURL() %>"
+	searchActionURL="<%= changeListsHistoryDisplayContext.getDetailsSearchActionURL(ctCollectionId) %>"
 	searchContainerId="changeListsHistory"
 	selectable="<%= false %>"
 	showSearch="<%= true %>"
