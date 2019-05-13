@@ -265,7 +265,7 @@ class Overview extends PortletBase {
 				this.changeEntries.push(
 					{
 						changeType: changeTypeStr,
-						conflict: false,
+						conflict: changeEntry.collision,
 						contentType: entityNameTranslation.translation,
 						lastEdited: new Intl.DateTimeFormat(
 							Liferay.ThemeDisplay.getBCP47LanguageId(),

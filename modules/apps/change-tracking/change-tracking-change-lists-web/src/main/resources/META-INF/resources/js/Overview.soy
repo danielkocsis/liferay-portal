@@ -392,6 +392,7 @@
 		userName: string
 	]}
 	{@param? publishedByTitle: string}
+	{@param spritemap: string}
 
 	<div class="overview-card-body overview-card-container">
 
@@ -499,6 +500,7 @@
 											{param index: index($changeEntry) /}
 											{param lastEdited: $changeEntry.lastEdited /}
 											{param site: $changeEntry.site /}
+											{param spritemap: $spritemap /}
 											{param title: $changeEntry.title /}
 											{param userName: $changeEntry.userName /}
 											{param version: $changeEntry.version /}
@@ -521,6 +523,7 @@
 	{@param index: number}
 	{@param lastEdited: string}
 	{@param site: string}
+	{@param spritemap: string}
 	{@param title: string}
 	{@param userName: string}
 	{@param version: string}
@@ -532,9 +535,12 @@
 		<td class="table-cell-expand">
 			<div id="change-entry-conflict-{$index}">
 			{if $conflict}
-				{msg desc=""}yes{/msg}
-			{else}
-				{msg desc=""}no{/msg}
+				<span class="change-lists-helper">
+					{call ClayIcon.render}
+						{param spritemap: $spritemap /}
+						{param symbol: 'exclamation-circle' /}
+					{/call}
+				</span>
 			{/if}
 			</div>
 		</td>
