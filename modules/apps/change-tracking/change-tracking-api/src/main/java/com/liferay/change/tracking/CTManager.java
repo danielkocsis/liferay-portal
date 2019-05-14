@@ -38,32 +38,16 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface CTManager {
 
 	/**
-	 * Assigns a model change to the change entry aggregate associated with the
-	 * owner model change. If there is no change aggregate associated with the
-	 * owner, it creates a new one. Also, a new aggregate is created if the
-	 * related entry was already part of the aggregate and is being changed.
-	 *
-	 * @param  userId the primary key of the user
-	 * @param  ownerCTEntry the change bag's owner
-	 * @param  relatedCTEntry the change to add to the bag
-	 * @return the created or updated change entry aggregate
+	 * @deprecated As of Mueller (7.2.x)
 	 */
+	@Deprecated
 	public Optional<CTEntryAggregate> addRelatedCTEntry(
 		long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry);
 
 	/**
-	 * Assigns a model change to the change entry aggregate associated with the
-	 * owner model change. If there is no change aggregate associated with the
-	 * owner, it creates a new one. Also, a new aggregate is created if the
-	 * related entry was already part of the aggregate and is being changed,
-	 * unless you force the override of the existing change entry aggregate.
-	 *
-	 * @param  userId the primary key of the user
-	 * @param  ownerCTEntry the owner of the change bag
-	 * @param  relatedCTEntry the change to add to the bag
-	 * @param  force whether to override the existing change entry aggregate
-	 * @return the created or updated change entry aggregate
+	 * @deprecated As of Mueller (7.2.x)
 	 */
+	@Deprecated
 	public Optional<CTEntryAggregate> addRelatedCTEntry(
 		long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry,
 		boolean force);
@@ -74,13 +58,56 @@ public interface CTManager {
 	 * owner, it creates a new one. Also, a new aggregate is created if the
 	 * related entry was already part of the aggregate and is being changed.
 	 *
+	 * @param  companyId the primary key of the company
+	 * @param  userId the primary key of the user
+	 * @param  ownerCTEntry the change bag's owner
+	 * @param  relatedCTEntry the change to add to the bag
+	 * @return the created or updated change entry aggregate
+	 */
+	public Optional<CTEntryAggregate> addRelatedCTEntry(
+		long companyId, long userId, CTEntry ownerCTEntry,
+		CTEntry relatedCTEntry);
+
+	/**
+	 * Assigns a model change to the change entry aggregate associated with the
+	 * owner model change. If there is no change aggregate associated with the
+	 * owner, it creates a new one. Also, a new aggregate is created if the
+	 * related entry was already part of the aggregate and is being changed,
+	 * unless you force the override of the existing change entry aggregate.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  userId the primary key of the user
+	 * @param  ownerCTEntry the owner of the change bag
+	 * @param  relatedCTEntry the change to add to the bag
+	 * @param  force whether to override the existing change entry aggregate
+	 * @return the created or updated change entry aggregate
+	 */
+	public Optional<CTEntryAggregate> addRelatedCTEntry(
+		long companyId, long userId, CTEntry ownerCTEntry,
+		CTEntry relatedCTEntry, boolean force);
+
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
+	public Optional<CTEntryAggregate> addRelatedCTEntry(
+		long userId, long ownerCTEntryId, long relatedCTEntryId);
+
+	/**
+	 * Assigns a model change to the change entry aggregate associated with the
+	 * owner model change. If there is no change aggregate associated with the
+	 * owner, it creates a new one. Also, a new aggregate is created if the
+	 * related entry was already part of the aggregate and is being changed.
+	 *
+	 * @param  companyId the primary key of the company
 	 * @param  userId the primary key of the user
 	 * @param  ownerCTEntryId the primary key of the change bag's owner
 	 * @param  relatedCTEntryId the primary key of the change to add to the bag
 	 * @return the created or updated change entry aggregate
 	 */
 	public Optional<CTEntryAggregate> addRelatedCTEntry(
-		long userId, long ownerCTEntryId, long relatedCTEntryId);
+		long companyId, long userId, long ownerCTEntryId,
+		long relatedCTEntryId);
 
 	/**
 	 * Executes a model addition or update using the given supplier, toggling
@@ -97,6 +124,13 @@ public interface CTManager {
 		throws PortalException;
 
 	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
+	public Optional<CTEntry> getActiveCTCollectionCTEntryOptional(
+		long userId, long modelClassNameId, long modelClassPK);
+
+	/**
 	 * Returns the model change of the current user's active change collection.
 	 *
 	 * @param  userId the primary key of the user
@@ -106,16 +140,16 @@ public interface CTManager {
 	 * @return the change tracking entry representing the model change
 	 */
 	public Optional<CTEntry> getActiveCTCollectionCTEntryOptional(
-		long userId, long modelClassNameId, long modelClassPK);
+		long companyId, long userId, long modelClassNameId, long modelClassPK);
 
 	/**
-	 * Returns the active change tracking collection associated with the user in
-	 * the scope of the company.
-	 *
-	 * @param  userId the primary key of the user
-	 * @return the selected change tracking collection
+	 * @deprecated As of Mueller (7.2.x)
 	 */
+	@Deprecated
 	public Optional<CTCollection> getActiveCTCollectionOptional(long userId);
+
+	public Optional<CTCollection> getActiveCTCollectionOptional(
+		long companyId, long userId);
 
 	/**
 	 * Returns the list change entries associated with the given change
@@ -159,6 +193,13 @@ public interface CTManager {
 		CTEntry ctEntry, CTCollection ctCollection);
 
 	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
+	public Optional<CTEntry> getLatestModelChangeCTEntryOptional(
+		long userId, long modelResourcePrimKey);
+
+	/**
 	 * Returns the latest model change for the current user's active change
 	 * collection.
 	 *
@@ -168,6 +209,13 @@ public interface CTManager {
 	 * @return the change tracking entry representing the model change
 	 */
 	public Optional<CTEntry> getLatestModelChangeCTEntryOptional(
+		long companyId, long userId, long modelResourcePrimKey);
+
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
+	public List<CTEntry> getModelChangeCTEntries(
 		long userId, long modelResourcePrimKey);
 
 	/**
@@ -182,7 +230,7 @@ public interface CTManager {
 	 * @review
 	 */
 	public List<CTEntry> getModelChangeCTEntries(
-		long userId, long modelResourcePrimKey);
+		long companyId, long userId, long modelResourcePrimKey);
 
 	/**
 	 * Returns all model changes for a given resource model for the current
@@ -198,8 +246,23 @@ public interface CTManager {
 	 * @review
 	 */
 	public List<CTEntry> getModelChangeCTEntries(
+		long companyId, long userId, long modelResourcePrimKey,
+		QueryDefinition<CTEntry> queryDefinition);
+
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
+	public List<CTEntry> getModelChangeCTEntries(
 		long userId, long modelResourcePrimKey,
 		QueryDefinition<CTEntry> queryDefinition);
+
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
+	public Optional<CTEntryAggregate> getModelChangeCTEntryAggregateOptional(
+		long userId, long modelClassNameId, long modelClassPK);
 
 	/**
 	 * Returns a model change's bag, first searching for it in the current
@@ -213,6 +276,13 @@ public interface CTManager {
 	 * @return the change tracking entry representing the model change
 	 */
 	public Optional<CTEntryAggregate> getModelChangeCTEntryAggregateOptional(
+		long companyId, long userId, long modelClassNameId, long modelClassPK);
+
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
+	public Optional<CTEntry> getModelChangeCTEntryOptional(
 		long userId, long modelClassNameId, long modelClassPK);
 
 	/**
@@ -227,19 +297,19 @@ public interface CTManager {
 	 * @return the change tracking entry representing the model change
 	 */
 	public Optional<CTEntry> getModelChangeCTEntryOptional(
-		long userId, long modelClassNameId, long modelClassPK);
+		long companyId, long userId, long modelClassNameId, long modelClassPK);
 
 	/**
 	 * Returns a model change from the production change collection.
 	 *
-	 * @param  userId the primary key of the user
+	 * @param  companyId the primary key of the company
 	 * @param  modelClassNameId the primary key of the changed version model's
 	 *         class
 	 * @param  modelClassPK the primary key of the changed version model
 	 * @return the change tracking entry representing the model change
 	 */
 	public Optional<CTEntry> getProductionCTCollectionCTEntryOptional(
-		long userId, long modelClassNameId, long modelClassPK);
+		long companyId, long modelClassNameId, long modelClassPK);
 
 	/**
 	 * Returns the change related change entries associated with the given
