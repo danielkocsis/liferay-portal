@@ -16,13 +16,13 @@ package com.liferay.change.tracking.change.lists.indicator.web.internal.display.
 
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
-import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.template.soy.util.SoyContext;
 import com.liferay.portal.template.soy.util.SoyContextFactoryUtil;
 
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -55,14 +55,9 @@ public class ChangeListsIndicatorDisplayContext {
 			"spritemap",
 			_themeDisplay.getPathThemeImages() + "/lexicon/icons.svg");
 
-		RequestBackedPortletURLFactory requestBackedPortletURLFactory =
-			RequestBackedPortletURLFactoryUtil.create(_httpServletRequest);
-
-		PortletURL portletURL =
-			requestBackedPortletURLFactory.createControlPanelRenderURL(
-				CTPortletKeys.CHANGE_LISTS, _themeDisplay.getScopeGroup(),
-				_themeDisplay.getRefererGroupId(),
-				_themeDisplay.getRefererPlid());
+		PortletURL portletURL = PortalUtil.getControlPanelPortletURL(
+			_httpServletRequest, _themeDisplay.getScopeGroup(),
+			CTPortletKeys.CHANGE_LISTS, 0, 0, PortletRequest.RENDER_PHASE);
 
 		try {
 			portletURL.setWindowState(WindowState.MAXIMIZED);
