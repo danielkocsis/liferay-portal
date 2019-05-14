@@ -60,7 +60,7 @@ renderResponse.setTitle(journalEditDDMTemplateDisplayContext.getTitle());
 						String taglibOnClick = "Liferay.fire('" + liferayPortletResponse.getNamespace() + "saveTemplate');";
 						%>
 
-						<aui:button cssClass="btn-sm mr-3" onClick="<%= taglibOnClick %>" type="submit" value="save" />
+						<aui:button cssClass="btn-sm mr-3" onClick="<%= taglibOnClick %>" type="submit" value="<%= journalEditDDMTemplateDisplayContext.getSaveButtonLabel() %>" />
 
 						<clay:button
 							icon="cog"

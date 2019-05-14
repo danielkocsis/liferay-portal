@@ -21,8 +21,10 @@ import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.util.DDMTemplateHelper;
 import com.liferay.journal.configuration.JournalFileUploadsConfiguration;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.util.JournalChangeTrackingHelper;
 import com.liferay.journal.web.configuration.JournalWebConfiguration;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateHandler;
@@ -47,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Eudaldo Alonso
@@ -183,6 +186,20 @@ public class JournalEditDDMTemplateDisplayContext {
 		_redirect = ParamUtil.getString(_httpServletRequest, "redirect");
 
 		return _redirect;
+	}
+
+	public String getSaveButtonLabel() throws PortalException {
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)_httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		if (_journalChangeTrackingHelper.hasActiveCTCollection(
+				themeDisplay.getCompanyId(), themeDisplay.getUserId())) {
+
+			return "publish-to-change-list";
+		}
+
+		return "save";
 	}
 
 	public String getScript() {
@@ -351,6 +368,22 @@ public class JournalEditDDMTemplateDisplayContext {
 
 	public long smallImageMaxSize() {
 		return _journalFileUploadsConfiguration.smallImageMaxSize();
+	}
+
+	private static JournalChangeTrackingHelper _journalChangeTrackingHelper;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(
+			JournalChangeTrackingHelper.class);
+
+		ServiceTracker<JournalChangeTrackingHelper, JournalChangeTrackingHelper>
+			serviceTracker = new ServiceTracker<>(
+				bundle.getBundleContext(), JournalChangeTrackingHelper.class,
+				null);
+
+		serviceTracker.open();
+
+		_journalChangeTrackingHelper = serviceTracker.getService();
 	}
 
 	private Boolean _cacheable;

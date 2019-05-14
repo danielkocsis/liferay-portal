@@ -65,7 +65,7 @@ if (ddmStructure != null) {
 							<liferay-ui:message key="cancel" />
 						</a>
 
-						<aui:button cssClass="btn-sm mr-3" type="submit" value="save" />
+						<aui:button cssClass="btn-sm mr-3" type="submit" value="<%= journalEditDDMStructuresDisplayContext.getSaveButtonLabel() %>" />
 
 						<clay:button
 							icon="cog"

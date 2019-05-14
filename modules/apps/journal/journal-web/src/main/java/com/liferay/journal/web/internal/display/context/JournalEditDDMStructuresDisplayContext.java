@@ -21,6 +21,7 @@ import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.util.DDMUtil;
 import com.liferay.journal.configuration.JournalServiceConfiguration;
+import com.liferay.journal.util.JournalChangeTrackingHelper;
 import com.liferay.journal.web.configuration.JournalWebConfiguration;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
@@ -42,6 +43,10 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Eudaldo Alonso
@@ -207,6 +212,20 @@ public class JournalEditDDMStructuresDisplayContext {
 		return _parentDDMStructureName;
 	}
 
+	public String getSaveButtonLabel() throws PortalException {
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)_httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		if (_journalChangeTrackingHelper.hasActiveCTCollection(
+				themeDisplay.getCompanyId(), themeDisplay.getUserId())) {
+
+			return "publish-to-change-list";
+		}
+
+		return "save";
+	}
+
 	public String getScript() throws PortalException {
 		if (_script != null) {
 			DDMStructure ddmStructure = getDDMStructure();
@@ -245,6 +264,22 @@ public class JournalEditDDMStructuresDisplayContext {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		JournalEditDDMStructuresDisplayContext.class);
+
+	private static JournalChangeTrackingHelper _journalChangeTrackingHelper;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(
+			JournalChangeTrackingHelper.class);
+
+		ServiceTracker<JournalChangeTrackingHelper, JournalChangeTrackingHelper>
+			serviceTracker = new ServiceTracker<>(
+				bundle.getBundleContext(), JournalChangeTrackingHelper.class,
+				null);
+
+		serviceTracker.open();
+
+		_journalChangeTrackingHelper = serviceTracker.getService();
+	}
 
 	private DDMStructure _ddmStructure;
 	private Long _ddmStructureId;
