@@ -133,6 +133,7 @@ public interface CTManager {
 	/**
 	 * Returns the model change of the current user's active change collection.
 	 *
+	 * @param  companyId the primary key of the company
 	 * @param  userId the primary key of the user
 	 * @param  modelClassNameId the primary key of the changed version model's
 	 *         class
@@ -148,6 +149,13 @@ public interface CTManager {
 	@Deprecated
 	public Optional<CTCollection> getActiveCTCollectionOptional(long userId);
 
+	/**
+	 * Returns the user's active change collection in the given company.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  userId the primary key of the user
+	 * @return the user's active change collection
+	 */
 	public Optional<CTCollection> getActiveCTCollectionOptional(
 		long companyId, long userId);
 
@@ -203,6 +211,7 @@ public interface CTManager {
 	 * Returns the latest model change for the current user's active change
 	 * collection.
 	 *
+	 * @param  companyId the primary key of the company
 	 * @param  userId the primary key of the user
 	 * @param  modelResourcePrimKey the primary key of the changed resource
 	 *         model
@@ -222,6 +231,7 @@ public interface CTManager {
 	 * Returns all model changes for a given resource model for the current
 	 * user's active change collection.
 	 *
+	 * @param  companyId the primary key of the company
 	 * @param  userId the primary key of the user
 	 * @param  modelResourcePrimKey the primary key of the changed resource
 	 *         model
@@ -236,6 +246,7 @@ public interface CTManager {
 	 * Returns all model changes for a given resource model for the current
 	 * user's active change collection.
 	 *
+	 * @param  companyId the primary key of the company
 	 * @param  userId the primary key of the user
 	 * @param  modelResourcePrimKey the primary key of the changed resource
 	 *         model
@@ -269,6 +280,7 @@ public interface CTManager {
 	 * user's active change collection; if it doesn't exist there, the
 	 * production change collection is searched.
 	 *
+	 * @param  companyId the primary key of the company
 	 * @param  userId the primary key of the user
 	 * @param  modelClassNameId the primary key of the changed version model's
 	 *         class
@@ -290,6 +302,7 @@ public interface CTManager {
 	 * active change collection; if it doesn't exist there, the production
 	 * change collection is searched.
 	 *
+	 * @param  companyId the primary key of the company
 	 * @param  userId the primary key of the user
 	 * @param  modelClassNameId the primary key of the changed version model's
 	 *         class
@@ -371,7 +384,7 @@ public interface CTManager {
 	 * entry already exists with the same model class name ID and model class
 	 * primary key.
 	 *
-	 * @param  companyId the company id
+	 * @param  companyId the company ID
 	 * @param  userId the primary key of the user
 	 * @param  modelClassNameId the primary key of the changed version model's
 	 *         class
@@ -394,7 +407,7 @@ public interface CTManager {
 	 * entry already exists with the same model class name ID and model class
 	 * primary key, unless you force the override of the existing change entry.
 	 *
-	 * @param  companyId the company id
+	 * @param  companyId the company ID
 	 * @param  userId the primary key of the user
 	 * @param  modelClassNameId the primary key of the changed version model's
 	 *         class
@@ -431,7 +444,7 @@ public interface CTManager {
 	 * with the owner model change. A new aggregate is created if the related
 	 * entry was already part of the aggregate.
 	 *
-	 * @param companyId the company id
+	 * @param companyId the company ID
 	 * @param userId the primary key of the user
 	 * @param classNameId the primary key of the owner version model's class
 	 * @param classPK the primary key of the owner version model
@@ -445,7 +458,7 @@ public interface CTManager {
 	 * entry was already part of the aggregate, unless you force the override of
 	 * the existing change entry aggregate.
 	 *
-	 * @param companyId the company id
+	 * @param companyId the company ID
 	 * @param userId the primary key of the user
 	 * @param classNameId the primary key of the owner version model's class
 	 * @param classPK the primary key of the owner version model
@@ -465,7 +478,7 @@ public interface CTManager {
 	/**
 	 * Unregisters a model change from the change tracking framework.
 	 *
-	 * @param  companyId the company id
+	 * @param  companyId the company ID
 	 * @param  userId the primary key of the user
 	 * @param  modelClassNameId the primary key of the changed version model's
 	 *         class
