@@ -17,6 +17,7 @@ package com.liferay.journal.web.internal.util;
 import com.liferay.journal.util.JournalChangeTrackingHelper;
 import com.liferay.petra.string.StringPool;
 
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -46,6 +47,10 @@ public class JournalChangeTrackingHelperUtil {
 			companyId, userId);
 	}
 
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
 	public static boolean isJournalArticleInChangeList(
 		long userId, long classPK) {
 
@@ -54,7 +59,18 @@ public class JournalChangeTrackingHelperUtil {
 		}
 
 		return _journalChangeTrackingHelper.isJournalArticleInChangeList(
-			userId, classPK);
+			CompanyThreadLocal.getCompanyId(), userId, classPK);
+	}
+
+	public static boolean isJournalArticleInChangeList(
+		long companyId, long userId, long classPK) {
+
+		if (_journalChangeTrackingHelper == null) {
+			return false;
+		}
+
+		return _journalChangeTrackingHelper.isJournalArticleInChangeList(
+			companyId, userId, classPK);
 	}
 
 	@Reference(unbind = "-")

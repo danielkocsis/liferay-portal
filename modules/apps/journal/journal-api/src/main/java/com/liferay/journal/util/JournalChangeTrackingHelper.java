@@ -28,6 +28,13 @@ public interface JournalChangeTrackingHelper {
 
 	public boolean hasActiveCTCollection(long companyId, long userId);
 
+	/**
+	 * @deprecated As of Mueller (7.2.x)
+	 */
+	@Deprecated
 	public boolean isJournalArticleInChangeList(long userId, long classPK);
+
+	public boolean isJournalArticleInChangeList(
+		long companyId, long userId, long classPK);
 
 }

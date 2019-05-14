@@ -971,6 +971,7 @@ public class JournalDisplayContext {
 						visible =
 							JournalChangeTrackingHelperUtil.
 								isJournalArticleInChangeList(
+									_themeDisplay.getCompanyId(),
 									_themeDisplay.getUserId(), article.getId());
 					}
 
@@ -1096,7 +1097,8 @@ public class JournalDisplayContext {
 
 	public boolean isJournalArticleInChangeList(JournalArticle journalArticle) {
 		return JournalChangeTrackingHelperUtil.isJournalArticleInChangeList(
-			_themeDisplay.getUserId(), journalArticle.getId());
+			_themeDisplay.getCompanyId(), _themeDisplay.getUserId(),
+			journalArticle.getId());
 	}
 
 	public boolean isNavigationHome() {
