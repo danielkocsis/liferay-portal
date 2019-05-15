@@ -247,7 +247,7 @@ class Overview extends PortletBase {
 
 			return;
 		}
-		
+
 		changeEntriesResult.items.forEach(
 			changeEntry => {
 				let changeTypeStr = Liferay.Language.get('added');
