@@ -197,6 +197,8 @@ class Overview extends PortletBase {
 			.then(
 				response => {
 					if (response.status === 202) {
+						Liferay.fire('refreshChangeTrackingIndicator');
+
 						if (production) {
 							Liferay.Util.navigate(this.urlSelectProduction);
 						}

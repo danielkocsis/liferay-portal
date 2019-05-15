@@ -26,14 +26,13 @@ class ChangeListsIndicator extends PortletBase {
 		this._eventHandler = new EventHandler();
 		let urlActiveCollection = this.urlCollectionsBase + '?type=active&userId=' + Liferay.ThemeDisplay.getUserId();
 
-		this._getDataRequest(
-			urlActiveCollection,
-			response => {
-				if (response) {
-					this.activeChangeListName = response[0].name;
-					this._setTooltipCssClassName(this.activeChangeListName);
-					this._setEventHandlers();
-				}
+		this._render(urlActiveCollection);
+
+		let instance = this;
+		Liferay.on(
+			'refreshChangeTrackingIndicator',
+			function() {
+				instance._render(urlActiveCollection);
 			}
 		);
 	}
@@ -233,6 +232,24 @@ class ChangeListsIndicator extends PortletBase {
 					element.classList.remove(cssClassName);
 				}
 			});
+	}
+
+	/**
+	 * Rerenders the screen.
+	 * @param urlActiveCollection
+	 * @private
+	 */
+	_render(urlActiveCollection) {
+		this._getDataRequest(
+			urlActiveCollection,
+			response => {
+				if (response) {
+					this.activeChangeListName = response[0].name;
+					this._setTooltipCssClassName(this.activeChangeListName);
+					this._setEventHandlers();
+				}
+			}
+		);
 	}
 
 	/**
