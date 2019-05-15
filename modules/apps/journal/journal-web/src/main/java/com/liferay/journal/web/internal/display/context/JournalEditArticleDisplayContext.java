@@ -26,10 +26,10 @@ import com.liferay.journal.model.JournalArticleConstants;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.model.JournalFolderConstants;
 import com.liferay.journal.service.JournalFolderLocalServiceUtil;
-import com.liferay.journal.util.JournalChangeTrackingHelper;
 import com.liferay.journal.util.JournalConverter;
 import com.liferay.journal.web.internal.security.permission.resource.JournalArticlePermission;
 import com.liferay.journal.web.internal.security.permission.resource.JournalFolderPermission;
+import com.liferay.journal.web.internal.util.JournalChangeTrackingHelperUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -65,10 +65,6 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Eudaldo Alonso
@@ -442,7 +438,7 @@ public class JournalEditArticleDisplayContext {
 	}
 
 	public String getPublishButtonLabel() throws PortalException {
-		if (_journalChangeTrackingHelper.hasActiveCTCollection(
+		if (JournalChangeTrackingHelperUtil.hasActiveCTCollection(
 				_themeDisplay.getCompanyId(), _themeDisplay.getUserId())) {
 
 			return "publish-to-change-list";
@@ -751,22 +747,6 @@ public class JournalEditArticleDisplayContext {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		JournalEditArticleDisplayContext.class);
-
-	private static JournalChangeTrackingHelper _journalChangeTrackingHelper;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
-			JournalChangeTrackingHelper.class);
-
-		ServiceTracker<JournalChangeTrackingHelper, JournalChangeTrackingHelper>
-			serviceTracker = new ServiceTracker<>(
-				bundle.getBundleContext(), JournalChangeTrackingHelper.class,
-				null);
-
-		serviceTracker.open();
-
-		_journalChangeTrackingHelper = serviceTracker.getService();
-	}
 
 	private JournalArticle _article;
 	private String _articleId;
