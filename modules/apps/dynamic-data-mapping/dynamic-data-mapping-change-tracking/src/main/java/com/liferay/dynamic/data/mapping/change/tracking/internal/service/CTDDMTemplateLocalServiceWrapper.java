@@ -30,9 +30,7 @@ import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
-import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -75,20 +73,16 @@ public class CTDDMTemplateLocalServiceWrapper
 			File smallImageFile, ServiceContext serviceContext)
 		throws PortalException {
 
-		if (!_isClassNameChangeTracked(classNameId)) {
-			return super.addTemplate(
-				userId, groupId, classNameId, classPK, resourceClassNameId,
-				templateKey, nameMap, descriptionMap, type, mode, language,
-				script, cacheable, smallImage, smallImageURL, smallImageFile,
-				serviceContext);
-		}
-
 		DDMTemplate ddmTemplate = _ctManager.executeModelUpdate(
 			() -> super.addTemplate(
 				userId, groupId, classNameId, classPK, resourceClassNameId,
 				templateKey, nameMap, descriptionMap, type, mode, language,
 				script, cacheable, smallImage, smallImageURL, smallImageFile,
 				serviceContext));
+
+		if (!_isClassNameChangeTracked(classNameId)) {
+			return ddmTemplate;
+		}
 
 		DDMTemplateVersion ddmTemplateVersion =
 			ddmTemplate.getTemplateVersion();
@@ -145,21 +139,15 @@ public class CTDDMTemplateLocalServiceWrapper
 			File smallImageFile, ServiceContext serviceContext)
 		throws PortalException {
 
-		DDMTemplate ddmTemplate = _ddmTemplateLocalService.getDDMTemplate(
-			templateId);
-
-		if (!_isClassNameChangeTracked(ddmTemplate.getClassNameId())) {
-			return super.updateTemplate(
-				userId, templateId, classPK, nameMap, descriptionMap, type,
-				mode, language, script, cacheable, smallImage, smallImageURL,
-				smallImageFile, serviceContext);
-		}
-
-		ddmTemplate = _ctManager.executeModelUpdate(
+		DDMTemplate ddmTemplate = _ctManager.executeModelUpdate(
 			() -> super.updateTemplate(
 				userId, templateId, classPK, nameMap, descriptionMap, type,
 				mode, language, script, cacheable, smallImage, smallImageURL,
 				smallImageFile, serviceContext));
+
+		if (!_isClassNameChangeTracked(ddmTemplate.getClassNameId())) {
+			return ddmTemplate;
+		}
 
 		DDMTemplateVersion ddmTemplateVersion =
 			ddmTemplate.getTemplateVersion();
@@ -187,15 +175,13 @@ public class CTDDMTemplateLocalServiceWrapper
 	}
 
 	private boolean _isClassNameChangeTracked(long classNameId) {
-		ClassName className = _classNameLocalService.fetchByClassNameId(
-			classNameId);
+		String className = _portal.getClassName(classNameId);
 
 		if (className == null) {
 			return false;
 		}
 
-		return ArrayUtil.contains(
-			_CHANGE_TRACKED_CLASS_NAMES, className.getValue());
+		return ArrayUtil.contains(_CHANGE_TRACKED_CLASS_NAMES, className);
 	}
 
 	private boolean _isRetrievable(DDMTemplate ddmTemplate) {
@@ -298,9 +284,6 @@ public class CTDDMTemplateLocalServiceWrapper
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTDDMTemplateLocalServiceWrapper.class);
-
-	@Reference
-	private ClassNameLocalService _classNameLocalService;
 
 	@Reference
 	private CTEngineManager _ctEngineManager;

@@ -31,9 +31,7 @@ import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
-import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -78,18 +76,15 @@ public class CTDDMStructureLocalServiceWrapper
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		if (!_isClassNameChangeTracked(classNameId)) {
-			return super.addStructure(
-				userId, groupId, parentStructureId, classNameId, structureKey,
-				nameMap, descriptionMap, ddmForm, ddmFormLayout, storageType,
-				type, serviceContext);
-		}
-
 		DDMStructure ddmStructure = _ctManager.executeModelUpdate(
 			() -> super.addStructure(
 				userId, groupId, parentStructureId, classNameId, structureKey,
 				nameMap, descriptionMap, ddmForm, ddmFormLayout, storageType,
 				type, serviceContext));
+
+		if (!_isClassNameChangeTracked(classNameId)) {
+			return ddmStructure;
+		}
 
 		DDMStructureVersion ddmStructureVersion =
 			ddmStructure.getStructureVersion();
@@ -207,19 +202,14 @@ public class CTDDMStructureLocalServiceWrapper
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		DDMStructure ddmStructure = _ddmStructureLocalService.getDDMStructure(
-			structureId);
-
-		if (!_isClassNameChangeTracked(ddmStructure.getClassNameId())) {
-			return super.updateStructure(
-				userId, structureId, parentStructureId, nameMap, descriptionMap,
-				ddmForm, ddmFormLayout, serviceContext);
-		}
-
-		ddmStructure = _ctManager.executeModelUpdate(
+		DDMStructure ddmStructure = _ctManager.executeModelUpdate(
 			() -> super.updateStructure(
 				userId, structureId, parentStructureId, nameMap, descriptionMap,
 				ddmForm, ddmFormLayout, serviceContext));
+
+		if (!_isClassNameChangeTracked(ddmStructure.getClassNameId())) {
+			return ddmStructure;
+		}
 
 		DDMStructureVersion ddmStructureVersion =
 			ddmStructure.getStructureVersion();
@@ -252,15 +242,13 @@ public class CTDDMStructureLocalServiceWrapper
 	}
 
 	private boolean _isClassNameChangeTracked(long classNameId) {
-		ClassName className = _classNameLocalService.fetchByClassNameId(
-			classNameId);
+		String className = _portal.getClassName(classNameId);
 
 		if (className == null) {
 			return false;
 		}
 
-		return ArrayUtil.contains(
-			_CHANGE_TRACKED_CLASS_NAMES, className.getValue());
+		return ArrayUtil.contains(_CHANGE_TRACKED_CLASS_NAMES, className);
 	}
 
 	private boolean _isRetrievable(DDMStructure ddmStructure) {
@@ -370,9 +358,6 @@ public class CTDDMStructureLocalServiceWrapper
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTDDMStructureLocalServiceWrapper.class);
-
-	@Reference
-	private ClassNameLocalService _classNameLocalService;
 
 	@Reference
 	private CTEngineManager _ctEngineManager;
