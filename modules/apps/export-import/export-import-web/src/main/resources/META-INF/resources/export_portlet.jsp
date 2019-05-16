@@ -23,6 +23,21 @@ PortletURL portletURL = renderResponse.createRenderURL();
 
 portletURL.setParameter("mvcRenderCommandName", "exportImport");
 portletURL.setParameter("portletResource", portletResource);
+
+if (layout instanceof VirtualLayout && layout.isTypeControlPanel()) {
+	VirtualLayout virtualLayout = (VirtualLayout)layout;
+
+	long targetGroupId = virtualLayout.getVirtualGroupId();
+	long defaultPlid = LayoutLocalServiceUtil.getDefaultPlid(targetGroupId);
+
+	if (defaultPlid == 0) {
+		Group userGroup = GroupLocalServiceUtil.getGroup(user.getCompanyId(), String.valueOf(user.getUserId()));
+
+		plid = LayoutLocalServiceUtil.getDefaultPlid(userGroup.getGroupId());
+	} else {
+		plid = defaultPlid;
+	}
+}
 %>
 
 <clay:navigation-bar

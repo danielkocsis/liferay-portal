@@ -18,6 +18,21 @@
 
 <%
 String redirect = ParamUtil.getString(request, "redirect");
+
+if (layout instanceof VirtualLayout && layout.isTypeControlPanel()) {
+	VirtualLayout virtualLayout = (VirtualLayout)layout;
+
+	long targetGroupId = virtualLayout.getVirtualGroupId();
+	long defaultPlid = LayoutLocalServiceUtil.getDefaultPlid(targetGroupId);
+
+	if (defaultPlid == 0) {
+		Group userGroup = GroupLocalServiceUtil.getGroup(user.getCompanyId(), String.valueOf(user.getUserId()));
+
+		plid = LayoutLocalServiceUtil.getDefaultPlid(userGroup.getGroupId());
+	} else {
+		plid = defaultPlid;
+	}
+}
 %>
 
 <liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="exportImport" var="importPortletURL">
