@@ -29,6 +29,7 @@ class ChangeListsIndicator extends PortletBase {
 		this._render(urlActiveCollection);
 
 		let instance = this;
+
 		Liferay.on(
 			'refreshChangeTrackingIndicator',
 			function() {
