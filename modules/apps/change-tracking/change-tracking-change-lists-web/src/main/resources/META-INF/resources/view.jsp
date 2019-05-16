@@ -111,7 +111,7 @@ renderResponse.setTitle(title);
 					<liferay-ui:search-container-column-text
 						name="status"
 					>
-						<c:if test="<%= changeListsDisplayContext.isChangeListActive(curCTCollection.getCtCollectionId()) %>">
+						<c:if test="<%= changeListActive %>">
 							<span class="label label-info">
 								<span class="label-item label-item-expand"><liferay-ui:message key="active" /></span>
 							</span>
@@ -203,7 +203,7 @@ renderResponse.setTitle(title);
 					<%
 					CTCollection productionCTCollection = changeListsDisplayContext.getProductionCTCollection();
 
-					boolean productionActive = changeListsDisplayContext.isChangeListActive(productionCTCollection.getCtCollectionId());
+					boolean productionChangeListActive = changeListsDisplayContext.isChangeListActive(productionCTCollection.getCtCollectionId());
 					%>
 
 					<liferay-portlet:actionURL name="/change_lists/checkout_ct_collection" var="checkoutProductionURL">
@@ -211,9 +211,9 @@ renderResponse.setTitle(title);
 						<portlet:param name="displayStyle" value="<%= changeListsDisplayContext.getDisplayStyle() %>" />
 					</liferay-portlet:actionURL>
 
-					<c:if test="<%= (productionCTCollection != null) && (ctCollectionSearchContainer.getCur() == 1) && Validator.isNull(displayTerms.getKeywords()) %>">
+					<c:if test="<%= (ctCollectionSearchContainer.getCur() == 1) && Validator.isNull(displayTerms.getKeywords()) %>">
 						<div class="col-sm-4">
-							<div class="<%= productionActive ? "border-left-green" : "border-left-gray" %> card select-card-sheet">
+							<div class="<%= productionChangeListActive ? "border-left-green" : "border-left-gray" %> card select-card-sheet">
 								<div class="card-row card-row-layout-fixed card-row-padded card-row-valign-top select-card-header">
 									<div class="card-col-content lfr-card-details-column production-details-column">
 										<a href="<%= checkoutProductionURL.toString() %>">
@@ -237,7 +237,7 @@ renderResponse.setTitle(title);
 											showWhenSingleIcon="<%= true %>"
 										>
 											<c:choose>
-												<c:when test="<%= productionActive %>">
+												<c:when test="<%= productionChangeListActive %>">
 													<liferay-ui:icon
 														cssClass="disabled"
 														message="make-active"
