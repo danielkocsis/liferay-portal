@@ -19,6 +19,7 @@ import com.liferay.change.tracking.exception.DuplicateCTEntryException;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.base.CTEntryLocalServiceBaseImpl;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -32,12 +33,14 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.query.TermsQuery;
+import com.liferay.portal.search.query.field.FieldQueryFactory;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
@@ -238,6 +241,19 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 	}
 
 	@Override
+	public List<CTEntry> search(
+		CTCollection ctCollection, String keywords,
+		QueryDefinition<CTEntry> queryDefinition) {
+
+		Query query = _buildQuery(ctCollection, keywords);
+
+		SearchResponse searchResponse = _search(
+			ctCollection.getCompanyId(), query, queryDefinition);
+
+		return _getCTEntries(searchResponse);
+	}
+
+	@Override
 	public long searchCount(
 		CTCollection ctCollection, long[] groupIds, long[] userIds,
 		long[] classNameIds, int[] changeTypes, Boolean collision,
@@ -247,6 +263,19 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 			ctCollection, groupIds, userIds, classNameIds, changeTypes,
 			collision, queryDefinition.getStatus(),
 			queryDefinition.isExcludeStatus());
+
+		SearchResponse searchResponse = _search(
+			ctCollection.getCompanyId(), query, queryDefinition);
+
+		return searchResponse.getTotalHits();
+	}
+
+	@Override
+	public int searchCount(
+		CTCollection ctCollection, String keywords,
+		QueryDefinition<CTEntry> queryDefinition) {
+
+		Query query = _buildQuery(ctCollection, keywords);
 
 		SearchResponse searchResponse = _search(
 			ctCollection.getCompanyId(), query, queryDefinition);
@@ -373,6 +402,36 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 				booleanQuery.addMustQueryClauses(
 					_queries.term(Field.STATUS, status));
 			}
+		}
+
+		return booleanQuery;
+	}
+
+	private Query _buildQuery(CTCollection ctCollection, String keywords) {
+		BooleanQuery booleanQuery = _queries.booleanQuery();
+
+		booleanQuery.addFilterQueryClauses(
+			_queries.term("ctCollectionId", ctCollection.getCtCollectionId()));
+		booleanQuery.addFilterQueryClauses(
+			_queries.term(
+				"originalCTCollectionId", ctCollection.getCtCollectionId()));
+		booleanQuery.addFilterQueryClauses(
+			_queries.term(Field.COMPANY_ID, ctCollection.getCompanyId()));
+
+		booleanQuery.addFilterQueryClauses(
+			_queries.term(Field.STATUS, WorkflowConstants.STATUS_APPROVED));
+
+		if (Validator.isNotNull(keywords)) {
+			BooleanQuery keywordsQuery = _queries.booleanQuery();
+
+			for (String keyword : keywords.split(StringPool.SPACE)) {
+				keywordsQuery.addShouldQueryClauses(
+					_queries.wildcard(
+						Field.TITLE,
+						StringPool.STAR + keyword + StringPool.STAR));
+			}
+
+			booleanQuery.addMustQueryClauses(keywordsQuery);
 		}
 
 		return booleanQuery;
@@ -513,6 +572,9 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 			throw new IllegalArgumentException("Change type value is invalid");
 		}
 	}
+
+	@Reference
+	private FieldQueryFactory _fieldQueryFactory;
 
 	@Reference
 	private Portal _portal;
