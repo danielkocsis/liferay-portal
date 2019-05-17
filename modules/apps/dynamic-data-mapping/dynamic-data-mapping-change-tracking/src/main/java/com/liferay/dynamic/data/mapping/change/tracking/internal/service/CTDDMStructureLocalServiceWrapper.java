@@ -31,7 +31,6 @@ import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceWrapper;
@@ -183,7 +182,7 @@ public class CTDDMStructureLocalServiceWrapper
 
 				Optional<CTEntry> ctEntryOptional =
 					_ctManager.getLatestModelChangeCTEntryOptional(
-						CompanyThreadLocal.getCompanyId(),
+						structure.getCompanyId(),
 						PrincipalThreadLocal.getUserId(),
 						structure.getStructureId());
 
