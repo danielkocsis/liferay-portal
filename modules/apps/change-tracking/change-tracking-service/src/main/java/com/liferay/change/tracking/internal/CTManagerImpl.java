@@ -65,31 +65,6 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = CTManager.class)
 public class CTManagerImpl implements CTManager {
 
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public Optional<CTEntryAggregate> addRelatedCTEntry(
-		long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry) {
-
-		return addRelatedCTEntry(
-			_getCompanyId(userId), userId, ownerCTEntry, relatedCTEntry);
-	}
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public Optional<CTEntryAggregate> addRelatedCTEntry(
-		long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry,
-		boolean force) {
-
-		return addRelatedCTEntry(
-			_getCompanyId(userId), userId, ownerCTEntry, relatedCTEntry, force);
-	}
-
 	@Override
 	public Optional<CTEntryAggregate> addRelatedCTEntry(
 		long companyId, long userId, CTEntry ownerCTEntry,
@@ -137,18 +112,6 @@ public class CTManagerImpl implements CTManager {
 		}
 	}
 
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public Optional<CTEntryAggregate> addRelatedCTEntry(
-		long userId, long ownerCTEntryId, long relatedCTEntryId) {
-
-		return addRelatedCTEntry(
-			_getCompanyId(userId), userId, ownerCTEntryId, relatedCTEntryId);
-	}
-
 	@Override
 	public Optional<CTEntryAggregate> addRelatedCTEntry(
 		long companyId, long userId, long ownerCTEntryId,
@@ -187,18 +150,6 @@ public class CTManagerImpl implements CTManager {
 		}
 	}
 
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public Optional<CTEntry> getActiveCTCollectionCTEntryOptional(
-		long userId, long modelClassNameId, long modelClassPK) {
-
-		return getActiveCTCollectionCTEntryOptional(
-			_getCompanyId(userId), userId, modelClassNameId, modelClassPK);
-	}
-
 	@Override
 	public Optional<CTEntry> getActiveCTCollectionCTEntryOptional(
 		long companyId, long userId, long modelClassNameId, long modelClassPK) {
@@ -216,15 +167,6 @@ public class CTManagerImpl implements CTManager {
 			companyId, ctCollectionId, modelClassNameId, modelClassPK);
 
 		return Optional.ofNullable(ctEntry);
-	}
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public Optional<CTCollection> getActiveCTCollectionOptional(long userId) {
-		return getActiveCTCollectionOptional(_getCompanyId(userId), userId);
 	}
 
 	@Override
@@ -315,18 +257,6 @@ public class CTManagerImpl implements CTManager {
 		).findAny();
 	}
 
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public Optional<CTEntry> getLatestModelChangeCTEntryOptional(
-		long userId, long modelResourcePrimKey) {
-
-		return getLatestModelChangeCTEntryOptional(
-			_getCompanyId(userId), userId, modelResourcePrimKey);
-	}
-
 	@Override
 	public Optional<CTEntry> getLatestModelChangeCTEntryOptional(
 		long companyId, long userId, long resourcePrimKey) {
@@ -349,18 +279,6 @@ public class CTManagerImpl implements CTManager {
 		}
 
 		return Optional.of(ctEntries.get(0));
-	}
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public List<CTEntry> getModelChangeCTEntries(
-		long userId, long resourcePrimKey) {
-
-		return getModelChangeCTEntries(
-			_getCompanyId(userId), userId, resourcePrimKey);
 	}
 
 	@Override
@@ -392,27 +310,6 @@ public class CTManagerImpl implements CTManager {
 
 		return _ctEntryLocalService.fetchCTEntries(
 			ctCollectionId, resourcePrimKey, queryDefinition);
-	}
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public List<CTEntry> getModelChangeCTEntries(
-		long userId, long resourcePrimKey,
-		QueryDefinition<CTEntry> queryDefinition) {
-
-		return getModelChangeCTEntries(
-			_getCompanyId(userId), userId, resourcePrimKey, queryDefinition);
-	}
-
-	@Override
-	public Optional<CTEntryAggregate> getModelChangeCTEntryAggregateOptional(
-		long userId, long modelClassNameId, long modelClassPK) {
-
-		return getModelChangeCTEntryAggregateOptional(
-			_getCompanyId(userId), userId, modelClassNameId, modelClassPK);
 	}
 
 	@Override
@@ -461,18 +358,6 @@ public class CTManagerImpl implements CTManager {
 				ctCollectionId, ctEntryId);
 
 		return Optional.ofNullable(ctEntryAggregate);
-	}
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public Optional<CTEntry> getModelChangeCTEntryOptional(
-		long userId, long modelClassNameId, long modelClassPK) {
-
-		return getModelChangeCTEntryOptional(
-			_getCompanyId(userId), userId, modelClassNameId, modelClassPK);
 	}
 
 	@Override
@@ -538,40 +423,6 @@ public class CTManagerImpl implements CTManager {
 		return ChangeTrackingThreadLocal.isModelUpdateInProgress();
 	}
 
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public Optional<CTEntry> registerModelChange(
-			long userId, long modelClassNameId, long modelClassPK,
-			long modelResourcePrimKey, int changeType)
-		throws CTException {
-
-		long companyId = _getCompanyId(userId);
-
-		return registerModelChange(
-			companyId, userId, modelClassNameId, modelClassPK,
-			modelResourcePrimKey, changeType);
-	}
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public Optional<CTEntry> registerModelChange(
-			long userId, long modelClassNameId, long modelClassPK,
-			long modelResourcePrimKey, int changeType, boolean force)
-		throws CTException {
-
-		long companyId = _getCompanyId(userId);
-
-		return registerModelChange(
-			companyId, userId, modelClassNameId, modelClassPK,
-			modelResourcePrimKey, changeType, force);
-	}
-
 	@Override
 	public Optional<CTEntry> registerModelChange(
 			long companyId, long userId, long modelClassNameId,
@@ -626,32 +477,6 @@ public class CTManagerImpl implements CTManager {
 		return ctEntryOptional;
 	}
 
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public <V extends BaseModel> void registerRelatedChanges(
-		long userId, long classNameId, long classPK) {
-
-		long companyId = _getCompanyId(userId);
-
-		registerRelatedChanges(companyId, userId, classNameId, classPK);
-	}
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	@Override
-	public <V extends BaseModel> void registerRelatedChanges(
-		long userId, long classNameId, long classPK, boolean force) {
-
-		long companyId = _getCompanyId(userId);
-
-		registerRelatedChanges(companyId, userId, classNameId, classPK, force);
-	}
-
 	@Override
 	public <V extends BaseModel> void registerRelatedChanges(
 		long companyId, long userId, long classNameId, long classPK) {
@@ -696,23 +521,6 @@ public class CTManagerImpl implements CTManager {
 			relatedEntitiesFunction -> _registerRelatedChange(
 				companyId, userId, classNameId, classPK, versionEntity,
 				relatedEntitiesFunction, force));
-	}
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntry> unregisterModelChange(
-		long userId, long modelClassNameId, long modelClassPK) {
-
-		long companyId = _getCompanyId(userId);
-
-		if (companyId <= 0) {
-			return Optional.empty();
-		}
-
-		return unregisterModelChange(
-			companyId, userId, modelClassNameId, modelClassPK);
 	}
 
 	@Override

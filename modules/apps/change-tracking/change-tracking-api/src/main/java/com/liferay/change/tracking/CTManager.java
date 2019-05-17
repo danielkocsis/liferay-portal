@@ -38,21 +38,6 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface CTManager {
 
 	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntryAggregate> addRelatedCTEntry(
-		long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry);
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntryAggregate> addRelatedCTEntry(
-		long userId, CTEntry ownerCTEntry, CTEntry relatedCTEntry,
-		boolean force);
-
-	/**
 	 * Assigns a model change to the change entry aggregate associated with the
 	 * owner model change. If there is no change aggregate associated with the
 	 * owner, it creates a new one. Also, a new aggregate is created if the
@@ -87,13 +72,6 @@ public interface CTManager {
 		CTEntry relatedCTEntry, boolean force);
 
 	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntryAggregate> addRelatedCTEntry(
-		long userId, long ownerCTEntryId, long relatedCTEntryId);
-
-	/**
 	 * Assigns a model change to the change entry aggregate associated with the
 	 * owner model change. If there is no change aggregate associated with the
 	 * owner, it creates a new one. Also, a new aggregate is created if the
@@ -124,13 +102,6 @@ public interface CTManager {
 		throws PortalException;
 
 	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntry> getActiveCTCollectionCTEntryOptional(
-		long userId, long modelClassNameId, long modelClassPK);
-
-	/**
 	 * Returns the model change of the current user's active change collection.
 	 *
 	 * @param  companyId the primary key of the company
@@ -142,12 +113,6 @@ public interface CTManager {
 	 */
 	public Optional<CTEntry> getActiveCTCollectionCTEntryOptional(
 		long companyId, long userId, long modelClassNameId, long modelClassPK);
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTCollection> getActiveCTCollectionOptional(long userId);
 
 	/**
 	 * Returns the user's active change collection in the given company.
@@ -201,13 +166,6 @@ public interface CTManager {
 		CTEntry ctEntry, CTCollection ctCollection);
 
 	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntry> getLatestModelChangeCTEntryOptional(
-		long userId, long modelResourcePrimKey);
-
-	/**
 	 * Returns the latest model change for the current user's active change
 	 * collection.
 	 *
@@ -219,13 +177,6 @@ public interface CTManager {
 	 */
 	public Optional<CTEntry> getLatestModelChangeCTEntryOptional(
 		long companyId, long userId, long modelResourcePrimKey);
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public List<CTEntry> getModelChangeCTEntries(
-		long userId, long modelResourcePrimKey);
 
 	/**
 	 * Returns all model changes for a given resource model for the current
@@ -261,21 +212,6 @@ public interface CTManager {
 		QueryDefinition<CTEntry> queryDefinition);
 
 	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public List<CTEntry> getModelChangeCTEntries(
-		long userId, long modelResourcePrimKey,
-		QueryDefinition<CTEntry> queryDefinition);
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntryAggregate> getModelChangeCTEntryAggregateOptional(
-		long userId, long modelClassNameId, long modelClassPK);
-
-	/**
 	 * Returns a model change's bag, first searching for it in the current
 	 * user's active change collection; if it doesn't exist there, the
 	 * production change collection is searched.
@@ -289,13 +225,6 @@ public interface CTManager {
 	 */
 	public Optional<CTEntryAggregate> getModelChangeCTEntryAggregateOptional(
 		long companyId, long userId, long modelClassNameId, long modelClassPK);
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntry> getModelChangeCTEntryOptional(
-		long userId, long modelClassNameId, long modelClassPK);
 
 	/**
 	 * Returns a model change, first searching for it in the current user's
@@ -360,24 +289,6 @@ public interface CTManager {
 	public boolean isModelUpdateInProgress();
 
 	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntry> registerModelChange(
-			long userId, long modelClassNameId, long modelClassPK,
-			long modelResourcePrimKey, int changeType)
-		throws CTException;
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntry> registerModelChange(
-			long userId, long modelClassNameId, long modelClassPK,
-			long modelResourcePrimKey, int changeType, boolean force)
-		throws CTException;
-
-	/**
 	 * Registers the model change into the change tracking framework for the
 	 * current user's active change collection. A
 	 * <code>DuplicateCTEntryException</code> is thrown if the change tracking
@@ -426,20 +337,6 @@ public interface CTManager {
 		throws CTException;
 
 	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public <V extends BaseModel> void registerRelatedChanges(
-		long userId, long classNameId, long classPK);
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public <V extends BaseModel> void registerRelatedChanges(
-		long userId, long classNameId, long classPK, boolean force);
-
-	/**
 	 * Assigns all related model changes to a change entry aggregate associated
 	 * with the owner model change. A new aggregate is created if the related
 	 * entry was already part of the aggregate.
@@ -467,13 +364,6 @@ public interface CTManager {
 	public <V extends BaseModel> void registerRelatedChanges(
 		long companyId, long userId, long classNameId, long classPK,
 		boolean force);
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
-	public Optional<CTEntry> unregisterModelChange(
-		long userId, long modelClassNameId, long modelClassPK);
 
 	/**
 	 * Unregisters a model change from the change tracking framework.
