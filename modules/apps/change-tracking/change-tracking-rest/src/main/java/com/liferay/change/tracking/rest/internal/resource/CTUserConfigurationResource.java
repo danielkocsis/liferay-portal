@@ -98,13 +98,12 @@ public class CTUserConfigurationResource {
 	}
 
 	private void _updateCheckoutCTCollectionConfirmationEnabled(
-			long userId,
-			CTUserConfigurationUpdateModel ctUserConfigurationUpdateModel)
-		throws CTJaxRsException {
+		long userId,
+		CTUserConfigurationUpdateModel ctUserConfigurationUpdateModel) {
 
 		_ctSettingsManager.setUserCTSetting(
 			userId, CTSettingsKeys.CHECKOUT_CT_COLLECTION_CONFIRMATION_ENABLED,
-			GetterUtil.getString(
+			Boolean.toString(
 				ctUserConfigurationUpdateModel.
 					isCheckoutCTCollectionConfirmationEnabled()));
 	}
