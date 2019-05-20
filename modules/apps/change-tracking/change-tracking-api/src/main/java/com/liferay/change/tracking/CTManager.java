@@ -348,6 +348,32 @@ public interface CTManager {
 		long userId, long classNameId, long classPK, boolean force);
 
 	/**
+	 * Returns all the change tracking entries associated with the given
+	 * ctCollection and keywords.
+	 *
+	 * @param  ctCollection the containing change list
+	 * @param  keywords	the filtering keywords
+	 * @param  queryDefinition the settings regarding pagination, order
+	 * @return the change tracking entries
+	 */
+	public List<CTEntry> search(
+		CTCollection ctCollection, String keywords,
+		QueryDefinition<CTEntry> queryDefinition);
+
+	/**
+	 * Returns the number of change tracking entries associated with the given
+	 * ctCollection and keywords.
+	 *
+	 * @param  ctCollection the containing change list
+	 * @param  keywords	the filtering keywords
+	 * @param  queryDefinition the settings
+	 * @return the number of change tracking entries
+	 */
+	public int searchCount(
+		CTCollection ctCollection, String keywords,
+		QueryDefinition<CTEntry> queryDefinition);
+
+	/**
 	 * Unregisters a model change from the change tracking framework.
 	 *
 	 * @param  userId the primary key of the user

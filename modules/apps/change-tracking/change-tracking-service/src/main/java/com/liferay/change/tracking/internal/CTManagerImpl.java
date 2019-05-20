@@ -541,6 +541,24 @@ public class CTManagerImpl implements CTManager {
 	}
 
 	@Override
+	public List<CTEntry> search(
+		CTCollection ctCollection, String keywords,
+		QueryDefinition<CTEntry> queryDefinition) {
+
+		return _ctEntryLocalService.search(
+			ctCollection, keywords, queryDefinition);
+	}
+
+	@Override
+	public int searchCount(
+		CTCollection ctCollection, String keywords,
+		QueryDefinition<CTEntry> queryDefinition) {
+
+		return _ctEntryLocalService.searchCount(
+			ctCollection, keywords, queryDefinition);
+	}
+
+	@Override
 	public Optional<CTEntry> unregisterModelChange(
 		long userId, long modelClassNameId, long modelClassPK) {
 
