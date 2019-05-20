@@ -14,11 +14,10 @@
 
 package com.liferay.dynamic.data.mapping.change.tracking.internal.service;
 
-import com.liferay.change.tracking.CTEngineManager;
-import com.liferay.change.tracking.CTManager;
 import com.liferay.change.tracking.constants.CTConstants;
-import com.liferay.change.tracking.exception.CTEntryException;
-import com.liferay.change.tracking.exception.CTException;
+import com.liferay.change.tracking.engine.CTEngineManager;
+import com.liferay.change.tracking.engine.CTManager;
+import com.liferay.change.tracking.engine.exception.CTEngineException;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
@@ -245,7 +244,7 @@ public class CTDDMTemplateLocalServiceWrapper
 
 	private void _registerChange(
 			DDMTemplateVersion ddmTemplateVersion, int changeType)
-		throws CTException {
+		throws CTEngineException {
 
 		_registerChange(ddmTemplateVersion, changeType, false);
 	}
@@ -253,7 +252,7 @@ public class CTDDMTemplateLocalServiceWrapper
 	private void _registerChange(
 			DDMTemplateVersion ddmTemplateVersion, int changeType,
 			boolean force)
-		throws CTException {
+		throws CTEngineException {
 
 		if (ddmTemplateVersion == null) {
 			return;
@@ -266,14 +265,14 @@ public class CTDDMTemplateLocalServiceWrapper
 				ddmTemplateVersion.getTemplateVersionId(),
 				ddmTemplateVersion.getTemplateId(), changeType, force);
 		}
-		catch (CTException cte) {
-			if (cte instanceof CTEntryException) {
+		catch (CTEngineException ctee) {
+			if (ctee instanceof CTEngineException) {
 				if (_log.isWarnEnabled()) {
-					_log.warn(cte.getMessage());
+					_log.warn(ctee.getMessage());
 				}
 			}
 			else {
-				throw cte;
+				throw ctee;
 			}
 		}
 	}

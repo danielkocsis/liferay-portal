@@ -14,7 +14,7 @@
 
 package com.liferay.journal.change.tracking.internal.service;
 
-import com.liferay.change.tracking.CTManager;
+import com.liferay.change.tracking.engine.CTManager;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleResource;

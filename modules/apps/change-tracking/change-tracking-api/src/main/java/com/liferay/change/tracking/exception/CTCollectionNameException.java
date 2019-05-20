@@ -14,64 +14,29 @@
 
 package com.liferay.change.tracking.exception;
 
+import com.liferay.portal.kernel.exception.PortalException;
+
 import org.osgi.annotation.versioning.ProviderType;
 
-import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
-
 /**
- * @author Zoltan Csaszi
+ * @author Brian Wing Shun Chan
  */
 @ProviderType
-public class CTCollectionNameException extends CTException {
+public class CTCollectionNameException extends PortalException {
 
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
 	public CTCollectionNameException() {
-		super(CompanyThreadLocal.getCompanyId());
 	}
 
-	public CTCollectionNameException(long companyId) {
-		super(companyId);
-	}
-
-	public CTCollectionNameException(long companyId, String msg) {
-		super(companyId, msg);
-	}
-
-	public CTCollectionNameException(
-		long companyId, String msg, Throwable cause) {
-
-		super(companyId, msg, cause);
-	}
-
-	public CTCollectionNameException(long companyId, Throwable cause) {
-		super(companyId, cause);
-	}
-
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
 	public CTCollectionNameException(String msg) {
-		super(CompanyThreadLocal.getCompanyId(), msg);
+		super(msg);
 	}
 
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
 	public CTCollectionNameException(String msg, Throwable cause) {
-		super(CompanyThreadLocal.getCompanyId(), msg, cause);
+		super(msg, cause);
 	}
 
-	/**
-	 * @deprecated As of Mueller (7.2.x)
-	 */
-	@Deprecated
 	public CTCollectionNameException(Throwable cause) {
-		super(CompanyThreadLocal.getCompanyId(), cause);
+		super(cause);
 	}
 
 }

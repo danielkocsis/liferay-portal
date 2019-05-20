@@ -41,8 +41,8 @@ portletDisplay.setShowBackIcon(true);
 
 <liferay-ui:error key="ctCollectionDuplicate" message="name-is-already-used-by-another-change-list" />
 <liferay-ui:error key="ctCollectionNameIsNull" message="the-change-list-name-is-too-short" />
-<liferay-ui:error exception="<%= CTCollectionDescriptionException.class %>" message="the-change-list-description-is-too-long" />
-<liferay-ui:error exception="<%= CTCollectionNameException.class %>" message="the-change-list-name-is-too-long" />
+<liferay-ui:error exception="<%= CTCollectionDescriptionCTEngineException.class %>" message="the-change-list-description-is-too-long" />
+<liferay-ui:error exception="<%= CTCollectionNameCTEngineException.class %>" message="the-change-list-name-is-too-long" />
 
 <div class="custom-sheet sheet sheet-lg">
 	<aui:form action='<%= actionURL.toString() + "&etag=0&strip=0" %>' cssClass="lfr-export-dialog" method="post" name="addChangeListFm">
