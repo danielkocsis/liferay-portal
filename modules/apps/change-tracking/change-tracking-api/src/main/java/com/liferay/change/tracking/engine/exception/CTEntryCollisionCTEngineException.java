@@ -12,25 +12,29 @@
  * details.
  */
 
-package com.liferay.change.tracking.rest.internal.exception;
+package com.liferay.change.tracking.engine.exception;
 
-import javax.ws.rs.core.Response;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * @author Máté Thurzó
+ * @author Daniel Kocsis
  */
-public class CannotCreateCTCollectionException extends CTJaxRsException {
+@ProviderType
+public class CTEntryCollisionCTEngineException extends CTEngineException {
 
-	public CannotCreateCTCollectionException(long companyId) {
-		super(companyId);
+	public CTEntryCollisionCTEngineException(long companyId, long ctEntryId) {
+		super(
+			companyId,
+			"Unable to publish change entry " + ctEntryId +
+				" because it is colliding with other changes");
 
-		setResponseStatus(Response.Status.BAD_REQUEST);
+		_ctEntryId = ctEntryId;
 	}
 
-	public CannotCreateCTCollectionException(long companyId, String msg) {
-		super(companyId, msg);
-
-		setResponseStatus(Response.Status.BAD_REQUEST);
+	public long getCtEntryId() {
+		return _ctEntryId;
 	}
+
+	private final long _ctEntryId;
 
 }

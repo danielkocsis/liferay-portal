@@ -12,31 +12,26 @@
  * details.
  */
 
-package com.liferay.change.tracking.exception;
+package com.liferay.change.tracking.rest.internal.exception;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.portal.kernel.exception.PortalException;
+import javax.ws.rs.core.Response;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Máté Thurzó
  */
-@ProviderType
-public class CollectionNameException extends PortalException {
+public class ChangeTrackingNotEnabledEngineException
+	extends CTJaxRsEngineException {
 
-	public CollectionNameException() {
+	public ChangeTrackingNotEnabledEngineException(long companyId) {
+		super(companyId);
+
+		setResponseStatus(Response.Status.CONFLICT);
 	}
 
-	public CollectionNameException(String msg) {
-		super(msg);
-	}
+	public ChangeTrackingNotEnabledEngineException(long companyId, String msg) {
+		super(companyId, msg);
 
-	public CollectionNameException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
-
-	public CollectionNameException(Throwable cause) {
-		super(cause);
+		setResponseStatus(Response.Status.CONFLICT);
 	}
 
 }

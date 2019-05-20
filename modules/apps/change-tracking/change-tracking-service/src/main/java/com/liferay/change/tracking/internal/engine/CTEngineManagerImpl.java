@@ -12,18 +12,19 @@
  * details.
  */
 
-package com.liferay.change.tracking.internal;
+package com.liferay.change.tracking.internal.engine;
 
-import com.liferay.change.tracking.CTEngineManager;
 import com.liferay.change.tracking.configuration.CTConfiguration;
 import com.liferay.change.tracking.configuration.CTConfigurationRegistry;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.change.tracking.engine.CTEngineManager;
+import com.liferay.change.tracking.engine.exception.CTCollectionDescriptionCTEngineException;
+import com.liferay.change.tracking.engine.exception.CTCollectionNameCTEngineException;
+import com.liferay.change.tracking.engine.exception.CTEngineException;
+import com.liferay.change.tracking.engine.exception.CTEngineSystemException;
 import com.liferay.change.tracking.exception.CTCollectionDescriptionException;
 import com.liferay.change.tracking.exception.CTCollectionNameException;
-import com.liferay.change.tracking.exception.CTException;
-import com.liferay.change.tracking.exception.CollectionDescriptionException;
-import com.liferay.change.tracking.exception.CollectionNameException;
 import com.liferay.change.tracking.internal.util.ChangeTrackingThreadLocal;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
@@ -132,7 +133,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	@Override
 	public Optional<CTCollection> createCTCollection(
 			long userId, String name, String description)
-		throws CTException {
+		throws CTEngineException {
 
 		long companyId = _getCompanyId(userId);
 
@@ -512,7 +513,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 
 	private Optional<CTCollection> _createCTCollection(
 			long userId, String name, String description)
-		throws CTException {
+		throws CTEngineException {
 
 		CTCollection ctCollection = null;
 
@@ -529,13 +530,13 @@ public class CTEngineManagerImpl implements CTEngineManager {
 					return addedCTCollection;
 				});
 		}
-		catch (CollectionDescriptionException cde) {
-			throw new CTCollectionDescriptionException(
-				CompanyThreadLocal.getCompanyId(), cde.getMessage(), cde);
+		catch (CTCollectionDescriptionException ctcde) {
+			throw new CTCollectionDescriptionCTEngineException(
+				CompanyThreadLocal.getCompanyId(), ctcde.getMessage(), ctcde);
 		}
-		catch (CollectionNameException cne) {
-			throw new CTCollectionNameException(
-				CompanyThreadLocal.getCompanyId(), cne.getMessage(), cne);
+		catch (CTCollectionNameException ctcne) {
+			throw new CTCollectionNameCTEngineException(
+				CompanyThreadLocal.getCompanyId(), ctcne.getMessage(), ctcne);
 		}
 		catch (Throwable t) {
 			_log.error(
@@ -554,7 +555,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 		long companyId = _getCompanyId(userId);
 
 		CTCollection productionCTCollection = ctCollectionOptional.orElseThrow(
-			() -> new CTException(
+			() -> new CTEngineSystemException(
 				companyId,
 				"Unable to create production change tracking collection"));
 

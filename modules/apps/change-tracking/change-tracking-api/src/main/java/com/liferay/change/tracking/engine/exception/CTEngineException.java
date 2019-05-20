@@ -12,35 +12,35 @@
  * details.
  */
 
-package com.liferay.change.tracking;
-
-import aQute.bnd.annotation.ProviderType;
+package com.liferay.change.tracking.engine.exception;
 
 import com.liferay.portal.kernel.exception.PortalException;
+
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * @author Gergely Mathe
  */
 @ProviderType
-public class CTException extends PortalException {
+public class CTEngineException extends PortalException {
 
-	public CTException(long companyId) {
+	public CTEngineException(long companyId) {
 		_companyId = companyId;
 	}
 
-	public CTException(long companyId, String msg) {
+	public CTEngineException(long companyId, String msg) {
 		super(msg);
 
 		_companyId = companyId;
 	}
 
-	public CTException(long companyId, String msg, Throwable cause) {
+	public CTEngineException(long companyId, String msg, Throwable cause) {
 		super(msg, cause);
 
 		_companyId = companyId;
 	}
 
-	public CTException(long companyId, Throwable cause) {
+	public CTEngineException(long companyId, Throwable cause) {
 		super(cause);
 
 		_companyId = companyId;

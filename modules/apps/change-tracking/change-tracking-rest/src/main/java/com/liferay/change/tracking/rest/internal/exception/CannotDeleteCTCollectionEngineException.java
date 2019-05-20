@@ -12,34 +12,26 @@
  * details.
  */
 
-package com.liferay.change.tracking;
+package com.liferay.change.tracking.rest.internal.exception;
 
-import aQute.bnd.annotation.ProviderType;
+import javax.ws.rs.core.Response;
 
 /**
  * @author Daniel Kocsis
  */
-@ProviderType
-public class CTProcessException extends CTException {
+public class CannotDeleteCTCollectionEngineException
+	extends CTJaxRsEngineException {
 
-	public CTProcessException(long companyId, long ctProcessId, String msg) {
+	public CannotDeleteCTCollectionEngineException(long companyId) {
+		super(companyId);
+
+		setResponseStatus(Response.Status.BAD_REQUEST);
+	}
+
+	public CannotDeleteCTCollectionEngineException(long companyId, String msg) {
 		super(companyId, msg);
 
-		_ctProcessId = ctProcessId;
+		setResponseStatus(Response.Status.BAD_REQUEST);
 	}
-
-	public CTProcessException(
-		long companyId, long ctProcessId, String msg, Throwable cause) {
-
-		super(companyId, msg, cause);
-
-		_ctProcessId = ctProcessId;
-	}
-
-	public long getCtProcessId() {
-		return _ctProcessId;
-	}
-
-	private final long _ctProcessId;
 
 }

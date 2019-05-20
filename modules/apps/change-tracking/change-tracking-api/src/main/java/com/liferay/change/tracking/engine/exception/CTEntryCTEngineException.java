@@ -12,17 +12,17 @@
  * details.
  */
 
-package com.liferay.change.tracking;
+package com.liferay.change.tracking.engine.exception;
 
-import aQute.bnd.annotation.ProviderType;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * @author Gergely Mathe
  */
 @ProviderType
-public class CTEntryException extends CTException {
+public class CTEntryCTEngineException extends CTEngineException {
 
-	public CTEntryException(
+	public CTEntryCTEngineException(
 		long ctEntryId, long companyId, long userId, long modelClassNameId,
 		long modelClassPK, long modelResourcePrimKey, long ctCollectionId) {
 
@@ -36,7 +36,7 @@ public class CTEntryException extends CTException {
 		_ctCollectionId = ctCollectionId;
 	}
 
-	public CTEntryException(
+	public CTEntryCTEngineException(
 		long ctEntryId, long companyId, long userId, long modelClassNameId,
 		long modelClassPK, long modelResourcePrimKey, long ctCollectionId,
 		String msg) {
@@ -51,7 +51,7 @@ public class CTEntryException extends CTException {
 		_ctCollectionId = ctCollectionId;
 	}
 
-	public CTEntryException(
+	public CTEntryCTEngineException(
 		long ctEntryId, long companyId, long userId, long modelClassNameId,
 		long modelClassPK, long modelResourcePrimKey, long ctCollectionId,
 		String msg, Throwable cause) {
@@ -66,7 +66,7 @@ public class CTEntryException extends CTException {
 		_ctCollectionId = ctCollectionId;
 	}
 
-	public CTEntryException(
+	public CTEntryCTEngineException(
 		long ctEntryId, long companyId, long userId, long modelClassNameId,
 		long modelClassPK, long modelResourcePrimKey, long ctCollectionId,
 		Throwable cause) {
