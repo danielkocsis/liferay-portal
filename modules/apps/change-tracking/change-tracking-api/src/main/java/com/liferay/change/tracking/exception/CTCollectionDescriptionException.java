@@ -14,30 +14,29 @@
 
 package com.liferay.change.tracking.exception;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.exception.PortalException;
+
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * @author Zoltan Csaszi
+ * @author Brian Wing Shun Chan
  */
 @ProviderType
-public class CTCollectionDescriptionException extends CTException {
+public class CTCollectionDescriptionException extends PortalException {
 
-	public CTCollectionDescriptionException(long companyId) {
-		super(companyId);
+	public CTCollectionDescriptionException() {
 	}
 
-	public CTCollectionDescriptionException(long companyId, String msg) {
-		super(companyId, msg);
+	public CTCollectionDescriptionException(String msg) {
+		super(msg);
 	}
 
-	public CTCollectionDescriptionException(
-		long companyId, String msg, Throwable cause) {
-
-		super(companyId, msg, cause);
+	public CTCollectionDescriptionException(String msg, Throwable cause) {
+		super(msg, cause);
 	}
 
-	public CTCollectionDescriptionException(long companyId, Throwable cause) {
-		super(companyId, cause);
+	public CTCollectionDescriptionException(Throwable cause) {
+		super(cause);
 	}
 
 }

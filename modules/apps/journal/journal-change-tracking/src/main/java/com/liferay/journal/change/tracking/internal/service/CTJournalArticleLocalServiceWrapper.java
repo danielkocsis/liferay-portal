@@ -14,11 +14,11 @@
 
 package com.liferay.journal.change.tracking.internal.service;
 
-import com.liferay.change.tracking.CTEngineManager;
-import com.liferay.change.tracking.CTManager;
 import com.liferay.change.tracking.constants.CTConstants;
-import com.liferay.change.tracking.exception.CTEntryException;
-import com.liferay.change.tracking.exception.CTException;
+import com.liferay.change.tracking.engine.CTEngineManager;
+import com.liferay.change.tracking.engine.CTManager;
+import com.liferay.change.tracking.engine.exception.CTEngineException;
+import com.liferay.change.tracking.engine.exception.CTEntryCTEngineException;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.journal.exception.NoSuchArticleException;
@@ -1894,14 +1894,14 @@ public class CTJournalArticleLocalServiceWrapper
 	}
 
 	private void _registerChange(JournalArticle journalArticle, int changeType)
-		throws CTException {
+		throws CTEngineException {
 
 		_registerChange(journalArticle, changeType, false);
 	}
 
 	private void _registerChange(
 			JournalArticle journalArticle, int changeType, boolean force)
-		throws CTException {
+		throws CTEngineException {
 
 		if (journalArticle == null) {
 			return;
@@ -1919,14 +1919,14 @@ public class CTJournalArticleLocalServiceWrapper
 				_portal.getClassNameId(JournalArticle.class.getName()),
 				journalArticle.getId(), force);
 		}
-		catch (CTException cte) {
-			if (cte instanceof CTEntryException) {
+		catch (CTEngineException ctee) {
+			if (ctee instanceof CTEntryCTEngineException) {
 				if (_log.isWarnEnabled()) {
-					_log.warn(cte.getMessage());
+					_log.warn(ctee.getMessage());
 				}
 			}
 			else {
-				throw cte;
+				throw ctee;
 			}
 		}
 	}
