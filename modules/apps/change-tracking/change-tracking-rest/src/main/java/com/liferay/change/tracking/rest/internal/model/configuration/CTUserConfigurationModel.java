@@ -39,6 +39,11 @@ public class CTUserConfigurationModel {
 		return _userId;
 	}
 
+	@XmlElement
+	public boolean isCheckoutCTCollectionConfirmationEnabled() {
+		return _checkoutCTCollectionConfirmationEnabled;
+	}
+
 	public static class Builder {
 
 		public CTUserConfigurationModel build() {
