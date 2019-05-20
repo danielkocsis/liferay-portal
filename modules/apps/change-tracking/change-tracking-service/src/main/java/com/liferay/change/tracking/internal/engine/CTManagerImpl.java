@@ -12,14 +12,14 @@
  * details.
  */
 
-package com.liferay.change.tracking.internal;
+package com.liferay.change.tracking.internal.engine;
 
-import com.liferay.change.tracking.CTEngineManager;
-import com.liferay.change.tracking.CTManager;
 import com.liferay.change.tracking.configuration.CTConfiguration;
 import com.liferay.change.tracking.configuration.CTConfigurationRegistry;
-import com.liferay.change.tracking.exception.CTEntryException;
-import com.liferay.change.tracking.exception.CTException;
+import com.liferay.change.tracking.engine.CTEngineManager;
+import com.liferay.change.tracking.engine.CTManager;
+import com.liferay.change.tracking.engine.exception.CTEngineException;
+import com.liferay.change.tracking.engine.exception.CTEntryCTEngineException;
 import com.liferay.change.tracking.exception.DuplicateCTEntryException;
 import com.liferay.change.tracking.internal.util.CTEntryCollisionUtil;
 import com.liferay.change.tracking.internal.util.ChangeTrackingThreadLocal;
@@ -425,7 +425,7 @@ public class CTManagerImpl implements CTManager {
 	public Optional<CTEntry> registerModelChange(
 			long companyId, long userId, long modelClassNameId,
 			long modelClassPK, long modelResourcePrimKey, int changeType)
-		throws CTException {
+		throws CTEngineException {
 
 		return registerModelChange(
 			companyId, userId, modelClassNameId, modelClassPK,
@@ -437,7 +437,7 @@ public class CTManagerImpl implements CTManager {
 			long companyId, long userId, long modelClassNameId,
 			long modelClassPK, long modelResourcePrimKey, int changeType,
 			boolean force)
-		throws CTException {
+		throws CTEngineException {
 
 		if (!_ctEngineManager.isChangeTrackingEnabled(companyId) ||
 			!_ctEngineManager.isChangeTrackingSupported(
@@ -465,8 +465,8 @@ public class CTManagerImpl implements CTManager {
 					modelResourcePrimKey, changeType, force, ctCollection));
 		}
 		catch (Throwable t) {
-			if (t instanceof CTException) {
-				throw (CTException)t;
+			if (t instanceof CTEngineException) {
+				throw (CTEngineException)t;
 			}
 
 			_log.error("Unable to register model change", t);
@@ -646,7 +646,7 @@ public class CTManagerImpl implements CTManager {
 			long companyId, long userId, long modelClassNameId,
 			long modelClassPK, long modelResourcePrimKey, int changeType,
 			boolean force, CTCollection ctCollection)
-		throws CTException {
+		throws CTEngineException {
 
 		try {
 			ServiceContext serviceContext = new ServiceContext();
@@ -689,7 +689,7 @@ public class CTManagerImpl implements CTManager {
 			sb.append(" in change tracking collection ");
 			sb.append(ctCollection.getCtCollectionId());
 
-			throw new CTEntryException(
+			throw new CTEntryCTEngineException(
 				0L, companyId, userId, modelClassNameId, modelClassPK,
 				modelResourcePrimKey, ctCollection.getCtCollectionId(),
 				sb.toString(), dctee);
@@ -707,7 +707,7 @@ public class CTManagerImpl implements CTManager {
 			sb.append(" in change tracking collection ");
 			sb.append(ctCollection.getCtCollectionId());
 
-			throw new CTException(companyId, sb.toString(), pe);
+			throw new CTEngineException(companyId, sb.toString(), pe);
 		}
 	}
 

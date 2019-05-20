@@ -12,9 +12,9 @@
  * details.
  */
 
-package com.liferay.change.tracking;
+package com.liferay.change.tracking.engine;
 
-import com.liferay.change.tracking.exception.CTException;
+import com.liferay.change.tracking.engine.exception.CTEngineException;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.model.CTEntryAggregate;
@@ -66,7 +66,7 @@ public interface CTEngineManager {
 	 */
 	public Optional<CTCollection> createCTCollection(
 			long userId, String name, String description)
-		throws CTException;
+		throws CTEngineException;
 
 	/**
 	 * Deletes the change tracking collection.

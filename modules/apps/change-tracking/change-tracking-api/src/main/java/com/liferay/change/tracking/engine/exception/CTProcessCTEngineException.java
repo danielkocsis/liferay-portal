@@ -12,25 +12,36 @@
  * details.
  */
 
-package com.liferay.change.tracking.rest.internal.exception;
+package com.liferay.change.tracking.engine.exception;
 
-import javax.ws.rs.core.Response;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * @author Máté Thurzó
+ * @author Daniel Kocsis
  */
-public class NoSuchCompanyException extends CTJaxRsException {
+@ProviderType
+public class CTProcessCTEngineException extends CTEngineException {
 
-	public NoSuchCompanyException(long companyId) {
-		super(companyId);
+	public CTProcessCTEngineException(
+		long companyId, long ctProcessId, String msg) {
 
-		setResponseStatus(Response.Status.BAD_REQUEST);
-	}
-
-	public NoSuchCompanyException(long companyId, String msg) {
 		super(companyId, msg);
 
-		setResponseStatus(Response.Status.BAD_REQUEST);
+		_ctProcessId = ctProcessId;
 	}
+
+	public CTProcessCTEngineException(
+		long companyId, long ctProcessId, String msg, Throwable cause) {
+
+		super(companyId, msg, cause);
+
+		_ctProcessId = ctProcessId;
+	}
+
+	public long getCtProcessId() {
+		return _ctProcessId;
+	}
+
+	private final long _ctProcessId;
 
 }

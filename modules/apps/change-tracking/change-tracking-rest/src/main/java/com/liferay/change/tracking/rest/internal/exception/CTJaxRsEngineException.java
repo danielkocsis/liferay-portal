@@ -14,28 +14,28 @@
 
 package com.liferay.change.tracking.rest.internal.exception;
 
-import com.liferay.change.tracking.exception.CTException;
+import com.liferay.change.tracking.engine.exception.CTEngineException;
 
 import javax.ws.rs.core.Response;
 
 /**
  * @author Máté Thurzó
  */
-public class CTJaxRsException extends CTException {
+public class CTJaxRsEngineException extends CTEngineException {
 
-	public CTJaxRsException(long companyId) {
+	public CTJaxRsEngineException(long companyId) {
 		super(companyId);
 	}
 
-	public CTJaxRsException(long companyId, String msg) {
+	public CTJaxRsEngineException(long companyId, String msg) {
 		super(companyId, msg);
 	}
 
-	public CTJaxRsException(long companyId, String msg, Throwable cause) {
+	public CTJaxRsEngineException(long companyId, String msg, Throwable cause) {
 		super(companyId, msg, cause);
 	}
 
-	public CTJaxRsException(long companyId, Throwable cause) {
+	public CTJaxRsEngineException(long companyId, Throwable cause) {
 		super(companyId, cause);
 	}
 

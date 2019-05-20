@@ -12,29 +12,25 @@
  * details.
  */
 
-package com.liferay.change.tracking.exception;
+package com.liferay.change.tracking.rest.internal.exception;
 
-import aQute.bnd.annotation.ProviderType;
+import javax.ws.rs.core.Response;
 
 /**
- * @author Daniel Kocsis
+ * @author Máté Thurzó
  */
-@ProviderType
-public class CTEntryCollisionException extends CTException {
+public class NoSuchUserEngineException extends CTJaxRsEngineException {
 
-	public CTEntryCollisionException(long companyId, long ctEntryId) {
-		super(
-			companyId,
-			"Unable to publish change entry " + ctEntryId +
-				" because it is colliding with other changes");
+	public NoSuchUserEngineException(long companyId) {
+		super(companyId);
 
-		_ctEntryId = ctEntryId;
+		setResponseStatus(Response.Status.BAD_REQUEST);
 	}
 
-	public long getCtEntryId() {
-		return _ctEntryId;
-	}
+	public NoSuchUserEngineException(long companyId, String msg) {
+		super(companyId, msg);
 
-	private final long _ctEntryId;
+		setResponseStatus(Response.Status.BAD_REQUEST);
+	}
 
 }
