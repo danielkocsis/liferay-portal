@@ -15,6 +15,8 @@
 package com.liferay.change.tracking.change.lists.configuration.web.internal.display.context;
 
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -46,6 +48,27 @@ public class ChangeListsConfigurationDisplayContext {
 		SoyContext soyContext = SoyContextFactoryUtil.createSoyContext();
 
 		soyContext.put(
+			"navigationItems",
+			JSONUtil.put(
+				JSONUtil.put(
+					"active", true
+				).put(
+					"href", "#1"
+				).put(
+					"label",
+					LanguageUtil.get(_httpServletRequest, "global-settings")
+				)
+			).put(
+				JSONUtil.put(
+					"active", false
+				).put(
+					"href", "#2"
+				).put(
+					"label",
+					LanguageUtil.get(_httpServletRequest, "user-settings")
+				)
+			)
+		).put(
 			"portalURL", _themeDisplay.getPortalURL()
 		).put(
 			"portletNamespace", _renderResponse.getNamespace()
@@ -57,6 +80,12 @@ public class ChangeListsConfigurationDisplayContext {
 			_themeDisplay.getPortalURL() +
 				"/o/change-tracking/configurations/" +
 					_themeDisplay.getCompanyId()
+		).put(
+			"urlChangeTrackingUserConfiguration",
+			_themeDisplay.getPortalURL() +
+				"/o/change-tracking/configurations/" +
+					_themeDisplay.getCompanyId() + "/user/" +
+						_themeDisplay.getUserId()
 		);
 
 		PortletURL configurationPortletURL = PortletURLFactoryUtil.create(
