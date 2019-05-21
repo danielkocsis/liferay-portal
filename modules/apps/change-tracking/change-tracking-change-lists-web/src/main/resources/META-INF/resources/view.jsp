@@ -128,13 +128,13 @@ renderResponse.setTitle(title);
 								<c:when test="<%= changeListsDisplayContext.isChangeListActive(curCTCollection.getCtCollectionId()) %>">
 									<liferay-ui:icon
 										cssClass="disabled"
-										message="make-active"
+										message="activate"
 										url="#"
 									/>
 								</c:when>
 								<c:otherwise>
 									<liferay-ui:icon
-										message="make-active"
+										message="activate"
 										url="<%= checkoutCollectionURL %>"
 									/>
 								</c:otherwise>
@@ -237,13 +237,13 @@ renderResponse.setTitle(title);
 												<c:when test="<%= changeListsDisplayContext.isChangeListActive(productionCTCollection.getCtCollectionId()) %>">
 													<liferay-ui:icon
 														cssClass="disabled"
-														message="make-active"
+														message="activate"
 														url="#"
 													/>
 												</c:when>
 												<c:otherwise>
 													<liferay-ui:icon
-														message="make-active"
+														message="activate"
 														url="<%= checkoutProductionURL %>"
 													/>
 												</c:otherwise>
@@ -343,13 +343,13 @@ renderResponse.setTitle(title);
 													<c:when test="<%= changeListsDisplayContext.isChangeListActive(curCTCollection.getCtCollectionId()) %>">
 														<liferay-ui:icon
 															cssClass="disabled"
-															message="make-active"
+															message="activate"
 															url="#"
 														/>
 													</c:when>
 													<c:otherwise>
 														<liferay-ui:icon
-															message="make-active"
+															message="activate"
 															url="<%= checkoutCollectionURL %>"
 														/>
 													</c:otherwise>
