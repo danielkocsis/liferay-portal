@@ -59,6 +59,9 @@ renderResponse.setTitle(title);
 
 					<%
 					boolean production = CTConstants.CT_COLLECTION_NAME_PRODUCTION.equals(curCTCollection.getName());
+					String ctCollectionName = production ? "work-on-production" : curCTCollection.getName();
+
+					String confirmMessage = changeListsDisplayContext.getConfirmationMessage(ctCollectionName);
 					%>
 
 					<liferay-portlet:actionURL name="/change_lists/checkout_ct_collection" var="checkoutCollectionURL">
@@ -67,7 +70,7 @@ renderResponse.setTitle(title);
 					</liferay-portlet:actionURL>
 
 					<liferay-ui:search-container-column-text
-						href="<%= checkoutCollectionURL.toString() %>"
+						href='<%= "javascript:" + renderResponse.getNamespace() + "checkoutCollection(\'" + checkoutCollectionURL.toString() + "\',\'" + confirmMessage + "\');" %>'
 						name="name"
 					>
 						<c:choose>
@@ -135,7 +138,7 @@ renderResponse.setTitle(title);
 								<c:otherwise>
 									<liferay-ui:icon
 										message="activate"
-										url="<%= checkoutCollectionURL %>"
+										url='<%= "javascript:" + renderResponse.getNamespace() + "checkoutCollection(\'" + checkoutCollectionURL.toString() + "\',\'" + confirmMessage + "\');" %>'
 									/>
 								</c:otherwise>
 							</c:choose>
@@ -161,7 +164,7 @@ renderResponse.setTitle(title);
 
 										<liferay-ui:icon
 											message="publish"
-											onClick='<%= "javascript:" + renderResponse.getNamespace() + "handleClickPublish(\'" + publishModalURL.toString() + "\');" %>'
+											onClick='<%= "javascript:" + renderResponse.getNamespace() + "handleClickPublish(\'" + publishModalURL.toString() + "\',\'" + confirmMessage +"\');" %>'
 											url="#"
 										/>
 									</c:when>
@@ -201,6 +204,7 @@ renderResponse.setTitle(title);
 
 					<%
 					CTCollection productionCTCollection = changeListsDisplayContext.getProductionCTCollection();
+					String productionConfirmMessage = changeListsDisplayContext.getConfirmationMessage("work-on-production");
 					%>
 
 					<liferay-portlet:actionURL name="/change_lists/checkout_ct_collection" var="checkoutProductionURL">
@@ -213,7 +217,13 @@ renderResponse.setTitle(title);
 							<div class="<%= changeListsDisplayContext.isChangeListActive(productionCTCollection.getCtCollectionId()) ? "border-left-green" : "border-left-gray" %> card select-card-sheet">
 								<div class="card-row card-row-layout-fixed card-row-padded card-row-valign-top select-card-header">
 									<div class="card-col-content lfr-card-details-column production-details-column">
-										<a href="<%= checkoutProductionURL.toString() %>">
+										<script>
+											function <portlet:namespace/>checkoutLinkProduction() {
+												<portlet:namespace/>checkoutCollection('<%= checkoutProductionURL.toString() %>', '<%= productionConfirmMessage %>');
+											}
+										</script>
+
+										<a href="#" onclick="<%= "javascript:" + renderResponse.getNamespace() + "checkoutLinkProduction();" %>">
 											<span class="card-h3" data-qa-id="headerSubTitle">
 												<span class="work-on-production"><liferay-ui:message key="work-on-production" /></span>
 											</span>
@@ -244,7 +254,7 @@ renderResponse.setTitle(title);
 												<c:otherwise>
 													<liferay-ui:icon
 														message="activate"
-														url="<%= checkoutProductionURL %>"
+														url='<%= "javascript:" + renderResponse.getNamespace() + "checkoutCollection(\'" + checkoutProductionURL.toString() + "\',\'" + productionConfirmMessage + "\');" %>'
 													/>
 												</c:otherwise>
 											</c:choose>
@@ -263,6 +273,7 @@ renderResponse.setTitle(title);
 
 						<%
 						boolean production = CTConstants.CT_COLLECTION_NAME_PRODUCTION.equals(curCTCollection.getName());
+						String confirmMessage = changeListsDisplayContext.getConfirmationMessage(curCTCollection.getName());
 						%>
 
 						<liferay-portlet:actionURL name="/change_lists/checkout_ct_collection" var="checkoutCollectionURL">
@@ -275,7 +286,13 @@ renderResponse.setTitle(title);
 								<div class="<%= changeListsDisplayContext.isChangeListActive(curCTCollection.getCtCollectionId()) ? "border-left-blue" : "border-left-gray" %> card select-card-sheet">
 									<div class="card-row card-row-layout-fixed card-row-padded card-row-valign-top select-card-header">
 										<div class="card-col-content lfr-card-details-column">
-											<a href="<%= checkoutCollectionURL.toString() %>">
+											<script>
+												function <portlet:namespace/>checkoutLink<%= curCTCollection.getCtCollectionId() %>() {
+													<portlet:namespace/>checkoutCollection('<%= checkoutCollectionURL.toString() %>', '<%= confirmMessage %>');
+												}
+											</script>
+
+											<a href="#" onclick="<%= "javascript:" + renderResponse.getNamespace() + "checkoutLink"+ curCTCollection.getCtCollectionId() + "();" %>">
 												<span class="card-h3" data-qa-id="headerSubTitle">
 													<%= HtmlUtil.escape(curCTCollection.getName()) %>
 												</span>
@@ -350,7 +367,7 @@ renderResponse.setTitle(title);
 													<c:otherwise>
 														<liferay-ui:icon
 															message="activate"
-															url="<%= checkoutCollectionURL %>"
+															url='<%= "javascript:" + renderResponse.getNamespace() + "checkoutCollection(\'" + checkoutCollectionURL.toString() + "\',\'" + confirmMessage + "\');" %>'
 														/>
 													</c:otherwise>
 												</c:choose>
@@ -447,5 +464,13 @@ renderResponse.setTitle(title);
 				uri: url,
 				zIndex: 10000
 			});
+	}
+
+	function <portlet:namespace/>checkoutCollection(url, message) {
+		var confirmationDisabled = <%= !changeListsDisplayContext.isCheckoutCtCollectionConfirmationEnabled() %>;
+
+		if (confirmationDisabled || confirm(message)) {
+			submitForm(document.hrefFm, url);
+		}
 	}
 </script>
