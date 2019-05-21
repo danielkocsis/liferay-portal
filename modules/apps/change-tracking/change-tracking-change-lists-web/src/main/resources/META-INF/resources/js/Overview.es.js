@@ -168,7 +168,7 @@ class Overview extends PortletBase {
 				changeListName: this.headerTitleActiveChangeList,
 				spritemap: themeDisplay.getPathThemeImages() + '/lexicon/icons.svg',
 				urlChangeListsHistory: this.urlChangeListsHistory,
-				urlCheckoutProduction: this.urlCollectionsBase + '/' + this.productionCTCollectionId + '/checkout?userId=' + Liferay.ThemeDisplay.getUserId(),
+				urlCheckoutProduction: this.urlCollectionsBase + '/' + this.productionCTCollectionId + '/checkout?companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&userId=' + Liferay.ThemeDisplay.getUserId(),
 				urlPublishChangeList: this.urlActiveCollectionPublish
 			}
 		);
@@ -191,7 +191,7 @@ class Overview extends PortletBase {
 
 		let production = event.target.getAttribute('data-production');
 
-		let url = this.urlCollectionsBase + '/' + collectionId + '/checkout?userId=' + Liferay.ThemeDisplay.getUserId();
+		let url = this.urlCollectionsBase + '/' + collectionId + '/checkout?companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&userId=' + Liferay.ThemeDisplay.getUserId();
 
 		fetch(url, body)
 			.then(
@@ -402,8 +402,8 @@ class Overview extends PortletBase {
 		}
 	}
 
-	_render() {
-		let urlActiveCollection = this.urlCollectionsBase + '?type=active&userId=' + Liferay.ThemeDisplay.getUserId();
+	_render() { 
+		let urlActiveCollection = this.urlCollectionsBase + '?type=active&companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&userId=' + Liferay.ThemeDisplay.getUserId();
 
 		let urls = [urlActiveCollection, this.urlProductionInformation];
 

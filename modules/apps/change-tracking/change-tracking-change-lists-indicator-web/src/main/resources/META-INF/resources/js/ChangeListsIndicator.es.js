@@ -24,7 +24,7 @@ class ChangeListsIndicator extends PortletBase {
 	 */
 	created() {
 		this._eventHandler = new EventHandler();
-		let urlActiveCollection = this.urlCollectionsBase + '?type=active&userId=' + Liferay.ThemeDisplay.getUserId();
+		let urlActiveCollection = this.urlCollectionsBase + '?type=active&companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&userId=' + Liferay.ThemeDisplay.getUserId();
 
 		this._render(urlActiveCollection);
 
