@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.template.soy.util.SoyContext;
 import com.liferay.portal.template.soy.util.SoyContextFactoryUtil;
@@ -82,10 +83,7 @@ public class ChangeListsConfigurationDisplayContext {
 					_themeDisplay.getCompanyId()
 		).put(
 			"urlChangeTrackingUserConfiguration",
-			_themeDisplay.getPortalURL() +
-				"/o/change-tracking/configurations/" +
-					_themeDisplay.getCompanyId() + "/user/" +
-						_themeDisplay.getUserId()
+			_getUserConfigurationURL(_themeDisplay)
 		);
 
 		PortletURL configurationPortletURL = PortletURLFactoryUtil.create(
@@ -103,6 +101,18 @@ public class ChangeListsConfigurationDisplayContext {
 		soyContext.put("urlOverview", overviewPortletURL.toString());
 
 		return soyContext;
+	}
+
+	private String _getUserConfigurationURL(ThemeDisplay themeDisplay) {
+		StringBundler sb = new StringBundler(5);
+
+		sb.append(themeDisplay.getPortalURL());
+		sb.append("/o/change-tracking/configurations/");
+		sb.append(themeDisplay.getCompanyId());
+		sb.append("/user/");
+		sb.append(themeDisplay.getUserId());
+
+		return sb.toString();
 	}
 
 	private final HttpServletRequest _httpServletRequest;
