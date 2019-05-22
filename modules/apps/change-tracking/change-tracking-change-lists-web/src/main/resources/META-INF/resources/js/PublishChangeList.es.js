@@ -11,7 +11,7 @@ import templates from './PublishChangeList.soy';
  * Handles the Change Lists publication dialog.
  */
 class PublishChangeList extends Component {
-	
+
 	created() {
 		this._disablePublishButton = this.changeListHasCollision;
 	}
@@ -128,12 +128,12 @@ class PublishChangeList extends Component {
  * @type {!Object}
  */
 PublishChangeList.STATE = {
-	
+
 	_disablePublishButton: Config.bool().value(false),
 
 	changeListDescription: Config.string(),
-	
-	changeListHasCollision:  Config.bool().value(false),
+
+	changeListHasCollision: Config.bool().value(false),
 
 	changeListName: Config.string(),
 
