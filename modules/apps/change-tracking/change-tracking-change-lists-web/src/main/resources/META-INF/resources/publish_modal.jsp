@@ -50,7 +50,7 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 			<%= HtmlUtil.escape(changeListDescription) %>
 		</div>
 
-		<aui:input disabled="<%= !hasCollision %>" label="ignore-collision" name="ignoreCollision" onClick='<%= renderResponse.getNamespace() + "ignoreCheck();" %>' type="checkbox" />
+		<aui:input disabled="<%= !hasCollision %>" label="ignore-collision" name="ignoreCollision" onClick='<%= renderResponse.getNamespace() + "ignoreCheck();" %>' type="toggle-switch" />
 
 		<aui:button-row>
 			<aui:button disabled="<%= hasCollision %>" type="submit" value="publish" />
