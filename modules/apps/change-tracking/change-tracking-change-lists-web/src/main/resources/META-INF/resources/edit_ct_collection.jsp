@@ -53,7 +53,7 @@ portletDisplay.setShowBackIcon(true);
 			<aui:validator name="required" />
 		</aui:input>
 
-		<aui:input label="description" name="description" type="textarea" placeholder="change-list-description-placeholder" value="<%= description %>">
+		<aui:input label="description" name="description" placeholder="change-list-description-placeholder" type="textarea" value="<%= description %>">
 			<aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(CTCollection.class.getName(), "description") %></aui:validator>
 		</aui:input>
 

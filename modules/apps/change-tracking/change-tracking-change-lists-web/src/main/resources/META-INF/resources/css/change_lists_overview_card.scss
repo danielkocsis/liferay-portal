@@ -44,25 +44,24 @@
 	}
 
 	.line-clamp {
+		max-width: 100%;
 		overflow: hidden;
+		position: relative;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		max-width: 100%;
-		position: relative;
 
 		.lfr-portal-tooltip {
 			display: inline;
 		}
-	  }
+	}
 
-	
 	@supports (-webkit-line-clamp: 2) {
 		.line-clamp {
-			display: -webkit-box;
-			white-space: initial;
-			-webkit-line-clamp: 2;
 			-webkit-box-orient: vertical;
+			display: -webkit-box;
 			height: auto;
+			-webkit-line-clamp: 2;
+			white-space: initial;
 		}
 	}
 }

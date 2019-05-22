@@ -1,4 +1,3 @@
-import ClayNavigationBar from 'clay-navigation-bar';
 import PortletBase from 'frontend-js-web/liferay/PortletBase.es';
 import Soy from 'metal-soy';
 import {Config} from 'metal-state';
@@ -72,15 +71,15 @@ class ChangeListsConfiguration extends PortletBase {
 						}
 					);
 				}
-				else {
-					return Object.assign(
-						{},
-						item,
-						{
-							active: false
-						}
-					);
-				}
+
+				return Object.assign(
+					{},
+					item,
+					{
+						active: false
+					}
+				);
+
 			}
 		);
 	}
