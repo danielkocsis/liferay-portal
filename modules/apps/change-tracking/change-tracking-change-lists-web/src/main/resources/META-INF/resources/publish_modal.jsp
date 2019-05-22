@@ -59,9 +59,16 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 	</aui:form>
 
 	<script>
-
 		if (<%= !hasCollision %>) {
 			document.querySelector('#<portlet:namespace/>ignoreCollision').parentElement.classList.add('disabled')
+		}
+
+		function <portlet:namespace/>closeModal(destroy) {
+			Liferay.Util.getWindow('<portlet:namespace/>publishIconDialog').hide();
+
+			if (destroy) {
+				Liferay.Util.getWindow('<portlet:namespace/>publishIconDialog').destroy();
+			}
 		}
 
 		function <portlet:namespace/>ignoreCheck() {
@@ -74,14 +81,6 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 			}
 			else {
 				btn.classList.add("disabled");
-			}
-		}
-
-		function <portlet:namespace/>closeModal(destroy) {
-			Liferay.Util.getWindow('<portlet:namespace/>publishIconDialog').hide();
-
-			if (destroy) {
-				Liferay.Util.getWindow('<portlet:namespace/>publishIconDialog').destroy();
 			}
 		}
 
