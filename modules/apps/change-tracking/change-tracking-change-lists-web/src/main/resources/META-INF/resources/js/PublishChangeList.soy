@@ -28,14 +28,19 @@
 				{msg desc=""}ignore-collision{/msg}
 			{/let}
 
-			{call ClayCheckbox.render}
-				{param checked: false /}
-				{param disabled: not $changeListHasCollision /}
-				{param events: [
-					'change': $_handleIgnoreCollisionChange
-				] /}
-				{param label: $ignoreCollisionLabel /}
-			{/call}
+			<div class="form-group">
+				<label class="toggle-switch">
+					<input class="toggle-switch-check" data-onchange="{$_handleIgnoreCollisionChange}" data-qa-id="ignorecollision-toggle" {if not $changeListHasCollision}disabled{/if} type="checkbox"/>
+					<span aria-hidden="true" class="toggle-switch-bar">
+						<span class="toggle-switch-handle"></span>
+					</span>
+					<span class="toggle-label-text">
+						<span class="custom-control-label-text">
+							{msg desc=""}ignore-collision{/msg}
+						</span>
+					</span>
+				</label>
+			</div>
 		{/param}
 
 		{param dialogClasses: 'modal-dialog-sm' /}
