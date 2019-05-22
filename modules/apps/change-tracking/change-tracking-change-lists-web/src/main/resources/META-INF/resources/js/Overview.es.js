@@ -426,7 +426,7 @@ class Overview extends PortletBase {
 	}
 
 	_render() {
-		let urlActiveCollection = this.urlCollectionsBase + '?companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&userId=' + Liferay.ThemeDisplay.getUserId() + "&type=active";
+		let urlActiveCollection = this.urlCollectionsBase + '?companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&userId=' + Liferay.ThemeDisplay.getUserId() + '&type=active';
 
 		let urls = [urlActiveCollection, this.urlProductionInformation, this.urlUserSettings];
 
@@ -624,7 +624,7 @@ Overview.STATE = {
 	collisionsCount: Config.number().value(0),
 
 	collisionsTooltip: Config.string(),
-	
+
 	hasCollision: Config.bool().value(false),
 
 	/**
