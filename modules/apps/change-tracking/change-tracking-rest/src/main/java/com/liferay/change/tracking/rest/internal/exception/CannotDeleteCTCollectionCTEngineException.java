@@ -17,17 +17,20 @@ package com.liferay.change.tracking.rest.internal.exception;
 import javax.ws.rs.core.Response;
 
 /**
- * @author Máté Thurzó
+ * @author Daniel Kocsis
  */
-public class NoSuchCompanyEngineException extends CTJaxRsEngineException {
+public class CannotDeleteCTCollectionCTEngineException
+	extends JaxRsCTEngineException {
 
-	public NoSuchCompanyEngineException(long companyId) {
+	public CannotDeleteCTCollectionCTEngineException(long companyId) {
 		super(companyId);
 
 		setResponseStatus(Response.Status.BAD_REQUEST);
 	}
 
-	public NoSuchCompanyEngineException(long companyId, String msg) {
+	public CannotDeleteCTCollectionCTEngineException(
+		long companyId, String msg) {
+
 		super(companyId, msg);
 
 		setResponseStatus(Response.Status.BAD_REQUEST);

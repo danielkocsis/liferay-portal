@@ -19,19 +19,21 @@ import javax.ws.rs.core.Response;
 /**
  * @author Máté Thurzó
  */
-public class ChangeTrackingNotEnabledEngineException
-	extends CTJaxRsEngineException {
+public class CannotCreateCTCollectionCTEngineException
+	extends JaxRsCTEngineException {
 
-	public ChangeTrackingNotEnabledEngineException(long companyId) {
+	public CannotCreateCTCollectionCTEngineException(long companyId) {
 		super(companyId);
 
-		setResponseStatus(Response.Status.CONFLICT);
+		setResponseStatus(Response.Status.BAD_REQUEST);
 	}
 
-	public ChangeTrackingNotEnabledEngineException(long companyId, String msg) {
+	public CannotCreateCTCollectionCTEngineException(
+		long companyId, String msg) {
+
 		super(companyId, msg);
 
-		setResponseStatus(Response.Status.CONFLICT);
+		setResponseStatus(Response.Status.BAD_REQUEST);
 	}
 
 }

@@ -19,16 +19,15 @@ import javax.ws.rs.core.Response;
 /**
  * @author Máté Thurzó
  */
-public class CannotCreateCTCollectionEngineException
-	extends CTJaxRsEngineException {
+public class NoSuchUserCTEngineException extends JaxRsCTEngineException {
 
-	public CannotCreateCTCollectionEngineException(long companyId) {
+	public NoSuchUserCTEngineException(long companyId) {
 		super(companyId);
 
 		setResponseStatus(Response.Status.BAD_REQUEST);
 	}
 
-	public CannotCreateCTCollectionEngineException(long companyId, String msg) {
+	public NoSuchUserCTEngineException(long companyId, String msg) {
 		super(companyId, msg);
 
 		setResponseStatus(Response.Status.BAD_REQUEST);

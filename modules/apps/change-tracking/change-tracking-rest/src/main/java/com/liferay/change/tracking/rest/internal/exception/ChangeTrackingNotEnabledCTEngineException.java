@@ -19,21 +19,21 @@ import javax.ws.rs.core.Response;
 /**
  * @author Máté Thurzó
  */
-public class NoSuchProductionCTCollectionEngineException
-	extends CTJaxRsEngineException {
+public class ChangeTrackingNotEnabledCTEngineException
+	extends JaxRsCTEngineException {
 
-	public NoSuchProductionCTCollectionEngineException(long companyId) {
+	public ChangeTrackingNotEnabledCTEngineException(long companyId) {
 		super(companyId);
 
-		setResponseStatus(Response.Status.BAD_REQUEST);
+		setResponseStatus(Response.Status.CONFLICT);
 	}
 
-	public NoSuchProductionCTCollectionEngineException(
+	public ChangeTrackingNotEnabledCTEngineException(
 		long companyId, String msg) {
 
 		super(companyId, msg);
 
-		setResponseStatus(Response.Status.BAD_REQUEST);
+		setResponseStatus(Response.Status.CONFLICT);
 	}
 
 }

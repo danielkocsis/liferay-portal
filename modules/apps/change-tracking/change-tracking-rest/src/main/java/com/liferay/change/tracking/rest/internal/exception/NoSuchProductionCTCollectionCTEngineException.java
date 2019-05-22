@@ -19,15 +19,18 @@ import javax.ws.rs.core.Response;
 /**
  * @author Máté Thurzó
  */
-public class NoSuchUserEngineException extends CTJaxRsEngineException {
+public class NoSuchProductionCTCollectionCTEngineException
+	extends JaxRsCTEngineException {
 
-	public NoSuchUserEngineException(long companyId) {
+	public NoSuchProductionCTCollectionCTEngineException(long companyId) {
 		super(companyId);
 
 		setResponseStatus(Response.Status.BAD_REQUEST);
 	}
 
-	public NoSuchUserEngineException(long companyId, String msg) {
+	public NoSuchProductionCTCollectionCTEngineException(
+		long companyId, String msg) {
+
 		super(companyId, msg);
 
 		setResponseStatus(Response.Status.BAD_REQUEST);
