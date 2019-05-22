@@ -28,6 +28,8 @@ if (ctCollection != null) {
 	changeListName = ctCollection.getName();
 	changeListDescription = ctCollection.getDescription();
 }
+
+boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 %>
 
 <div class="change-list-publish-modal modal-body">
@@ -48,15 +50,33 @@ if (ctCollection != null) {
 			<%= HtmlUtil.escape(changeListDescription) %>
 		</div>
 
-		<aui:input label="ignore-collision" name="ignoreCollision" type="checkbox" />
+		<aui:input disabled="<%= !hasCollision %>" label="ignore-collision" name="ignoreCollision" onClick='<%= renderResponse.getNamespace() + "ignoreCheck();" %>' type="checkbox" />
 
 		<aui:button-row>
-			<aui:button type="submit" value="publish" />
+			<aui:button disabled="<%= hasCollision %>" type="submit" value="publish" />
 			<aui:button onClick='<%= renderResponse.getNamespace() + "closeModal(true);" %>' value="cancel" />
 		</aui:button-row>
 	</aui:form>
 
 	<script>
+
+		if (<%= !hasCollision %>) {
+			document.querySelector('#<portlet:namespace/>ignoreCollision').parentElement.classList.add('disabled')
+		}
+
+		function <portlet:namespace/>ignoreCheck() {
+			let btn = document.querySelector('button[type="submit"]');
+
+			btn.disabled = !event.target.checked;
+
+			if (event.target.checked) {
+				btn.classList.remove("disabled");
+			}
+			else {
+				btn.classList.add("disabled");
+			}
+		}
+
 		function <portlet:namespace/>closeModal(destroy) {
 			Liferay.Util.getWindow('<portlet:namespace/>publishIconDialog').hide();
 
