@@ -265,49 +265,57 @@ class Overview extends PortletBase {
 		headers.append('Content-Type', 'application/json');
 		headers.append('X-CSRF-Token', Liferay.authToken);
 
-		let body = {
-			credentials: 'include',
-			headers,
-			method: 'DELETE'
-		};
+		let ok = false;
 
-		let url = this.urlCollectionsBase + '/' + this.activeCTCollectionId;
+		const label = this._sub(Liferay.Language.get('are-you-sure-you-want-to-delete-x-change-list'), [this.headerTitleActiveChangeList]);
 
-		fetch(url, body)
-			.then(
-				response => {
-					if (response.status === 204) {
-						this._checkoutCollection(this.productionCTCollectionId, false);
+		ok = confirm(label);
+
+		if (ok) {
+			let body = {
+				credentials: 'include',
+				headers,
+				method: 'DELETE'
+			};
+
+			let url = this.urlCollectionsBase + '/' + this.activeCTCollectionId;
+
+			fetch(url, body)
+				.then(
+					response => {
+						if (response.status === 204) {
+							this._checkoutCollection(this.productionCTCollectionId, false);
+						}
+						else if (response.status === 404) {
+							openToast(
+								{
+									message: this._sub(Liferay.Language.get('cannot-delete-x-no-such-change-list-found'), [this.headerTitleActiveChangeList]),
+									title: Liferay.Language.get('error'),
+									type: 'danger'
+								}
+							);
+						}
 					}
-					else if (response.status === 404) {
+				).then(
+					response => {
+						Liferay.Util.navigate(this.urlSelectChangeList);
+					}
+				).catch(
+					error => {
+						const message = typeof error === 'string' ?
+							error :
+							this._sub(Liferay.Language.get('an-error-occured-when-trying-to-delete-x'), [this.headerTitleActiveChangeList]);
+
 						openToast(
 							{
-								message: this._sub(Liferay.Language.get('cannot-delete-x-no-such-change-list-found'), this.changeListName),
+								message,
 								title: Liferay.Language.get('error'),
 								type: 'danger'
 							}
 						);
 					}
-				}
-			).then(
-				response => {
-					Liferay.Util.navigate(this.urlSelectChangeList);
-				}
-			).catch(
-				error => {
-					const message = typeof error === 'string' ?
-						error :
-						this._sub(Liferay.Language.get('an-error-occured-when-trying-to-delete-x'), this.changeListName);
-
-					openToast(
-						{
-							message,
-							title: Liferay.Language.get('error'),
-							type: 'danger'
-						}
-					);
-				}
-			);
+				);
+		}
 	}
 
 	_populateChangeEntries(changeEntriesResult) {

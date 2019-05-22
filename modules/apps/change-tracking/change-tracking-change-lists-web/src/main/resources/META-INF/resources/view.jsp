@@ -182,7 +182,8 @@ renderResponse.setTitle(title);
 									<portlet:param name="ctCollectionId" value="<%= String.valueOf(curCTCollection.getCtCollectionId()) %>" />
 								</liferay-portlet:actionURL>
 
-								<liferay-ui:icon
+								<liferay-ui:icon-delete
+									confirmation='<%= LanguageUtil.format(request, "are-you-sure-you-want-to-delete-x-change-list", curCTCollection.getName()) %>'
 									message="delete"
 									url="<%= deleteCollectionURL %>"
 								/>
@@ -410,7 +411,8 @@ renderResponse.setTitle(title);
 													<portlet:param name="ctCollectionId" value="<%= String.valueOf(curCTCollection.getCtCollectionId()) %>" />
 												</liferay-portlet:actionURL>
 
-												<liferay-ui:icon
+												<liferay-ui:icon-delete
+													confirmation='<%= LanguageUtil.format(request, "are-you-sure-you-want-to-delete-x-change-list", curCTCollection.getName()) %>'
 													message="delete"
 													url="<%= deleteCollectionURL %>"
 												/>
