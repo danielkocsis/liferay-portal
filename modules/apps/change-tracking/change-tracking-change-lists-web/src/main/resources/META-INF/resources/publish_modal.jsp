@@ -57,7 +57,9 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 					<span class="toggle-switch-handle"></span>
 				</span>
 				<span class="toggle-label-text">
-					<span class="custom-control-label-text"><liferay-ui:message key="ignore-collision" /></span>
+					<span class="custom-control-label-text">
+						<liferay-ui:message key="ignore-collision" />
+					</span>
 				</span>
 			</label>
 		</div>
@@ -83,10 +85,10 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 			btn.disabled = !event.target.checked;
 
 			if (event.target.checked) {
-				btn.classList.remove("disabled");
+				btn.classList.remove('disabled');
 			}
 			else {
-				btn.classList.add("disabled");
+				btn.classList.add('disabled');
 			}
 		}
 
