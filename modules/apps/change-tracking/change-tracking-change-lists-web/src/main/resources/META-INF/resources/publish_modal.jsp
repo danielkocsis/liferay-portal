@@ -95,7 +95,7 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 		function <portlet:namespace/>submitForm(event) {
 			var form = AUI().one('#<portlet:namespace/>fm');
 
-			Liferay.Util.getOpener().Liferay.fire('<portlet:namespace/>refreshSelectChangeList');
+			Liferay.Util.getOpener().Liferay.fire('<portlet:namespace/>refreshChangeListHistory');
 
 			Liferay.Util.submitForm(form);
 

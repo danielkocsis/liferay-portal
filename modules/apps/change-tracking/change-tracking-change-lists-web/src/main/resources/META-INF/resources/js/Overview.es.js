@@ -284,7 +284,7 @@ class Overview extends PortletBase {
 				.then(
 					response => {
 						if (response.status === 204) {
-							this._checkoutCollection(this.productionCTCollectionId, false);
+							Liferay.Util.navigate(this.urlSelectProduction);
 						}
 						else if (response.status === 404) {
 							openToast(
@@ -295,10 +295,6 @@ class Overview extends PortletBase {
 								}
 							);
 						}
-					}
-				).then(
-					response => {
-						Liferay.Util.navigate(this.urlSelectChangeList);
 					}
 				).catch(
 					error => {
