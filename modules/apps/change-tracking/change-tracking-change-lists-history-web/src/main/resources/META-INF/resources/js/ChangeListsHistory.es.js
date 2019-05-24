@@ -9,36 +9,32 @@ import {Config} from 'metal-state';
 
 import templates from './ChangeListsHistory.soy';
 
+const FIRST_TIMEOUT = 3000;
+
+const INTERVAL_TIME = 60000;
+
+const SPLIT_REGEX = /({\d+})/g;
+
 /**
  * Handles the tags of the selected file entries inside a modal.
  */
 class ChangeListsHistory extends PortletBase {
-
 	created() {
-		let headers = new Headers();
-		headers.append('Content-Type', 'application/json');
-		headers.append('X-CSRF-Token', Liferay.authToken);
-
-		let init = {
-			credentials: 'include',
-			headers,
-			method: 'GET'
-		};
-
-		const firstTimeout = 3000;
-		const intervalTimeout = 60000;
-
-		let sort = '&' + this.orderByCol + ':' + this.orderByType;
-
-		let urlProcesses = this.urlProcesses + '&type=' + this.filterStatus + '&offset=0&limit=5' + sort;
-
-		this._fetchProcesses(urlProcesses, init);
+		this._fetchProcesses();
 
 		let instance = this;
+		setTimeout(() => instance._fetchProcesses(), FIRST_TIMEOUT);
+	}
 
-		setTimeout(() => instance._fetchProcesses(urlProcesses, init), firstTimeout, urlProcesses, init);
+	rendered() {
+		let instance = this;
 
-		setInterval(() => instance._fetchProcesses(urlProcesses, init), intervalTimeout, urlProcesses, init);
+		clearInterval(this.refreshInterval);
+		this.refreshInterval = setInterval(() => instance._fetchProcesses(), INTERVAL_TIME);
+	}
+
+	disposed() {
+		clearInterval(this.refreshInterval);
 	}
 
 	static _getState(processEntryStatus) {
@@ -51,7 +47,21 @@ class ChangeListsHistory extends PortletBase {
 		return statusText;
 	}
 
-	_fetchProcesses(urlProcesses, init) {
+	_fetchProcesses() {
+		let headers = new Headers();
+		headers.append('Content-Type', 'application/json');
+		headers.append('X-CSRF-Token', Liferay.authToken);
+
+		let init = {
+			credentials: 'include',
+			headers,
+			method: 'GET'
+		};
+
+		let sort = '&' + this.orderByCol + ':' + this.orderByType;
+
+		let urlProcesses = this.urlProcesses + '&type=' + this.filterStatus + '&offset=0&limit=5' + sort;
+
 		fetch(urlProcesses, init)
 			.then(r => r.json())
 			.then(response => this._populateProcessEntries(response))
@@ -59,7 +69,7 @@ class ChangeListsHistory extends PortletBase {
 				error => {
 					const message = typeof error === 'string' ?
 						error :
-						Liferay.Util.sub(Liferay.Language.get('an-error-occured-while-getting-data-from-x'), this.urlProcesses);
+						this._sub(Liferay.Language.get('an-error-occured-while-getting-data-from-x'), urlProcesses);
 
 					openToast(
 						{
@@ -73,42 +83,45 @@ class ChangeListsHistory extends PortletBase {
 	}
 
 	_populateProcessEntries(processEntries) {
+		let instance = this;
 		AUI().use(
 			'liferay-portlet-url',
 			A => {
-				this.processEntries = [];
+				instance.processEntries = [];
 
 				processEntries.forEach(
 					processEntry => {
-						const detailsLink = Liferay.PortletURL.createURL(this.baseURL);
+						const detailsLink = Liferay.PortletURL.createURL(instance.baseURL);
 
 						detailsLink.setParameter('mvcRenderCommandName', '/change_lists_history/view_details');
 						detailsLink.setParameter('ctProcessId', processEntry.ctprocessId);
 
-						const viewLink = Liferay.PortletURL.createURL(this.baseURL);
+						const viewLink = Liferay.PortletURL.createURL(instance.baseURL);
 
 						detailsLink.setParameter('backURL', viewLink.toString());
 
-						this.processEntries.push(
-							{
-								description: processEntry.ctcollection.description,
-								detailsLink: detailsLink.toString(),
-								name: processEntry.ctcollection.name,
-								percentage: processEntry.percentage,
-								state: ChangeListsHistory._getState(processEntry.status),
-								timestamp: new Intl.DateTimeFormat(
-									Liferay.ThemeDisplay.getBCP47LanguageId(),
-									{
-										day: 'numeric',
-										hour: 'numeric',
-										minute: 'numeric',
-										month: 'numeric',
-										year: 'numeric'
-									}).format(new Date(processEntry.date)),
-								userInitials: processEntry.userInitials,
-								userName: processEntry.userName
-							}
-						);
+						if (instance.processEntries != undefined) {
+							instance.processEntries.push(
+								{
+									description: processEntry.ctcollection.description,
+									detailsLink: detailsLink.toString(),
+									name: processEntry.ctcollection.name,
+									percentage: processEntry.percentage,
+									state: ChangeListsHistory._getState(processEntry.status),
+									timestamp: new Intl.DateTimeFormat(
+										Liferay.ThemeDisplay.getBCP47LanguageId(),
+										{
+											day: 'numeric',
+											hour: 'numeric',
+											minute: 'numeric',
+											month: 'numeric',
+											year: 'numeric'
+										}).format(new Date(processEntry.date)),
+									userInitials: processEntry.userInitials,
+									userName: processEntry.userName
+								}
+							);
+						}
 					}
 				);
 			}
@@ -117,6 +130,25 @@ class ChangeListsHistory extends PortletBase {
 		this.loaded = true;
 	}
 
+	_sub(langKey, args) {
+		const keyArray = langKey.split(SPLIT_REGEX).filter(val => val.length !== 0);
+
+		for (let i = 0; i < args.length; i++) {
+			const arg = args[i];
+
+			const indexKey = `{${i}}`;
+
+			let argIndex = keyArray.indexOf(indexKey);
+
+			while (argIndex >= 0) {
+				keyArray.splice(argIndex, 1, arg);
+
+				argIndex = keyArray.indexOf(indexKey);
+			}
+		}
+
+		return keyArray.join('');
+	}
 }
 
 /**
@@ -127,6 +159,8 @@ class ChangeListsHistory extends PortletBase {
  * @type {!Object}
  */
 ChangeListsHistory.STATE = {
+
+	refreshInterval: Config.any(),
 
 	baseURL: Config.string(),
 
