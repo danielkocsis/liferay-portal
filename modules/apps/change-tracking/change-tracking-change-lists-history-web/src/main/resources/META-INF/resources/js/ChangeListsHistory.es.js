@@ -30,24 +30,62 @@ class ChangeListsHistory extends PortletBase {
 			method: 'GET'
 		};
 
+		let beforeNavigateHandler = null;
+
 		let urlProcesses = this._getUrlProcesses();
 
 		this._fetchProcesses(urlProcesses, init);
 
 		let instance = this;
 
-		setTimeout(
-			() => instance._fetchProcesses(urlProcesses, init),
-			TIMEOUT_FIRST,
-			urlProcesses,
-			init
+		this.timeoutId = setTimeout(() => instance._fetchProcesses(urlProcesses, init), TIMEOUT_FIRST, urlProcesses, init);
+
+		const handleBeforeNavigate = (event) => {
+			clearPendingCallback();
+		};
+
+		const clearPendingCallback = () => {
+			this._clearInterval();
+
+			if (this.timeoutId) {
+				clearTimeout(this.timeoutId);
+				this.timeoutId = null;
+			}
+
+			window.removeEventListener('beforeunload', beforeNavigateHandler);
+
+			if (beforeNavigateHandler) {
+				beforeNavigateHandler.detach();
+				beforeNavigateHandler = null;
+			}
+		};
+
+		this._startProgress(urlProcesses, init);
+
+		beforeNavigateHandler = Liferay.on(
+			'beforeNavigate',
+			handleBeforeNavigate
 		);
-		setInterval(
-			() => instance._fetchProcesses(urlProcesses, init),
-			TIMEOUT_INTERVAL,
-			urlProcesses,
-			init
+
+		window.addEventListener(
+			'beforeunload',
+			handleBeforeNavigate
 		);
+	}
+
+	_callFetchProcesses(urlProcesses, init) {
+		try {
+			this._fetchProcesses(urlProcesses, init);
+		}
+		catch (e) {
+			this._clearInterval(this.intervalId);
+		}
+	}
+
+	_clearInterval() {
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+		}
 	}
 
 	static _getState(processEntryStatus) {
@@ -229,6 +267,14 @@ class ChangeListsHistory extends PortletBase {
 		});
 
 		this.loaded = true;
+	}
+	_startProgress(urlProcesses, init) {
+		this._clearInterval();
+
+		this.intervalId = setInterval(
+			this._callFetchProcesses.bind(this, urlProcesses, init),
+			TIMEOUT_INTERVAL
+		);
 	}
 }
 
