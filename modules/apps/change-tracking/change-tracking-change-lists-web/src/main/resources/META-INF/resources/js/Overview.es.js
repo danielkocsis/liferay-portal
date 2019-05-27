@@ -21,11 +21,7 @@ class Overview extends PortletBase {
 		this._fetchProductionCollection();
 	}
 
-	_checkoutCollection(ctCollectionId, render, production) {
-		if (render == 'undefined') {
-			render = true;
-		}
-
+	_checkoutCollection(ctCollectionId, production) {
 		let headers = new Headers();
 		headers.append('Content-Type', 'application/json');
 		headers.append('X-CSRF-Token', Liferay.authToken);
@@ -256,7 +252,7 @@ class Overview extends PortletBase {
 
 			let production = event.target.getAttribute('data-production');
 
-			this._checkoutCollection(collectionId, true, production);
+			this._checkoutCollection(collectionId, production);
 		}
 	}
 
