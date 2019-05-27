@@ -257,10 +257,6 @@ class Overview extends PortletBase {
 	}
 
 	_handleClickTrash() {
-		let headers = new Headers();
-		headers.append('Content-Type', 'application/json');
-		headers.append('X-CSRF-Token', Liferay.authToken);
-
 		let ok = false;
 
 		const label = this._sub(Liferay.Language.get('are-you-sure-you-want-to-delete-x-change-list'), [this.headerTitleActiveChangeList]);
@@ -268,6 +264,10 @@ class Overview extends PortletBase {
 		ok = confirm(label);
 
 		if (ok) {
+			let headers = new Headers();
+			headers.append('Content-Type', 'application/json');
+			headers.append('X-CSRF-Token', Liferay.authToken);
+
 			let body = {
 				credentials: 'include',
 				headers,
