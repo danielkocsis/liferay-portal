@@ -6,13 +6,17 @@
 	border-width: 0.063rem;
 	margin-bottom: 1.5rem;
 	margin-top: 1.5rem;
-	min-height: 413px;
+	min-height: 26.5rem;
 	padding-bottom: 2rem;
 	padding-top: 1.5rem;
 
 	.overview-card-container {
 		padding-left: 1.5rem;
 		padding-right: 1.5rem;
+	}
+
+	.overview-card-sheet-block {
+		height: 6.5rem;
 	}
 
 	.overview-card-sheet-title {
