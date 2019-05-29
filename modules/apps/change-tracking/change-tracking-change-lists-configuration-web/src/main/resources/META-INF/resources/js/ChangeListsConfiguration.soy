@@ -10,11 +10,17 @@
 	{@param? checkoutCTCollectionConfirmationEnabled: bool}
 	{@param? currentPage: string}
 	{@param? initialFetch: bool}
+	{@param navigationItem: list<[
+			active: bool,
+			href: string,
+			label: string
+		]>}
 	{@param navigationItems: list<[
 			active: bool,
 			href: string,
 			label: string
 		]>}
+	{@param? userSettingsEnabled: bool}
 	{@param? tooltipBody: string}
 	{@param? _handleCheck: any}
 	{@param? _handleNavItemClicked: any}
@@ -24,12 +30,21 @@
 	{@param? _handleSaveAndGoToOverview: any}
 
 	<div id="change-tracking-change-list-configuration-sheet">
-		{call ClayNavigationBar.render}
-			{param events: ['itemClicked': $_handleNavItemClicked] /}
-			{param inverted: true /}
-			{param items: $navigationItems /}
-			{param spritemap: $spritemap /}
-		{/call}
+		{if $userSettingsEnabled}
+			{call ClayNavigationBar.render}
+				{param events: ['itemClicked': $_handleNavItemClicked] /}
+				{param inverted: true /}
+				{param items: $navigationItems /}
+				{param spritemap: $spritemap /}
+			{/call}
+		{else}
+			{call ClayNavigationBar.render}
+				{param events: ['itemClicked': $_handleNavItemClicked] /}
+				{param inverted: true /}
+				{param items: $navigationItem /}
+				{param spritemap: $spritemap /}
+			{/call}
+		{/if}
 		<div class="change-lists-configuration-sheet sheet sheet-lg">
 			{if not $initialFetch}
 				{call .loading}{/call}

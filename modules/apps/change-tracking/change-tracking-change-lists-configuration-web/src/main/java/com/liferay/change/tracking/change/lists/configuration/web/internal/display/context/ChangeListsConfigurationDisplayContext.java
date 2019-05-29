@@ -49,6 +49,19 @@ public class ChangeListsConfigurationDisplayContext {
 		SoyContext soyContext = SoyContextFactoryUtil.createSoyContext();
 
 		soyContext.put(
+			"navigationItem",
+			JSONUtil.put(
+				JSONUtil.put(
+					"active", true
+				).put(
+					"href", "#1"
+				).put(
+					"label",
+					LanguageUtil.get(_httpServletRequest, "global-settings")
+				).put(
+					"visible", true
+				))
+		).put(
 			"navigationItems",
 			JSONUtil.put(
 				JSONUtil.put(

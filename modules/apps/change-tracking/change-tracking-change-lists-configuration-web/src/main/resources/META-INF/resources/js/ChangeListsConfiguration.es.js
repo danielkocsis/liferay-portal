@@ -22,6 +22,10 @@ class ChangeListsConfiguration extends PortletBase {
 					this.initialFetch = true;
 					this.tooltipBody = '';
 
+					if (this.changeTrackingEnabled) {
+						this.userSettingsEnabled = true;
+					}
+
 					response.supportedContentTypes.forEach(
 						(supportedContentType) => {
 							if (this.tooltipBody.length > 0) {
@@ -61,6 +65,7 @@ class ChangeListsConfiguration extends PortletBase {
 	 */
 	_handleNavItemClicked(event) {
 		this.currentPage = event.data.item.label;
+
 		this.navigationItems = this.navigationItems.map(
 			item => {
 				if (item.label === this.currentPage) {
@@ -297,6 +302,24 @@ ChangeListsConfiguration.STATE = {
 	 * @memberOf ChangeListsConfiguration
 	 * @type {!array}
 	 */
+	navigationItem: Config.arrayOf(
+		Config.shapeOf(
+			{
+				active: Config.bool().value(false),
+				href: Config.string(),
+				label: Config.string().required()
+			}
+		)
+	).required(),
+
+	/**
+	 * Itemlist for navigationBar
+	 *
+	 * @default undefined
+	 * @instance
+	 * @memberOf ChangeListsConfiguration
+	 * @type {!array}
+	 */
 	navigationItems: Config.arrayOf(
 		Config.shapeOf(
 			{
@@ -306,6 +329,16 @@ ChangeListsConfiguration.STATE = {
 			}
 		)
 	).required(),
+
+	/**
+	 * If <code>true</code>, User Settings is available in navigation.
+	 *
+	 * @default false
+	 * @instance
+	 * @memberOf ChangeListsConfiguration
+	 * @type {boolean}
+	 */
+	userSettingsEnabled: Config.bool().value(false),
 
 	/**
 	 * URL for the REST service to the change tracking configuration endpoint.
