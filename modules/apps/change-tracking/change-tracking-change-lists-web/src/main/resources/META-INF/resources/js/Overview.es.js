@@ -242,7 +242,7 @@ class Overview extends PortletBase {
 		let ok = true;
 
 		if (this.checkoutConfirmationEnabled) {
-			const label = this._sub(Liferay.Language.get('do-you-want-to-switch-to-x-change-list'), [event.target.text]) + '\n' + Liferay.Language.get('you-can-disable-this-message-from-the-change-list-user-settings-tab');
+			const label = this._sub(Liferay.Language.get('do-you-want-to-switch-to-x-change-list'), [event.target.text]);
 			ok = confirm(label);
 		}
 

@@ -143,15 +143,9 @@ public class ChangeListsDisplayContext {
 	}
 
 	public String getConfirmationMessage(String ctCollectionName) {
-		return StringBundler.concat(
-			LanguageUtil.format(
-				_httpServletRequest, "do-you-want-to-switch-to-x-change-list",
-				ctCollectionName, true),
-			"\\n",
-			LanguageUtil.get(
-				_httpServletRequest,
-				"you-can-disable-this-message-from-the-change-list-user-" +
-					"settings-tab"));
+		return LanguageUtil.format(
+			_httpServletRequest, "do-you-want-to-switch-to-x-change-list",
+			ctCollectionName, true);
 	}
 
 	public CreationMenu getCreationMenu() {
