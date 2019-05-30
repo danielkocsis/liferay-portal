@@ -66,7 +66,7 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 		</div>
 
 		<aui:button-row>
-			<aui:button disabled="<%= hasCollision %>" type="submit" value="publish" />
+			<aui:button disabled="<%= hasCollision %>" type="submit" value="publish-to-live" />
 			<aui:button onClick='<%= renderResponse.getNamespace() + "closeModal(true);" %>' value="cancel" />
 		</aui:button-row>
 	</aui:form>
