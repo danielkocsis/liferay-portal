@@ -484,12 +484,12 @@ renderResponse.setTitle(title);
 				dialog: {
 					center: true,
 					destroyOnHide: false,
-					height: 400,
+					height: 389,
 					modal: true,
 					width: 500
 				},
 				dialogIframe: {
-					bodyCssClass: 'dialog-with-footer'
+					bodyCssClass: 'dialog-with-footer change-list-publish-modal'
 				},
 				id: '<portlet:namespace/>publishIconDialog',
 				title: '<%= LanguageUtil.get(request, "publish-change-list") %>',
