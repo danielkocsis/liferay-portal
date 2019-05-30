@@ -38,13 +38,13 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 	</liferay-portlet:actionURL>
 
 	<aui:form action="<%= publishCollectionURL.toString() %>" method="POST" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "submitForm()" %>'>
-		<h4><liferay-ui:message key="change-list" /></h4>
+		<h4><liferay-ui:message key="change-list-name" />:</h4>
 
 		<div class="sheet-text">
 			<%= HtmlUtil.escape(changeListName) %>
 		</div>
 
-		<h4><liferay-ui:message key="description" /></h4>
+		<h4><liferay-ui:message key="description" />:</h4>
 
 		<div class="sheet-text">
 			<%= HtmlUtil.escape(changeListDescription) %>
