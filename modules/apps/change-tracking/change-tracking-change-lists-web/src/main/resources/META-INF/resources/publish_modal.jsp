@@ -32,7 +32,7 @@ if (ctCollection != null) {
 boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 %>
 
-<div class="change-list-publish-modal modal-body">
+<section class="modal-body">
 	<liferay-portlet:actionURL name="/change_lists/publish_ct_collection" var="publishCollectionURL">
 		<portlet:param name="ctCollectionId" value="<%= String.valueOf(ctCollectionId) %>" />
 	</liferay-portlet:actionURL>
@@ -50,7 +50,7 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 			<%= HtmlUtil.escape(changeListDescription) %>
 		</div>
 
-		<div class="form-group form-inline input-checkbox-wrapper">
+		<div class="form-group">
 			<label class="toggle-switch">
 				<input <%= !hasCollision ? "disabled" : "" %> class="toggle-switch-check" data-qa-id="ignorecollision-toggle" id="<%= renderResponse.getNamespace() + "ignoreCollision" %>" name="<%= renderResponse.getNamespace() + "ignoreCollision" %>" onclick="<%= renderResponse.getNamespace() + "ignoreCheck();" %>" type="checkbox" />
 
@@ -70,42 +70,43 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 			</label>
 		</div>
 
-		<aui:button-row>
-			<aui:button disabled="<%= hasCollision %>" type="submit" value="publish-to-live" />
-			<aui:button onClick='<%= renderResponse.getNamespace() + "closeModal(true);" %>' value="cancel" />
-		</aui:button-row>
+
 	</aui:form>
+</section>
+<footer class="modal-footer publish-modal-footer">
+	<aui:button onClick='<%= renderResponse.getNamespace() + "closeModal(true);" %>' value="cancel" />
+	<aui:button disabled="<%= hasCollision %>" type="submit" value="publish-to-live" />
+</section>
 
-	<script>
-		function <portlet:namespace/>closeModal(destroy) {
-			Liferay.Util.getWindow('<portlet:namespace/>publishIconDialog').hide();
+<script>
+	function <portlet:namespace/>closeModal(destroy) {
+		Liferay.Util.getWindow('<portlet:namespace/>publishIconDialog').hide();
 
-			if (destroy) {
-				Liferay.Util.getWindow('<portlet:namespace/>publishIconDialog').destroy();
-			}
+		if (destroy) {
+			Liferay.Util.getWindow('<portlet:namespace/>publishIconDialog').destroy();
 		}
+	}
 
-		function <portlet:namespace/>ignoreCheck() {
-			let btn = document.querySelector('button[type="submit"]');
+	function <portlet:namespace/>ignoreCheck() {
+		let btn = document.querySelector('button[type="submit"]');
 
-			btn.disabled = !event.target.checked;
+		btn.disabled = !event.target.checked;
 
-			if (event.target.checked) {
-				btn.classList.remove('disabled');
-			}
-			else {
-				btn.classList.add('disabled');
-			}
+		if (event.target.checked) {
+			btn.classList.remove('disabled');
 		}
-
-		function <portlet:namespace/>submitForm(event) {
-			var form = AUI().one('#<portlet:namespace/>fm');
-
-			Liferay.Util.getOpener().Liferay.fire('<portlet:namespace/>refreshChangeListHistory');
-
-			Liferay.Util.submitForm(form);
-
-			<portlet:namespace/>closeModal(false);
+		else {
+			btn.classList.add('disabled');
 		}
-	</script>
-</div>
+	}
+
+	function <portlet:namespace/>submitForm(event) {
+		var form = AUI().one('#<portlet:namespace/>fm');
+
+		Liferay.Util.getOpener().Liferay.fire('<portlet:namespace/>refreshChangeListHistory');
+
+		Liferay.Util.submitForm(form);
+
+		<portlet:namespace/>closeModal(false);
+	}
+</script>
