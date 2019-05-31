@@ -14,7 +14,7 @@
 
 package com.liferay.change.tracking.rest.internal.resource;
 
-import com.liferay.change.tracking.configuration.CTConfiguration;
+import com.liferay.change.tracking.definition.CTDefinition;
 import com.liferay.change.tracking.engine.CTEngineManager;
 import com.liferay.change.tracking.rest.internal.exception.JaxRsCTEngineException;
 import com.liferay.change.tracking.rest.internal.model.configuration.CTConfigurationModel;
@@ -111,8 +111,8 @@ public class CTConfigurationResource {
 		cardinality = ReferenceCardinality.MULTIPLE,
 		policy = ReferencePolicy.DYNAMIC, unbind = "_removeCTConfiguration"
 	)
-	private void _addCTConfiguration(CTConfiguration<?, ?> ctConfiguration) {
-		_ctConfigurations.add(ctConfiguration);
+	private void _addCTConfiguration(CTDefinition<?, ?> ctConfiguration) {
+		_ctDefinitions.add(ctConfiguration);
 	}
 
 	private CTConfigurationModel _getCTConfigurationModel(
@@ -124,7 +124,7 @@ public class CTConfigurationResource {
 		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
 			"content.Language", locale, getClass());
 
-		Stream<CTConfiguration<?, ?>> stream = _ctConfigurations.stream();
+		Stream<CTDefinition<?, ?>> stream = _ctDefinitions.stream();
 
 		stream.forEach(
 			ctConfiguration -> {
@@ -152,8 +152,8 @@ public class CTConfigurationResource {
 		).build();
 	}
 
-	private void _removeCTConfiguration(CTConfiguration<?, ?> ctConfiguration) {
-		_ctConfigurations.remove(ctConfiguration);
+	private void _removeCTConfiguration(CTDefinition<?, ?> ctConfiguration) {
+		_ctDefinitions.remove(ctConfiguration);
 	}
 
 	private void _updateChangeTrackingEnabled(
@@ -176,8 +176,7 @@ public class CTConfigurationResource {
 	@Reference
 	private CompanyLocalService _companyLocalService;
 
-	private final Set<CTConfiguration<?, ?>> _ctConfigurations =
-		new HashSet<>();
+	private final Set<CTDefinition<?, ?>> _ctDefinitions = new HashSet<>();
 
 	@Reference
 	private CTEngineManager _ctEngineManager;
