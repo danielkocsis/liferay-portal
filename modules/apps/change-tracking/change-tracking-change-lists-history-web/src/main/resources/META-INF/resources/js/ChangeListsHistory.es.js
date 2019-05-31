@@ -37,8 +37,24 @@ class ChangeListsHistory extends PortletBase {
 
 		let instance = this;
 
-		setTimeout(() => instance._fetchProcesses(urlProcesses, init), TIMEOUT_FIRST, urlProcesses, init);
-		setInterval(() => instance._fetchProcesses(urlProcesses, init), TIMEOUT_INTERVAL, urlProcesses, init);
+		this.timer = setTimeout(() => instance._fetchProcesses(urlProcesses, init), TIMEOUT_FIRST, urlProcesses, init);
+		this.interval = setInterval(() => instance._fetchProcesses(urlProcesses, init), TIMEOUT_INTERVAL, urlProcesses, init);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	detached() {
+		clearTimeout(this.timer);
+		clearInterval(this.interval);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	disposed() {
+		clearTimeout(this.timer);
+		clearInterval(this.interval);
 	}
 
 	static _getState(processEntryStatus) {
