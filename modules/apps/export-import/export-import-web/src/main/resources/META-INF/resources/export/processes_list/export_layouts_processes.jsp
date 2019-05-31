@@ -195,9 +195,14 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 							</c:if>
 						</c:if>
 
-						<span class="background-task-status-row background-task-status-<%= BackgroundTaskConstants.getStatusLabel(backgroundTask.getStatus()) %> <%= BackgroundTaskConstants.getStatusCssClass(backgroundTask.getStatus()) %>">
-							<liferay-ui:message key="<%= backgroundTask.getStatusLabel() %>" />
-						</span>
+						<div class="row">
+							<div class="col">
+								<liferay-staging:process-status
+									backgroundTaskStatus="<%= backgroundTask.getStatus() %>"
+									backgroundTaskStatusLabel="<%= backgroundTask.getStatusLabel() %>"
+								/>
+							</div>
+						</div>
 
 						<c:if test="<%= Validator.isNotNull(backgroundTask.getStatusMessage()) %>">
 							<span class="background-task-status-row">
@@ -235,11 +240,15 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 						</span>
 					</liferay-ui:search-container-column-text>
 
-					<liferay-ui:search-container-column-jsp
-						cssClass="table-cell-minw-150"
+					<liferay-ui:search-container-column-text
+						cssClass="background-task-status-column"
 						name="status"
-						path="/publish_process_message.jsp"
-					/>
+					>
+						<liferay-staging:process-status
+							backgroundTaskStatus="<%= backgroundTask.getStatus() %>"
+							backgroundTaskStatusLabel="<%= backgroundTask.getStatusLabel() %>"
+						/>
+					</liferay-ui:search-container-column-text>
 
 					<liferay-ui:search-container-column-date
 						cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
