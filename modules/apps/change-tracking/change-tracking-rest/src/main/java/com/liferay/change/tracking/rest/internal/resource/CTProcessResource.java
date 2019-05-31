@@ -384,7 +384,7 @@ public class CTProcessResource {
 		CTProcessResource.class);
 
 	private static final Set<String> _orderByColumnNames = new HashSet<>(
-		Arrays.asList("publishDate", "name"));
+		Arrays.asList("modifiedDate", "publishDate", "name"));
 
 	@Reference
 	private BackgroundTaskExecutorRegistry _backgroundTaskExecutorRegistry;
