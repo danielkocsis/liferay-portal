@@ -62,17 +62,14 @@ boolean hasCollision = changeListsDisplayContext.hasCollision(ctCollectionId);
 						<liferay-ui:message key="ignore-collision" />
 					</span>
 				</span>
-				
 				<span class="toggle-switch-text toggle-switch-text-right">
 					<liferay-ui:icon-help message="force-overwrite-the-colliding-entries-in-the-production-view-with-this-change-list" />
 				</span>
-				
 			</label>
 		</div>
-
-
 	</aui:form>
 </section>
+
 <footer class="modal-footer publish-modal-footer">
 	<aui:button onClick='<%= renderResponse.getNamespace() + "closeModal(true);" %>' value="cancel" />
 	<aui:button disabled="<%= hasCollision %>" type="submit" value="publish-to-live" />

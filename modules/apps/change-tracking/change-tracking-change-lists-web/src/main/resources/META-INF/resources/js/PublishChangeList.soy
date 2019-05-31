@@ -9,7 +9,7 @@
 	{@param? changeListDescription: string}
 	{@param? changeListHasCollision: bool}
 	{@param? changeListName: string}
-	
+
 	{let $ignoreCollisionTooltipText kind="text"}
 		{msg desc=""}force-overwrite-the-colliding-entries-in-the-production-view-with-this-change-list{/msg}
 	{/let}
@@ -43,17 +43,16 @@
 							{msg desc=""}ignore-collision{/msg}
 						</span>
 					</span>
-					
 					<span class="toggle-switch-text toggle-switch-text-right">
-						<span class="taglib-icon-help lfr-portal-tooltip" data-title="{$ignoreCollisionTooltipText}" aria-describedby="yui_patched_v3_18_1_1_1559201690099_2778">
+						<span aria-describedby="yui_patched_v3_18_1_1_1559201690099_2778" class="lfr-portal-tooltip taglib-icon-help" data-title="{$ignoreCollisionTooltipText}">
 							{call ClayIcon.render}
 								{param spritemap: $spritemap /}
 								{param symbol: 'question-circle-full' /}
 							{/call}
-							<span class="taglib-text hide-accessible">{msg desc=""}force-overwrite-the-colliding-entries-in-the-production-view-with-this-change-list{/msg}</span>
+							<span class="hide-accessible taglib-text">{msg desc=""}force-overwrite-the-colliding-entries-in-the-production-view-with-this-change-list{/msg}</span>
 						</span>
 					</span>
-					
+
 				</label>
 			</div>
 		{/param}
