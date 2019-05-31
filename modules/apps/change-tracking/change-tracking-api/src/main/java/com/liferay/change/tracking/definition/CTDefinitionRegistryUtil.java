@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.change.tracking.configuration;
+package com.liferay.change.tracking.definition;
 
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.model.GroupedModel;
@@ -32,17 +32,17 @@ import org.osgi.util.tracker.ServiceTracker;
 /**
  * @author Máté Thurzó
  */
-public class CTConfigurationRegistryUtil {
+public class CTDefinitionRegistryUtil {
 
 	public static List<String> getContentTypeLanguageKeys() {
 		List<String> contentTypeLanguageKeys = new ArrayList<>();
 
-		List<CTConfiguration<?, ?>> ctConfigurations =
-			_getCTConfigurationRegistry().getAllCTConfigurations();
+		List<CTDefinition<?, ?>> ctDefinitions =
+			_getCTDefinitionRegistry().getAllCTDefinitions();
 
-		for (CTConfiguration ctConfiguration : ctConfigurations) {
+		for (CTDefinition ctDefinition : ctDefinitions) {
 			contentTypeLanguageKeys.add(
-				ctConfiguration.getContentTypeLanguageKey());
+				ctDefinition.getContentTypeLanguageKey());
 		}
 
 		return contentTypeLanguageKeys;
@@ -51,19 +51,17 @@ public class CTConfigurationRegistryUtil {
 	public static String getVersionEntityContentTypeLanguageKey(
 		long classNameId) {
 
-		CTConfiguration<?, ?> ctConfiguration = _getCTConfiguration(
-			classNameId);
+		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
-		return ctConfiguration.getContentTypeLanguageKey();
+		return ctDefinition.getContentTypeLanguageKey();
 	}
 
 	@SuppressWarnings("unchecked")
 	public static long getVersionEntityGroupId(long classNameId, long classPK) {
-		CTConfiguration<?, ?> ctConfiguration = _getCTConfiguration(
-			classNameId);
+		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
 		Function versionEntityByVersionEntityIdFunction =
-			ctConfiguration.getVersionEntityByVersionEntityIdFunction();
+			ctDefinition.getVersionEntityByVersionEntityIdFunction();
 
 		Object versionEntity = versionEntityByVersionEntityIdFunction.apply(
 			classPK);
@@ -81,14 +79,13 @@ public class CTConfigurationRegistryUtil {
 	public static String getVersionEntitySiteName(
 		long classNameId, long classPK) {
 
-		CTConfiguration<?, ?> ctConfiguration = _getCTConfiguration(
-			classNameId);
+		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
 		Function versionEntityByVersionEntityIdFunction =
-			ctConfiguration.getVersionEntityByVersionEntityIdFunction();
+			ctDefinition.getVersionEntityByVersionEntityIdFunction();
 
 		Function versionEntitySiteNameFunction =
-			ctConfiguration.getVersionEntitySiteNameFunction();
+			ctDefinition.getVersionEntitySiteNameFunction();
 
 		return (String)versionEntitySiteNameFunction.compose(
 			versionEntityByVersionEntityIdFunction
@@ -99,14 +96,13 @@ public class CTConfigurationRegistryUtil {
 
 	@SuppressWarnings("unchecked")
 	public static String getVersionEntityTitle(long classNameId, long classPK) {
-		CTConfiguration<?, ?> ctConfiguration = _getCTConfiguration(
-			classNameId);
+		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
 		Function versionEntityByVersionEntityIdFunction =
-			ctConfiguration.getVersionEntityByVersionEntityIdFunction();
+			ctDefinition.getVersionEntityByVersionEntityIdFunction();
 
 		Function versionEntityTitleFunction =
-			ctConfiguration.getVersionEntityTitleFunction();
+			ctDefinition.getVersionEntityTitleFunction();
 
 		return (String)versionEntityTitleFunction.compose(
 			versionEntityByVersionEntityIdFunction
@@ -119,14 +115,13 @@ public class CTConfigurationRegistryUtil {
 	public static Serializable getVersionEntityVersion(
 		long classNameId, long classPK) {
 
-		CTConfiguration<?, ?> ctConfiguration = _getCTConfiguration(
-			classNameId);
+		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
 		Function versionEntityByVersionEntityIdFunction =
-			ctConfiguration.getVersionEntityByVersionEntityIdFunction();
+			ctDefinition.getVersionEntityByVersionEntityIdFunction();
 
 		Function versionEntityVersionFunction =
-			ctConfiguration.getVersionEntityVersionFunction();
+			ctDefinition.getVersionEntityVersionFunction();
 
 		return (Serializable)versionEntityVersionFunction.compose(
 			versionEntityByVersionEntityIdFunction
@@ -135,28 +130,28 @@ public class CTConfigurationRegistryUtil {
 		);
 	}
 
-	private static CTConfiguration<?, ?> _getCTConfiguration(long classNameId) {
-		Optional<CTConfiguration<?, ?>> ctConfigurationOptional =
-			_getCTConfigurationRegistry().
-				getCTConfigurationOptionalByVersionClassName(
+	private static CTDefinition<?, ?> _getCTDefinition(long classNameId) {
+		Optional<CTDefinition<?, ?>> ctDefinitionOptional =
+			_getCTDefinitionRegistry().
+				getCTDefinitionOptionalByVersionClassName(
 					PortalUtil.getClassName(classNameId));
 
-		return ctConfigurationOptional.get();
+		return ctDefinitionOptional.get();
 	}
 
-	private static CTConfigurationRegistry _getCTConfigurationRegistry() {
+	private static CTDefinitionRegistry _getCTDefinitionRegistry() {
 		return _serviceTracker.getService();
 	}
 
 	private static final ServiceTracker
-		<CTConfigurationRegistry, CTConfigurationRegistry> _serviceTracker;
+		<CTDefinitionRegistry, CTDefinitionRegistry> _serviceTracker;
 
 	static {
-		Bundle bundle = FrameworkUtil.getBundle(CTConfigurationRegistry.class);
+		Bundle bundle = FrameworkUtil.getBundle(CTDefinitionRegistry.class);
 
-		ServiceTracker<CTConfigurationRegistry, CTConfigurationRegistry>
+		ServiceTracker<CTDefinitionRegistry, CTDefinitionRegistry>
 			serviceTracker = new ServiceTracker<>(
-				bundle.getBundleContext(), CTConfigurationRegistry.class, null);
+				bundle.getBundleContext(), CTDefinitionRegistry.class, null);
 
 		serviceTracker.open();
 
