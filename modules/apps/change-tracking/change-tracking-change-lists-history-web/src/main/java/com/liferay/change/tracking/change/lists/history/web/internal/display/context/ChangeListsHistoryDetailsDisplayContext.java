@@ -15,6 +15,7 @@
 package com.liferay.change.tracking.change.lists.history.web.internal.display.context;
 
 import com.liferay.change.tracking.constants.CTConstants;
+import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.engine.CTEngineManager;
 import com.liferay.change.tracking.engine.CTManager;
 import com.liferay.change.tracking.model.CTCollection;
@@ -25,16 +26,20 @@ import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
+import com.liferay.portal.kernel.servlet.taglib.ui.BreadcrumbEntry;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -64,6 +69,26 @@ public class ChangeListsHistoryDetailsDisplayContext {
 
 	public int getAffectsCount(CTEntry ctEntry) {
 		return _ctManager.getRelatedOwnerCTEntriesCount(ctEntry.getCtEntryId());
+	}
+
+	public List<BreadcrumbEntry> getBreadcrumbEntries(String ctCollectionName) {
+		List<BreadcrumbEntry> breadcrumbEntries = new ArrayList<>();
+
+		breadcrumbEntries.add(
+			_createBreadcrumbEntry(
+				CTPortletKeys.CHANGE_LISTS,
+				LanguageUtil.get(_httpServletRequest, "change-lists")));
+
+		breadcrumbEntries.add(
+			_createBreadcrumbEntry(CTPortletKeys.CHANGE_LISTS_HISTORY));
+
+		BreadcrumbEntry breadcrumbEntry = new BreadcrumbEntry();
+
+		breadcrumbEntry.setTitle(ctCollectionName);
+
+		breadcrumbEntries.add(breadcrumbEntry);
+
+		return breadcrumbEntries;
 	}
 
 	public String getChangeType(int changeType) {
@@ -156,6 +181,28 @@ public class ChangeListsHistoryDetailsDisplayContext {
 			Objects.equals(getOrderByType(), "asc") ? "desc" : "asc");
 
 		return sortingURL.toString();
+	}
+
+	private BreadcrumbEntry _createBreadcrumbEntry(String portletId) {
+		String title = LanguageUtil.get(
+			_httpServletRequest, "javax.portlet.title." + portletId);
+
+		return _createBreadcrumbEntry(portletId, title);
+	}
+
+	private BreadcrumbEntry _createBreadcrumbEntry(
+		String portletId, String title) {
+
+		BreadcrumbEntry breadcrumbEntry = new BreadcrumbEntry();
+
+		breadcrumbEntry.setTitle(title);
+
+		PortletURL changeListsPortletURL = PortletURLFactoryUtil.create(
+			_renderRequest, portletId, PortletRequest.RENDER_PHASE);
+
+		breadcrumbEntry.setURL(changeListsPortletURL.toString());
+
+		return breadcrumbEntry;
 	}
 
 	private PortletURL _getIteratorURL() {

@@ -25,8 +25,10 @@ SearchContainer<CTEntry> ctEntrySearchContainer = changeListsHistoryDetailsDispl
 
 long ctCollectionId = 0;
 
+String title = StringPool.BLANK;
+
 if (ctCollection != null) {
-	String title = HtmlUtil.escape(ctCollection.getName());
+	title = HtmlUtil.escape(ctCollection.getName());
 
 	portletDisplay.setTitle(title);
 
@@ -54,6 +56,10 @@ portletDisplay.setShowBackIcon(true);
 />
 
 <div class="closed container-fluid-1280">
+	<liferay-site-navigation:breadcrumb
+		breadcrumbEntries="<%= changeListsHistoryDetailsDisplayContext.getBreadcrumbEntries(title) %>"
+	/>
+
 	<liferay-ui:search-container
 		id="changeListsHistory"
 		searchContainer="<%= ctEntrySearchContainer %>"
