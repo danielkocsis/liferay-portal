@@ -887,19 +887,16 @@ public class StagedLayoutSetStagedModelDataHandler
 			_layoutRevisionLocalService.getLayoutRevisions(
 				stagedLayout.getPlid());
 
-		boolean inReview = false;
+		Stream<LayoutRevision> layoutRevisionStream = revisions.stream();
 
-		for (LayoutRevision revision : revisions) {
-			int status = revision.getStatus();
+		if (layoutRevisionStream.anyMatch(
+				revision ->
+					revision.getStatus() == WorkflowConstants.STATUS_PENDING)) {
 
-			if (status == WorkflowConstants.STATUS_PENDING) {
-				inReview = true;
-
-				break;
-			}
+			return true;
 		}
 
-		return inReview;
+		return false;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
