@@ -211,6 +211,10 @@ public class StagedLayoutSetStagedModelDataHandler
 						layout, false, serviceContext);
 				}
 				catch (Exception e) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Unable to delete layout with UUID " + layoutUUID);
+					}
 				}
 			}
 		}
