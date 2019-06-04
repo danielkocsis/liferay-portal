@@ -50,21 +50,21 @@ import org.osgi.service.component.annotations.ServiceScope;
 		"osgi.jaxrs.application.select=(osgi.jaxrs.name=Liferay.Change.Tracking.REST)",
 		"osgi.jaxrs.resource=true"
 	},
-	scope = ServiceScope.PROTOTYPE, service = CTAffectedEntryResource.class
+	scope = ServiceScope.PROTOTYPE, service = CTAffectedByEntryResource.class
 )
 @Path("/collections/{collectionId}/entries/{entryId}/affecteds")
-public class CTAffectedEntryResource {
+public class CTAffectedByEntryResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Page<CTAffectedEntryModel> getCTAffectedEntryModels(
+	public Page<CTAffectedEntryModel> getCTAffectedByEntryModels(
 		@PathParam("collectionId") long ctCollectionId,
 		@PathParam("entryId") long ctEntryId,
 		@QueryParam("keywords") String keywords,
 		@Context Pagination pagination) {
 
 		try {
-			List<CTEntry> affectedCTEntries;
+			List<CTEntry> affectedByCTEntries;
 			int totalCount;
 
 			QueryDefinition<CTEntry> queryDefinition = _getQueryDefinition(
@@ -74,7 +74,7 @@ public class CTAffectedEntryResource {
 				CTEntry ownerCTEntry = _ctEntryLocalService.getCTEntry(
 					ctEntryId);
 
-				affectedCTEntries =
+				affectedByCTEntries =
 					_ctEntryLocalService.getRelatedOwnerCTEntries(
 						ownerCTEntry.getCompanyId(), ctCollectionId, ctEntryId,
 						keywords, queryDefinition);
@@ -90,14 +90,14 @@ public class CTAffectedEntryResource {
 
 				queryDefinition.setOrderByComparator(orderByComparator);
 
-				affectedCTEntries =
+				affectedByCTEntries =
 					_ctEntryLocalService.getRelatedOwnerCTEntries(
 						ctEntryId, queryDefinition);
 				totalCount = _ctEntryLocalService.getRelatedOwnerCTEntriesCount(
 					ctEntryId, queryDefinition);
 			}
 
-			return _getPage(affectedCTEntries, totalCount, pagination);
+			return _getPage(affectedByCTEntries, totalCount, pagination);
 		}
 		catch (PortalException pe) {
 			throw new IllegalArgumentException(pe.getMessage(), pe);
@@ -105,7 +105,7 @@ public class CTAffectedEntryResource {
 	}
 
 	private Page<CTAffectedEntryModel> _getPage(
-		List<CTEntry> affectedCTEntries, int totalCount,
+		List<CTEntry> affectedByCTEntries, int totalCount,
 		Pagination pagination) {
 
 		if (pagination == null) {
@@ -114,7 +114,7 @@ public class CTAffectedEntryResource {
 
 		return Page.of(
 			TransformUtil.transform(
-				affectedCTEntries, CTAffectedEntryModel::forCTEntry),
+				affectedByCTEntries, CTAffectedEntryModel::forCTEntry),
 			pagination, totalCount);
 	}
 

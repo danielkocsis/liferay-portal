@@ -384,7 +384,7 @@ class Overview extends PortletBase {
 			);
 
 			this.changeEntries.push({
-				affectedCTEntriesCount: changeEntry.affectedCTEntriesCount,
+				affectedByCTEntriesCount: changeEntry.affectedByCTEntriesCount,
 				changeType: changeTypeStr,
 				conflict: changeEntry.collision,
 				contentType: entityNameTranslation.translation,
@@ -695,7 +695,7 @@ Overview.STATE = {
 	 */
 	changeEntries: Config.arrayOf(
 		Config.shapeOf({
-			affectedCTEntriesCount: Config.number(),
+			affectedByCTEntriesCount: Config.number(),
 			changeType: Config.string(),
 			conflict: Config.bool(),
 			contentType: Config.string(),

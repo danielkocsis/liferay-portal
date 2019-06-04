@@ -197,7 +197,7 @@ public class StagedLayoutSetStagedModelDataHandler
 
 				try {
 					Layout stagedLayout =
-						_layoutLocalService.getLayoutByUuidAndGroupId(
+						_layoutLocalService.fetchLayoutByUuidAndGroupId(
 							layoutUUID, stagingGroupID,
 							!layout.isPublicLayout());
 

@@ -17,6 +17,7 @@ package com.liferay.change.tracking.rest.internal.model.entry;
 import com.liferay.change.tracking.configuration.CTConfigurationRegistryUtil;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalServiceUtil;
+import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 
 import java.io.Serializable;
 
@@ -36,9 +37,9 @@ public class CTEntryModel {
 	public static CTEntryModel forCTEntry(CTEntry ctEntry) {
 		Builder builder = new Builder();
 
-		return builder.setAffectedCTEntriesCount(
+		return builder.setAffectedByCTEntriesCount(
 			CTEntryLocalServiceUtil.getRelatedOwnerCTEntriesCount(
-				ctEntry.getCtEntryId())
+				ctEntry.getCtEntryId(), new QueryDefinition<>())
 		).setChangeType(
 			ctEntry.getChangeType()
 		).setClassNameId(
@@ -71,8 +72,8 @@ public class CTEntryModel {
 	}
 
 	@XmlElement
-	public int getAffectedCTEntriesCount() {
-		return _affectedCTEntriesCount;
+	public int getAffectedByCTEntriesCount() {
+		return _affectedByCTEntriesCount;
 	}
 
 	@XmlElement
@@ -141,10 +142,10 @@ public class CTEntryModel {
 			return _ctEntryModel;
 		}
 
-		public CTEntryModel.Builder setAffectedCTEntriesCount(
-			int affectedCTEntriesCount) {
+		public CTEntryModel.Builder setAffectedByCTEntriesCount(
+			int affectedByCTEntriesCount) {
 
-			_ctEntryModel._affectedCTEntriesCount = affectedCTEntriesCount;
+			_ctEntryModel._affectedByCTEntriesCount = affectedByCTEntriesCount;
 
 			return this;
 		}
@@ -232,7 +233,7 @@ public class CTEntryModel {
 	private CTEntryModel() {
 	}
 
-	private int _affectedCTEntriesCount;
+	private int _affectedByCTEntriesCount;
 	private int _changeType;
 	private long _classNameId;
 	private long _classPK;

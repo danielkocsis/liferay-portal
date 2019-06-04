@@ -16,7 +16,7 @@
 		contentType: string,
 		lastEdited: string,
 		changeType: string,
-		affectedCTEntriesCount: number,
+		affectedByCTEntriesCount: number,
 		version: string
 	]>}
 	{@param? changes: [
@@ -178,7 +178,7 @@
 		contentType: string,
 		lastEdited: string,
 		changeType: string,
-		affectedCTEntriesCount: number,
+		affectedByCTEntriesCount: number,
 		version: string
 	]>}
 	{@param? changeListsDropdownMenu: list<[
@@ -385,7 +385,7 @@
 		contentType: string,
 		lastEdited: string,
 		changeType: string,
-		affectedCTEntriesCount: number,
+		affectedByCTEntriesCount: number,
 		version: string
 	]>}
 	{@param? changesLabel: string}
@@ -512,7 +512,7 @@
 									{foreach $changeEntry in $changeEntries}
 										{call .changeEntry}
 											{param ctEntryId: $changeEntry.ctEntryId /}
-											{param affects: $changeEntry.affectedCTEntriesCount /}
+											{param affects: $changeEntry.affectedByCTEntriesCount /}
 											{param changeType: $changeEntry.changeType /}
 											{param conflict: $changeEntry.conflict /}
 											{param contentType: $changeEntry.contentType /}
