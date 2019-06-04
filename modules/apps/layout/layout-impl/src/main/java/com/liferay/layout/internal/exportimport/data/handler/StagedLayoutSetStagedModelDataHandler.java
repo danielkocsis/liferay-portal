@@ -197,14 +197,14 @@ public class StagedLayoutSetStagedModelDataHandler
 
 				try {
 					Layout stagedLayout =
-						_layoutLocalService.getLayoutByUuidAndGroupId(
+						_layoutLocalService.fetchLayoutByUuidAndGroupId(
 							layoutUUID, stagingGroupID,
 							!layout.isPublicLayout());
 
-					if (stagedLayout != null) {
-						if (_isLayoutRevisionInReview(stagedLayout)) {
-							continue;
-						}
+					if ((stagedLayout != null) &&
+						_isLayoutRevisionInReview(stagedLayout)) {
+
+						continue;
 					}
 
 					_layoutLocalService.deleteLayout(
