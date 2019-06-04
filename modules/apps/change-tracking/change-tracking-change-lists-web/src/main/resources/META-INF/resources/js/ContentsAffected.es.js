@@ -9,7 +9,6 @@ import templates from './ContentsAffected.soy';
  * Handles the Change Lists Contents Affected dialog.
  */
 class ContentsAffected extends Component {
-
 	created() {
 		this._fetchAffectedContents();
 	}
@@ -37,28 +36,34 @@ class ContentsAffected extends Component {
 			page = 1;
 		}
 
-		let queryParam = '?pageSize=' + this.pageSize + ((keywords.length > 0) ? '&keywords=' + keywords : '') + ((page > 1) ? '&page=' + page : '');
+		let queryParam =
+			'?pageSize=' +
+			this.pageSize +
+			(keywords.length > 0 ? '&keywords=' + keywords : '') +
+			(page > 1 ? '&page=' + page : '');
 
 		let url = this.urlAffectedContents + queryParam;
 
 		fetch(url, init)
 			.then(r => r.json())
 			.then(response => this._populateAffectedContents(response))
-			.catch(
-				error => {
-					const message = typeof error === 'string' ?
-						error :
-						Liferay.Util.sub(Liferay.Language.get('an-error-occured-while-getting-data-from-x'), url);
+			.catch(error => {
+				const message =
+					typeof error === 'string'
+						? error
+						: Liferay.Util.sub(
+								Liferay.Language.get(
+									'an-error-occured-while-getting-data-from-x'
+								),
+								url
+						  );
 
-					openToast(
-						{
-							message,
-							title: Liferay.Language.get('error'),
-							type: 'danger'
-						}
-					);
-				}
-			);
+				openToast({
+					message,
+					title: Liferay.Language.get('error'),
+					type: 'danger'
+				});
+			});
 	}
 
 	static _getKeywords() {
@@ -74,8 +79,7 @@ class ContentsAffected extends Component {
 	}
 
 	_handleClickNextPage(event) {
-		if ((this.page + 1) <= this.lastPage) {
-
+		if (this.page + 1 <= this.lastPage) {
 			this._fetchAffectedContents(this.page + 1);
 		}
 	}
@@ -83,14 +87,13 @@ class ContentsAffected extends Component {
 	_handleClickPageNumber(event) {
 		let page = event.target.getAttribute('data-page');
 
-		if ((page >= 1) && (page <= this.lastPage)) {
+		if (page >= 1 && page <= this.lastPage) {
 			this._fetchAffectedContents(page);
 		}
 	}
 
 	_handleClickPreviousPage(event) {
-		if ((this.page - 1) >= 1) {
-
+		if (this.page - 1 >= 1) {
 			this._fetchAffectedContents(this.page - 1);
 		}
 	}
@@ -118,25 +121,20 @@ class ContentsAffected extends Component {
 		this.endPosition = this.page * this.pageSize;
 
 		if (affectedContentsResult.items) {
-			affectedContentsResult.items.forEach(
-				affectedContent => {
+			affectedContentsResult.items.forEach(affectedContent => {
+				let entityNameTranslation = this.entityNameTranslations.find(
+					entityNameTranslation =>
+						entityNameTranslation.key ===
+						affectedContent.contentType
+				);
 
-					let entityNameTranslation = this.entityNameTranslations.find(
-						entityNameTranslation =>
-							entityNameTranslation.key === affectedContent.contentType
-					);
-
-					this.affectedContents.push(
-						{
-							contentType: entityNameTranslation.translation,
-							title: affectedContent.title
-						}
-					);
-				}
-			);
+				this.affectedContents.push({
+					contentType: entityNameTranslation.translation,
+					title: affectedContent.title
+				});
+			});
 		}
 	}
-
 }
 
 /**
@@ -147,7 +145,6 @@ class ContentsAffected extends Component {
  * @type {!Object}
  */
 ContentsAffected.STATE = {
-
 	/**
 	 * Path to the images.
 	 *
@@ -166,12 +163,10 @@ ContentsAffected.STATE = {
 	 * @type {object}
 	 */
 	affectedContents: Config.arrayOf(
-		Config.shapeOf(
-			{
-				contentType: Config.string(),
-				title: Config.string()
-			}
-		)
+		Config.shapeOf({
+			contentType: Config.string(),
+			title: Config.string()
+		})
 	),
 
 	endPosition: Config.number().value(10),
@@ -185,12 +180,10 @@ ContentsAffected.STATE = {
 	 * @type {object}
 	 */
 	entityNameTranslations: Config.arrayOf(
-		Config.shapeOf(
-			{
-				key: Config.string(),
-				translation: Config.string()
-			}
-		)
+		Config.shapeOf({
+			key: Config.string(),
+			translation: Config.string()
+		})
 	),
 
 	lastPage: Config.number().value(1),

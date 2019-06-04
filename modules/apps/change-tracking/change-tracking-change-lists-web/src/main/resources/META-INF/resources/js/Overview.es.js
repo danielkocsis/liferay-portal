@@ -242,13 +242,17 @@ class Overview extends PortletBase {
 		event.preventDefault();
 		let entryId = event.target.getAttribute('data-entry-id');
 
-		new ContentsAffected(
-			{
-				entityNameTranslations: this.entityNameTranslations,
-				spritemap: themeDisplay.getPathThemeImages() + '/lexicon/icons.svg',
-				urlAffectedContents: this.urlCollectionsBase + '/' + this.activeCTCollectionId + '/entries/' + entryId + '/affecteds'
-			}
-		);
+		new ContentsAffected({
+			entityNameTranslations: this.entityNameTranslations,
+			spritemap: themeDisplay.getPathThemeImages() + '/lexicon/icons.svg',
+			urlAffectedContents:
+				this.urlCollectionsBase +
+				'/' +
+				this.activeCTCollectionId +
+				'/entries/' +
+				entryId +
+				'/affecteds'
+		});
 	}
 
 	_handleClickPublish(event) {
