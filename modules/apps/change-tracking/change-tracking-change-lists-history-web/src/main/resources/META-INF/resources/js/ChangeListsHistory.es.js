@@ -31,6 +31,8 @@ class ChangeListsHistory extends PortletBase {
 		};
 
 		let beforeNavigateHandler = null;
+		
+		let beforeUnloadHandler = null;
 
 		let urlProcesses = this._getUrlProcesses();
 
@@ -51,13 +53,10 @@ class ChangeListsHistory extends PortletBase {
 				clearTimeout(this.timeoutId);
 				this.timeoutId = null;
 			}
-
-			window.removeEventListener('beforeunload', beforeNavigateHandler);
-
-			if (beforeNavigateHandler) {
-				beforeNavigateHandler.detach();
-				beforeNavigateHandler = null;
-			}
+			
+			Liferay.detach('beforeNavigate', beforeNavigateHandler);
+			
+			Liferay.detach('beforeunload', beforeNavigateHandler);			
 		};
 
 		this._startProgress(urlProcesses, init);
@@ -66,8 +65,8 @@ class ChangeListsHistory extends PortletBase {
 			'beforeNavigate',
 			handleBeforeNavigate
 		);
-
-		window.addEventListener(
+		
+		beforeUnloadHandler = Liferay.on(
 			'beforeunload',
 			handleBeforeNavigate
 		);
