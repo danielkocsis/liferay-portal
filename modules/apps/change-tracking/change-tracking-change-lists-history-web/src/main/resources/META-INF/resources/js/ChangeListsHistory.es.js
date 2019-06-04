@@ -31,7 +31,7 @@ class ChangeListsHistory extends PortletBase {
 		};
 
 		let beforeNavigateHandler = null;
-		
+
 		let beforeUnloadHandler = null;
 
 		let urlProcesses = this._getUrlProcesses();
@@ -40,9 +40,14 @@ class ChangeListsHistory extends PortletBase {
 
 		let instance = this;
 
-		this.timeoutId = setTimeout(() => instance._fetchProcesses(urlProcesses, init), TIMEOUT_FIRST, urlProcesses, init);
+		this.timeoutId = setTimeout(
+			() => instance._fetchProcesses(urlProcesses, init),
+			TIMEOUT_FIRST,
+			urlProcesses,
+			init
+		);
 
-		const handleBeforeNavigate = (event) => {
+		const handleBeforeNavigate = event => {
 			clearPendingCallback();
 		};
 
@@ -53,10 +58,9 @@ class ChangeListsHistory extends PortletBase {
 				clearTimeout(this.timeoutId);
 				this.timeoutId = null;
 			}
-			
+
 			Liferay.detach('beforeNavigate', beforeNavigateHandler);
-			
-			Liferay.detach('beforeunload', beforeNavigateHandler);			
+			Liferay.detach('beforeunload', beforeUnloadHandler);
 		};
 
 		this._startProgress(urlProcesses, init);
@@ -65,18 +69,14 @@ class ChangeListsHistory extends PortletBase {
 			'beforeNavigate',
 			handleBeforeNavigate
 		);
-		
-		beforeUnloadHandler = Liferay.on(
-			'beforeunload',
-			handleBeforeNavigate
-		);
+
+		beforeUnloadHandler = Liferay.on('beforeunload', handleBeforeNavigate);
 	}
 
 	_callFetchProcesses(urlProcesses, init) {
 		try {
 			this._fetchProcesses(urlProcesses, init);
-		}
-		catch (e) {
+		} catch (e) {
 			this._clearInterval(this.intervalId);
 		}
 	}
