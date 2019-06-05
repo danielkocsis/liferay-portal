@@ -256,6 +256,23 @@ public class CTManagerImpl implements CTManager {
 	}
 
 	@Override
+	public Optional<CTEntry> getCTEntryOptional(
+		long companyId, long modelClassNameId, long modelClassPK) {
+
+		if (!_ctEngineManager.isChangeTrackingEnabled(companyId) ||
+			!_ctEngineManager.isChangeTrackingSupported(
+				companyId, modelClassNameId)) {
+
+			return Optional.empty();
+		}
+
+		CTEntry ctEntry = _ctEntryLocalService.fetchCTEntry(
+			modelClassNameId, modelClassPK);
+
+		return Optional.ofNullable(ctEntry);
+	}
+
+	@Override
 	public Optional<CTEntry> getLatestModelChangeCTEntryOptional(
 		long companyId, long userId, long resourcePrimKey) {
 
@@ -526,18 +543,12 @@ public class CTManagerImpl implements CTManager {
 	public Optional<CTEntry> unregisterModelChange(
 		long companyId, long userId, long modelClassNameId, long modelClassPK) {
 
-		if (!_ctEngineManager.isChangeTrackingEnabled(companyId) ||
-			!_ctEngineManager.isChangeTrackingSupported(
-				companyId, modelClassNameId)) {
+		Optional<CTEntry> ctEntryOptional = getCTEntryOptional(
+			companyId, modelClassNameId, modelClassPK);
 
-			return Optional.empty();
-		}
+		ctEntryOptional.ifPresent(_ctEntryLocalService::deleteCTEntry);
 
-		Optional<CTEntry> ctEntryOptional = getModelChangeCTEntryOptional(
-			companyId, userId, modelClassNameId, modelClassPK);
-
-		return ctEntryOptional.map(
-			ctEntry -> _ctEntryLocalService.deleteCTEntry(ctEntry));
+		return ctEntryOptional;
 	}
 
 	private CTEntryAggregate _addCTEntryAggregate(
