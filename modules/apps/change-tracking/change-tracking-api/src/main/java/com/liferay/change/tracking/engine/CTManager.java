@@ -166,6 +166,19 @@ public interface CTManager {
 		CTEntry ctEntry, CTCollection ctCollection);
 
 	/**
+	 * Returns a model change's bag, searching for in any change collection.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  modelClassNameId the primary key of the changed version model's
+	 *         class
+	 * @param  modelClassPK the primary key of the changed version model
+	 * @return the change tracking entry representing the model change
+	 * @review
+	 */
+	public Optional<CTEntry> getCTEntryOptional(
+		long companyId, long modelClassNameId, long modelClassPK);
+
+	/**
 	 * Returns the latest model change for the current user's active change
 	 * collection.
 	 *
