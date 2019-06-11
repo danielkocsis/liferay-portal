@@ -98,6 +98,10 @@ public class ChangeListsHistoryDetailsDisplayContext {
 		return "added";
 	}
 
+	public String getClearResultsActionURL() {
+		return _getIteratorURL().toString();
+	}
+
 	public SearchContainer<CTEntry> getCTCollectionSearchContainer(
 		CTCollection ctCollection) {
 
@@ -158,19 +162,12 @@ public class ChangeListsHistoryDetailsDisplayContext {
 		return _orderByType;
 	}
 
-	public String getSearchActionURL(long ctCollectionId) {
-		PortletURL portletURL = _getIteratorURL();
-
-		portletURL.setParameter(
-			"ctCollectionId", String.valueOf(ctCollectionId));
-		portletURL.setParameter(
-			"mvcRenderCommandName", "/change_lists_history/view_details");
-
-		return portletURL.toString();
+	public String getSearchActionURL() {
+		return _getKeywordsURL().toString();
 	}
 
 	public String getSortingURL() {
-		PortletURL sortingURL = _getIteratorURL();
+		PortletURL sortingURL = _getKeywordsURL();
 
 		sortingURL.setParameter(
 			"orderByType",
@@ -238,6 +235,18 @@ public class ChangeListsHistoryDetailsDisplayContext {
 		return iteratorURL;
 	}
 
+	private PortletURL _getKeywordsURL() {
+		String keywords = ParamUtil.getString(_httpServletRequest, "keywords");
+
+		PortletURL portletURL = _getIteratorURL();
+
+		portletURL.setParameter("keywords", keywords);
+		portletURL.setParameter(
+			"mvcRenderCommandName", "/change_lists_history/view_details");
+
+		return portletURL;
+	}
+
 	private String _getOrderByCol() {
 		if (_orderByCol != null) {
 			return _orderByCol;
@@ -257,7 +266,7 @@ public class ChangeListsHistoryDetailsDisplayContext {
 						dropdownItem.setActive(
 							Objects.equals(_getOrderByCol(), "title"));
 						dropdownItem.setHref(
-							_getIteratorURL(), "orderByCol", "title");
+							_getKeywordsURL(), "orderByCol", "title");
 						dropdownItem.setLabel(
 							LanguageUtil.get(_httpServletRequest, "name"));
 					});

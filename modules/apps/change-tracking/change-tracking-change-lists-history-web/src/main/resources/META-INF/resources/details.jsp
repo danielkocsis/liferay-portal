@@ -44,10 +44,10 @@ portletDisplay.setShowBackIcon(true);
 %>
 
 <clay:management-toolbar
-	clearResultsURL="<%= changeListsHistoryDetailsDisplayContext.getSearchActionURL(ctCollectionId) %>"
+	clearResultsURL="<%= changeListsHistoryDetailsDisplayContext.getClearResultsActionURL() %>"
 	filterDropdownItems="<%= changeListsHistoryDetailsDisplayContext.getFilterDropdownItems() %>"
 	itemsTotal="<%= ctEntrySearchContainer.getTotal() %>"
-	searchActionURL="<%= changeListsHistoryDetailsDisplayContext.getSearchActionURL(ctCollectionId) %>"
+	searchActionURL="<%= changeListsHistoryDetailsDisplayContext.getSearchActionURL() %>"
 	searchContainerId="changeListsHistory"
 	selectable="<%= false %>"
 	showSearch="<%= true %>"
