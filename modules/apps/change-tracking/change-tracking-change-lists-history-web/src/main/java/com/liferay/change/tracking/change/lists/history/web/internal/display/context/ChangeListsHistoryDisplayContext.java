@@ -83,6 +83,12 @@ public class ChangeListsHistoryDisplayContext {
 		return soyContext;
 	}
 
+	public String getClearResultsActionURL() {
+		PortletURL portletURL = _getPortletURL();
+
+		return portletURL.toString();
+	}
+
 	public List<DropdownItem> getFilterDropdownItems() {
 		return new DropdownItemList() {
 			{
@@ -125,7 +131,7 @@ public class ChangeListsHistoryDisplayContext {
 	}
 
 	public String getSortingURL() {
-		PortletURL sortingURL = _getPortletURL();
+		PortletURL sortingURL = _getKeywordsURL();
 
 		sortingURL.setParameter(
 			"orderByType",
@@ -135,7 +141,7 @@ public class ChangeListsHistoryDisplayContext {
 	}
 
 	public String getViewSearchActionURL() {
-		PortletURL portletURL = _getPortletURL();
+		PortletURL portletURL = _getKeywordsURL();
 
 		return portletURL.toString();
 	}
@@ -180,7 +186,8 @@ public class ChangeListsHistoryDisplayContext {
 					dropdownItem -> {
 						dropdownItem.setActive(
 							Objects.equals(_getFilterByStatus(), "all"));
-						dropdownItem.setHref(_getPortletURL(), "status", "all");
+						dropdownItem.setHref(
+							_getKeywordsURL(), "status", "all");
 						dropdownItem.setLabel(
 							LanguageUtil.get(_httpServletRequest, "all"));
 					});
@@ -189,7 +196,7 @@ public class ChangeListsHistoryDisplayContext {
 						dropdownItem.setActive(
 							Objects.equals(_getFilterByStatus(), "published"));
 						dropdownItem.setHref(
-							_getPortletURL(), "status", "published");
+							_getKeywordsURL(), "status", "published");
 						dropdownItem.setLabel(
 							LanguageUtil.get(_httpServletRequest, "published"));
 					});
@@ -198,7 +205,7 @@ public class ChangeListsHistoryDisplayContext {
 						dropdownItem.setActive(
 							Objects.equals(_getFilterByStatus(), "failed"));
 						dropdownItem.setHref(
-							_getPortletURL(), "status", "failed");
+							_getKeywordsURL(), "status", "failed");
 						dropdownItem.setLabel(
 							LanguageUtil.get(_httpServletRequest, "failed"));
 					});
@@ -208,7 +215,7 @@ public class ChangeListsHistoryDisplayContext {
 							Objects.equals(
 								_getFilterByStatus(), "in-progress"));
 						dropdownItem.setHref(
-							_getPortletURL(), "status", "in-progress");
+							_getKeywordsURL(), "status", "in-progress");
 						dropdownItem.setLabel(
 							LanguageUtil.get(
 								_httpServletRequest, "in-progress"));
@@ -218,7 +225,7 @@ public class ChangeListsHistoryDisplayContext {
 						dropdownItem.setActive(
 							Objects.equals(_getFilterByStatus(), "scheduled"));
 						dropdownItem.setHref(
-							_getPortletURL(), "status", "scheduled");
+							_getKeywordsURL(), "status", "scheduled");
 						dropdownItem.setLabel(
 							LanguageUtil.get(_httpServletRequest, "scheduled"));
 					});
@@ -234,7 +241,7 @@ public class ChangeListsHistoryDisplayContext {
 						dropdownItem.setActive(
 							_getFilterByUser() == CTConstants.USER_FILTER_ALL);
 						dropdownItem.setHref(
-							_getPortletURL(), "user",
+							_getKeywordsURL(), "user",
 							CTConstants.USER_FILTER_ALL);
 						dropdownItem.setLabel(
 							LanguageUtil.get(_httpServletRequest, "all"));
@@ -251,6 +258,18 @@ public class ChangeListsHistoryDisplayContext {
 		_keywords = ParamUtil.getString(_httpServletRequest, "keywords", null);
 
 		return _keywords;
+	}
+
+	private PortletURL _getKeywordsURL() {
+		PortletURL portletURL = _getPortletURL();
+
+		String keywords = _getKeywords();
+
+		if (Validator.isNotNull(keywords)) {
+			portletURL.setParameter("keywords", keywords);
+		}
+
+		return portletURL;
 	}
 
 	private String _getOrderByCol() {
@@ -272,7 +291,7 @@ public class ChangeListsHistoryDisplayContext {
 						dropdownItem.setActive(
 							Objects.equals(_getOrderByCol(), "publishDate"));
 						dropdownItem.setHref(
-							_getPortletURL(), "orderByCol", "publishDate");
+							_getKeywordsURL(), "orderByCol", "publishDate");
 						dropdownItem.setLabel(
 							LanguageUtil.get(
 								_httpServletRequest, "publish-date"));
@@ -282,7 +301,7 @@ public class ChangeListsHistoryDisplayContext {
 						dropdownItem.setActive(
 							Objects.equals(_getOrderByCol(), "name"));
 						dropdownItem.setHref(
-							_getPortletURL(), "orderByCol", "name");
+							_getKeywordsURL(), "orderByCol", "name");
 						dropdownItem.setLabel(
 							LanguageUtil.get(_httpServletRequest, "name"));
 					});

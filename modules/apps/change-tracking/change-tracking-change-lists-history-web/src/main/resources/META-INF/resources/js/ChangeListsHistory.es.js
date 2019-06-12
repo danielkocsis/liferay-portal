@@ -201,6 +201,11 @@ class ChangeListsHistory extends PortletBase {
 				);
 
 				userFilterUrl.setParameter('displayStyle', 'list');
+
+				if (this.keywords) {
+					userFilterUrl.setParameter('keywords', this.keywords);
+				}
+
 				userFilterUrl.setParameter('orderByCol', this.orderByCol);
 				userFilterUrl.setParameter('orderByType', this.orderByType);
 				userFilterUrl.setParameter('user', processUser.userId);
