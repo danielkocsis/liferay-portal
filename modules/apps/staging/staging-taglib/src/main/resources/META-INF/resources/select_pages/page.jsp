@@ -1,4 +1,4 @@
-﻿<%--
+<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -181,10 +181,12 @@
 				</aui:fieldset>
 			</li>
 		</ul>
+
 		<c:if test="<%= action.equals(Constants.PUBLISH) %>">
-			<ul class="flex-container layout-selector deletions" id="<portlet:namespace />pagedeletions">
+			<ul class="deletions flex-container layout-selector" id="<portlet:namespace />pagedeletions">
 				<li class="layout-selector-options">
 					<aui:fieldset label="page-deletions">
+
 						<%
 						DateRange dateRange = null;
 

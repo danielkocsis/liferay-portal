@@ -35,11 +35,12 @@ public interface ExportImportConfigurationParameterMapFactory {
 		PortletRequest portletRequest);
 
 	public Map<String, String[]> buildParameterMap(
-		String dataStrategy, Boolean deleteMissingLayouts,
-		Boolean deletePortletData, Boolean deletions,
-		Boolean ignoreLastPublishDate, Boolean layoutSetPrototypeLinkEnabled,
-		Boolean layoutSetSettings, Boolean logo, Boolean permissions,
-		Boolean portletConfiguration, Boolean portletConfigurationAll,
+		String dataStrategy, Boolean deleteLayouts,
+		Boolean deleteMissingLayouts, Boolean deletePortletData,
+		Boolean deletions, Boolean ignoreLastPublishDate,
+		Boolean layoutSetPrototypeLinkEnabled, Boolean layoutSetSettings,
+		Boolean logo, Boolean permissions, Boolean portletConfiguration,
+		Boolean portletConfigurationAll,
 		List<String> portletConfigurationPortletIds, Boolean portletData,
 		Boolean portletDataAll, List<String> portletDataPortletIds,
 		Boolean portletSetupAll, List<String> portletSetupPortletIds,
@@ -47,7 +48,7 @@ public interface ExportImportConfigurationParameterMapFactory {
 		String userIdStrategy);
 
 	public Map<String, String[]> buildParameterMap(
-		String dataStrategy, Boolean deleteLayouts, Boolean deleteMissingLayouts,
+		String dataStrategy, Boolean deleteMissingLayouts,
 		Boolean deletePortletData, Boolean deletions,
 		Boolean ignoreLastPublishDate, Boolean layoutSetPrototypeLinkEnabled,
 		Boolean layoutSetSettings, Boolean logo, Boolean permissions,

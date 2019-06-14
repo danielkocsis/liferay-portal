@@ -127,6 +127,7 @@ if (modelDeletionCounters.containsKey(Layout.class.getName())) {
 				<liferay-ui:message key="page-deletions" />:
 			</label>
 		</div>
+
 		<div>
 			<%= LanguageUtil.format(resourceBundle, "x-items-deleted", pageDeletions) %>
 		</div>
