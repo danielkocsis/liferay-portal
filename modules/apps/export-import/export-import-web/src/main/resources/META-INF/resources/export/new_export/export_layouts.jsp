@@ -151,6 +151,11 @@ renderResponse.setTitle(!configuredExport ? LanguageUtil.get(request, "new-custo
 					</c:choose>
 				</aui:fieldset>
 
+				<liferay-staging:deletions
+					cmd="<%= Constants.EXPORT %>"
+					exportImportConfigurationId="<%= exportImportConfigurationId %>"
+				/>
+
 				<c:if test="<%= !group.isLayoutPrototype() && !group.isCompany() %>">
 					<liferay-staging:select-pages
 						action="<%= Constants.EXPORT %>"
@@ -167,11 +172,6 @@ renderResponse.setTitle(!configuredExport ? LanguageUtil.get(request, "new-custo
 					disableInputs="<%= configuredExport %>"
 					exportImportConfigurationId="<%= exportImportConfigurationId %>"
 					type="<%= Constants.EXPORT %>"
-				/>
-
-				<liferay-staging:deletions
-					cmd="<%= Constants.EXPORT %>"
-					exportImportConfigurationId="<%= exportImportConfigurationId %>"
 				/>
 
 				<liferay-staging:permissions

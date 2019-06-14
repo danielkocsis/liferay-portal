@@ -546,6 +546,34 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 	}
 
 	@Override
+	public long getLayoutModelDeletionCount(
+			final PortletDataContext portletDataContext, boolean privateLayout)
+		throws PortalException {
+
+		ActionableDynamicQuery actionableDynamicQuery =
+			_systemEventLocalService.getActionableDynamicQuery();
+
+		StagedModelType stagedModelType = new StagedModelType(Layout.class);
+
+		actionableDynamicQuery.setAddCriteriaMethod(
+			dynamicQuery -> {
+				doAddCriteria(
+					portletDataContext, stagedModelType, dynamicQuery);
+
+				Property extraDataProperty = PropertyFactoryUtil.forName(
+					"extraData");
+
+				dynamicQuery.add(
+					extraDataProperty.like(
+						"%\"privateLayout\":\"" + privateLayout + "\"%"));
+			});
+
+		actionableDynamicQuery.setCompanyId(portletDataContext.getCompanyId());
+
+		return actionableDynamicQuery.performCount();
+	}
+
+	@Override
 	public Layout getLayoutOrCreateDummyRootLayout(long plid)
 		throws PortalException {
 
