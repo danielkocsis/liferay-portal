@@ -14,6 +14,10 @@
 
 package com.liferay.portal.async.advice.internal;
 
+import com.liferay.change.tracking.definition.CTDefinition;
+import com.liferay.change.tracking.definition.CTDefinitionRegistry;
+import com.liferay.change.tracking.engine.CTEngineManager;
+import com.liferay.change.tracking.engine.CTManager;
 import com.liferay.petra.string.CharPool;
 import com.liferay.portal.async.advice.internal.configuration.AsyncAdviceConfiguration;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
@@ -24,6 +28,9 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.async.Async;
+import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.ShardedModel;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 
 import java.lang.annotation.Annotation;
@@ -90,11 +97,7 @@ public class AsyncAdvice extends ChainableMethodAdvice {
 		Class<?> targetClass, Method method,
 		Map<Class<? extends Annotation>, Annotation> annotations) {
 
-		Annotation annotation = annotations.get(Async.class);
-
-		if (annotation == null) {
-			return null;
-		}
+		// map check targetClass
 
 		if (method.getReturnType() != void.class) {
 			if (_log.isWarnEnabled()) {
@@ -104,6 +107,16 @@ public class AsyncAdvice extends ChainableMethodAdvice {
 			}
 
 			return null;
+		}
+
+		String name = method.getName();
+		Class<?> returnType = method.getReturnType();
+		
+		if (name.startsWith("add") &&
+			BaseModel.class.isAssignableFrom(returnType) &&
+			ShardedModel.class.isAssignableFrom(returnType)) {
+
+			return new AddMethodHandler();
 		}
 
 		String destinationName = null;
@@ -119,29 +132,78 @@ public class AsyncAdvice extends ChainableMethodAdvice {
 		return destinationName;
 	}
 
-	@Override
-	protected Object before(
-		AopMethodInvocation aopMethodInvocation, Object[] arguments) {
+	@FunctionalInterface
+	private interface CTMethodHandler {
 
-		if (AsyncInvokeThreadLocal.isEnabled()) {
-			return null;
+		public void handle(
+				AopMethodInvocation aopMethodInvocation, BaseModel<?> baseModel)
+			throws Throwable;
+
+	}
+
+	private class AddMethodHandler implements CTMethodHandler {
+
+		@Override
+		public void handle(
+				AopMethodInvocation aopMethodInvocation, BaseModel<?> baseModel)
+			throws Throwable {
+
+			String modelClassName = baseModel.getModelClassName();
+
+			ShardedModel shardedModel = (ShardedModel)baseModel;
+
+			if (!_ctEngineManager.isChangeTrackingEnabled(
+					shardedModel.getCompanyId()) ||
+				!_ctEngineManager.isChangeTrackingSupported(
+					shardedModel.getCompanyId(),
+					(Class<? extends BaseModel<?>>)baseModel.getModelClass())) {
+
+				return;
+			}
+
+			if (_ctManager.isModelUpdateInProgress()) {
+				return;
+			}
+
+			CTDefinition<?, ?> ctDefinition = _ctDefinitionRegistry.getCTDefinitionOptionalByResourceClassName(baseModel.getModelClassName()).get();
+
+			try {
+				_ctManager.registerModelChange(
+					journalArticle.getCompanyId(),
+					PrincipalThreadLocal.getUserId(),
+					_portal.getClassNameId(JournalArticle.class.getName()),
+					ctDefinition.getResourceEntityIdFromVersionEntityFunction().apply(baseModel), ctDefinition,
+					changeType, force);
+	
+				_ctManager.registerRelatedChanges(
+					journalArticle.getCompanyId(), PrincipalThreadLocal.getUserId(),
+					_portal.getClassNameId(JournalArticle.class.getName()),
+					journalArticle.getId(), force);
+			}
+			catch (CTEngineException ctee) {
+				if (ctee instanceof CTEntryCTEngineException) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(ctee.getMessage());
+					}
+				}
+				else {
+					throw ctee;
+				}
+			}
 		}
 
-		String destinationName = aopMethodInvocation.getAdviceMethodContext();
+	}
 
-		TransactionCommitCallbackUtil.registerCallback(
-			() -> {
-				Message message = new Message();
+	@Override
+	protected void afterReturning(
+			AopMethodInvocation aopMethodInvocation, Object[] arguments,
+			Object result)
+		throws Throwable {
 
-				message.setPayload(
-					new AsyncProcessCallable(aopMethodInvocation, arguments));
+		CTMethodHandler ctMethodHandler =
+			aopMethodInvocation.getAdviceMethodContext();
 
-				_messageBus.sendMessage(destinationName, message);
-
-				return null;
-			});
-
-		return nullResult;
+		ctMethodHandler.handle(aopMethodInvocation, (BaseModel<?>) result);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(AsyncAdvice.class);
@@ -149,6 +211,12 @@ public class AsyncAdvice extends ChainableMethodAdvice {
 	private AsyncAdviceConfiguration _asyncAdviceConfiguration;
 	private Map<String, String> _destinationNames;
 
+	@Reference
+	private CTManager _ctManager;
+	@Reference
+	private CTEngineManager _ctEngineManager;
+	@Reference
+	private CTDefinitionRegistry _ctDefinitionRegistry;
 	@Reference
 	private MessageBus _messageBus;
 
