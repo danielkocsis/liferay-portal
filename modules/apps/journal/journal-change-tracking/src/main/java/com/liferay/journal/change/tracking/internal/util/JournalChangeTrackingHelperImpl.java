@@ -76,15 +76,13 @@ public class JournalChangeTrackingHelperImpl
 		Optional<CTCollection> originalCTCollectionOptional =
 			_getOriginalCTCollectionOptional(companyId, userId, id);
 
-		long originalCTCollectionId = originalCTCollectionOptional.map(
-			CTCollectionModel::getCtCollectionId
-		).orElse(
-			0L
-		);
-
-		if (originalCTCollectionId == 0) {
+		if (!originalCTCollectionOptional.isPresent()) {
 			return null;
 		}
+
+		long originalCTCollectionId = originalCTCollectionOptional.map(
+			CTCollectionModel::getCtCollectionId
+		).get();
 
 		Optional<CTCollection> activeCTCollectionOptional =
 			_ctManager.getActiveCTCollectionOptional(companyId, userId);
@@ -95,22 +93,10 @@ public class JournalChangeTrackingHelperImpl
 		).isPresent();
 
 		if (active) {
-			return PortletURLFactoryUtil.create(
-				portletRequest, CTPortletKeys.CHANGE_LISTS,
-				PortletRequest.RENDER_PHASE);
+			return _getOverviewURL(portletRequest);
 		}
 
-		PortletURL portletURL = PortletURLFactoryUtil.create(
-			portletRequest, CTPortletKeys.CHANGE_LISTS_HISTORY,
-			PortletRequest.RENDER_PHASE);
-
-		portletURL.setParameter("mvcPath", "/details.jsp");
-		portletURL.setParameter(
-			"ctCollectionId", String.valueOf(originalCTCollectionId));
-		portletURL.setParameter("orderByCol", "title");
-		portletURL.setParameter("orderByType", "desc");
-
-		return portletURL;
+		return _getHistoryURL(portletRequest, originalCTCollectionId);
 	}
 
 	@Override
@@ -172,6 +158,22 @@ public class JournalChangeTrackingHelperImpl
 		);
 	}
 
+	private PortletURL _getHistoryURL(
+		PortletRequest portletRequest, long ctCollectionId) {
+
+		PortletURL portletURL = PortletURLFactoryUtil.create(
+			portletRequest, CTPortletKeys.CHANGE_LISTS_HISTORY,
+			PortletRequest.RENDER_PHASE);
+
+		portletURL.setParameter("mvcPath", "/details.jsp");
+		portletURL.setParameter(
+			"ctCollectionId", String.valueOf(ctCollectionId));
+		portletURL.setParameter("orderByCol", "title");
+		portletURL.setParameter("orderByType", "desc");
+
+		return portletURL;
+	}
+
 	private Optional<CTCollection> _getOriginalCTCollectionOptional(
 		long companyId, long userId, long id) {
 
@@ -185,6 +187,12 @@ public class JournalChangeTrackingHelperImpl
 		).map(
 			_ctCollectionLocalService::fetchCTCollection
 		);
+	}
+
+	private PortletURL _getOverviewURL(PortletRequest portletRequest) {
+		return PortletURLFactoryUtil.create(
+			portletRequest, CTPortletKeys.CHANGE_LISTS,
+			PortletRequest.RENDER_PHASE);
 	}
 
 	@Reference
