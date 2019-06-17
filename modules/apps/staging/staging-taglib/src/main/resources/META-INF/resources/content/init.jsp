@@ -42,7 +42,13 @@ else {
 	}
 }
 
-dateRange = ExportImportDateUtil.getDateRange(renderRequest, exportGroupId, privateLayout, 0, null, defaultRange);
+if (exportImportConfigurationId > 0) {
+	dateRange = ExportImportDateUtil.getDateRange(exportImportConfigurationId);
+}
+else {
+	dateRange = ExportImportDateUtil.getDateRange(renderRequest, exportGroupId,
+		privateLayout, 0, null, defaultRange);
+}
 
 Date startDate = dateRange.getStartDate();
 Date endDate = dateRange.getEndDate();
