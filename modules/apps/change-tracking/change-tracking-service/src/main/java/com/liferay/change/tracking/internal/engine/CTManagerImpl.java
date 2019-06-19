@@ -458,6 +458,34 @@ public class CTManagerImpl implements CTManager {
 
 	@Override
 	public Optional<CTEntry> registerModelChange(
+			CTCollection ctCollection, long userId, long modelClassNameId,
+			long modelClassPK, long modelResourcePrimKey, int changeType,
+			boolean force)
+		throws CTEngineException {
+
+		Optional<CTEntry> ctEntryOptional = Optional.empty();
+
+		try {
+			ctEntryOptional = TransactionInvokerUtil.invoke(
+				_transactionConfig,
+				() -> _registerModelChange(
+					ctCollection.getCompanyId(), userId, modelClassNameId,
+					modelClassPK, modelResourcePrimKey, changeType, force,
+					ctCollection));
+		}
+		catch (Throwable t) {
+			if (t instanceof CTEngineException) {
+				throw (CTEngineException)t;
+			}
+
+			_log.error("Unable to register model change", t);
+		}
+
+		return ctEntryOptional;
+	}
+
+	@Override
+	public Optional<CTEntry> registerModelChange(
 			long companyId, long userId, long modelClassNameId,
 			long modelClassPK, long modelResourcePrimKey, int changeType)
 		throws CTEngineException {
