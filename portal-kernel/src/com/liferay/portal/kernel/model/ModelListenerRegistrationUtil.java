@@ -68,7 +68,8 @@ public class ModelListenerRegistrationUtil {
 	}
 
 	private <T> ModelListener<T>[] _getModelListeners(Class<T> clazz) {
-		List<ModelListener<?>> modelListeners = _modelListeners.get(clazz);
+		List<ModelListener<?>> modelListeners = _modelListeners.get(
+			clazz.getName());
 
 		if (modelListeners == null) {
 			return new ModelListener[0];
@@ -100,7 +101,7 @@ public class ModelListenerRegistrationUtil {
 	private static final ModelListenerRegistrationUtil _instance =
 		new ModelListenerRegistrationUtil();
 
-	private final ConcurrentMap<Class<?>, List<ModelListener<?>>>
+	private final ConcurrentMap<String, List<ModelListener<?>>>
 		_modelListeners = new ConcurrentHashMap<>();
 	private final Map<String, ServiceRegistration<?>> _serviceRegistrations =
 		new ConcurrentHashMap<>();
@@ -120,20 +121,29 @@ public class ModelListenerRegistrationUtil {
 			ModelListener<?> modelListener = registry.getService(
 				serviceReference);
 
-			Class<?> modelClass = _getModelClass(modelListener);
+			String modelClassName = (String)serviceReference.getProperty(
+				"model.class.name");
 
-			if (modelClass == null) {
-				return null;
+			if (modelClassName == null) {
+				Class<?> modelClass = _getModelClass(modelListener);
+
+				if (modelClass == null) {
+					throw new IllegalStateException(
+						"Cannot find model class name for model listener " +
+							modelListener.getClass());
+				}
+
+				modelClassName = modelClass.getName();
 			}
 
 			List<ModelListener<?>> modelListeners = _modelListeners.get(
-				modelClass);
+				modelClassName);
 
 			if (modelListeners == null) {
 				modelListeners = new ArrayList<>();
 
 				List<ModelListener<?>> previousModelListeners =
-					_modelListeners.putIfAbsent(modelClass, modelListeners);
+					_modelListeners.putIfAbsent(modelClassName, modelListeners);
 
 				if (previousModelListeners != null) {
 					modelListeners = previousModelListeners;
@@ -160,16 +170,23 @@ public class ModelListenerRegistrationUtil {
 
 			registry.ungetService(serviceReference);
 
-			Class<?> modelClass = _getModelClass(modelListener);
+			String modelClassName = (String)serviceReference.getProperty(
+				"model.class.name");
+
+			if (modelClassName == null) {
+				Class<?> modelClass = _getModelClass(modelListener);
+
+				modelClassName = modelClass.getName();
+			}
 
 			List<ModelListener<?>> modelListeners = _modelListeners.get(
-				modelClass);
+				modelClassName);
 
 			if (modelListeners != null) {
 				modelListeners.remove(modelListener);
 
 				if (modelListeners.isEmpty()) {
-					_modelListeners.remove(modelClass);
+					_modelListeners.remove(modelClassName);
 				}
 			}
 		}
