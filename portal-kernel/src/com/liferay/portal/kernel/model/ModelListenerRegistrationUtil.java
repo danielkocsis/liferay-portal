@@ -40,34 +40,6 @@ import java.util.concurrent.ConcurrentMap;
 public class ModelListenerRegistrationUtil {
 
 	public static <T> ModelListener<T>[] getModelListeners(Class<T> clazz) {
-		return _instance._getModelListeners(clazz);
-	}
-
-	public static void register(ModelListener<?> modelListener) {
-		Class<?> clazz = modelListener.getClass();
-
-		_instance._register(clazz.getName(), modelListener);
-	}
-
-	public static void unregister(ModelListener<?> modelListener) {
-		Class<?> clazz = modelListener.getClass();
-
-		_instance._unregister(clazz.getName());
-	}
-
-	private ModelListenerRegistrationUtil() {
-		Registry registry = RegistryUtil.getRegistry();
-
-		Filter filter = registry.getFilter(
-			"(objectClass=" + ModelListener.class.getName() + ")");
-
-		_serviceTracker = registry.trackServices(
-			filter, new ModelListenerTrackerCustomizer());
-
-		_serviceTracker.open();
-	}
-
-	private <T> ModelListener<T>[] _getModelListeners(Class<T> clazz) {
 		List<ModelListener<?>> modelListeners = _modelListeners.get(
 			clazz.getName());
 
@@ -78,37 +50,39 @@ public class ModelListenerRegistrationUtil {
 		return modelListeners.toArray(new ModelListener[0]);
 	}
 
-	private <T> void _register(
-		String className, ModelListener<T> modelListener) {
+	public static void register(ModelListener<?> modelListener) {
+		Class<?> clazz = modelListener.getClass();
 
 		Registry registry = RegistryUtil.getRegistry();
 
 		ServiceRegistration<?> serviceRegistration = registry.registerService(
 			ModelListener.class.getName(), modelListener);
 
-		_serviceRegistrations.put(className, serviceRegistration);
+		_serviceRegistrations.put(clazz.getName(), serviceRegistration);
 	}
 
-	private void _unregister(String className) {
+	public static void unregister(ModelListener<?> modelListener) {
+		Class<?> clazz = modelListener.getClass();
+
 		ServiceRegistration<?> serviceRegistration =
-			_serviceRegistrations.remove(className);
+			_serviceRegistrations.remove(clazz.getName());
 
 		if (serviceRegistration != null) {
 			serviceRegistration.unregister();
 		}
 	}
 
-	private static final ModelListenerRegistrationUtil _instance =
-		new ModelListenerRegistrationUtil();
+	private ModelListenerRegistrationUtil() {
+	}
 
-	private final ConcurrentMap<String, List<ModelListener<?>>>
+	private static final ConcurrentMap<String, List<ModelListener<?>>>
 		_modelListeners = new ConcurrentHashMap<>();
-	private final Map<String, ServiceRegistration<?>> _serviceRegistrations =
-		new ConcurrentHashMap<>();
-	private final ServiceTracker<ModelListener<?>, ModelListener<?>>
+	private static final Map<String, ServiceRegistration<?>>
+		_serviceRegistrations = new ConcurrentHashMap<>();
+	private static final ServiceTracker<ModelListener<?>, ModelListener<?>>
 		_serviceTracker;
 
-	private class ModelListenerTrackerCustomizer
+	private static class ModelListenerTrackerCustomizer
 		implements ServiceTrackerCustomizer
 			<ModelListener<?>, ModelListener<?>> {
 
@@ -228,6 +202,18 @@ public class ModelListenerRegistrationUtil {
 			return _getGenericSuperType(clazz);
 		}
 
+	}
+
+	static {
+		Registry registry = RegistryUtil.getRegistry();
+
+		Filter filter = registry.getFilter(
+			"(objectClass=" + ModelListener.class.getName() + ")");
+
+		_serviceTracker = registry.trackServices(
+			filter, new ModelListenerTrackerCustomizer());
+
+		_serviceTracker.open();
 	}
 
 }
