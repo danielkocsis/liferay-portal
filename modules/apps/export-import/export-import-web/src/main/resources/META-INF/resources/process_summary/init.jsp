@@ -43,4 +43,6 @@ Map<String, Serializable> exportImportConfigurationSettingsMap = exportImportCon
 Map<String, Serializable> parameterMap = (Map<String, Serializable>)exportImportConfigurationSettingsMap.get("parameterMap");
 
 String processCmd = MapUtil.getString(parameterMap, "cmd");
+
+Map<String, LongWrapper> modelDeletionCounters = (Map<String, LongWrapper>)taskContextMap.get(ExportImportBackgroundTaskContextMapConstants.MODEL_DELETION_COUNTERS);
 %>
