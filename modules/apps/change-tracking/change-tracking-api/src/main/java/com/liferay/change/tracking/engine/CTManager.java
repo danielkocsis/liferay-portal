@@ -317,6 +317,12 @@ public interface CTManager {
 	public boolean isRetrievableVersion(
 		long companyId, long userId, long modelClassNameId, long modelClassPK);
 
+	public Optional<CTEntry> registerModelChange(
+			CTCollection ctCollection, long userId, long modelClassNameId,
+			long modelClassPK, long modelResourcePrimKey, int changeType,
+			boolean force)
+		throws CTEngineException;
+
 	/**
 	 * Registers the model change into the change tracking framework for the
 	 * current user's active change collection. A
