@@ -42,14 +42,16 @@ public class CTPersistenceHelperUtil {
 			finderArgs, modelClass);
 	}
 
-	public static void appendContextSQL(StringBundler sb) {
+	public static void appendContextSQL(
+		StringBundler sb, Class<? extends BaseModel<?>> modelClass) {
+
 		CTPersistenceHelper ctPersistenceHelper = _ctPersistenceHelper;
 
 		if (ctPersistenceHelper == null) {
 			return;
 		}
 
-		ctPersistenceHelper.appendContextSQL(sb);
+		ctPersistenceHelper.appendContextSQL(sb, modelClass);
 	}
 
 	public static boolean isValidFinderResult(BaseModel<?> baseModel) {

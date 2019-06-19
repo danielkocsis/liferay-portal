@@ -59,6 +59,10 @@ public class CTSettingsManagerImpl implements CTSettingsManager {
 	public String getUserCTSetting(
 		long userId, String key, String defaultValue) {
 
+		if (userId <= 0) {
+			return defaultValue;
+		}
+
 		User user = _userLocalService.fetchUser(userId);
 
 		if (user == null) {

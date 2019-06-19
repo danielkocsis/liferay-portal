@@ -25,15 +25,19 @@ import java.util.List;
  */
 public interface CTAdapter<T extends BaseModel<T>, C extends BaseModel<C>> {
 
+	public C createContextModel(T ctContextHolderModel);
+
 	public T fetchByPrimaryKey(Serializable primaryKey);
+
+	public C fetchContextModel(Serializable primaryKey, long contextId);
 
 	public List<T> findByContextId(long contextId);
 
-	public C getContext(T ctContextHolderModel);
-
-	public long getContextId();
-
 	public Class<T> getModelClass();
+
+	public Class<C> getContextModelClass();
+
+	public long getModelContextId(T ctContextHolderModel);
 
 	public Serializable getPrimaryKey(T ctContextHolderModel);
 
@@ -41,10 +45,19 @@ public interface CTAdapter<T extends BaseModel<T>, C extends BaseModel<C>> {
 
 	public String getTableName();
 
-	public void removeContext(Serializable primaryKey, long contextId);
+	public void populateContextHolderModel(
+		T ctContextHolderModel, C ctContextModel);
 
-	public void setContext(T ctContextHolderModel, C ctContextModel);
+	public void populateContextModel(T ctContextHolderModel, C ctContextModel);
 
-	public void setContextId(long contextId);
+	public void removeContext(C ctContextModel);
+
+	public void removeContexts(T ctContextHolderModel);
+
+	public void setContextContextId(C ctContextModel, long contextId);
+
+	public void setModelContextId(T ctContextHolderModel, long contextId);
+
+	public void updateContextModel(C ctContextModel);
 
 }
