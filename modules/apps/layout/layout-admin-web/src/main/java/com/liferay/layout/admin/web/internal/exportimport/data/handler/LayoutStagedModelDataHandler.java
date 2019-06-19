@@ -478,25 +478,35 @@ public class LayoutStagedModelDataHandler
 				Layout mergeFailFriendlyURLLayout =
 					_layoutLocalService.getLayout(layoutFriendlyURL.getPlid());
 
-				SitesUtil.addMergeFailFriendlyURLLayout(
-					mergeFailFriendlyURLLayout);
+				LayoutSet layoutSet = mergeFailFriendlyURLLayout.getLayoutSet();
 
-				if (!_log.isWarnEnabled()) {
+				if (layoutSet.isLayoutSetPrototypeLinkActive() &&
+					Validator.isNotNull(layout.getLayoutPrototypeUuid())) {
+
+					_layoutLocalService.deleteLayout(
+						mergeFailFriendlyURLLayout);
+				}
+				else {
+					SitesUtil.addMergeFailFriendlyURLLayout(
+						mergeFailFriendlyURLLayout);
+
+					if (!_log.isWarnEnabled()) {
+						return;
+					}
+
+					StringBundler sb = new StringBundler(6);
+
+					sb.append("Layout with layout ID ");
+					sb.append(layout.getLayoutId());
+					sb.append(" cannot be propagated because the friendly ");
+					sb.append("URL conflicts with the friendly URL of layout ");
+					sb.append("with layout ID ");
+					sb.append(mergeFailFriendlyURLLayout.getLayoutId());
+
+					_log.warn(sb.toString());
+
 					return;
 				}
-
-				StringBundler sb = new StringBundler(6);
-
-				sb.append("Layout with layout ID ");
-				sb.append(layout.getLayoutId());
-				sb.append(" cannot be propagated because the friendly URL ");
-				sb.append("conflicts with the friendly URL of layout with ");
-				sb.append("layout ID ");
-				sb.append(mergeFailFriendlyURLLayout.getLayoutId());
-
-				_log.warn(sb.toString());
-
-				return;
 			}
 		}
 		else {
