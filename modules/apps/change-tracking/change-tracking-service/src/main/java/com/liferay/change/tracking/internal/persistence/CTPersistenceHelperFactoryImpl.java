@@ -26,7 +26,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.change.tracking.CTAdapter;
 import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelper;
-import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelperFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
@@ -35,10 +35,10 @@ import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 
-import java.io.Serializable;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,173 +57,29 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 /**
  * @author Preston Crary
  */
-@Component(immediate = true, service = CTPersistenceHelper.class)
-public class CTPersistenceHelperImpl implements CTPersistenceHelper {
+@Component(immediate = true, service = CTPersistenceHelperFactory.class)
+public class CTPersistenceHelperFactoryImpl
+	implements CTPersistenceHelperFactory {
 
 	@Override
-	public Object[] appendContextFinderArgs(
-		Object[] finderArgs, Class<? extends BaseModel<?>> modelClass) {
+	public <T extends BaseModel<T>> CTPersistenceHelper<T> create(
+		Class<T> modelClass) {
 
 		Optional<CTCollection> ctCollectionOptional =
 			_activeCTCollectionOptionalThreadLocal.get();
 
-		if (ctCollectionOptional.isPresent()) {
-			CTCollection ctCollection = ctCollectionOptional.get();
-
-			CTAdapterHolder ctAdapterHolder = _ctAdapterHolders.get(modelClass);
-
-			List<CTEntry> ctEntries = _ctManager.getCTCollectionCTEntries(
-				ctCollection.getCompanyId(), ctCollection.getCtCollectionId(),
-				ctAdapterHolder._classNameId);
-
-			Object[] newFinderArgs = null;
-
-			if (ctEntries.isEmpty()) {
-				newFinderArgs = new Object[finderArgs.length + 1];
-
-				System.arraycopy(
-					finderArgs, 0, newFinderArgs, 0, finderArgs.length);
-
-				newFinderArgs[finderArgs.length] =
-					ctCollection.getCtCollectionId();
-			}
-			else {
-				newFinderArgs = new Object[finderArgs.length + 2];
-
-				System.arraycopy(
-					finderArgs, 0, newFinderArgs, 0, finderArgs.length);
-
-				newFinderArgs[finderArgs.length] =
-					ctCollection.getCtCollectionId();
-
-				newFinderArgs[finderArgs.length] = StringUtil.merge(
-					ctEntries,
-					ctEntry -> String.valueOf(ctEntry.getModelClassPK()),
-					StringPool.COMMA);
-			}
-
-			finderArgs = newFinderArgs;
+		if (!ctCollectionOptional.isPresent()) {
+			return new EmptyCTPersistenceHelperImpl<>();
 		}
 
-		return finderArgs;
-	}
+		CTAdapterHolder ctAdapterHolder = _ctAdapterHolders.get(modelClass);
 
-	@Override
-	public void appendContextSQL(
-		StringBundler sb, Class<? extends BaseModel<?>> modelClass) {
-
-		Optional<CTCollection> ctCollectionOptional =
-			_activeCTCollectionOptionalThreadLocal.get();
-
-		if (ctCollectionOptional.isPresent()) {
-			CTCollection ctCollection = ctCollectionOptional.get();
-
-			CTAdapterHolder ctAdapterHolder = _ctAdapterHolders.get(modelClass);
-
-			CTAdapter<?, ?> ctAdapter = ctAdapterHolder._ctAdapter;
-
-			sb.append(" AND (");
-			sb.append(ctAdapter.getTableName());
-			sb.append(".ctCollectionId = 0 OR ");
-			sb.append(ctAdapter.getTableName());
-			sb.append(".ctCollectionId = ");
-			sb.append(ctCollection.getCtCollectionId());
-
-			List<CTEntry> ctEntries = _ctManager.getCTCollectionCTEntries(
-				ctCollection.getCompanyId(), ctCollection.getCtCollectionId(),
-				ctAdapterHolder._classNameId);
-
-			if (ctEntries.isEmpty()) {
-				sb.append(") AND ");
-				sb.append(ctAdapter.getTableName());
-				sb.append(".");
-				sb.append(ctAdapter.getPrimaryKeyColumnName());
-				sb.append(" NOT IN (");
-
-				for (CTEntry ctEntry : ctEntries) {
-					sb.append(ctEntry.getModelClassPK());
-					sb.append(",");
-				}
-
-				sb.setIndex(sb.index() - 1);
-			}
-
-			sb.append(") ");
-		}
-	}
-
-	@Override
-	public boolean isValidFinderResult(BaseModel<?> baseModel) {
-		Optional<CTCollection> ctCollectionOptional =
-			_activeCTCollectionOptionalThreadLocal.get();
-
-		if (ctCollectionOptional.isPresent()) {
-			CTCollection ctCollection = ctCollectionOptional.get();
-
-			CTAdapterHolder ctAdapterHolder = _ctAdapterHolders.get(
-				baseModel.getModelClass());
-
-			CTAdapter ctAdapter = ctAdapterHolder._ctAdapter;
-
-			long ctCollectionId = ctAdapter.getModelContextId(baseModel);
-
-			if (ctCollectionId == ctCollection.getCtCollectionId()) {
-				return true;
-			}
-
-			if (ctCollectionId != 0) {
-				return false;
-			}
-
-			List<CTEntry> ctEntries = _ctManager.getCTCollectionCTEntries(
-				ctCollection.getCompanyId(), ctCollection.getCtCollectionId(),
-				ctAdapterHolder._classNameId);
-
-			if (!ctEntries.isEmpty()) {
-				Serializable primaryKey = ctAdapter.getPrimaryKey(baseModel);
-
-				for (CTEntry ctEntry : ctEntries) {
-					if (primaryKey.equals(ctEntry.getModelClassPK())) {
-						return false;
-					}
-				}
-			}
+		if (ctAdapterHolder == null) {
+			return new EmptyCTPersistenceHelperImpl<>();
 		}
 
-		return true;
-	}
-
-	@Override
-	public void setContext(
-		Session session, BaseModel<?> baseModel,
-		Class<? extends BaseModel<?>> modelClass) {
-
-		Optional<CTCollection> ctCollectionOptional =
-			_activeCTCollectionOptionalThreadLocal.get();
-
-		if (ctCollectionOptional.isPresent()) {
-			CTCollection ctCollection = ctCollectionOptional.get();
-
-			CTAdapterHolder ctAdapterHolder = _ctAdapterHolders.get(
-				baseModel.getModelClass());
-
-			CTAdapter ctAdapter = ctAdapterHolder._ctAdapter;
-
-			BaseModel<?> contextModel = ctAdapter.fetchContextModel(
-				baseModel, ctCollection.getCtCollectionId());
-
-			ctAdapter.populateContextHolderModel(baseModel, contextModel);
-		}
-	}
-
-	@Override
-	public void setContexts(
-		Session session, List<BaseModel<?>> baseModels,
-		Class<? extends BaseModel<?>> modelClass) {
-
-		for (BaseModel<?> baseModel : baseModels) {
-			setContext(session, baseModel, modelClass);
-		}
+		return new CTPersistenceHelperImpl<>(
+			ctCollectionOptional.get(), ctAdapterHolder);
 	}
 
 	@Activate
@@ -231,7 +87,7 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 		_bundleContext = bundleContext;
 
 		_activeCTCollectionOptionalThreadLocal = new CentralizedThreadLocal<>(
-			CTPersistenceHelperImpl.class.getName() +
+			CTPersistenceHelperFactoryImpl.class.getName() +
 				"_activeCTCollectionOptionalThreadLocal",
 			() -> _ctManager.getActiveCTCollectionOptional(
 				CompanyThreadLocal.getCompanyId(),
@@ -250,7 +106,7 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		CTPersistenceHelperImpl.class);
+		CTPersistenceHelperFactoryImpl.class);
 
 	private static final Map<Class<?>, CTAdapterHolder> _ctAdapterHolders =
 		new ConcurrentHashMap<>();
@@ -287,6 +143,33 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 		private final CTAdapter<?, ?> _ctAdapter;
 		private final ServiceRegistration<ModelListener>
 			_modelListenerServiceRegistration;
+
+	}
+
+	private static class EmptyCTPersistenceHelperImpl<T extends BaseModel<T>>
+		implements CTPersistenceHelper<T> {
+
+		@Override
+		public Object[] appendContextFinderArgs(Object[] finderArgs) {
+			return finderArgs;
+		}
+
+		@Override
+		public void appendContextSQL(StringBundler sb) {
+		}
+
+		@Override
+		public boolean isValidFinderResult(T baseModel) {
+			return true;
+		}
+
+		@Override
+		public void setContext(T baseModel) {
+		}
+
+		@Override
+		public void setContexts(List<T> baseModels) {
+		}
 
 	}
 
@@ -357,7 +240,7 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 				try {
 					_ctManager.registerModelChange(
 						ctCollection.getCompanyId(), ctCollection.getUserId(),
-						_classNameId, (long)_ctAdapter.getPrimaryKey(model), 0,
+						_classNameId, _ctAdapter.getPrimaryKey(model), 0,
 						CTConstants.CT_CHANGE_TYPE_ADDITION);
 				}
 				catch (CTEngineException ctee) {
@@ -381,7 +264,7 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 				try {
 					_ctManager.registerModelChange(
 						ctCollection.getCompanyId(), ctCollection.getUserId(),
-						_classNameId, (long)_ctAdapter.getPrimaryKey(model), 0,
+						_classNameId, _ctAdapter.getPrimaryKey(model), 0,
 						CTConstants.CT_CHANGE_TYPE_DELETION);
 				}
 				catch (CTEngineException ctee) {
@@ -401,14 +284,15 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 				CTCollection ctCollection = ctCollectionOptional.get();
 
 				C contextModel = _ctAdapter.fetchContextModel(
-					model.getPrimaryKeyObj(), ctCollection.getCtCollectionId());
+					_ctAdapter.getPrimaryKey(model),
+					ctCollection.getCtCollectionId());
 
-				_ctAdapter.populateContextHolderModel(model, contextModel);
+				_ctAdapter.populateModel(model, contextModel);
 
 				try {
 					_ctManager.registerModelChange(
 						ctCollection.getCompanyId(), ctCollection.getUserId(),
-						_classNameId, (long)_ctAdapter.getPrimaryKey(model), 0,
+						_classNameId, _ctAdapter.getPrimaryKey(model), 0,
 						CTConstants.CT_CHANGE_TYPE_MODIFICATION);
 				}
 				catch (CTEngineException ctee) {
@@ -427,7 +311,7 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 			if (ctCollectionOptional.isPresent()) {
 				CTCollection ctCollection = ctCollectionOptional.get();
 
-				_ctAdapter.setModelContextId(
+				_ctAdapter.setModelCTCollectionId(
 					model, ctCollection.getCtCollectionId());
 			}
 		}
@@ -441,14 +325,15 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 				CTCollection ctCollection = ctCollectionOptional.get();
 
 				C contextModel = _ctAdapter.fetchContextModel(
-					model.getPrimaryKeyObj(), ctCollection.getCtCollectionId());
+					_ctAdapter.getPrimaryKey(model),
+					ctCollection.getCtCollectionId());
 
 				if (contextModel == null) {
 					contextModel = _ctAdapter.createContextModel(model);
 
 					_ctAdapter.populateContextModel(model, contextModel);
 
-					_ctAdapter.setContextContextId(
+					_ctAdapter.setModelContextCTCollectionId(
 						contextModel, ctCollection.getCtCollectionId());
 				}
 				else {
@@ -458,12 +343,12 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 				_ctAdapter.updateContextModel(contextModel);
 
 				T oldModel = _ctAdapter.fetchByPrimaryKey(
-					model.getPrimaryKeyObj());
+					_ctAdapter.getPrimaryKey(model));
 
 				if (oldModel != null) {
 					_ctAdapter.populateContextModel(oldModel, contextModel);
 
-					_ctAdapter.populateContextHolderModel(model, contextModel);
+					_ctAdapter.populateModel(model, contextModel);
 				}
 			}
 		}
@@ -476,6 +361,157 @@ public class CTPersistenceHelperImpl implements CTPersistenceHelper {
 
 		private final long _classNameId;
 		private final CTAdapter<T, C> _ctAdapter;
+
+	}
+
+	private class CTPersistenceHelperImpl
+		<T extends BaseModel<T>, C extends BaseModel<C>>
+			implements CTPersistenceHelper<T> {
+
+		@Override
+		public Object[] appendContextFinderArgs(Object[] finderArgs) {
+			List<CTEntry> ctEntries = _getCTEntries();
+
+			if (ctEntries.isEmpty()) {
+				Object[] newFinderArgs = new Object[finderArgs.length + 1];
+
+				System.arraycopy(
+					finderArgs, 0, newFinderArgs, 0, finderArgs.length);
+
+				newFinderArgs[finderArgs.length] =
+					_ctCollection.getCtCollectionId();
+
+				return newFinderArgs;
+			}
+
+			Object[] newFinderArgs = new Object[finderArgs.length + 2];
+
+			System.arraycopy(
+				finderArgs, 0, newFinderArgs, 0, finderArgs.length);
+
+			newFinderArgs[finderArgs.length] =
+				_ctCollection.getCtCollectionId();
+
+			newFinderArgs[finderArgs.length + 1] = StringUtil.merge(
+				ctEntries, ctEntry -> String.valueOf(ctEntry.getModelClassPK()),
+				StringPool.COMMA);
+
+			return newFinderArgs;
+		}
+
+		@Override
+		public void appendContextSQL(StringBundler sb) {
+			sb.append(" AND (");
+			sb.append(_ctAdapter.getTableName());
+			sb.append(".ctCollectionId = 0 OR ");
+			sb.append(_ctAdapter.getTableName());
+			sb.append(".ctCollectionId = ");
+			sb.append(_ctCollection.getCtCollectionId());
+
+			List<CTEntry> ctEntries = _getCTEntries();
+
+			if (ctEntries.isEmpty()) {
+				sb.append(") AND ");
+				sb.append(_ctAdapter.getTableName());
+				sb.append(".");
+				sb.append(_ctAdapter.getPrimaryKeyColumnName());
+				sb.append(" NOT IN (");
+
+				for (CTEntry ctEntry : ctEntries) {
+					sb.append(ctEntry.getModelClassPK());
+					sb.append(",");
+				}
+
+				sb.setIndex(sb.index() - 1);
+			}
+
+			sb.append(") ");
+		}
+
+		@Override
+		public boolean isValidFinderResult(T baseModel) {
+			long ctCollectionId = _ctAdapter.getModelCTCollectionId(baseModel);
+
+			if (ctCollectionId == _ctCollection.getCtCollectionId()) {
+				return true;
+			}
+
+			if (ctCollectionId != 0) {
+				return false;
+			}
+
+			List<CTEntry> ctEntries = _getCTEntries();
+
+			if (!ctEntries.isEmpty()) {
+				long primaryKey = _ctAdapter.getPrimaryKey(baseModel);
+
+				for (CTEntry ctEntry : ctEntries) {
+					if (primaryKey == ctEntry.getModelClassPK()) {
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+
+		@Override
+		public void setContext(T baseModel) {
+			C contextModel = _ctAdapter.fetchContextModel(
+				_ctAdapter.getPrimaryKey(baseModel),
+				_ctCollection.getCtCollectionId());
+
+			_ctAdapter.populateModel(baseModel, contextModel);
+		}
+
+		@Override
+		public void setContexts(List<T> baseModels) {
+			long[] primaryKeys = ListUtil.toLongArray(
+				baseModels, _ctAdapter::getPrimaryKey);
+
+			List<C> contextModels = _ctAdapter.fetchContextModels(
+				primaryKeys, _ctCollection.getCtCollectionId());
+
+			Map<Long, C> contextModelMap = new HashMap<>();
+
+			for (C contextModel : contextModels) {
+				contextModelMap.put(
+					_ctAdapter.getModelPrimaryKey(contextModel), contextModel);
+			}
+
+			for (T baseModel : baseModels) {
+				C contextModel = contextModelMap.get(
+					_ctAdapter.getPrimaryKey(baseModel));
+
+				if (contextModel != null) {
+					_ctAdapter.populateModel(baseModel, contextModel);
+				}
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		private CTPersistenceHelperImpl(
+			CTCollection ctCollection, CTAdapterHolder ctAdapterHolder) {
+
+			_ctCollection = ctCollection;
+			_ctAdapter = (CTAdapter<T, C>)ctAdapterHolder._ctAdapter;
+			_classNameId = ctAdapterHolder._classNameId;
+		}
+
+		private List<CTEntry> _getCTEntries() {
+			if (_ctEntries == null) {
+				_ctEntries = _ctManager.getCTCollectionCTEntries(
+					_ctCollection.getCompanyId(),
+					_ctCollection.getCtCollectionId(), _classNameId);
+			}
+
+			return _ctEntries;
+		}
+
+		private final long _classNameId;
+		private final CTAdapter<T, C> _ctAdapter;
+		private final CTCollection _ctCollection;
+		private List<CTEntry> _ctEntries;
 
 	}
 

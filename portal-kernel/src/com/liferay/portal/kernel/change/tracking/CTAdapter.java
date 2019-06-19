@@ -16,8 +16,6 @@ package com.liferay.portal.kernel.change.tracking;
 
 import com.liferay.portal.kernel.model.BaseModel;
 
-import java.io.Serializable;
-
 import java.util.List;
 
 /**
@@ -25,38 +23,41 @@ import java.util.List;
  */
 public interface CTAdapter<T extends BaseModel<T>, C extends BaseModel<C>> {
 
-	public C createContextModel(T ctContextHolderModel);
+	public C createContextModel(T model);
 
-	public T fetchByPrimaryKey(Serializable primaryKey);
+	public T fetchByPrimaryKey(long primaryKey);
 
-	public C fetchContextModel(Serializable primaryKey, long contextId);
+	public C fetchContextModel(long primaryKey, long ctCollectionId);
 
-	public List<T> findByContextId(long contextId);
+	public List<C> fetchContextModels(long[] primaryKeys, long ctCollectionId);
+
+	public List<T> findByCTCollectionId(long ctCollectionId);
 
 	public Class<T> getModelClass();
 
-	public Class<C> getContextModelClass();
+	public long getModelCTCollectionId(T model);
 
-	public long getModelContextId(T ctContextHolderModel);
+	public long getModelPrimaryKey(C ctContextModel);
 
-	public Serializable getPrimaryKey(T ctContextHolderModel);
+	public long getPrimaryKey(T model);
 
 	public String getPrimaryKeyColumnName();
 
 	public String getTableName();
 
-	public void populateContextHolderModel(
-		T ctContextHolderModel, C ctContextModel);
+	public void populateContextModel(T model, C ctContextModel);
 
-	public void populateContextModel(T ctContextHolderModel, C ctContextModel);
+	public void populateModel(T model, C ctContextModel);
 
 	public void removeContext(C ctContextModel);
 
-	public void removeContexts(T ctContextHolderModel);
+	public void removeContexts(T model);
 
-	public void setContextContextId(C ctContextModel, long contextId);
+	public void setModelContextCTCollectionId(
+		C ctContextModel, long ctCollectionId);
 
-	public void setModelContextId(T ctContextHolderModel, long contextId);
+	public void setModelCTCollectionId(
+		T ctContextHolderModel, long ctCollectionId);
 
 	public void updateContextModel(C ctContextModel);
 
