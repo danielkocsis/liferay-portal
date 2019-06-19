@@ -217,7 +217,6 @@ Map<String, String[]> parameterMap = (Map<String, String[]>)settingsMap.get("par
 											</c:otherwise>
 										</c:choose>
 									</span>
-
 									<span class="badge badge-warning deletions"><%= (layoutModelDeletionCount > 0) ? (layoutModelDeletionCount + StringPool.SPACE + LanguageUtil.get(request, "deletions")) : StringPool.BLANK %></span>
 								</liferay-util:buffer>
 
