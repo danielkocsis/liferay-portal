@@ -29,7 +29,7 @@ public interface CTPersistenceHelper<T extends BaseModel<T>> {
 
 	public Object[] appendContextFinderArgs(Object[] finderArgs);
 
-	public void appendContextSQL(StringBundler sb);
+	public void appendContextSQL(String tableName, StringBundler sb);
 
 	public boolean isValidFinderResult(T baseModel);
 

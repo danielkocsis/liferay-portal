@@ -43,7 +43,12 @@ public class CTPersistenceHelperFactoryUtil {
 				}
 
 				@Override
-				public void appendContextSQL(StringBundler sb) {
+				public void appendContextSQL(
+					String tableName, StringBundler sb) {
+
+					sb.append(" AND ");
+					sb.append(tableName);
+					sb.append(".ctCollectionId = 0 ");
 				}
 
 				@Override

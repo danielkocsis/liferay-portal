@@ -69,13 +69,13 @@ public class CTPersistenceHelperFactoryImpl
 			_activeCTCollectionOptionalThreadLocal.get();
 
 		if (!ctCollectionOptional.isPresent()) {
-			return new EmptyCTPersistenceHelperImpl<>();
+			return _getDefaultCTPersistenceHelper();
 		}
 
 		CTAdapterHolder ctAdapterHolder = _ctAdapterHolders.get(modelClass);
 
 		if (ctAdapterHolder == null) {
-			return new EmptyCTPersistenceHelperImpl<>();
+			return _getDefaultCTPersistenceHelper();
 		}
 
 		return new CTPersistenceHelperImpl<>(
@@ -105,11 +105,22 @@ public class CTPersistenceHelperFactoryImpl
 		_serviceTracker.close();
 	}
 
+	@SuppressWarnings("unchecked")
+	private <T extends BaseModel<T>> CTPersistenceHelper<T>
+		_getDefaultCTPersistenceHelper() {
+
+		return (CTPersistenceHelper<T>)_defaultCTPersistenceHelper;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTPersistenceHelperFactoryImpl.class);
 
 	private static final Map<Class<?>, CTAdapterHolder> _ctAdapterHolders =
 		new ConcurrentHashMap<>();
+
+	@SuppressWarnings("rawtypes")
+	private static final CTPersistenceHelper _defaultCTPersistenceHelper =
+		new DefaultCTPersistenceHelperImpl<>();
 
 	private ThreadLocal<Optional<CTCollection>>
 		_activeCTCollectionOptionalThreadLocal;
@@ -146,7 +157,7 @@ public class CTPersistenceHelperFactoryImpl
 
 	}
 
-	private static class EmptyCTPersistenceHelperImpl<T extends BaseModel<T>>
+	private static class DefaultCTPersistenceHelperImpl<T extends BaseModel<T>>
 		implements CTPersistenceHelper<T> {
 
 		@Override
@@ -155,7 +166,10 @@ public class CTPersistenceHelperFactoryImpl
 		}
 
 		@Override
-		public void appendContextSQL(StringBundler sb) {
+		public void appendContextSQL(String tableName, StringBundler sb) {
+			sb.append(" AND ");
+			sb.append(tableName);
+			sb.append(".ctCollectionId = 0 ");
 		}
 
 		@Override
@@ -400,11 +414,11 @@ public class CTPersistenceHelperFactoryImpl
 		}
 
 		@Override
-		public void appendContextSQL(StringBundler sb) {
+		public void appendContextSQL(String tableName, StringBundler sb) {
 			sb.append(" AND (");
-			sb.append(_ctAdapter.getTableName());
+			sb.append(tableName);
 			sb.append(".ctCollectionId = 0 OR ");
-			sb.append(_ctAdapter.getTableName());
+			sb.append(tableName);
 			sb.append(".ctCollectionId = ");
 			sb.append(_ctCollection.getCtCollectionId());
 
@@ -412,7 +426,7 @@ public class CTPersistenceHelperFactoryImpl
 
 			if (ctEntries.isEmpty()) {
 				sb.append(") AND ");
-				sb.append(_ctAdapter.getTableName());
+				sb.append(tableName);
 				sb.append(".");
 				sb.append(_ctAdapter.getPrimaryKeyColumnName());
 				sb.append(" NOT IN (");

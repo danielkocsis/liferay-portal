@@ -43,8 +43,6 @@ public interface CTAdapter<T extends BaseModel<T>, C extends BaseModel<C>> {
 
 	public String getPrimaryKeyColumnName();
 
-	public String getTableName();
-
 	public void populateContextModel(T model, C ctContextModel);
 
 	public void populateModel(T model, C ctContextModel);
