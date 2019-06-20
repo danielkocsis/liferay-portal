@@ -612,6 +612,7 @@
 		<column name="parentLayoutId" type="long" />
 		<column name="classNameId" type="long" />
 		<column name="classPK" type="long" />
+		<column name="ctCollectionId" type="long" />
 		<column localized="true" name="name" type="String" />
 		<column localized="true" name="title" type="String" />
 		<column localized="true" name="description" type="String" />
@@ -659,6 +660,9 @@
 		</finder>
 		<finder name="SourcePrototypeLayoutUuid" return-type="Collection" where="system = [$FALSE$]">
 			<finder-column name="sourcePrototypeLayoutUuid" />
+		</finder>
+		<finder name="CTCollectionId" return-type="Collection" where="system = [$FALSE$]">
+			<finder-column name="ctCollectionId" />
 		</finder>
 		<finder name="G_P" return-type="Collection" where="system = [$FALSE$]">
 			<finder-column name="groupId" />
@@ -723,6 +727,7 @@
 		<reference entity="ClassName" package-path="com.liferay.portal" />
 		<reference entity="Group" package-path="com.liferay.portal" />
 		<reference entity="Image" package-path="com.liferay.portal" />
+		<reference entity="LayoutCT" package-path="com.liferay.portal" />
 		<reference entity="LayoutFriendlyURL" package-path="com.liferay.portal" />
 		<reference entity="LayoutPrototype" package-path="com.liferay.portal" />
 		<reference entity="LayoutSet" package-path="com.liferay.portal" />
@@ -790,6 +795,30 @@
 		<reference entity="RecentLayoutBranch" package-path="com.liferay.portal" />
 		<reference entity="Resource" package-path="com.liferay.portal" />
 		<reference entity="User" package-path="com.liferay.portal" />
+	</entity>
+	<entity local-service="false" name="LayoutCT" remote-service="false">
+
+		<!-- PK fields -->
+
+		<column name="plid" primary="true" type="long" />
+		<column name="ctCollectionId" primary="true" type="long" />
+
+		<!-- CT fields -->
+
+		<column name="typeSettings" type="String" />
+
+		<!-- Finder methods -->
+
+		<finder name="Plid" return-type="Collection">
+			<finder-column name="plid" />
+		</finder>
+		<finder name="CTCollectionId" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+		</finder>
+		<finder name="P_CT" return-type="Collection">
+			<finder-column arrayable-operator="OR" name="plid" />
+			<finder-column name="ctCollectionId" />
+		</finder>
 	</entity>
 	<entity local-service="true" name="LayoutFriendlyURL" remote-service="false" uad-application-name="Layout" uad-dir-path="../modules/apps/layout/layout-uad/src/main/java" uad-package-path="com.liferay.layout" uuid="true">
 
