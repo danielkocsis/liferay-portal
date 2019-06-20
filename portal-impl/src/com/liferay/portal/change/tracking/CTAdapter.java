@@ -59,4 +59,6 @@ public interface CTAdapter<T extends BaseModel<T>, C extends BaseModel<C>> {
 
 	public void updateContextModel(C ctContextModel);
 
+	public void updateModel(T model);
+
 }
