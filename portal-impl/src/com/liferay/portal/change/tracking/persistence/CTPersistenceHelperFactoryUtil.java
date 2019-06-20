@@ -52,11 +52,11 @@ public class CTPersistenceHelperFactoryUtil {
 				}
 
 				@Override
-				public void setContext(T baseModel) {
+				public void populateContext(T baseModel) {
 				}
 
 				@Override
-				public void setContexts(List<T> baseModels) {
+				public void populateContexts(List<T> baseModels) {
 				}
 
 			};

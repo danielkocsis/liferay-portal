@@ -164,11 +164,11 @@ public class CTPersistenceHelperFactoryImpl
 		}
 
 		@Override
-		public void setContext(T baseModel) {
+		public void populateContext(T baseModel) {
 		}
 
 		@Override
-		public void setContexts(List<T> baseModels) {
+		public void populateContexts(List<T> baseModels) {
 		}
 
 	}
@@ -456,7 +456,7 @@ public class CTPersistenceHelperFactoryImpl
 		}
 
 		@Override
-		public void setContext(T baseModel) {
+		public void populateContext(T baseModel) {
 			C contextModel = _ctAdapter.fetchContextModel(
 				_ctAdapter.getPrimaryKey(baseModel),
 				_ctCollection.getCtCollectionId());
@@ -465,7 +465,7 @@ public class CTPersistenceHelperFactoryImpl
 		}
 
 		@Override
-		public void setContexts(List<T> baseModels) {
+		public void populateContexts(List<T> baseModels) {
 			long[] primaryKeys = ListUtil.toLongArray(
 				baseModels, _ctAdapter::getPrimaryKey);
 
