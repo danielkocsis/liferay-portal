@@ -375,11 +375,12 @@ public class CTPersistenceHelperFactoryImpl
 					ctCollection.getCtCollectionId());
 
 				if (contextModel == null) {
-					contextModel = _ctAdapter.createContextModel(model);
+					contextModel = _ctAdapter.createContextModel(
+						model, ctCollection.getCtCollectionId());
 
 					_ctAdapter.populateContextModel(model, contextModel);
 
-					_ctAdapter.setModelContextCTCollectionId(
+					_ctAdapter.setContextModelCTCollectionId(
 						contextModel, ctCollection.getCtCollectionId());
 				}
 				else {

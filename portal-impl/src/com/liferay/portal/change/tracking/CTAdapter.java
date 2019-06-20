@@ -23,7 +23,7 @@ import java.util.List;
  */
 public interface CTAdapter<T extends BaseModel<T>, C extends BaseModel<C>> {
 
-	public C createContextModel(T model);
+	public C createContextModel(T model, long ctCollectionId);
 
 	public T fetchByPrimaryKey(long primaryKey);
 
@@ -51,11 +51,10 @@ public interface CTAdapter<T extends BaseModel<T>, C extends BaseModel<C>> {
 
 	public void removeContexts(T model);
 
-	public void setModelContextCTCollectionId(
+	public void setContextModelCTCollectionId(
 		C ctContextModel, long ctCollectionId);
 
-	public void setModelCTCollectionId(
-		T ctContextHolderModel, long ctCollectionId);
+	public void setModelCTCollectionId(T model, long ctCollectionId);
 
 	public void updateContextModel(C ctContextModel);
 

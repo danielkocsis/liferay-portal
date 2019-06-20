@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<suppressions>
+	<checkstyle>
+		<suppress checks="PersistenceCallCheck" files="src/main/java/com/liferay/layout/change/tracking/internal/LayoutCTAdapter\.java" />
+	</checkstyle>
+</suppressions>
