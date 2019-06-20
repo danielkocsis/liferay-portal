@@ -17,9 +17,11 @@ package com.liferay.change.tracking.internal.persistence;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.engine.CTManager;
 import com.liferay.change.tracking.engine.exception.CTEngineException;
+import com.liferay.change.tracking.internal.adapter.CTAdapterHelper;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTEntryLocalService;
+import com.liferay.petra.function.UnsafeRunnable;
 import com.liferay.petra.lang.CentralizedThreadLocal;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -57,9 +59,12 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 /**
  * @author Preston Crary
  */
-@Component(immediate = true, service = CTPersistenceHelperFactory.class)
+@Component(
+	immediate = true,
+	service = {CTAdapterHelper.class, CTPersistenceHelperFactory.class}
+)
 public class CTPersistenceHelperFactoryImpl
-	implements CTPersistenceHelperFactory {
+	implements CTAdapterHelper, CTPersistenceHelperFactory {
 
 	@Override
 	public <T extends BaseModel<T>> CTPersistenceHelper<T> create(
@@ -72,7 +77,8 @@ public class CTPersistenceHelperFactoryImpl
 			return _getDefaultCTPersistenceHelper();
 		}
 
-		CTAdapterHolder ctAdapterHolder = _ctAdapterHolders.get(modelClass);
+		CTAdapterHolder ctAdapterHolder = _ctAdapterHolders.get(
+			_classNameLocalService.getClassName(modelClass.getName()));
 
 		if (ctAdapterHolder == null) {
 			return _getDefaultCTPersistenceHelper();
@@ -80,6 +86,32 @@ public class CTPersistenceHelperFactoryImpl
 
 		return new CTPersistenceHelperImpl<>(
 			ctCollectionOptional.get(), ctAdapterHolder);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends BaseModel<T>, C extends BaseModel<C>> CTAdapter<T, C>
+		getCTModelAdapter(long classNameId) {
+
+		return (CTAdapter<T, C>)_ctAdapterHolders.get(classNameId);
+	}
+
+	@Override
+	public <T extends Throwable> void runInProduction(
+			UnsafeRunnable<T> unsafeRunnable)
+		throws T {
+
+		Optional<CTCollection> ctCollectionOptional =
+			_activeCTCollectionOptionalThreadLocal.get();
+
+		try {
+			_activeCTCollectionOptionalThreadLocal.set(Optional.empty());
+
+			unsafeRunnable.run();
+		}
+		finally {
+			_activeCTCollectionOptionalThreadLocal.set(ctCollectionOptional);
+		}
 	}
 
 	@Activate
@@ -115,7 +147,7 @@ public class CTPersistenceHelperFactoryImpl
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTPersistenceHelperFactoryImpl.class);
 
-	private static final Map<Class<?>, CTAdapterHolder> _ctAdapterHolders =
+	private static final Map<Long, CTAdapterHolder> _ctAdapterHolders =
 		new ConcurrentHashMap<>();
 
 	@SuppressWarnings("rawtypes")
@@ -213,7 +245,7 @@ public class CTPersistenceHelperFactoryImpl
 			CTAdapterHolder ctAdapterHolder = new CTAdapterHolder(
 				ctAdapter, serviceRegistration, classNameId);
 
-			_ctAdapterHolders.put(modelClass, ctAdapterHolder);
+			_ctAdapterHolders.put(classNameId, ctAdapterHolder);
 
 			return ctAdapterHolder;
 		}
