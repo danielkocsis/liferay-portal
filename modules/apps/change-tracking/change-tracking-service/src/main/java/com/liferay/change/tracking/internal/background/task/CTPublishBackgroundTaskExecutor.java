@@ -14,10 +14,12 @@
 
 package com.liferay.change.tracking.internal.background.task;
 
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.engine.CTEngineManager;
 import com.liferay.change.tracking.engine.exception.CTEngineException;
 import com.liferay.change.tracking.engine.exception.CTEntryCollisionCTEngineException;
 import com.liferay.change.tracking.engine.exception.CTProcessCTEngineException;
+import com.liferay.change.tracking.internal.adapter.CTAdapterHelper;
 import com.liferay.change.tracking.internal.background.task.display.CTPublishBackgroundTaskDisplay;
 import com.liferay.change.tracking.internal.process.log.CTProcessLog;
 import com.liferay.change.tracking.internal.process.util.CTProcessMessageSenderUtil;
@@ -30,6 +32,7 @@ import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
 import com.liferay.change.tracking.service.CTEntryAggregateLocalServiceUtil;
 import com.liferay.change.tracking.service.CTEntryLocalServiceUtil;
 import com.liferay.change.tracking.service.CTProcessLocalServiceUtil;
+import com.liferay.portal.change.tracking.CTAdapter;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
@@ -42,6 +45,7 @@ import com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
@@ -61,10 +65,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
-
 /**
  * @author Zoltan Csaszi
  * @author Daniel Kocsis
@@ -72,26 +72,21 @@ import org.osgi.util.tracker.ServiceTracker;
 public class CTPublishBackgroundTaskExecutor
 	extends BaseBackgroundTaskExecutor {
 
-	public CTPublishBackgroundTaskExecutor() {
+	public CTPublishBackgroundTaskExecutor(
+		CTAdapterHelper ctAdapterHelper, CTEngineManager ctEngineManager) {
+
 		setBackgroundTaskStatusMessageTranslator(
 			new CTPublishBackgroundTaskStatusMessageTranslator());
 		setIsolationLevel(BackgroundTaskConstants.ISOLATION_LEVEL_COMPANY);
 
-		Bundle bundle = FrameworkUtil.getBundle(
-			CTPublishBackgroundTaskExecutor.class);
-
-		ServiceTracker<CTEngineManager, CTEngineManager> serviceTracker =
-			new ServiceTracker<>(
-				bundle.getBundleContext(), CTEngineManager.class, null);
-
-		serviceTracker.open();
-
-		_ctEngineManager = serviceTracker.getService();
+		_ctAdapterHelper = ctAdapterHelper;
+		_ctEngineManager = ctEngineManager;
 	}
 
 	@Override
 	public BackgroundTaskExecutor clone() {
-		return new CTPublishBackgroundTaskExecutor();
+		return new CTPublishBackgroundTaskExecutor(
+			_ctAdapterHelper, _ctEngineManager);
 	}
 
 	@Override
@@ -197,6 +192,9 @@ public class CTPublishBackgroundTaskExecutor
 			return;
 		}
 
+		_ctAdapterHelper.runInProduction(
+			() -> _publishCTContextHolderModels(ctCollectionId, ctEntries));
+
 		List<CTEntryAggregate> ctEntryAggregates =
 			_ctEngineManager.getCTEntryAggregates(ctCollectionId);
 
@@ -205,6 +203,55 @@ public class CTPublishBackgroundTaskExecutor
 			ctEntryAggregates, ignoreCollision);
 
 		_attachLogs(backgroundTask);
+	}
+
+	private <T extends BaseModel<T>, C extends BaseModel<C>> void
+		_publishCTContextHolderModels(
+			long ctCollectionId, List<CTEntry> ctEntries) {
+
+		for (CTEntry ctEntry : ctEntries) {
+			CTAdapter<T, C> ctAdapter = _ctAdapterHelper.getCTModelAdapter(
+				ctEntry.getModelClassNameId());
+
+			T model = ctAdapter.fetchByPrimaryKey(ctEntry.getModelClassPK());
+
+			if (CTConstants.CT_CHANGE_TYPE_ADDITION ==
+					ctEntry.getChangeType()) {
+
+				ctAdapter.setModelCTCollectionId(model, 0);
+			}
+			else if (CTConstants.CT_CHANGE_TYPE_MODIFICATION ==
+						ctEntry.getChangeType()) {
+
+				// swap
+
+				C modelCT = ctAdapter.fetchContextModel(
+					ctAdapter.getPrimaryKey(model), ctCollectionId);
+
+				if (modelCT == null) {
+					continue;
+				}
+
+				C tempContextModel = ctAdapter.createContextModel(model);
+
+				ctAdapter.populateContextModel(model, tempContextModel);
+
+				ctAdapter.populateModel(model, modelCT);
+
+				ctAdapter.updateModel(model);
+
+				ctAdapter.populateModel(model, tempContextModel);
+
+				ctAdapter.populateContextModel(model, modelCT);
+
+				ctAdapter.updateContextModel(modelCT);
+			}
+			else if (CTConstants.CT_CHANGE_TYPE_DELETION ==
+						ctEntry.getChangeType()) {
+
+				ctAdapter.setModelCTCollectionId(model, ctCollectionId);
+			}
+		}
 	}
 
 	private void _publishCTEntriesAndCTEntryAggregates(
@@ -294,6 +341,7 @@ public class CTPublishBackgroundTaskExecutor
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTPublishBackgroundTaskExecutor.class);
 
+	private final CTAdapterHelper _ctAdapterHelper;
 	private final CTEngineManager _ctEngineManager;
 	private final TransactionConfig _transactionConfig =
 		TransactionConfig.Factory.create(
