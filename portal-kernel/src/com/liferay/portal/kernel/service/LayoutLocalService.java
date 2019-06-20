@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutCT;
 import com.liferay.portal.kernel.model.LayoutReference;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutVersion;
@@ -467,6 +468,8 @@ public interface LayoutLocalService
 	 */
 	public void deleteLayout(long plid, ServiceContext serviceContext)
 		throws PortalException;
+
+	public LayoutCT deleteLayoutCT(long plid, long ctCollectionId);
 
 	/**
 	 * Deletes the group's private or non-private layouts, also deleting the

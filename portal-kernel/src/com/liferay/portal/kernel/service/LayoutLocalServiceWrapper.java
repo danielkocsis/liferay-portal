@@ -500,6 +500,13 @@ public class LayoutLocalServiceWrapper
 		_layoutLocalService.deleteLayout(plid, serviceContext);
 	}
 
+	@Override
+	public com.liferay.portal.kernel.model.LayoutCT deleteLayoutCT(
+		long plid, long ctCollectionId) {
+
+		return _layoutLocalService.deleteLayoutCT(plid, ctCollectionId);
+	}
+
 	/**
 	 * Deletes the group's private or non-private layouts, also deleting the
 	 * layouts' child layouts, and associated resources.

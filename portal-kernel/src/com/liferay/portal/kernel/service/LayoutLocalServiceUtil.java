@@ -491,6 +491,12 @@ public class LayoutLocalServiceUtil {
 		getService().deleteLayout(plid, serviceContext);
 	}
 
+	public static com.liferay.portal.kernel.model.LayoutCT deleteLayoutCT(
+		long plid, long ctCollectionId) {
+
+		return getService().deleteLayoutCT(plid, ctCollectionId);
+	}
+
 	/**
 	 * Deletes the group's private or non-private layouts, also deleting the
 	 * layouts' child layouts, and associated resources.
