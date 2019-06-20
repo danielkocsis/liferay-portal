@@ -153,6 +153,8 @@ public class LayoutPersistenceTest {
 
 		newLayout.setClassPK(RandomTestUtil.nextLong());
 
+		newLayout.setCtCollectionId(RandomTestUtil.nextLong());
+
 		newLayout.setName(RandomTestUtil.randomString());
 
 		newLayout.setTitle(RandomTestUtil.randomString());
@@ -228,6 +230,8 @@ public class LayoutPersistenceTest {
 			existingLayout.getClassNameId(), newLayout.getClassNameId());
 		Assert.assertEquals(
 			existingLayout.getClassPK(), newLayout.getClassPK());
+		Assert.assertEquals(
+			existingLayout.getCtCollectionId(), newLayout.getCtCollectionId());
 		Assert.assertEquals(existingLayout.getName(), newLayout.getName());
 		Assert.assertEquals(existingLayout.getTitle(), newLayout.getTitle());
 		Assert.assertEquals(
@@ -436,6 +440,22 @@ public class LayoutPersistenceTest {
 
 		_persistence.countBySourcePrototypeLayoutUuid_Head(
 			(String)null, RandomTestUtil.randomBoolean());
+	}
+
+	@Test
+	public void testCountByCTCollectionId() throws Exception {
+		_persistence.countByCTCollectionId(RandomTestUtil.nextLong());
+
+		_persistence.countByCTCollectionId(0L);
+	}
+
+	@Test
+	public void testCountByCTCollectionId_Head() throws Exception {
+		_persistence.countByCTCollectionId_Head(
+			RandomTestUtil.nextLong(), RandomTestUtil.randomBoolean());
+
+		_persistence.countByCTCollectionId_Head(
+			0L, RandomTestUtil.randomBoolean());
 	}
 
 	@Test
@@ -771,11 +791,11 @@ public class LayoutPersistenceTest {
 			"userName", true, "createDate", true, "modifiedDate", true,
 			"parentPlid", true, "privateLayout", true, "layoutId", true,
 			"parentLayoutId", true, "classNameId", true, "classPK", true,
-			"name", true, "title", true, "description", true, "keywords", true,
-			"robots", true, "type", true, "hidden", true, "system", true,
-			"friendlyURL", true, "iconImageId", true, "themeId", true,
-			"colorSchemeId", true, "priority", true, "layoutPrototypeUuid",
-			true, "layoutPrototypeLinkEnabled", true,
+			"ctCollectionId", true, "name", true, "title", true, "description",
+			true, "keywords", true, "robots", true, "type", true, "hidden",
+			true, "system", true, "friendlyURL", true, "iconImageId", true,
+			"themeId", true, "colorSchemeId", true, "priority", true,
+			"layoutPrototypeUuid", true, "layoutPrototypeLinkEnabled", true,
 			"sourcePrototypeLayoutUuid", true, "publishDate", true,
 			"lastPublishDate", true);
 	}
@@ -1109,6 +1129,8 @@ public class LayoutPersistenceTest {
 		layout.setClassNameId(RandomTestUtil.nextLong());
 
 		layout.setClassPK(RandomTestUtil.nextLong());
+
+		layout.setCtCollectionId(RandomTestUtil.nextLong());
 
 		layout.setName(RandomTestUtil.randomString());
 

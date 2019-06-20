@@ -2888,6 +2888,306 @@ public interface LayoutVersionPersistence
 		String sourcePrototypeLayoutUuid, int version);
 
 	/**
+	 * Returns all the layout versions where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the matching layout versions
+	 */
+	public java.util.List<LayoutVersion> findByCTCollectionId(
+		long ctCollectionId);
+
+	/**
+	 * Returns a range of all the layout versions where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @return the range of matching layout versions
+	 */
+	public java.util.List<LayoutVersion> findByCTCollectionId(
+		long ctCollectionId, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the layout versions where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching layout versions
+	 */
+	public java.util.List<LayoutVersion> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the layout versions where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching layout versions
+	 */
+	public java.util.List<LayoutVersion> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+			orderByComparator,
+		boolean retrieveFromCache);
+
+	/**
+	 * Returns the first layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout version
+	 * @throws NoSuchLayoutVersionException if a matching layout version could not be found
+	 */
+	public LayoutVersion findByCTCollectionId_First(
+			long ctCollectionId,
+			com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+				orderByComparator)
+		throws NoSuchLayoutVersionException;
+
+	/**
+	 * Returns the first layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout version, or <code>null</code> if a matching layout version could not be found
+	 */
+	public LayoutVersion fetchByCTCollectionId_First(
+		long ctCollectionId,
+		com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+			orderByComparator);
+
+	/**
+	 * Returns the last layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout version
+	 * @throws NoSuchLayoutVersionException if a matching layout version could not be found
+	 */
+	public LayoutVersion findByCTCollectionId_Last(
+			long ctCollectionId,
+			com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+				orderByComparator)
+		throws NoSuchLayoutVersionException;
+
+	/**
+	 * Returns the last layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout version, or <code>null</code> if a matching layout version could not be found
+	 */
+	public LayoutVersion fetchByCTCollectionId_Last(
+		long ctCollectionId,
+		com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+			orderByComparator);
+
+	/**
+	 * Returns the layout versions before and after the current layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param layoutVersionId the primary key of the current layout version
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next layout version
+	 * @throws NoSuchLayoutVersionException if a layout version with the primary key could not be found
+	 */
+	public LayoutVersion[] findByCTCollectionId_PrevAndNext(
+			long layoutVersionId, long ctCollectionId,
+			com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+				orderByComparator)
+		throws NoSuchLayoutVersionException;
+
+	/**
+	 * Removes all the layout versions where ctCollectionId = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 */
+	public void removeByCTCollectionId(long ctCollectionId);
+
+	/**
+	 * Returns the number of layout versions where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the number of matching layout versions
+	 */
+	public int countByCTCollectionId(long ctCollectionId);
+
+	/**
+	 * Returns all the layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @return the matching layout versions
+	 */
+	public java.util.List<LayoutVersion> findByCTCollectionId_Version(
+		long ctCollectionId, int version);
+
+	/**
+	 * Returns a range of all the layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @return the range of matching layout versions
+	 */
+	public java.util.List<LayoutVersion> findByCTCollectionId_Version(
+		long ctCollectionId, int version, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching layout versions
+	 */
+	public java.util.List<LayoutVersion> findByCTCollectionId_Version(
+		long ctCollectionId, int version, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching layout versions
+	 */
+	public java.util.List<LayoutVersion> findByCTCollectionId_Version(
+		long ctCollectionId, int version, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+			orderByComparator,
+		boolean retrieveFromCache);
+
+	/**
+	 * Returns the first layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout version
+	 * @throws NoSuchLayoutVersionException if a matching layout version could not be found
+	 */
+	public LayoutVersion findByCTCollectionId_Version_First(
+			long ctCollectionId, int version,
+			com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+				orderByComparator)
+		throws NoSuchLayoutVersionException;
+
+	/**
+	 * Returns the first layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout version, or <code>null</code> if a matching layout version could not be found
+	 */
+	public LayoutVersion fetchByCTCollectionId_Version_First(
+		long ctCollectionId, int version,
+		com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+			orderByComparator);
+
+	/**
+	 * Returns the last layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout version
+	 * @throws NoSuchLayoutVersionException if a matching layout version could not be found
+	 */
+	public LayoutVersion findByCTCollectionId_Version_Last(
+			long ctCollectionId, int version,
+			com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+				orderByComparator)
+		throws NoSuchLayoutVersionException;
+
+	/**
+	 * Returns the last layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout version, or <code>null</code> if a matching layout version could not be found
+	 */
+	public LayoutVersion fetchByCTCollectionId_Version_Last(
+		long ctCollectionId, int version,
+		com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+			orderByComparator);
+
+	/**
+	 * Returns the layout versions before and after the current layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param layoutVersionId the primary key of the current layout version
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next layout version
+	 * @throws NoSuchLayoutVersionException if a layout version with the primary key could not be found
+	 */
+	public LayoutVersion[] findByCTCollectionId_Version_PrevAndNext(
+			long layoutVersionId, long ctCollectionId, int version,
+			com.liferay.portal.kernel.util.OrderByComparator<LayoutVersion>
+				orderByComparator)
+		throws NoSuchLayoutVersionException;
+
+	/**
+	 * Removes all the layout versions where ctCollectionId = &#63; and version = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 */
+	public void removeByCTCollectionId_Version(
+		long ctCollectionId, int version);
+
+	/**
+	 * Returns the number of layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @return the number of matching layout versions
+	 */
+	public int countByCTCollectionId_Version(long ctCollectionId, int version);
+
+	/**
 	 * Returns all the layout versions where groupId = &#63; and privateLayout = &#63;.
 	 *
 	 * @param groupId the group ID

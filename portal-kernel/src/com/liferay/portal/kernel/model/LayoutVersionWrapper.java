@@ -60,6 +60,7 @@ public class LayoutVersionWrapper
 		attributes.put("parentLayoutId", getParentLayoutId());
 		attributes.put("classNameId", getClassNameId());
 		attributes.put("classPK", getClassPK());
+		attributes.put("ctCollectionId", getCtCollectionId());
 		attributes.put("name", getName());
 		attributes.put("title", getTitle());
 		attributes.put("description", getDescription());
@@ -182,6 +183,12 @@ public class LayoutVersionWrapper
 
 		if (classPK != null) {
 			setClassPK(classPK);
+		}
+
+		Long ctCollectionId = (Long)attributes.get("ctCollectionId");
+
+		if (ctCollectionId != null) {
+			setCtCollectionId(ctCollectionId);
 		}
 
 		String name = (String)attributes.get("name");
@@ -381,6 +388,16 @@ public class LayoutVersionWrapper
 	@Override
 	public String getCss() {
 		return model.getCss();
+	}
+
+	/**
+	 * Returns the ct collection ID of this layout version.
+	 *
+	 * @return the ct collection ID of this layout version
+	 */
+	@Override
+	public long getCtCollectionId() {
+		return model.getCtCollectionId();
 	}
 
 	@Override
@@ -1156,6 +1173,16 @@ public class LayoutVersionWrapper
 	@Override
 	public void setCss(String css) {
 		model.setCss(css);
+	}
+
+	/**
+	 * Sets the ct collection ID of this layout version.
+	 *
+	 * @param ctCollectionId the ct collection ID of this layout version
+	 */
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		model.setCtCollectionId(ctCollectionId);
 	}
 
 	/**

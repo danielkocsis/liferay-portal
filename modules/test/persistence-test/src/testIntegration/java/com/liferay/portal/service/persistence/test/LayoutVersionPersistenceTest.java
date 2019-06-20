@@ -150,6 +150,8 @@ public class LayoutVersionPersistenceTest {
 
 		newLayoutVersion.setClassPK(RandomTestUtil.nextLong());
 
+		newLayoutVersion.setCtCollectionId(RandomTestUtil.nextLong());
+
 		newLayoutVersion.setName(RandomTestUtil.randomString());
 
 		newLayoutVersion.setTitle(RandomTestUtil.randomString());
@@ -239,6 +241,9 @@ public class LayoutVersionPersistenceTest {
 			newLayoutVersion.getClassNameId());
 		Assert.assertEquals(
 			existingLayoutVersion.getClassPK(), newLayoutVersion.getClassPK());
+		Assert.assertEquals(
+			existingLayoutVersion.getCtCollectionId(),
+			newLayoutVersion.getCtCollectionId());
 		Assert.assertEquals(
 			existingLayoutVersion.getName(), newLayoutVersion.getName());
 		Assert.assertEquals(
@@ -468,6 +473,21 @@ public class LayoutVersionPersistenceTest {
 		_persistence.countBySourcePrototypeLayoutUuid_Version("null", 0);
 
 		_persistence.countBySourcePrototypeLayoutUuid_Version((String)null, 0);
+	}
+
+	@Test
+	public void testCountByCTCollectionId() throws Exception {
+		_persistence.countByCTCollectionId(RandomTestUtil.nextLong());
+
+		_persistence.countByCTCollectionId(0L);
+	}
+
+	@Test
+	public void testCountByCTCollectionId_Version() throws Exception {
+		_persistence.countByCTCollectionId_Version(
+			RandomTestUtil.nextLong(), RandomTestUtil.nextInt());
+
+		_persistence.countByCTCollectionId_Version(0L, 0);
 	}
 
 	@Test
@@ -744,11 +764,11 @@ public class LayoutVersionPersistenceTest {
 			true, "userName", true, "createDate", true, "modifiedDate", true,
 			"parentPlid", true, "privateLayout", true, "layoutId", true,
 			"parentLayoutId", true, "classNameId", true, "classPK", true,
-			"name", true, "title", true, "description", true, "keywords", true,
-			"robots", true, "type", true, "hidden", true, "system", true,
-			"friendlyURL", true, "iconImageId", true, "themeId", true,
-			"colorSchemeId", true, "priority", true, "layoutPrototypeUuid",
-			true, "layoutPrototypeLinkEnabled", true,
+			"ctCollectionId", true, "name", true, "title", true, "description",
+			true, "keywords", true, "robots", true, "type", true, "hidden",
+			true, "system", true, "friendlyURL", true, "iconImageId", true,
+			"themeId", true, "colorSchemeId", true, "priority", true,
+			"layoutPrototypeUuid", true, "layoutPrototypeLinkEnabled", true,
 			"sourcePrototypeLayoutUuid", true, "publishDate", true,
 			"lastPublishDate", true);
 	}
@@ -1053,6 +1073,8 @@ public class LayoutVersionPersistenceTest {
 		layoutVersion.setClassNameId(RandomTestUtil.nextLong());
 
 		layoutVersion.setClassPK(RandomTestUtil.nextLong());
+
+		layoutVersion.setCtCollectionId(RandomTestUtil.nextLong());
 
 		layoutVersion.setName(RandomTestUtil.randomString());
 

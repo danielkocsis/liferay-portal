@@ -10778,6 +10778,1088 @@ public class LayoutVersionPersistenceImpl
 		_FINDER_COLUMN_SOURCEPROTOTYPELAYOUTUUID_VERSION_VERSION_2 =
 			"layoutVersion.version = ?";
 
+	private FinderPath _finderPathWithPaginationFindByCTCollectionId;
+	private FinderPath _finderPathWithoutPaginationFindByCTCollectionId;
+	private FinderPath _finderPathCountByCTCollectionId;
+
+	/**
+	 * Returns all the layout versions where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the matching layout versions
+	 */
+	@Override
+	public List<LayoutVersion> findByCTCollectionId(long ctCollectionId) {
+		return findByCTCollectionId(
+			ctCollectionId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the layout versions where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @return the range of matching layout versions
+	 */
+	@Override
+	public List<LayoutVersion> findByCTCollectionId(
+		long ctCollectionId, int start, int end) {
+
+		return findByCTCollectionId(ctCollectionId, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the layout versions where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching layout versions
+	 */
+	@Override
+	public List<LayoutVersion> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		OrderByComparator<LayoutVersion> orderByComparator) {
+
+		return findByCTCollectionId(
+			ctCollectionId, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the layout versions where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching layout versions
+	 */
+	@Override
+	public List<LayoutVersion> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		OrderByComparator<LayoutVersion> orderByComparator,
+		boolean retrieveFromCache) {
+
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+			(orderByComparator == null)) {
+
+			pagination = false;
+			finderPath = _finderPathWithoutPaginationFindByCTCollectionId;
+			finderArgs = new Object[] {ctCollectionId};
+		}
+		else {
+			finderPath = _finderPathWithPaginationFindByCTCollectionId;
+			finderArgs = new Object[] {
+				ctCollectionId, start, end, orderByComparator
+			};
+		}
+
+		List<LayoutVersion> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<LayoutVersion>)FinderCacheUtil.getResult(
+				finderPath, finderArgs, this);
+
+			if ((list != null) && !list.isEmpty()) {
+				for (LayoutVersion layoutVersion : list) {
+					if ((ctCollectionId != layoutVersion.getCtCollectionId())) {
+						list = null;
+
+						break;
+					}
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(
+					3 + (orderByComparator.getOrderByFields().length * 2));
+			}
+			else {
+				query = new StringBundler(3);
+			}
+
+			query.append(_SQL_SELECT_LAYOUTVERSION_WHERE);
+
+			query.append(_FINDER_COLUMN_CTCOLLECTIONID_CTCOLLECTIONID_2);
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+			}
+			else if (pagination) {
+				query.append(LayoutVersionModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				if (!pagination) {
+					list = (List<LayoutVersion>)QueryUtil.list(
+						q, getDialect(), start, end, false);
+
+					Collections.sort(list);
+
+					list = Collections.unmodifiableList(list);
+				}
+				else {
+					list = (List<LayoutVersion>)QueryUtil.list(
+						q, getDialect(), start, end);
+				}
+
+				cacheResult(list);
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout version
+	 * @throws NoSuchLayoutVersionException if a matching layout version could not be found
+	 */
+	@Override
+	public LayoutVersion findByCTCollectionId_First(
+			long ctCollectionId,
+			OrderByComparator<LayoutVersion> orderByComparator)
+		throws NoSuchLayoutVersionException {
+
+		LayoutVersion layoutVersion = fetchByCTCollectionId_First(
+			ctCollectionId, orderByComparator);
+
+		if (layoutVersion != null) {
+			return layoutVersion;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append("}");
+
+		throw new NoSuchLayoutVersionException(msg.toString());
+	}
+
+	/**
+	 * Returns the first layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout version, or <code>null</code> if a matching layout version could not be found
+	 */
+	@Override
+	public LayoutVersion fetchByCTCollectionId_First(
+		long ctCollectionId,
+		OrderByComparator<LayoutVersion> orderByComparator) {
+
+		List<LayoutVersion> list = findByCTCollectionId(
+			ctCollectionId, 0, 1, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout version
+	 * @throws NoSuchLayoutVersionException if a matching layout version could not be found
+	 */
+	@Override
+	public LayoutVersion findByCTCollectionId_Last(
+			long ctCollectionId,
+			OrderByComparator<LayoutVersion> orderByComparator)
+		throws NoSuchLayoutVersionException {
+
+		LayoutVersion layoutVersion = fetchByCTCollectionId_Last(
+			ctCollectionId, orderByComparator);
+
+		if (layoutVersion != null) {
+			return layoutVersion;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append("}");
+
+		throw new NoSuchLayoutVersionException(msg.toString());
+	}
+
+	/**
+	 * Returns the last layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout version, or <code>null</code> if a matching layout version could not be found
+	 */
+	@Override
+	public LayoutVersion fetchByCTCollectionId_Last(
+		long ctCollectionId,
+		OrderByComparator<LayoutVersion> orderByComparator) {
+
+		int count = countByCTCollectionId(ctCollectionId);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<LayoutVersion> list = findByCTCollectionId(
+			ctCollectionId, count - 1, count, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the layout versions before and after the current layout version in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param layoutVersionId the primary key of the current layout version
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next layout version
+	 * @throws NoSuchLayoutVersionException if a layout version with the primary key could not be found
+	 */
+	@Override
+	public LayoutVersion[] findByCTCollectionId_PrevAndNext(
+			long layoutVersionId, long ctCollectionId,
+			OrderByComparator<LayoutVersion> orderByComparator)
+		throws NoSuchLayoutVersionException {
+
+		LayoutVersion layoutVersion = findByPrimaryKey(layoutVersionId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			LayoutVersion[] array = new LayoutVersionImpl[3];
+
+			array[0] = getByCTCollectionId_PrevAndNext(
+				session, layoutVersion, ctCollectionId, orderByComparator,
+				true);
+
+			array[1] = layoutVersion;
+
+			array[2] = getByCTCollectionId_PrevAndNext(
+				session, layoutVersion, ctCollectionId, orderByComparator,
+				false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected LayoutVersion getByCTCollectionId_PrevAndNext(
+		Session session, LayoutVersion layoutVersion, long ctCollectionId,
+		OrderByComparator<LayoutVersion> orderByComparator, boolean previous) {
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(
+				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		query.append(_SQL_SELECT_LAYOUTVERSION_WHERE);
+
+		query.append(_FINDER_COLUMN_CTCOLLECTIONID_CTCOLLECTIONID_2);
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(LayoutVersionModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(ctCollectionId);
+
+		if (orderByComparator != null) {
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(
+						layoutVersion)) {
+
+				qPos.add(orderByConditionValue);
+			}
+		}
+
+		List<LayoutVersion> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the layout versions where ctCollectionId = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 */
+	@Override
+	public void removeByCTCollectionId(long ctCollectionId) {
+		for (LayoutVersion layoutVersion :
+				findByCTCollectionId(
+					ctCollectionId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+					null)) {
+
+			remove(layoutVersion);
+		}
+	}
+
+	/**
+	 * Returns the number of layout versions where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the number of matching layout versions
+	 */
+	@Override
+	public int countByCTCollectionId(long ctCollectionId) {
+		FinderPath finderPath = _finderPathCountByCTCollectionId;
+
+		Object[] finderArgs = new Object[] {ctCollectionId};
+
+		Long count = (Long)FinderCacheUtil.getResult(
+			finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(2);
+
+			query.append(_SQL_COUNT_LAYOUTVERSION_WHERE);
+
+			query.append(_FINDER_COLUMN_CTCOLLECTIONID_CTCOLLECTIONID_2);
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_CTCOLLECTIONID_CTCOLLECTIONID_2 =
+		"layoutVersion.ctCollectionId = ?";
+
+	private FinderPath _finderPathWithPaginationFindByCTCollectionId_Version;
+	private FinderPath _finderPathWithoutPaginationFindByCTCollectionId_Version;
+	private FinderPath _finderPathCountByCTCollectionId_Version;
+
+	/**
+	 * Returns all the layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @return the matching layout versions
+	 */
+	@Override
+	public List<LayoutVersion> findByCTCollectionId_Version(
+		long ctCollectionId, int version) {
+
+		return findByCTCollectionId_Version(
+			ctCollectionId, version, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+			null);
+	}
+
+	/**
+	 * Returns a range of all the layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @return the range of matching layout versions
+	 */
+	@Override
+	public List<LayoutVersion> findByCTCollectionId_Version(
+		long ctCollectionId, int version, int start, int end) {
+
+		return findByCTCollectionId_Version(
+			ctCollectionId, version, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching layout versions
+	 */
+	@Override
+	public List<LayoutVersion> findByCTCollectionId_Version(
+		long ctCollectionId, int version, int start, int end,
+		OrderByComparator<LayoutVersion> orderByComparator) {
+
+		return findByCTCollectionId_Version(
+			ctCollectionId, version, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutVersionModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param start the lower bound of the range of layout versions
+	 * @param end the upper bound of the range of layout versions (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching layout versions
+	 */
+	@Override
+	public List<LayoutVersion> findByCTCollectionId_Version(
+		long ctCollectionId, int version, int start, int end,
+		OrderByComparator<LayoutVersion> orderByComparator,
+		boolean retrieveFromCache) {
+
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+			(orderByComparator == null)) {
+
+			pagination = false;
+			finderPath =
+				_finderPathWithoutPaginationFindByCTCollectionId_Version;
+			finderArgs = new Object[] {ctCollectionId, version};
+		}
+		else {
+			finderPath = _finderPathWithPaginationFindByCTCollectionId_Version;
+			finderArgs = new Object[] {
+				ctCollectionId, version, start, end, orderByComparator
+			};
+		}
+
+		List<LayoutVersion> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<LayoutVersion>)FinderCacheUtil.getResult(
+				finderPath, finderArgs, this);
+
+			if ((list != null) && !list.isEmpty()) {
+				for (LayoutVersion layoutVersion : list) {
+					if ((ctCollectionId != layoutVersion.getCtCollectionId()) ||
+						(version != layoutVersion.getVersion())) {
+
+						list = null;
+
+						break;
+					}
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(
+					4 + (orderByComparator.getOrderByFields().length * 2));
+			}
+			else {
+				query = new StringBundler(4);
+			}
+
+			query.append(_SQL_SELECT_LAYOUTVERSION_WHERE);
+
+			query.append(
+				_FINDER_COLUMN_CTCOLLECTIONID_VERSION_CTCOLLECTIONID_2);
+
+			query.append(_FINDER_COLUMN_CTCOLLECTIONID_VERSION_VERSION_2);
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+			}
+			else if (pagination) {
+				query.append(LayoutVersionModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				qPos.add(version);
+
+				if (!pagination) {
+					list = (List<LayoutVersion>)QueryUtil.list(
+						q, getDialect(), start, end, false);
+
+					Collections.sort(list);
+
+					list = Collections.unmodifiableList(list);
+				}
+				else {
+					list = (List<LayoutVersion>)QueryUtil.list(
+						q, getDialect(), start, end);
+				}
+
+				cacheResult(list);
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout version
+	 * @throws NoSuchLayoutVersionException if a matching layout version could not be found
+	 */
+	@Override
+	public LayoutVersion findByCTCollectionId_Version_First(
+			long ctCollectionId, int version,
+			OrderByComparator<LayoutVersion> orderByComparator)
+		throws NoSuchLayoutVersionException {
+
+		LayoutVersion layoutVersion = fetchByCTCollectionId_Version_First(
+			ctCollectionId, version, orderByComparator);
+
+		if (layoutVersion != null) {
+			return layoutVersion;
+		}
+
+		StringBundler msg = new StringBundler(6);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append(", version=");
+		msg.append(version);
+
+		msg.append("}");
+
+		throw new NoSuchLayoutVersionException(msg.toString());
+	}
+
+	/**
+	 * Returns the first layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout version, or <code>null</code> if a matching layout version could not be found
+	 */
+	@Override
+	public LayoutVersion fetchByCTCollectionId_Version_First(
+		long ctCollectionId, int version,
+		OrderByComparator<LayoutVersion> orderByComparator) {
+
+		List<LayoutVersion> list = findByCTCollectionId_Version(
+			ctCollectionId, version, 0, 1, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout version
+	 * @throws NoSuchLayoutVersionException if a matching layout version could not be found
+	 */
+	@Override
+	public LayoutVersion findByCTCollectionId_Version_Last(
+			long ctCollectionId, int version,
+			OrderByComparator<LayoutVersion> orderByComparator)
+		throws NoSuchLayoutVersionException {
+
+		LayoutVersion layoutVersion = fetchByCTCollectionId_Version_Last(
+			ctCollectionId, version, orderByComparator);
+
+		if (layoutVersion != null) {
+			return layoutVersion;
+		}
+
+		StringBundler msg = new StringBundler(6);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append(", version=");
+		msg.append(version);
+
+		msg.append("}");
+
+		throw new NoSuchLayoutVersionException(msg.toString());
+	}
+
+	/**
+	 * Returns the last layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout version, or <code>null</code> if a matching layout version could not be found
+	 */
+	@Override
+	public LayoutVersion fetchByCTCollectionId_Version_Last(
+		long ctCollectionId, int version,
+		OrderByComparator<LayoutVersion> orderByComparator) {
+
+		int count = countByCTCollectionId_Version(ctCollectionId, version);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<LayoutVersion> list = findByCTCollectionId_Version(
+			ctCollectionId, version, count - 1, count, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the layout versions before and after the current layout version in the ordered set where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param layoutVersionId the primary key of the current layout version
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next layout version
+	 * @throws NoSuchLayoutVersionException if a layout version with the primary key could not be found
+	 */
+	@Override
+	public LayoutVersion[] findByCTCollectionId_Version_PrevAndNext(
+			long layoutVersionId, long ctCollectionId, int version,
+			OrderByComparator<LayoutVersion> orderByComparator)
+		throws NoSuchLayoutVersionException {
+
+		LayoutVersion layoutVersion = findByPrimaryKey(layoutVersionId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			LayoutVersion[] array = new LayoutVersionImpl[3];
+
+			array[0] = getByCTCollectionId_Version_PrevAndNext(
+				session, layoutVersion, ctCollectionId, version,
+				orderByComparator, true);
+
+			array[1] = layoutVersion;
+
+			array[2] = getByCTCollectionId_Version_PrevAndNext(
+				session, layoutVersion, ctCollectionId, version,
+				orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected LayoutVersion getByCTCollectionId_Version_PrevAndNext(
+		Session session, LayoutVersion layoutVersion, long ctCollectionId,
+		int version, OrderByComparator<LayoutVersion> orderByComparator,
+		boolean previous) {
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(
+				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(4);
+		}
+
+		query.append(_SQL_SELECT_LAYOUTVERSION_WHERE);
+
+		query.append(_FINDER_COLUMN_CTCOLLECTIONID_VERSION_CTCOLLECTIONID_2);
+
+		query.append(_FINDER_COLUMN_CTCOLLECTIONID_VERSION_VERSION_2);
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(LayoutVersionModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(ctCollectionId);
+
+		qPos.add(version);
+
+		if (orderByComparator != null) {
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(
+						layoutVersion)) {
+
+				qPos.add(orderByConditionValue);
+			}
+		}
+
+		List<LayoutVersion> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the layout versions where ctCollectionId = &#63; and version = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 */
+	@Override
+	public void removeByCTCollectionId_Version(
+		long ctCollectionId, int version) {
+
+		for (LayoutVersion layoutVersion :
+				findByCTCollectionId_Version(
+					ctCollectionId, version, QueryUtil.ALL_POS,
+					QueryUtil.ALL_POS, null)) {
+
+			remove(layoutVersion);
+		}
+	}
+
+	/**
+	 * Returns the number of layout versions where ctCollectionId = &#63; and version = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param version the version
+	 * @return the number of matching layout versions
+	 */
+	@Override
+	public int countByCTCollectionId_Version(long ctCollectionId, int version) {
+		FinderPath finderPath = _finderPathCountByCTCollectionId_Version;
+
+		Object[] finderArgs = new Object[] {ctCollectionId, version};
+
+		Long count = (Long)FinderCacheUtil.getResult(
+			finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(3);
+
+			query.append(_SQL_COUNT_LAYOUTVERSION_WHERE);
+
+			query.append(
+				_FINDER_COLUMN_CTCOLLECTIONID_VERSION_CTCOLLECTIONID_2);
+
+			query.append(_FINDER_COLUMN_CTCOLLECTIONID_VERSION_VERSION_2);
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				qPos.add(version);
+
+				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String
+		_FINDER_COLUMN_CTCOLLECTIONID_VERSION_CTCOLLECTIONID_2 =
+			"layoutVersion.ctCollectionId = ? AND ";
+
+	private static final String
+		_FINDER_COLUMN_CTCOLLECTIONID_VERSION_VERSION_2 =
+			"layoutVersion.version = ?";
+
 	private FinderPath _finderPathWithPaginationFindByG_P;
 	private FinderPath _finderPathWithoutPaginationFindByG_P;
 	private FinderPath _finderPathCountByG_P;
@@ -25712,6 +26794,23 @@ public class LayoutVersionPersistenceImpl
 				_finderPathWithoutPaginationFindBySourcePrototypeLayoutUuid_Version,
 				args);
 
+			args = new Object[] {layoutVersionModelImpl.getCtCollectionId()};
+
+			FinderCacheUtil.removeResult(
+				_finderPathCountByCTCollectionId, args);
+			FinderCacheUtil.removeResult(
+				_finderPathWithoutPaginationFindByCTCollectionId, args);
+
+			args = new Object[] {
+				layoutVersionModelImpl.getCtCollectionId(),
+				layoutVersionModelImpl.getVersion()
+			};
+
+			FinderCacheUtil.removeResult(
+				_finderPathCountByCTCollectionId_Version, args);
+			FinderCacheUtil.removeResult(
+				_finderPathWithoutPaginationFindByCTCollectionId_Version, args);
+
 			args = new Object[] {
 				layoutVersionModelImpl.getGroupId(),
 				layoutVersionModelImpl.isPrivateLayout()
@@ -26368,6 +27467,56 @@ public class LayoutVersionPersistenceImpl
 					_finderPathCountBySourcePrototypeLayoutUuid_Version, args);
 				FinderCacheUtil.removeResult(
 					_finderPathWithoutPaginationFindBySourcePrototypeLayoutUuid_Version,
+					args);
+			}
+
+			if ((layoutVersionModelImpl.getColumnBitmask() &
+				 _finderPathWithoutPaginationFindByCTCollectionId.
+					 getColumnBitmask()) != 0) {
+
+				Object[] args = new Object[] {
+					layoutVersionModelImpl.getOriginalCtCollectionId()
+				};
+
+				FinderCacheUtil.removeResult(
+					_finderPathCountByCTCollectionId, args);
+				FinderCacheUtil.removeResult(
+					_finderPathWithoutPaginationFindByCTCollectionId, args);
+
+				args = new Object[] {
+					layoutVersionModelImpl.getCtCollectionId()
+				};
+
+				FinderCacheUtil.removeResult(
+					_finderPathCountByCTCollectionId, args);
+				FinderCacheUtil.removeResult(
+					_finderPathWithoutPaginationFindByCTCollectionId, args);
+			}
+
+			if ((layoutVersionModelImpl.getColumnBitmask() &
+				 _finderPathWithoutPaginationFindByCTCollectionId_Version.
+					 getColumnBitmask()) != 0) {
+
+				Object[] args = new Object[] {
+					layoutVersionModelImpl.getOriginalCtCollectionId(),
+					layoutVersionModelImpl.getOriginalVersion()
+				};
+
+				FinderCacheUtil.removeResult(
+					_finderPathCountByCTCollectionId_Version, args);
+				FinderCacheUtil.removeResult(
+					_finderPathWithoutPaginationFindByCTCollectionId_Version,
+					args);
+
+				args = new Object[] {
+					layoutVersionModelImpl.getCtCollectionId(),
+					layoutVersionModelImpl.getVersion()
+				};
+
+				FinderCacheUtil.removeResult(
+					_finderPathCountByCTCollectionId_Version, args);
+				FinderCacheUtil.removeResult(
+					_finderPathWithoutPaginationFindByCTCollectionId_Version,
 					args);
 			}
 
@@ -27782,6 +28931,59 @@ public class LayoutVersionPersistenceImpl
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countBySourcePrototypeLayoutUuid_Version",
 			new String[] {String.class.getName(), Integer.class.getName()});
+
+		_finderPathWithPaginationFindByCTCollectionId = new FinderPath(
+			LayoutVersionModelImpl.ENTITY_CACHE_ENABLED,
+			LayoutVersionModelImpl.FINDER_CACHE_ENABLED,
+			LayoutVersionImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			"findByCTCollectionId",
+			new String[] {
+				Long.class.getName(), Integer.class.getName(),
+				Integer.class.getName(), OrderByComparator.class.getName()
+			});
+
+		_finderPathWithoutPaginationFindByCTCollectionId = new FinderPath(
+			LayoutVersionModelImpl.ENTITY_CACHE_ENABLED,
+			LayoutVersionModelImpl.FINDER_CACHE_ENABLED,
+			LayoutVersionImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"findByCTCollectionId", new String[] {Long.class.getName()},
+			LayoutVersionModelImpl.CTCOLLECTIONID_COLUMN_BITMASK |
+			LayoutVersionModelImpl.VERSION_COLUMN_BITMASK);
+
+		_finderPathCountByCTCollectionId = new FinderPath(
+			LayoutVersionModelImpl.ENTITY_CACHE_ENABLED,
+			LayoutVersionModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByCTCollectionId",
+			new String[] {Long.class.getName()});
+
+		_finderPathWithPaginationFindByCTCollectionId_Version = new FinderPath(
+			LayoutVersionModelImpl.ENTITY_CACHE_ENABLED,
+			LayoutVersionModelImpl.FINDER_CACHE_ENABLED,
+			LayoutVersionImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			"findByCTCollectionId_Version",
+			new String[] {
+				Long.class.getName(), Integer.class.getName(),
+				Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
+			});
+
+		_finderPathWithoutPaginationFindByCTCollectionId_Version =
+			new FinderPath(
+				LayoutVersionModelImpl.ENTITY_CACHE_ENABLED,
+				LayoutVersionModelImpl.FINDER_CACHE_ENABLED,
+				LayoutVersionImpl.class,
+				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+				"findByCTCollectionId_Version",
+				new String[] {Long.class.getName(), Integer.class.getName()},
+				LayoutVersionModelImpl.CTCOLLECTIONID_COLUMN_BITMASK |
+				LayoutVersionModelImpl.VERSION_COLUMN_BITMASK);
+
+		_finderPathCountByCTCollectionId_Version = new FinderPath(
+			LayoutVersionModelImpl.ENTITY_CACHE_ENABLED,
+			LayoutVersionModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByCTCollectionId_Version",
+			new String[] {Long.class.getName(), Integer.class.getName()});
 
 		_finderPathWithPaginationFindByG_P = new FinderPath(
 			LayoutVersionModelImpl.ENTITY_CACHE_ENABLED,

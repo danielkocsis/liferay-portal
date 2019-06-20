@@ -340,6 +340,20 @@ public interface LayoutVersionModel
 	public void setClassPK(long classPK);
 
 	/**
+	 * Returns the ct collection ID of this layout version.
+	 *
+	 * @return the ct collection ID of this layout version
+	 */
+	public long getCtCollectionId();
+
+	/**
+	 * Sets the ct collection ID of this layout version.
+	 *
+	 * @param ctCollectionId the ct collection ID of this layout version
+	 */
+	public void setCtCollectionId(long ctCollectionId);
+
+	/**
 	 * Returns the name of this layout version.
 	 *
 	 * @return the name of this layout version

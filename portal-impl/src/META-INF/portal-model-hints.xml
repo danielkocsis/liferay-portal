@@ -668,6 +668,7 @@
 		<field name="parentLayoutId" type="long" />
 		<field name="classNameId" type="long" />
 		<field name="classPK" type="long" />
+		<field name="ctCollectionId" type="long" />
 		<field localized="true" name="name" type="String">
 			<hint name="display-width">210</hint>
 			<hint name="max-length">4000</hint>
@@ -729,6 +730,12 @@
 			<hint-collection name="TEXTAREA" />
 		</field>
 		<field name="master" type="boolean" />
+	</model>
+	<model name="com.liferay.portal.kernel.model.LayoutCT">
+		<field name="mvccVersion" type="long" />
+		<field name="plid" type="long" />
+		<field name="ctCollectionId" type="long" />
+		<field name="typeSettings" type="String" />
 	</model>
 	<model name="com.liferay.portal.kernel.model.LayoutFriendlyURL">
 		<field name="mvccVersion" type="long" />
@@ -923,6 +930,7 @@
 		<field name="parentLayoutId" type="long" />
 		<field name="classNameId" type="long" />
 		<field name="classPK" type="long" />
+		<field name="ctCollectionId" type="long" />
 		<field localized="true" name="name" type="String">
 			<hint name="display-width">210</hint>
 			<hint name="max-length">4000</hint>

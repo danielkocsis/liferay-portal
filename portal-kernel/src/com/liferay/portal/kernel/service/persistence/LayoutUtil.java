@@ -3444,6 +3444,369 @@ public class LayoutUtil {
 	}
 
 	/**
+	 * Returns all the layouts where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the matching layouts
+	 */
+	public static List<Layout> findByCTCollectionId(long ctCollectionId) {
+		return getPersistence().findByCTCollectionId(ctCollectionId);
+	}
+
+	/**
+	 * Returns a range of all the layouts where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of layouts
+	 * @param end the upper bound of the range of layouts (not inclusive)
+	 * @return the range of matching layouts
+	 */
+	public static List<Layout> findByCTCollectionId(
+		long ctCollectionId, int start, int end) {
+
+		return getPersistence().findByCTCollectionId(
+			ctCollectionId, start, end);
+	}
+
+	/**
+	 * Returns an ordered range of all the layouts where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of layouts
+	 * @param end the upper bound of the range of layouts (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching layouts
+	 */
+	public static List<Layout> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		OrderByComparator<Layout> orderByComparator) {
+
+		return getPersistence().findByCTCollectionId(
+			ctCollectionId, start, end, orderByComparator);
+	}
+
+	/**
+	 * Returns an ordered range of all the layouts where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of layouts
+	 * @param end the upper bound of the range of layouts (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching layouts
+	 */
+	public static List<Layout> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		OrderByComparator<Layout> orderByComparator,
+		boolean retrieveFromCache) {
+
+		return getPersistence().findByCTCollectionId(
+			ctCollectionId, start, end, orderByComparator, retrieveFromCache);
+	}
+
+	/**
+	 * Returns the first layout in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout
+	 * @throws NoSuchLayoutException if a matching layout could not be found
+	 */
+	public static Layout findByCTCollectionId_First(
+			long ctCollectionId, OrderByComparator<Layout> orderByComparator)
+		throws com.liferay.portal.kernel.exception.NoSuchLayoutException {
+
+		return getPersistence().findByCTCollectionId_First(
+			ctCollectionId, orderByComparator);
+	}
+
+	/**
+	 * Returns the first layout in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout, or <code>null</code> if a matching layout could not be found
+	 */
+	public static Layout fetchByCTCollectionId_First(
+		long ctCollectionId, OrderByComparator<Layout> orderByComparator) {
+
+		return getPersistence().fetchByCTCollectionId_First(
+			ctCollectionId, orderByComparator);
+	}
+
+	/**
+	 * Returns the last layout in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout
+	 * @throws NoSuchLayoutException if a matching layout could not be found
+	 */
+	public static Layout findByCTCollectionId_Last(
+			long ctCollectionId, OrderByComparator<Layout> orderByComparator)
+		throws com.liferay.portal.kernel.exception.NoSuchLayoutException {
+
+		return getPersistence().findByCTCollectionId_Last(
+			ctCollectionId, orderByComparator);
+	}
+
+	/**
+	 * Returns the last layout in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout, or <code>null</code> if a matching layout could not be found
+	 */
+	public static Layout fetchByCTCollectionId_Last(
+		long ctCollectionId, OrderByComparator<Layout> orderByComparator) {
+
+		return getPersistence().fetchByCTCollectionId_Last(
+			ctCollectionId, orderByComparator);
+	}
+
+	/**
+	 * Returns the layouts before and after the current layout in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param plid the primary key of the current layout
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next layout
+	 * @throws NoSuchLayoutException if a layout with the primary key could not be found
+	 */
+	public static Layout[] findByCTCollectionId_PrevAndNext(
+			long plid, long ctCollectionId,
+			OrderByComparator<Layout> orderByComparator)
+		throws com.liferay.portal.kernel.exception.NoSuchLayoutException {
+
+		return getPersistence().findByCTCollectionId_PrevAndNext(
+			plid, ctCollectionId, orderByComparator);
+	}
+
+	/**
+	 * Removes all the layouts where ctCollectionId = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 */
+	public static void removeByCTCollectionId(long ctCollectionId) {
+		getPersistence().removeByCTCollectionId(ctCollectionId);
+	}
+
+	/**
+	 * Returns the number of layouts where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the number of matching layouts
+	 */
+	public static int countByCTCollectionId(long ctCollectionId) {
+		return getPersistence().countByCTCollectionId(ctCollectionId);
+	}
+
+	/**
+	 * Returns all the layouts where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @return the matching layouts
+	 */
+	public static List<Layout> findByCTCollectionId_Head(
+		long ctCollectionId, boolean head) {
+
+		return getPersistence().findByCTCollectionId_Head(ctCollectionId, head);
+	}
+
+	/**
+	 * Returns a range of all the layouts where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @param start the lower bound of the range of layouts
+	 * @param end the upper bound of the range of layouts (not inclusive)
+	 * @return the range of matching layouts
+	 */
+	public static List<Layout> findByCTCollectionId_Head(
+		long ctCollectionId, boolean head, int start, int end) {
+
+		return getPersistence().findByCTCollectionId_Head(
+			ctCollectionId, head, start, end);
+	}
+
+	/**
+	 * Returns an ordered range of all the layouts where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @param start the lower bound of the range of layouts
+	 * @param end the upper bound of the range of layouts (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching layouts
+	 */
+	public static List<Layout> findByCTCollectionId_Head(
+		long ctCollectionId, boolean head, int start, int end,
+		OrderByComparator<Layout> orderByComparator) {
+
+		return getPersistence().findByCTCollectionId_Head(
+			ctCollectionId, head, start, end, orderByComparator);
+	}
+
+	/**
+	 * Returns an ordered range of all the layouts where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LayoutModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @param start the lower bound of the range of layouts
+	 * @param end the upper bound of the range of layouts (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching layouts
+	 */
+	public static List<Layout> findByCTCollectionId_Head(
+		long ctCollectionId, boolean head, int start, int end,
+		OrderByComparator<Layout> orderByComparator,
+		boolean retrieveFromCache) {
+
+		return getPersistence().findByCTCollectionId_Head(
+			ctCollectionId, head, start, end, orderByComparator,
+			retrieveFromCache);
+	}
+
+	/**
+	 * Returns the first layout in the ordered set where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout
+	 * @throws NoSuchLayoutException if a matching layout could not be found
+	 */
+	public static Layout findByCTCollectionId_Head_First(
+			long ctCollectionId, boolean head,
+			OrderByComparator<Layout> orderByComparator)
+		throws com.liferay.portal.kernel.exception.NoSuchLayoutException {
+
+		return getPersistence().findByCTCollectionId_Head_First(
+			ctCollectionId, head, orderByComparator);
+	}
+
+	/**
+	 * Returns the first layout in the ordered set where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching layout, or <code>null</code> if a matching layout could not be found
+	 */
+	public static Layout fetchByCTCollectionId_Head_First(
+		long ctCollectionId, boolean head,
+		OrderByComparator<Layout> orderByComparator) {
+
+		return getPersistence().fetchByCTCollectionId_Head_First(
+			ctCollectionId, head, orderByComparator);
+	}
+
+	/**
+	 * Returns the last layout in the ordered set where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout
+	 * @throws NoSuchLayoutException if a matching layout could not be found
+	 */
+	public static Layout findByCTCollectionId_Head_Last(
+			long ctCollectionId, boolean head,
+			OrderByComparator<Layout> orderByComparator)
+		throws com.liferay.portal.kernel.exception.NoSuchLayoutException {
+
+		return getPersistence().findByCTCollectionId_Head_Last(
+			ctCollectionId, head, orderByComparator);
+	}
+
+	/**
+	 * Returns the last layout in the ordered set where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching layout, or <code>null</code> if a matching layout could not be found
+	 */
+	public static Layout fetchByCTCollectionId_Head_Last(
+		long ctCollectionId, boolean head,
+		OrderByComparator<Layout> orderByComparator) {
+
+		return getPersistence().fetchByCTCollectionId_Head_Last(
+			ctCollectionId, head, orderByComparator);
+	}
+
+	/**
+	 * Returns the layouts before and after the current layout in the ordered set where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * @param plid the primary key of the current layout
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next layout
+	 * @throws NoSuchLayoutException if a layout with the primary key could not be found
+	 */
+	public static Layout[] findByCTCollectionId_Head_PrevAndNext(
+			long plid, long ctCollectionId, boolean head,
+			OrderByComparator<Layout> orderByComparator)
+		throws com.liferay.portal.kernel.exception.NoSuchLayoutException {
+
+		return getPersistence().findByCTCollectionId_Head_PrevAndNext(
+			plid, ctCollectionId, head, orderByComparator);
+	}
+
+	/**
+	 * Removes all the layouts where ctCollectionId = &#63; and head = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 */
+	public static void removeByCTCollectionId_Head(
+		long ctCollectionId, boolean head) {
+
+		getPersistence().removeByCTCollectionId_Head(ctCollectionId, head);
+	}
+
+	/**
+	 * Returns the number of layouts where ctCollectionId = &#63; and head = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param head the head
+	 * @return the number of matching layouts
+	 */
+	public static int countByCTCollectionId_Head(
+		long ctCollectionId, boolean head) {
+
+		return getPersistence().countByCTCollectionId_Head(
+			ctCollectionId, head);
+	}
+
+	/**
 	 * Returns all the layouts where groupId = &#63; and privateLayout = &#63;.
 	 *
 	 * @param groupId the group ID

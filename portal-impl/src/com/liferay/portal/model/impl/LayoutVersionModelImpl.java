@@ -88,14 +88,15 @@ public class LayoutVersionModelImpl
 		{"parentPlid", Types.BIGINT}, {"privateLayout", Types.BOOLEAN},
 		{"layoutId", Types.BIGINT}, {"parentLayoutId", Types.BIGINT},
 		{"classNameId", Types.BIGINT}, {"classPK", Types.BIGINT},
-		{"name", Types.VARCHAR}, {"title", Types.VARCHAR},
-		{"description", Types.VARCHAR}, {"keywords", Types.VARCHAR},
-		{"robots", Types.VARCHAR}, {"type_", Types.VARCHAR},
-		{"typeSettings", Types.CLOB}, {"hidden_", Types.BOOLEAN},
-		{"system_", Types.BOOLEAN}, {"friendlyURL", Types.VARCHAR},
-		{"iconImageId", Types.BIGINT}, {"themeId", Types.VARCHAR},
-		{"colorSchemeId", Types.VARCHAR}, {"css", Types.CLOB},
-		{"priority", Types.INTEGER}, {"layoutPrototypeUuid", Types.VARCHAR},
+		{"ctCollectionId", Types.BIGINT}, {"name", Types.VARCHAR},
+		{"title", Types.VARCHAR}, {"description", Types.VARCHAR},
+		{"keywords", Types.VARCHAR}, {"robots", Types.VARCHAR},
+		{"type_", Types.VARCHAR}, {"typeSettings", Types.CLOB},
+		{"hidden_", Types.BOOLEAN}, {"system_", Types.BOOLEAN},
+		{"friendlyURL", Types.VARCHAR}, {"iconImageId", Types.BIGINT},
+		{"themeId", Types.VARCHAR}, {"colorSchemeId", Types.VARCHAR},
+		{"css", Types.CLOB}, {"priority", Types.INTEGER},
+		{"layoutPrototypeUuid", Types.VARCHAR},
 		{"layoutPrototypeLinkEnabled", Types.BOOLEAN},
 		{"sourcePrototypeLayoutUuid", Types.VARCHAR},
 		{"publishDate", Types.TIMESTAMP}, {"lastPublishDate", Types.TIMESTAMP}
@@ -121,6 +122,7 @@ public class LayoutVersionModelImpl
 		TABLE_COLUMNS_MAP.put("parentLayoutId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("classNameId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("classPK", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("ctCollectionId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("name", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
@@ -144,7 +146,7 @@ public class LayoutVersionModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table LayoutVersion (layoutVersionId LONG not null primary key,version INTEGER,uuid_ VARCHAR(75) null,plid LONG,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,parentPlid LONG,privateLayout BOOLEAN,layoutId LONG,parentLayoutId LONG,classNameId LONG,classPK LONG,name STRING null,title STRING null,description STRING null,keywords STRING null,robots STRING null,type_ VARCHAR(75) null,typeSettings TEXT null,hidden_ BOOLEAN,system_ BOOLEAN,friendlyURL VARCHAR(255) null,iconImageId LONG,themeId VARCHAR(75) null,colorSchemeId VARCHAR(75) null,css TEXT null,priority INTEGER,layoutPrototypeUuid VARCHAR(75) null,layoutPrototypeLinkEnabled BOOLEAN,sourcePrototypeLayoutUuid VARCHAR(75) null,publishDate DATE null,lastPublishDate DATE null)";
+		"create table LayoutVersion (layoutVersionId LONG not null primary key,version INTEGER,uuid_ VARCHAR(75) null,plid LONG,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,parentPlid LONG,privateLayout BOOLEAN,layoutId LONG,parentLayoutId LONG,classNameId LONG,classPK LONG,ctCollectionId LONG,name STRING null,title STRING null,description STRING null,keywords STRING null,robots STRING null,type_ VARCHAR(75) null,typeSettings TEXT null,hidden_ BOOLEAN,system_ BOOLEAN,friendlyURL VARCHAR(255) null,iconImageId LONG,themeId VARCHAR(75) null,colorSchemeId VARCHAR(75) null,css TEXT null,priority INTEGER,layoutPrototypeUuid VARCHAR(75) null,layoutPrototypeLinkEnabled BOOLEAN,sourcePrototypeLayoutUuid VARCHAR(75) null,publishDate DATE null,lastPublishDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table LayoutVersion";
 
@@ -181,35 +183,37 @@ public class LayoutVersionModelImpl
 
 	public static final long COMPANYID_COLUMN_BITMASK = 4L;
 
-	public static final long FRIENDLYURL_COLUMN_BITMASK = 8L;
+	public static final long CTCOLLECTIONID_COLUMN_BITMASK = 8L;
 
-	public static final long GROUPID_COLUMN_BITMASK = 16L;
+	public static final long FRIENDLYURL_COLUMN_BITMASK = 16L;
 
-	public static final long HIDDEN_COLUMN_BITMASK = 32L;
+	public static final long GROUPID_COLUMN_BITMASK = 32L;
 
-	public static final long ICONIMAGEID_COLUMN_BITMASK = 64L;
+	public static final long HIDDEN_COLUMN_BITMASK = 64L;
 
-	public static final long LAYOUTID_COLUMN_BITMASK = 128L;
+	public static final long ICONIMAGEID_COLUMN_BITMASK = 128L;
 
-	public static final long LAYOUTPROTOTYPEUUID_COLUMN_BITMASK = 256L;
+	public static final long LAYOUTID_COLUMN_BITMASK = 256L;
 
-	public static final long PARENTLAYOUTID_COLUMN_BITMASK = 512L;
+	public static final long LAYOUTPROTOTYPEUUID_COLUMN_BITMASK = 512L;
 
-	public static final long PARENTPLID_COLUMN_BITMASK = 1024L;
+	public static final long PARENTLAYOUTID_COLUMN_BITMASK = 1024L;
 
-	public static final long PLID_COLUMN_BITMASK = 2048L;
+	public static final long PARENTPLID_COLUMN_BITMASK = 2048L;
 
-	public static final long PRIORITY_COLUMN_BITMASK = 4096L;
+	public static final long PLID_COLUMN_BITMASK = 4096L;
 
-	public static final long PRIVATELAYOUT_COLUMN_BITMASK = 8192L;
+	public static final long PRIORITY_COLUMN_BITMASK = 8192L;
 
-	public static final long SOURCEPROTOTYPELAYOUTUUID_COLUMN_BITMASK = 16384L;
+	public static final long PRIVATELAYOUT_COLUMN_BITMASK = 16384L;
 
-	public static final long TYPE_COLUMN_BITMASK = 32768L;
+	public static final long SOURCEPROTOTYPELAYOUTUUID_COLUMN_BITMASK = 32768L;
 
-	public static final long UUID_COLUMN_BITMASK = 65536L;
+	public static final long TYPE_COLUMN_BITMASK = 65536L;
 
-	public static final long VERSION_COLUMN_BITMASK = 131072L;
+	public static final long UUID_COLUMN_BITMASK = 131072L;
+
+	public static final long VERSION_COLUMN_BITMASK = 262144L;
 
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(
 		com.liferay.portal.util.PropsUtil.get(
@@ -410,6 +414,11 @@ public class LayoutVersionModelImpl
 		attributeSetterBiConsumers.put(
 			"classPK",
 			(BiConsumer<LayoutVersion, Long>)LayoutVersion::setClassPK);
+		attributeGetterFunctions.put(
+			"ctCollectionId", LayoutVersion::getCtCollectionId);
+		attributeSetterBiConsumers.put(
+			"ctCollectionId",
+			(BiConsumer<LayoutVersion, Long>)LayoutVersion::setCtCollectionId);
 		attributeGetterFunctions.put("name", LayoutVersion::getName);
 		attributeSetterBiConsumers.put(
 			"name", (BiConsumer<LayoutVersion, String>)LayoutVersion::setName);
@@ -529,6 +538,7 @@ public class LayoutVersionModelImpl
 		layout.setParentLayoutId(getParentLayoutId());
 		layout.setClassNameId(getClassNameId());
 		layout.setClassPK(getClassPK());
+		layout.setCtCollectionId(getCtCollectionId());
 		layout.setName(getName());
 		layout.setTitle(getTitle());
 		layout.setDescription(getDescription());
@@ -913,6 +923,28 @@ public class LayoutVersionModelImpl
 
 	public long getOriginalClassPK() {
 		return _originalClassPK;
+	}
+
+	@Override
+	public long getCtCollectionId() {
+		return _ctCollectionId;
+	}
+
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		_columnBitmask |= CTCOLLECTIONID_COLUMN_BITMASK;
+
+		if (!_setOriginalCtCollectionId) {
+			_setOriginalCtCollectionId = true;
+
+			_originalCtCollectionId = _ctCollectionId;
+		}
+
+		_ctCollectionId = ctCollectionId;
+	}
+
+	public long getOriginalCtCollectionId() {
+		return _originalCtCollectionId;
 	}
 
 	@Override
@@ -1924,6 +1956,7 @@ public class LayoutVersionModelImpl
 		layoutVersionImpl.setParentLayoutId(getParentLayoutId());
 		layoutVersionImpl.setClassNameId(getClassNameId());
 		layoutVersionImpl.setClassPK(getClassPK());
+		layoutVersionImpl.setCtCollectionId(getCtCollectionId());
 		layoutVersionImpl.setName(getName());
 		layoutVersionImpl.setTitle(getTitle());
 		layoutVersionImpl.setDescription(getDescription());
@@ -2069,6 +2102,11 @@ public class LayoutVersionModelImpl
 
 		layoutVersionModelImpl._setOriginalClassPK = false;
 
+		layoutVersionModelImpl._originalCtCollectionId =
+			layoutVersionModelImpl._ctCollectionId;
+
+		layoutVersionModelImpl._setOriginalCtCollectionId = false;
+
 		layoutVersionModelImpl._originalType = layoutVersionModelImpl._type;
 
 		layoutVersionModelImpl._originalHidden = layoutVersionModelImpl._hidden;
@@ -2159,6 +2197,8 @@ public class LayoutVersionModelImpl
 		layoutVersionCacheModel.classNameId = getClassNameId();
 
 		layoutVersionCacheModel.classPK = getClassPK();
+
+		layoutVersionCacheModel.ctCollectionId = getCtCollectionId();
 
 		layoutVersionCacheModel.name = getName();
 
@@ -2411,6 +2451,9 @@ public class LayoutVersionModelImpl
 	private long _classPK;
 	private long _originalClassPK;
 	private boolean _setOriginalClassPK;
+	private long _ctCollectionId;
+	private long _originalCtCollectionId;
+	private boolean _setOriginalCtCollectionId;
 	private String _name;
 	private String _nameCurrentLanguageId;
 	private String _title;

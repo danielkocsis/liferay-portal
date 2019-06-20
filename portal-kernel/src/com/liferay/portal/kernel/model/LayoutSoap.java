@@ -50,6 +50,7 @@ public class LayoutSoap implements Serializable {
 		soapModel.setParentLayoutId(model.getParentLayoutId());
 		soapModel.setClassNameId(model.getClassNameId());
 		soapModel.setClassPK(model.getClassPK());
+		soapModel.setCtCollectionId(model.getCtCollectionId());
 		soapModel.setName(model.getName());
 		soapModel.setTitle(model.getTitle());
 		soapModel.setDescription(model.getDescription());
@@ -256,6 +257,14 @@ public class LayoutSoap implements Serializable {
 		_classPK = classPK;
 	}
 
+	public long getCtCollectionId() {
+		return _ctCollectionId;
+	}
+
+	public void setCtCollectionId(long ctCollectionId) {
+		_ctCollectionId = ctCollectionId;
+	}
+
 	public String getName() {
 		return _name;
 	}
@@ -446,6 +455,7 @@ public class LayoutSoap implements Serializable {
 	private long _parentLayoutId;
 	private long _classNameId;
 	private long _classPK;
+	private long _ctCollectionId;
 	private String _name;
 	private String _title;
 	private String _description;

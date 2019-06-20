@@ -38,6 +38,7 @@
 	<import class="com.liferay.portal.kernel.model.Image" />
 	<import class="com.liferay.portal.kernel.model.Layout" />
 	<import class="com.liferay.portal.kernel.model.LayoutBranch" />
+	<import class="com.liferay.portal.kernel.model.LayoutCT" />
 	<import class="com.liferay.portal.kernel.model.LayoutFriendlyURL" />
 	<import class="com.liferay.portal.kernel.model.LayoutPrototype" />
 	<import class="com.liferay.portal.kernel.model.LayoutRevision" />
@@ -311,6 +312,7 @@
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="parentLayoutId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="classNameId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="classPK" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="ctCollectionId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="title" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />
@@ -346,6 +348,14 @@
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="master" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+	</class>
+	<class dynamic-update="true" name="com.liferay.portal.model.impl.LayoutCTImpl" table="LayoutCT">
+		<composite-id class="com.liferay.portal.kernel.service.persistence.LayoutCTPK" name="primaryKey">
+			<key-property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="plid" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+			<key-property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="ctCollectionId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		</composite-id>
+		<version access="com.liferay.portal.dao.orm.hibernate.PrivatePropertyAccessor" name="mvccVersion" type="long" />
+		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="typeSettings" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>
 	<class dynamic-update="true" name="com.liferay.portal.model.impl.LayoutFriendlyURLImpl" table="LayoutFriendlyURL">
 		<id access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="layoutFriendlyURLId" type="long">
@@ -513,6 +523,7 @@
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="parentLayoutId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="classNameId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="classPK" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="ctCollectionId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="title" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />

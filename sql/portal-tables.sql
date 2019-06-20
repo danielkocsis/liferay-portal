@@ -561,6 +561,7 @@ create table Layout (
 	parentLayoutId LONG,
 	classNameId LONG,
 	classPK LONG,
+	ctCollectionId LONG,
 	name STRING null,
 	title STRING null,
 	description STRING null,
@@ -595,6 +596,14 @@ create table LayoutBranch (
 	name VARCHAR(75) null,
 	description STRING null,
 	master BOOLEAN
+);
+
+create table LayoutCT (
+	mvccVersion LONG default 0 not null,
+	plid LONG not null,
+	ctCollectionId LONG not null,
+	typeSettings VARCHAR(75) null,
+	primary key (plid, ctCollectionId)
 );
 
 create table LayoutFriendlyURL (
@@ -754,6 +763,7 @@ create table LayoutVersion (
 	parentLayoutId LONG,
 	classNameId LONG,
 	classPK LONG,
+	ctCollectionId LONG,
 	name STRING null,
 	title STRING null,
 	description STRING null,
