@@ -47,7 +47,7 @@ public interface CTAdapter<T extends BaseModel<T>, C extends BaseModel<C>> {
 
 	public void populateModel(T model, C ctContextModel);
 
-	public void removeContext(C ctContextModel);
+	public void removeContext(long primaryKey, long ctCollectionId);
 
 	public void removeContexts(T model);
 

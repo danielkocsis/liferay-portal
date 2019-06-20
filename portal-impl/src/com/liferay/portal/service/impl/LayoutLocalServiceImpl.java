@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.model.CustomizedPages;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutCT;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutFriendlyURL;
 import com.liferay.portal.kernel.model.LayoutPrototype;
@@ -67,6 +68,7 @@ import com.liferay.portal.kernel.search.QueryConfig;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.persistence.LayoutCTPK;
 import com.liferay.portal.kernel.service.version.VersionServiceListener;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntry;
@@ -930,6 +932,18 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		Layout layout = layoutPersistence.findByPrimaryKey(plid);
 
 		layoutLocalService.deleteLayout(layout, true, serviceContext);
+	}
+
+	@Override
+	public LayoutCT deleteLayoutCT(long plid, long ctCollectionId) {
+		LayoutCT layoutCT = layoutCTPersistence.fetchByPrimaryKey(
+			new LayoutCTPK(plid, ctCollectionId));
+
+		if (layoutCT == null) {
+			return null;
+		}
+
+		return layoutCTPersistence.remove(layoutCT);
 	}
 
 	/**
