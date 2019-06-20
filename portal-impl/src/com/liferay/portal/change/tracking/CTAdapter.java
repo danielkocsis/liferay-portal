@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.kernel.change.tracking;
+package com.liferay.portal.change.tracking;
 
 import com.liferay.portal.kernel.model.BaseModel;
 

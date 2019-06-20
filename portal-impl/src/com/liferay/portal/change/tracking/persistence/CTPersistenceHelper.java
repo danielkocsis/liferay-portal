@@ -12,16 +12,29 @@
  * details.
  */
 
-package com.liferay.portal.kernel.change.tracking.persistence;
+package com.liferay.portal.change.tracking.persistence;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.BaseModel;
+
+import java.util.List;
+
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * @author Preston Crary
  */
-public interface CTPersistenceHelperFactory {
+@ProviderType
+public interface CTPersistenceHelper<T extends BaseModel<T>> {
 
-	public <T extends BaseModel<T>> CTPersistenceHelper<T> create(
-		Class<T> modelClass);
+	public Object[] appendContextFinderArgs(Object[] finderArgs);
+
+	public void appendContextSQL(StringBundler sb);
+
+	public boolean isValidFinderResult(T baseModel);
+
+	public void setContext(T baseModel);
+
+	public void setContexts(List<T> baseModels);
 
 }

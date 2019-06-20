@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.kernel.change.tracking.persistence;
+package com.liferay.portal.change.tracking.persistence;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.BaseModel;
