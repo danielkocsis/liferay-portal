@@ -612,6 +612,7 @@
 		<column name="parentLayoutId" type="long" />
 		<column name="classNameId" type="long" />
 		<column name="classPK" type="long" />
+		<column name="ctCollectionId" type="long" />
 		<column localized="true" name="name" type="String" />
 		<column localized="true" name="title" type="String" />
 		<column localized="true" name="description" type="String" />
@@ -650,6 +651,9 @@
 		</finder>
 		<finder name="ParentPlid" return-type="Collection" where="system = [$FALSE$]">
 			<finder-column name="parentPlid" />
+		</finder>
+		<finder name="CTCollectionId" return-type="Collection">
+			<finder-column name="ctCollectionId" />
 		</finder>
 		<finder name="IconImageId" return-type="Layout">
 			<finder-column name="iconImageId" />
@@ -790,6 +794,30 @@
 		<reference entity="RecentLayoutBranch" package-path="com.liferay.portal" />
 		<reference entity="Resource" package-path="com.liferay.portal" />
 		<reference entity="User" package-path="com.liferay.portal" />
+	</entity>
+	<entity local-service="false" name="LayoutCT" remote-service="false">
+
+		<!-- PK fields -->
+
+		<column name="classPK" primary="true" type="long" />
+		<column name="ctCollectionId" primary="true" type="long" />
+
+		<!-- CT fields -->
+
+		<column name="typeSettings" type="String" />
+
+		<!-- Finder methods -->
+
+		<finder name="ClassPK" return-type="Collection">
+			<finder-column name="classPK" />
+		</finder>
+		<finder name="CTCollectionId" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+		</finder>
+		<finder name="C_C" return-type="Collection">
+			<finder-column arrayable-operator="OR" name="classPK" />
+			<finder-column name="ctCollectionId" />
+		</finder>
 	</entity>
 	<entity local-service="true" name="LayoutFriendlyURL" remote-service="false" uad-application-name="Layout" uad-dir-path="../modules/apps/layout/layout-uad/src/main/java" uad-package-path="com.liferay.layout" uuid="true">
 
