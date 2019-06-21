@@ -417,7 +417,8 @@ public class StagedLayoutSetStagedModelDataHandler
 
 			try {
 				if (!LayoutStagingUtil.prepareLayoutStagingHandler(
-						portletDataContext, layout)) {
+						portletDataContext, layout) ||
+					_isLayoutRevisionInReview(layout)) {
 
 					continue;
 				}
