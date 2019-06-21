@@ -42,6 +42,14 @@ public class EntityFinder {
 		_arrayableColumns = new ArrayList<>();
 
 		for (EntityColumn column : _entityColumns) {
+			if (column.isChangeTracked()) {
+				throw new IllegalArgumentException(
+					StringBundler.concat(
+						column.getEntityName(), " finder ", name,
+						" cannot include change tracked column ",
+						column.getName()));
+			}
+
 			if (column.hasArrayableOperator()) {
 				_arrayableColumns.add(column);
 			}

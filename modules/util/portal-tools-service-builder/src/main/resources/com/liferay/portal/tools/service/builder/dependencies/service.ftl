@@ -20,6 +20,12 @@ import com.liferay.portal.kernel.transaction.Transactional;
 import ${import};
 </#list>
 
+<#if entity.isChangeTrackedModel()>
+	import com.liferay.portal.kernel.change.tracking.model.CTModelAdapter;
+	import com.liferay.portal.kernel.change.tracking.service.CTServiceAdapter;
+	import ${apiPackagePath}.model.${entity.name}CT;
+</#if>
+
 <#if entity.versionEntity??>
 	<#assign versionEntity = entity.versionEntity />
 
@@ -93,6 +99,12 @@ public interface ${entity.name}${sessionTypeName}Service
 	<#assign overrideMethodNames = [] />
 
 	<#if stringUtil.equals(sessionTypeName, "Local") && entity.hasEntityColumns() && entity.hasPersistence()>
+		<#if entity.isChangeTrackedModel()>
+			<#assign overrideMethodNames = overrideMethodNames + ["createModelCT", "fetchByPrimaryKey", "fetchModelCT", "fetchModelCTs", "findByCTCollectionId", "getCTModelAdapter", "removeModelCT", "removeModelCTs", "updateModel", "updateModelCT"] />
+
+			, CTServiceAdapter<${entity.name}, ${entity.name}CT>
+		</#if>
+
 		<#if entity.isPermissionedModel()>
 			, PermissionedModelLocalService
 		<#elseif entity.isResourcedModel()>

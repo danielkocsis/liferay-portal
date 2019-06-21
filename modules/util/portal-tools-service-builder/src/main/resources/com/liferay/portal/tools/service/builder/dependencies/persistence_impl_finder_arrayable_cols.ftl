@@ -51,3 +51,7 @@ query.setStringAt(removeConjunction(query.stringAt(query.index() - 1)), query.in
 <#elseif entityFinder.where?? && validator.isNotNull(entityFinder.getWhere())>
 	query.append(" AND ${entityFinder.where}");
 </#if>
+
+<#if entity.isChangeTrackedModel()>
+	query = ctPersistenceHelper.appendSQL("${entity.alias}", query);
+</#if>

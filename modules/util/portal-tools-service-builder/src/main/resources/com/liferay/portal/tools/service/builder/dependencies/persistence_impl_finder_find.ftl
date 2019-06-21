@@ -198,6 +198,10 @@ that may or may not be enforced with a unique index at the database level. Case
 	</#list>
 
 	int start, int end, OrderByComparator<${entity.name}> orderByComparator, boolean retrieveFromCache) {
+		<#if entity.isChangeTrackedModel()>
+			CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+		</#if>
+
 		<#list entityColumns as entityColumn>
 			<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
 				${entityColumn.name} = Objects.toString(${entityColumn.name}, "");
@@ -244,6 +248,10 @@ that may or may not be enforced with a unique index at the database level. Case
 
 		<#if !entityFinder.hasCustomComparator()>
 			}
+		</#if>
+
+		<#if entity.isChangeTrackedModel()>
+			finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 		</#if>
 
 		List<${entity.name}> list = null;
@@ -315,7 +323,11 @@ that may or may not be enforced with a unique index at the database level. Case
 			}
 		}
 
-		return list;
+		<#if entity.isChangeTrackedModel()>
+			return ctPersistenceHelper.populate(list);
+		<#else>
+			return list;
+		</#if>
 	}
 
 	/**
@@ -566,6 +578,10 @@ that may or may not be enforced with a unique index at the database level. Case
 
 			OrderByComparator<${entity.name}> orderByComparator, boolean previous) {
 
+			<#if entity.isChangeTrackedModel()>
+				CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+			</#if>
+
 			<#include "persistence_impl_get_by_prev_and_next_query.ftl">
 
 			String sql = query.toString();
@@ -588,7 +604,11 @@ that may or may not be enforced with a unique index at the database level. Case
 			List<${entity.name}> list = q.list();
 
 			if (list.size() == 2) {
-				return list.get(1);
+				<#if entity.isChangeTrackedModel()>
+					return ctPersistenceHelper.populate(list.get(1));
+				<#else>
+					return list.get(1);
+				</#if>
 			}
 			else {
 				return null;
@@ -697,6 +717,10 @@ that may or may not be enforced with a unique index at the database level. Case
 				start, end, orderByComparator);
 			}
 
+			<#if entity.isChangeTrackedModel()>
+				CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+			</#if>
+
 			<#list entityColumns as entityColumn>
 				<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
 					${entityColumn.name} = Objects.toString(${entityColumn.name}, "");
@@ -791,7 +815,11 @@ that may or may not be enforced with a unique index at the database level. Case
 
 					<@finderQPos />
 
-					return (List<${entity.name}>)QueryUtil.list(q, getDialect(), start, end);
+					<#if entity.isChangeTrackedModel()>
+						return ctPersistenceHelper.populate((List<${entity.name}>)QueryUtil.list(q, getDialect(), start, end));
+					<#else>
+						return (List<${entity.name}>)QueryUtil.list(q, getDialect(), start, end);
+					</#if>
 				}
 				catch (Exception e) {
 					throw processException(e);
@@ -895,6 +923,10 @@ that may or may not be enforced with a unique index at the database level. Case
 
 				OrderByComparator<${entity.name}> orderByComparator, boolean previous) {
 
+				<#if entity.isChangeTrackedModel()>
+					CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+				</#if>
+
 				<#if entity.isPermissionedModel()>
 					<#include "persistence_impl_get_by_prev_and_next_query.ftl">
 
@@ -918,7 +950,11 @@ that may or may not be enforced with a unique index at the database level. Case
 					List<${entity.name}> list = q.list();
 
 					if (list.size() == 2) {
-						return list.get(1);
+						<#if entity.isChangeTrackedModel()>
+							return ctPersistenceHelper.populate(list.get(1));
+						<#else>
+							return list.get(1);
+						</#if>
 					}
 					else {
 						return null;
@@ -1049,7 +1085,11 @@ that may or may not be enforced with a unique index at the database level. Case
 					List<${entity.name}> list = q.list();
 
 					if (list.size() == 2) {
-						return list.get(1);
+						<#if entity.isChangeTrackedModel()>
+							return ctPersistenceHelper.populate(list.get(1));
+						<#else>
+							return list.get(1);
+						</#if>
 					}
 					else {
 						return null;
@@ -1201,6 +1241,10 @@ that may or may not be enforced with a unique index at the database level. Case
 					start, end, orderByComparator);
 				}
 
+				<#if entity.isChangeTrackedModel()>
+					CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+				</#if>
+
 				<#list entityColumns as entityColumn>
 					<#if entityColumn.hasArrayableOperator()>
 						if (${entityColumn.names} == null) {
@@ -1261,7 +1305,11 @@ that may or may not be enforced with a unique index at the database level. Case
 
 						<@finderQPos _arrayable=true />
 
-						return (List<${entity.name}>)QueryUtil.list(q, getDialect(), start, end);
+						<#if entity.isChangeTrackedModel()>
+							return ctPersistenceHelper.populate((List<${entity.name}>)QueryUtil.list(q, getDialect(), start, end));
+						<#else>
+							return (List<${entity.name}>)QueryUtil.list(q, getDialect(), start, end);
+						</#if>
 					}
 					catch (Exception e) {
 						throw processException(e);
@@ -1336,7 +1384,11 @@ that may or may not be enforced with a unique index at the database level. Case
 
 						<@finderQPos _arrayable=true />
 
-						return (List<${entity.name}>)QueryUtil.list(q, getDialect(), start, end);
+						<#if entity.isChangeTrackedModel()>
+							return ctPersistenceHelper.populate((List<${entity.name}>)QueryUtil.list(q, getDialect(), start, end));
+						<#else>
+							return (List<${entity.name}>)QueryUtil.list(q, getDialect(), start, end);
+						</#if>
 					}
 					catch (Exception e) {
 						throw processException(e);
@@ -1528,6 +1580,11 @@ that may or may not be enforced with a unique index at the database level. Case
 	</#list>
 
 	int start, int end, OrderByComparator<${entity.name}> orderByComparator, boolean retrieveFromCache) {
+
+		<#if entity.isChangeTrackedModel()>
+			CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+		</#if>
+
 		<#list entityColumns as entityColumn>
 			<#if entityColumn.hasArrayableOperator()>
 				if (${entityColumn.names} == null) {
@@ -1651,6 +1708,10 @@ that may or may not be enforced with a unique index at the database level. Case
 			};
 		}
 
+		<#if entity.isChangeTrackedModel()>
+			finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
+		</#if>
+
 		List<${entity.name}> list = null;
 
 		if (retrieveFromCache) {
@@ -1668,6 +1729,8 @@ that may or may not be enforced with a unique index at the database level. Case
 
 							<#if entityColumn_has_next>
 								||
+							<#elseif entity.isChangeTrackedModel()>
+								|| !ctPersistenceHelper.isValidFinderResult(${entity.varName})
 							</#if>
 						</#list>
 					) {
@@ -1726,7 +1789,11 @@ that may or may not be enforced with a unique index at the database level. Case
 			}
 		}
 
-		return list;
+		<#if entity.isChangeTrackedModel()>
+			return ctPersistenceHelper.populate(list);
+		<#else>
+			return list;
+		</#if>
 	}
 </#if>
 
@@ -1893,6 +1960,11 @@ that may or may not be enforced with a unique index at the database level. Case
 	</#list>
 
 	int start, int end, OrderByComparator<${entity.name}> orderByComparator, boolean retrieveFromCache) {
+
+		<#if entity.isChangeTrackedModel()>
+			CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+		</#if>
+
 		<#list entityColumns as entityColumn>
 			<#if entityColumn.hasArrayableOperator()>
 				if (${entityColumn.names} == null) {
@@ -2008,6 +2080,10 @@ that may or may not be enforced with a unique index at the database level. Case
 			};
 		}
 
+		<#if entity.isChangeTrackedModel()>
+			finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
+		</#if>
+
 		List<${entity.name}> list = null;
 
 		if (retrieveFromCache) {
@@ -2025,6 +2101,8 @@ that may or may not be enforced with a unique index at the database level. Case
 
 							<#if entityColumn_has_next>
 								||
+							<#elseif entity.isChangeTrackedModel()>
+								|| !ctPersistenceHelper.isValidFinderResult(${entity.varName})
 							</#if>
 						</#list>
 					) {
@@ -2066,6 +2144,10 @@ that may or may not be enforced with a unique index at the database level. Case
 							</#if>
 						</#list>
 
+						<#if entity.isChangeTrackedModel()>
+							ctPersistenceHelper,
+						</#if>
+
 						start, end, orderByComparator, pagination));
 					<#list entityFinderArrayableColsList as arrayableentityColumn>
 						}
@@ -2085,6 +2167,10 @@ that may or may not be enforced with a unique index at the database level. Case
 							${entityColumn.name},
 						</#if>
 					</#list>
+
+					<#if entity.isChangeTrackedModel()>
+						ctPersistenceHelper,
+					</#if>
 
 					start, end, orderByComparator, pagination);
 				}
@@ -2112,6 +2198,10 @@ that may or may not be enforced with a unique index at the database level. Case
 			${entityColumn.type} ${entityColumn.name},
 		</#if>
 	</#list>
+
+	<#if entity.isChangeTrackedModel()>
+		CTPersistenceHelper<${entity.name}> ctPersistenceHelper,
+	</#if>
 
 	int start, int end, OrderByComparator<${entity.name}> orderByComparator, boolean pagination) {
 		List<${entity.name}> list = null;
@@ -2155,7 +2245,11 @@ that may or may not be enforced with a unique index at the database level. Case
 			closeSession(session);
 		}
 
-		return list;
+		<#if entity.isChangeTrackedModel()>
+			return ctPersistenceHelper.populate(list);
+		<#else>
+			return list;
+		</#if>
 	}
 </#if>
 
@@ -2272,6 +2366,11 @@ that may or may not be enforced with a unique index at the database level. Case
 	</#list>
 
 	boolean retrieveFromCache) {
+
+		<#if entity.isChangeTrackedModel()>
+			CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+		</#if>
+
 		<#list entityColumns as entityColumn>
 			<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
 				${entityColumn.name} = Objects.toString(${entityColumn.name}, "");
@@ -2291,6 +2390,10 @@ that may or may not be enforced with a unique index at the database level. Case
 				</#if>
 			</#list>
 		};
+
+		<#if entity.isChangeTrackedModel()>
+			finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
+		</#if>
 
 		Object result = null;
 
@@ -2315,6 +2418,8 @@ that may or may not be enforced with a unique index at the database level. Case
 
 					<#if entityColumn_has_next>
 						||
+					<#elseif entity.isChangeTrackedModel()>
+						|| !ctPersistenceHelper.isValidFinderResult(${entity.varName})
 					</#if>
 				</#list>
 			) {
@@ -2379,7 +2484,11 @@ that may or may not be enforced with a unique index at the database level. Case
 			return null;
 		}
 		else {
-			return (${entity.name})result;
+			<#if entity.isChangeTrackedModel()>
+				return ctPersistenceHelper.populate((${entity.name})result);
+			<#else>
+				return (${entity.name})result;
+			</#if>
 		}
 	}
 </#if>
