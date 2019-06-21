@@ -15,7 +15,6 @@
 package com.liferay.change.tracking.service.persistence.impl;
 
 import com.liferay.change.tracking.exception.NoSuchEntryAggregateException;
-import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.model.CTEntryAggregate;
 import com.liferay.change.tracking.model.impl.CTEntryAggregateImpl;
@@ -781,9 +780,6 @@ public class CTEntryAggregatePersistenceImpl
 
 	@Override
 	protected CTEntryAggregate removeImpl(CTEntryAggregate ctEntryAggregate) {
-		ctEntryAggregateToCTCollectionTableMapper.
-			deleteLeftPrimaryKeyTableMappings(ctEntryAggregate.getPrimaryKey());
-
 		ctEntryAggregateToCTEntryTableMapper.deleteLeftPrimaryKeyTableMappings(
 			ctEntryAggregate.getPrimaryKey());
 
@@ -1186,317 +1182,6 @@ public class CTEntryAggregatePersistenceImpl
 	}
 
 	/**
-	 * Returns the primaryKeys of ct collections associated with the ct entry aggregate.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @return long[] of the primaryKeys of ct collections associated with the ct entry aggregate
-	 */
-	@Override
-	public long[] getCTCollectionPrimaryKeys(long pk) {
-		long[] pks =
-			ctEntryAggregateToCTCollectionTableMapper.getRightPrimaryKeys(pk);
-
-		return pks.clone();
-	}
-
-	/**
-	 * Returns all the ct entry aggregate associated with the ct collection.
-	 *
-	 * @param pk the primary key of the ct collection
-	 * @return the ct entry aggregates associated with the ct collection
-	 */
-	@Override
-	public List<CTEntryAggregate> getCTCollectionCTEntryAggregates(long pk) {
-		return getCTCollectionCTEntryAggregates(
-			pk, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-	}
-
-	/**
-	 * Returns all the ct entry aggregate associated with the ct collection.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryAggregateModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
-	 * </p>
-	 *
-	 * @param pk the primary key of the ct collection
-	 * @param start the lower bound of the range of ct collections
-	 * @param end the upper bound of the range of ct collections (not inclusive)
-	 * @return the range of ct entry aggregates associated with the ct collection
-	 */
-	@Override
-	public List<CTEntryAggregate> getCTCollectionCTEntryAggregates(
-		long pk, int start, int end) {
-
-		return getCTCollectionCTEntryAggregates(pk, start, end, null);
-	}
-
-	/**
-	 * Returns all the ct entry aggregate associated with the ct collection.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryAggregateModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
-	 * </p>
-	 *
-	 * @param pk the primary key of the ct collection
-	 * @param start the lower bound of the range of ct collections
-	 * @param end the upper bound of the range of ct collections (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the ordered range of ct entry aggregates associated with the ct collection
-	 */
-	@Override
-	public List<CTEntryAggregate> getCTCollectionCTEntryAggregates(
-		long pk, int start, int end,
-		OrderByComparator<CTEntryAggregate> orderByComparator) {
-
-		return ctEntryAggregateToCTCollectionTableMapper.getLeftBaseModels(
-			pk, start, end, orderByComparator);
-	}
-
-	/**
-	 * Returns the number of ct collections associated with the ct entry aggregate.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @return the number of ct collections associated with the ct entry aggregate
-	 */
-	@Override
-	public int getCTCollectionsSize(long pk) {
-		long[] pks =
-			ctEntryAggregateToCTCollectionTableMapper.getRightPrimaryKeys(pk);
-
-		return pks.length;
-	}
-
-	/**
-	 * Returns <code>true</code> if the ct collection is associated with the ct entry aggregate.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollectionPK the primary key of the ct collection
-	 * @return <code>true</code> if the ct collection is associated with the ct entry aggregate; <code>false</code> otherwise
-	 */
-	@Override
-	public boolean containsCTCollection(long pk, long ctCollectionPK) {
-		return ctEntryAggregateToCTCollectionTableMapper.containsTableMapping(
-			pk, ctCollectionPK);
-	}
-
-	/**
-	 * Returns <code>true</code> if the ct entry aggregate has any ct collections associated with it.
-	 *
-	 * @param pk the primary key of the ct entry aggregate to check for associations with ct collections
-	 * @return <code>true</code> if the ct entry aggregate has any ct collections associated with it; <code>false</code> otherwise
-	 */
-	@Override
-	public boolean containsCTCollections(long pk) {
-		if (getCTCollectionsSize(pk) > 0) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	/**
-	 * Adds an association between the ct entry aggregate and the ct collection. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollectionPK the primary key of the ct collection
-	 */
-	@Override
-	public void addCTCollection(long pk, long ctCollectionPK) {
-		CTEntryAggregate ctEntryAggregate = fetchByPrimaryKey(pk);
-
-		if (ctEntryAggregate == null) {
-			ctEntryAggregateToCTCollectionTableMapper.addTableMapping(
-				CompanyThreadLocal.getCompanyId(), pk, ctCollectionPK);
-		}
-		else {
-			ctEntryAggregateToCTCollectionTableMapper.addTableMapping(
-				ctEntryAggregate.getCompanyId(), pk, ctCollectionPK);
-		}
-	}
-
-	/**
-	 * Adds an association between the ct entry aggregate and the ct collection. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollection the ct collection
-	 */
-	@Override
-	public void addCTCollection(long pk, CTCollection ctCollection) {
-		CTEntryAggregate ctEntryAggregate = fetchByPrimaryKey(pk);
-
-		if (ctEntryAggregate == null) {
-			ctEntryAggregateToCTCollectionTableMapper.addTableMapping(
-				CompanyThreadLocal.getCompanyId(), pk,
-				ctCollection.getPrimaryKey());
-		}
-		else {
-			ctEntryAggregateToCTCollectionTableMapper.addTableMapping(
-				ctEntryAggregate.getCompanyId(), pk,
-				ctCollection.getPrimaryKey());
-		}
-	}
-
-	/**
-	 * Adds an association between the ct entry aggregate and the ct collections. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollectionPKs the primary keys of the ct collections
-	 */
-	@Override
-	public void addCTCollections(long pk, long[] ctCollectionPKs) {
-		long companyId = 0;
-
-		CTEntryAggregate ctEntryAggregate = fetchByPrimaryKey(pk);
-
-		if (ctEntryAggregate == null) {
-			companyId = CompanyThreadLocal.getCompanyId();
-		}
-		else {
-			companyId = ctEntryAggregate.getCompanyId();
-		}
-
-		ctEntryAggregateToCTCollectionTableMapper.addTableMappings(
-			companyId, pk, ctCollectionPKs);
-	}
-
-	/**
-	 * Adds an association between the ct entry aggregate and the ct collections. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollections the ct collections
-	 */
-	@Override
-	public void addCTCollections(long pk, List<CTCollection> ctCollections) {
-		addCTCollections(
-			pk,
-			ListUtil.toLongArray(
-				ctCollections, CTCollection.CT_COLLECTION_ID_ACCESSOR));
-	}
-
-	/**
-	 * Clears all associations between the ct entry aggregate and its ct collections. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate to clear the associated ct collections from
-	 */
-	@Override
-	public void clearCTCollections(long pk) {
-		ctEntryAggregateToCTCollectionTableMapper.
-			deleteLeftPrimaryKeyTableMappings(pk);
-	}
-
-	/**
-	 * Removes the association between the ct entry aggregate and the ct collection. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollectionPK the primary key of the ct collection
-	 */
-	@Override
-	public void removeCTCollection(long pk, long ctCollectionPK) {
-		ctEntryAggregateToCTCollectionTableMapper.deleteTableMapping(
-			pk, ctCollectionPK);
-	}
-
-	/**
-	 * Removes the association between the ct entry aggregate and the ct collection. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollection the ct collection
-	 */
-	@Override
-	public void removeCTCollection(long pk, CTCollection ctCollection) {
-		ctEntryAggregateToCTCollectionTableMapper.deleteTableMapping(
-			pk, ctCollection.getPrimaryKey());
-	}
-
-	/**
-	 * Removes the association between the ct entry aggregate and the ct collections. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollectionPKs the primary keys of the ct collections
-	 */
-	@Override
-	public void removeCTCollections(long pk, long[] ctCollectionPKs) {
-		ctEntryAggregateToCTCollectionTableMapper.deleteTableMappings(
-			pk, ctCollectionPKs);
-	}
-
-	/**
-	 * Removes the association between the ct entry aggregate and the ct collections. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollections the ct collections
-	 */
-	@Override
-	public void removeCTCollections(long pk, List<CTCollection> ctCollections) {
-		removeCTCollections(
-			pk,
-			ListUtil.toLongArray(
-				ctCollections, CTCollection.CT_COLLECTION_ID_ACCESSOR));
-	}
-
-	/**
-	 * Sets the ct collections associated with the ct entry aggregate, removing and adding associations as necessary. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollectionPKs the primary keys of the ct collections to be associated with the ct entry aggregate
-	 */
-	@Override
-	public void setCTCollections(long pk, long[] ctCollectionPKs) {
-		Set<Long> newCTCollectionPKsSet = SetUtil.fromArray(ctCollectionPKs);
-		Set<Long> oldCTCollectionPKsSet = SetUtil.fromArray(
-			ctEntryAggregateToCTCollectionTableMapper.getRightPrimaryKeys(pk));
-
-		Set<Long> removeCTCollectionPKsSet = new HashSet<Long>(
-			oldCTCollectionPKsSet);
-
-		removeCTCollectionPKsSet.removeAll(newCTCollectionPKsSet);
-
-		ctEntryAggregateToCTCollectionTableMapper.deleteTableMappings(
-			pk, ArrayUtil.toLongArray(removeCTCollectionPKsSet));
-
-		newCTCollectionPKsSet.removeAll(oldCTCollectionPKsSet);
-
-		long companyId = 0;
-
-		CTEntryAggregate ctEntryAggregate = fetchByPrimaryKey(pk);
-
-		if (ctEntryAggregate == null) {
-			companyId = CompanyThreadLocal.getCompanyId();
-		}
-		else {
-			companyId = ctEntryAggregate.getCompanyId();
-		}
-
-		ctEntryAggregateToCTCollectionTableMapper.addTableMappings(
-			companyId, pk, ArrayUtil.toLongArray(newCTCollectionPKsSet));
-	}
-
-	/**
-	 * Sets the ct collections associated with the ct entry aggregate, removing and adding associations as necessary. Also notifies the appropriate model listeners and clears the mapping table finder cache.
-	 *
-	 * @param pk the primary key of the ct entry aggregate
-	 * @param ctCollections the ct collections to be associated with the ct entry aggregate
-	 */
-	@Override
-	public void setCTCollections(long pk, List<CTCollection> ctCollections) {
-		try {
-			long[] ctCollectionPKs = new long[ctCollections.size()];
-
-			for (int i = 0; i < ctCollections.size(); i++) {
-				CTCollection ctCollection = ctCollections.get(i);
-
-				ctCollectionPKs[i] = ctCollection.getPrimaryKey();
-			}
-
-			setCTCollections(pk, ctCollectionPKs);
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-	}
-
-	/**
 	 * Returns the primaryKeys of ct entries associated with the ct entry aggregate.
 	 *
 	 * @param pk the primary key of the ct entry aggregate
@@ -1827,13 +1512,6 @@ public class CTEntryAggregatePersistenceImpl
 		CTEntryAggregateModelImpl.setEntityCacheEnabled(entityCacheEnabled);
 		CTEntryAggregateModelImpl.setFinderCacheEnabled(finderCacheEnabled);
 
-		ctEntryAggregateToCTCollectionTableMapper =
-			TableMapperFactory.getTableMapper(
-				"CTCollection_CTEntryAggregate#ctEntryAggregateId",
-				"CTCollection_CTEntryAggregate", "companyId",
-				"ctEntryAggregateId", "ctCollectionId", this,
-				CTCollection.class);
-
 		ctEntryAggregateToCTEntryTableMapper =
 			TableMapperFactory.getTableMapper(
 				"CTEntryAggregates_CTEntries#ctEntryAggregateId",
@@ -1882,8 +1560,6 @@ public class CTEntryAggregatePersistenceImpl
 		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		TableMapperFactory.removeTableMapper(
-			"CTCollection_CTEntryAggregate#ctEntryAggregateId");
-		TableMapperFactory.removeTableMapper(
 			"CTEntryAggregates_CTEntries#ctEntryAggregateId");
 	}
 
@@ -1927,8 +1603,6 @@ public class CTEntryAggregatePersistenceImpl
 	@Reference
 	protected FinderCache finderCache;
 
-	protected TableMapper<CTEntryAggregate, CTCollection>
-		ctEntryAggregateToCTCollectionTableMapper;
 	protected TableMapper<CTEntryAggregate, CTEntry>
 		ctEntryAggregateToCTEntryTableMapper;
 

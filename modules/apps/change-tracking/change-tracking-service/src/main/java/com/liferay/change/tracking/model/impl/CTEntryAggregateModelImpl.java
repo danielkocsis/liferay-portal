@@ -118,20 +118,6 @@ public class CTEntryAggregateModelImpl
 		_finderCacheEnabled = finderCacheEnabled;
 	}
 
-	public static final String
-		MAPPING_TABLE_CTCOLLECTION_CTENTRYAGGREGATE_NAME =
-			"CTCollection_CTEntryAggregate";
-
-	public static final Object[][]
-		MAPPING_TABLE_CTCOLLECTION_CTENTRYAGGREGATE_COLUMNS = {
-			{"companyId", Types.BIGINT}, {"ctCollectionId", Types.BIGINT},
-			{"ctEntryAggregateId", Types.BIGINT}
-		};
-
-	public static final String
-		MAPPING_TABLE_CTCOLLECTION_CTENTRYAGGREGATE_SQL_CREATE =
-			"create table CTCollection_CTEntryAggregate (companyId LONG not null,ctCollectionId LONG not null,ctEntryAggregateId LONG not null,primary key (ctCollectionId, ctEntryAggregateId))";
-
 	public static final String MAPPING_TABLE_CTENTRYAGGREGATES_CTENTRIES_NAME =
 		"CTEntryAggregates_CTEntries";
 
