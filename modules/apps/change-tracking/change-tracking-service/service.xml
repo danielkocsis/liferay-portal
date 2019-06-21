@@ -26,11 +26,6 @@
 		<column name="statusByUserName" type="String" uad-anonymize-field-name="fullName" />
 		<column name="statusDate" type="Date" />
 
-		<!-- Relationships -->
-
-		<column entity="CTEntry" mapping-table="CTCollections_CTEntries" name="entries" type="Collection" />
-		<column entity="CTEntryAggregate" mapping-table="CTCollection_CTEntryAggregate" name="aggregates" type="Collection" />
-
 		<!-- Order -->
 
 		<order by="asc">
@@ -78,7 +73,6 @@
 		<!-- Relationships -->
 
 		<column entity="CTEntryAggregate" mapping-table="CTEntryAggregates_CTEntries" name="bags" type="Collection" />
-		<column entity="CTCollection" mapping-table="CTCollections_CTEntries" name="collections" type="Collection" />
 
 		<!-- Finder methods -->
 
@@ -116,7 +110,6 @@
 
 		<!-- Relationships -->
 
-		<column entity="CTCollection" mapping-table="CTCollection_CTEntryAggregate" name="collections" type="Collection" />
 		<column entity="CTEntry" mapping-table="CTEntryAggregates_CTEntries" name="entries" type="Collection" />
 
 		<!-- Finder methods -->
