@@ -77,6 +77,9 @@
 
 		<!-- Finder methods -->
 
+		<finder name="CTCollectionId" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+		</finder>
 		<finder name="ModelClassNameId" return-type="Collection">
 			<finder-column name="modelClassNameId" />
 		</finder>
@@ -116,6 +119,9 @@
 
 		<!-- Finder methods -->
 
+		<finder name="CTCollectionId" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+		</finder>
 		<finder name="OwnerCTEntryId" return-type="Collection">
 			<finder-column name="ownerCTEntryId" />
 		</finder>
