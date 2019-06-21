@@ -872,7 +872,7 @@ public class Entity implements Comparable<Entity> {
 	}
 
 	public boolean hasPrimitivePK(boolean includeWrappers) {
-		if (hasCompoundPK()) {
+		if (_pkEntityColumns.size() != 1) {
 			return false;
 		}
 
