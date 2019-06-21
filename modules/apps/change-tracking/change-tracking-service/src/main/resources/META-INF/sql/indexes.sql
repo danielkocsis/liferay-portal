@@ -6,8 +6,10 @@ create index IX_90D19701 on CTCollection_CTEntryAggregate (ctEntryAggregateId);
 create index IX_AFC3725E on CTCollections_CTEntries (companyId);
 create index IX_6EA8BE62 on CTCollections_CTEntries (ctEntryId);
 
+create index IX_1D4AFE65 on CTEntry (ctCollectionId);
 create unique index IX_88A1512E on CTEntry (modelClassNameId, modelClassPK);
 
+create index IX_712E6AE2 on CTEntryAggregate (ctCollectionId);
 create index IX_49B471E1 on CTEntryAggregate (ownerCTEntryId);
 
 create index IX_5C08EBAD on CTEntryAggregates_CTEntries (companyId);

@@ -108,9 +108,11 @@ public class CTEntryAggregateModelImpl
 
 	public static final String TX_MANAGER = "liferayTransactionManager";
 
-	public static final long OWNERCTENTRYID_COLUMN_BITMASK = 1L;
+	public static final long CTCOLLECTIONID_COLUMN_BITMASK = 1L;
 
-	public static final long CTENTRYAGGREGATEID_COLUMN_BITMASK = 2L;
+	public static final long OWNERCTENTRYID_COLUMN_BITMASK = 2L;
+
+	public static final long CTENTRYAGGREGATEID_COLUMN_BITMASK = 4L;
 
 	public static void setEntityCacheEnabled(boolean entityCacheEnabled) {
 		_entityCacheEnabled = entityCacheEnabled;
@@ -409,7 +411,19 @@ public class CTEntryAggregateModelImpl
 
 	@Override
 	public void setCtCollectionId(long ctCollectionId) {
+		_columnBitmask |= CTCOLLECTIONID_COLUMN_BITMASK;
+
+		if (!_setOriginalCtCollectionId) {
+			_setOriginalCtCollectionId = true;
+
+			_originalCtCollectionId = _ctCollectionId;
+		}
+
 		_ctCollectionId = ctCollectionId;
+	}
+
+	public long getOriginalCtCollectionId() {
+		return _originalCtCollectionId;
 	}
 
 	@Override
@@ -553,6 +567,11 @@ public class CTEntryAggregateModelImpl
 
 		ctEntryAggregateModelImpl._setModifiedDate = false;
 
+		ctEntryAggregateModelImpl._originalCtCollectionId =
+			ctEntryAggregateModelImpl._ctCollectionId;
+
+		ctEntryAggregateModelImpl._setOriginalCtCollectionId = false;
+
 		ctEntryAggregateModelImpl._originalOwnerCTEntryId =
 			ctEntryAggregateModelImpl._ownerCTEntryId;
 
@@ -688,6 +707,8 @@ public class CTEntryAggregateModelImpl
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
 	private long _ctCollectionId;
+	private long _originalCtCollectionId;
+	private boolean _setOriginalCtCollectionId;
 	private long _ownerCTEntryId;
 	private long _originalOwnerCTEntryId;
 	private boolean _setOriginalOwnerCTEntryId;
