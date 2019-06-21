@@ -13,3 +13,7 @@
 
 	<#include "persistence_impl_finder_col.ftl">
 </#list>
+
+<#if entity.isChangeTrackedModel()>
+	query = ctPersistenceHelper.appendSQL("${entity.alias}", query);
+</#if>

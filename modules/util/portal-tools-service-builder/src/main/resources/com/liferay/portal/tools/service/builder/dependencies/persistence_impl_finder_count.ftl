@@ -23,6 +23,10 @@ public int countBy${entityFinder.name}(
 </#list>
 
 ) {
+	<#if entity.isChangeTrackedModel()>
+		CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+	</#if>
+
 	<#list entityColumns as entityColumn>
 		<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
 			${entityColumn.name} = Objects.toString(${entityColumn.name}, "");
@@ -49,6 +53,10 @@ public int countBy${entityFinder.name}(
 			</#if>
 		</#list>
 	};
+
+	<#if entity.isChangeTrackedModel()>
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
+	</#if>
 
 	Long count = (Long)${finderCache}.getResult(finderPath, finderArgs, this);
 
@@ -114,6 +122,10 @@ public int countBy${entityFinder.name}(
 	</#list>
 
 	) {
+		<#if entity.isChangeTrackedModel()>
+			CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+		</#if>
+
 		<#list entityColumns as entityColumn>
 			<#if entityColumn.hasArrayableOperator()>
 				if (${entityColumn.names} == null) {
@@ -163,6 +175,10 @@ public int countBy${entityFinder.name}(
 				</#if>
 			</#list>
 		};
+
+		<#if entity.isChangeTrackedModel()>
+			finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
+		</#if>
 
 		Long count = (Long)${finderCache}.getResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, this);
 
@@ -231,6 +247,10 @@ public int countBy${entityFinder.name}(
 	</#list>
 
 	) {
+		<#if entity.isChangeTrackedModel()>
+			CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+		</#if>
+
 		<#list entityColumns as entityColumn>
 			<#if entityColumn.hasArrayableOperator()>
 				if (${entityColumn.names} == null) {
@@ -279,6 +299,10 @@ public int countBy${entityFinder.name}(
 			</#list>
 		};
 
+		<#if entity.isChangeTrackedModel()>
+			finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
+		</#if>
+
 		Long count = (Long)${finderCache}.getResult(_finderPathWithPaginationCountBy${entityFinder.name}, finderArgs, this);
 
 		if (count == null) {
@@ -311,6 +335,8 @@ public int countBy${entityFinder.name}(
 
 								<#if entityColumn_has_next>
 									,
+								<#elseif entity.isChangeTrackedModel()>
+									, ctPersistenceHelper
 								</#if>
 							</#list>));
 
@@ -330,6 +356,8 @@ public int countBy${entityFinder.name}(
 
 							<#if entityColumn_has_next>
 								,
+							<#elseif entity.isChangeTrackedModel()>
+								, ctPersistenceHelper
 							</#if>
 						</#list>));
 					}
@@ -357,6 +385,8 @@ public int countBy${entityFinder.name}(
 
 		<#if entityColumn_has_next>
 			,
+		<#elseif entity.isChangeTrackedModel()>
+			, CTPersistenceHelper<${entity.name}> ctPersistenceHelper
 		</#if>
 	</#list>
 
@@ -434,6 +464,10 @@ public int countBy${entityFinder.name}(
 
 			);
 		}
+
+		<#if entity.isChangeTrackedModel()>
+			CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+		</#if>
 
 		<#list entityColumns as entityColumn>
 			<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
@@ -565,6 +599,10 @@ public int countBy${entityFinder.name}(
 
 				);
 			}
+
+			<#if entity.isChangeTrackedModel()>
+				CTPersistenceHelper<${entity.name}> ctPersistenceHelper = CTPersistenceHelperFactoryUtil.create(${entity.name}.class);
+			</#if>
 
 			<#list entityColumns as entityColumn>
 				<#if entityColumn.hasArrayableOperator()>

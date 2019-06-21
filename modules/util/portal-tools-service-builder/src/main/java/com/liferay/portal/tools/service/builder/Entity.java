@@ -96,7 +96,7 @@ public class Entity implements Comparable<Entity> {
 			serviceBuilder, null, null, null, name, null, null, null, false,
 			false, false, false, true, true, null, null, null, null, null, true,
 			false, false, false, false, null, false, null, null, false, null,
-			null, null, null, null, null, null, null, null, null, false);
+			null, null, null, null, null, null, null, null, null, false, false);
 	}
 
 	public Entity(
@@ -117,7 +117,8 @@ public class Entity implements Comparable<Entity> {
 		List<EntityColumn> entityColumns, EntityOrder entityOrder,
 		List<EntityFinder> entityFinders, List<Entity> referenceEntities,
 		List<String> unresolvedReferenceEntityNames,
-		List<String> txRequiredMethodNames, boolean resourceActionModel) {
+		List<String> txRequiredMethodNames, boolean resourceActionModel,
+		boolean changeTrackedModel) {
 
 		_serviceBuilder = serviceBuilder;
 		_packagePath = packagePath;
@@ -154,6 +155,7 @@ public class Entity implements Comparable<Entity> {
 		_unresolvedReferenceEntityNames = unresolvedReferenceEntityNames;
 		_txRequiredMethodNames = txRequiredMethodNames;
 		_resourceActionModel = resourceActionModel;
+		_changeTrackedModel = changeTrackedModel;
 
 		_humanName = GetterUtil.getString(
 			humanName, ServiceBuilder.toHumanName(name));
@@ -929,6 +931,10 @@ public class Entity implements Comparable<Entity> {
 		return _cacheEnabled;
 	}
 
+	public boolean isChangeTrackedModel() {
+		return _changeTrackedModel;
+	}
+
 	public boolean isContainerModel() {
 		return _containerModel;
 	}
@@ -1255,6 +1261,7 @@ public class Entity implements Comparable<Entity> {
 	private String _apiPackagePath;
 	private List<EntityColumn> _blobEntityColumns;
 	private final boolean _cacheEnabled;
+	private final boolean _changeTrackedModel;
 	private final List<EntityColumn> _collectionEntityColumns;
 	private final boolean _containerModel;
 	private final List<EntityColumn> _databaseRegularEntityColumns;

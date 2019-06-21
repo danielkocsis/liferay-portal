@@ -85,6 +85,14 @@ import org.osgi.service.component.annotations.Reference;
 	import ${packagePath}.model.impl.${entity.name}Impl;
 </#if>
 
+<#if entity.isChangeTrackedModel()>
+	import com.liferay.portal.kernel.change.tracking.model.CTModelAdapter;
+	import com.liferay.portal.kernel.change.tracking.service.CTServiceAdapter;
+	import ${apiPackagePath}.model.${entity.name}CT;
+	import ${apiPackagePath}.service.persistence.${entity.name}CTPK;
+	import ${apiPackagePath}.service.persistence.${entity.name}CTPersistence;
+</#if>
+
 <#if entity.localizedEntity??>
 	<#assign localizedEntity = entity.localizedEntity />
 
@@ -143,6 +151,10 @@ import org.osgi.service.component.annotations.Reference;
 	public abstract class ${entity.name}LocalServiceBaseImpl extends BaseLocalServiceImpl implements ${entity.name}LocalService,
 	<#if dependencyInjectorDS>
 		AopService,
+	</#if>
+
+	<#if entity.isChangeTrackedModel()>
+		CTServiceAdapter<${entity.name}, ${entity.name}CT>,
 	</#if>
 
 	IdentifiableOSGiService
@@ -1429,6 +1441,10 @@ import org.osgi.service.component.annotations.Reference;
 				${entity.name}${sessionTypeName}Service.class, IdentifiableOSGiService.class
 
 				<#if stringUtil.equals(sessionTypeName, "Local") && entity.hasEntityColumns() && entity.hasPersistence()>
+					<#if entity.isChangeTrackedModel()>
+						, CTAdapter.class
+					</#if>
+
 					, PersistedModelLocalService.class
 				</#if>
 			};
@@ -1791,6 +1807,125 @@ import org.osgi.service.component.annotations.Reference;
 	}
 
 	<#if entity.hasEntityColumns()>
+		<#if entity.isChangeTrackedModel() && stringUtil.equals(sessionTypeName, "Local")>
+				@Override
+				public ${entity.name}CT createModelCT(long ${entity.PKVarName}, long ctCollectionId) {
+					return ${entity.varName}CTPersistence.create(new ${entity.name}CTPK(${entity.PKVarName}, ctCollectionId));
+				}
+
+				@Override
+				public ${entity.name} fetchByPrimaryKey(long ${entity.PKVarName}) {
+					return ${entity.varName}Persistence.fetchByPrimaryKey(${entity.PKVarName});
+				}
+
+				@Override
+				public ${entity.name}CT fetchModelCT(long ${entity.PKVarName}, long ctCollectionId) {
+					return ${entity.varName}CTPersistence.fetchByPrimaryKey(new ${entity.name}CTPK(${entity.PKVarName}, ctCollectionId));
+				}
+
+				@Override
+				public List<${entity.name}CT> fetchModelCTs(long[] ${entity.PKVarName}s, long ctCollectionId) {
+					return ${entity.varName}CTPersistence.findByC_C(${entity.PKVarName}s, ctCollectionId);
+				}
+
+				@Override
+				public List<${entity.name}> findByCTCollectionId(long ctCollectionId) {
+					return ${entity.varName}Persistence.findByCTCollectionId(ctCollectionId);
+				}
+
+				@Override
+				public CTModelAdapter<${entity.name}, ${entity.name}CT> getCTModelAdapter() {
+					return new CTModelAdapter<${entity.name}, ${entity.name}CT>() {
+
+						@Override
+						public long getCTCollectionId(${entity.name} ${entity.varName}) {
+							return ${entity.varName}.getCtCollectionId();
+						}
+
+						<#if entity.hasEntityColumn("groupId")>
+							@Override
+							public long getGroupId(${entity.name} ${entity.varName}) {
+								return ${entity.varName}.getGroupId();
+							}
+						</#if>
+
+						@Override
+						public Class<${entity.name}> getModelClass() {
+							return ${entity.name}.class;
+						}
+
+						@Override
+						public long getModelPrimaryKey(${entity.name}CT ${entity.varName}CT) {
+							return ${entity.varName}CT.getClassPK();
+						}
+
+						@Override
+						public long getPrimaryKey(${entity.name} ${entity.varName}) {
+							return ${entity.varName}.getPrimaryKey();
+						}
+
+						@Override
+						public String getPrimaryKeyColumnDBName() {
+							return "${entity.PKVarName}";
+						}
+
+						@Override
+						public String getPrimaryKeyColumnName() {
+							return "${entity.PKDBName}";
+						}
+
+						@Override
+						public void populateModel(${entity.name} ${entity.varName}, ${entity.name}CT ${entity.varName}CT) {
+							<#list entity.entityColumns as entityColumn>
+								<#if entityColumn.isChangeTracked()>
+									${entity.varName}.set${entityColumn.methodName}(${entity.varName}CT.get${entityColumn.methodName}());
+								</#if>
+							</#list>
+						}
+
+						@Override
+						public void populateModelCT(${entity.name} ${entity.varName}, ${entity.name}CT ${entity.varName}CT) {
+							<#list entity.entityColumns as entityColumn>
+								<#if entityColumn.isChangeTracked()>
+									${entity.varName}CT.set${entityColumn.methodName}(${entity.varName}.get${entityColumn.methodName}());
+								</#if>
+							</#list>
+						}
+
+						@Override
+						public void setModelCTCollectionId(${entity.name} ${entity.varName}, long ctCollectionId) {
+							${entity.varName}.setCtCollectionId(ctCollectionId);
+						}
+
+						@Override
+						public void setModelCTCTCollectionId(${entity.name}CT ${entity.varName}CT, long ctCollectionId) {
+							${entity.varName}CT.setCtCollectionId(ctCollectionId);
+						}
+
+					};
+				}
+
+				@Override
+				public void removeModelCT(${entity.name}CT ${entity.varName}CT) {
+					${entity.varName}CTPersistence.remove(${entity.varName}CT);
+				}
+
+				@Override
+				public void removeModelCTs(long ${entity.PKVarName}) {
+					${entity.varName}CTPersistence.removeByClassPK(${entity.PKVarName});
+				}
+
+				@Override
+				public void updateModel(${entity.name} ${entity.varName}) {
+					${entity.varName}Persistence.update(${entity.varName});
+				}
+
+				@Override
+				public void updateModelCT(${entity.name}CT ${entity.varName}CT) {
+					${entity.varName}CTPersistence.update(${entity.varName}CT);
+				}
+		</#if>
+
 		protected Class<?> getModelClass() {
 			return ${entity.name}.class;
 		}
@@ -1898,6 +2033,17 @@ import org.osgi.service.component.annotations.Reference;
 			</#if>
 		</#if>
 	</#list>
+
+	<#if stringUtil.equals(sessionTypeName, "Local") && entity.isChangeTrackedModel()>
+		<#if dependencyInjectorDS>
+			@Reference
+		<#elseif osgiModule>
+			@ServiceReference(type = ${entity.name}CTPersistence.class)
+		<#else>
+			@BeanReference(type = ${entity.name}CTPersistence.class)
+		</#if>
+		protected ${entity.name}CTPersistence ${entity.varName}CTPersistence;
+	</#if>
 
 	<#if stringUtil.equals(sessionTypeName, "Local") && entity.hasEntityColumns() && entity.hasPersistence() && !dependencyInjectorDS>
 		<#if validator.isNull(pluginName)>
