@@ -191,6 +191,13 @@ public class CTEntryPersistenceTest {
 	}
 
 	@Test
+	public void testCountByCTCollectionId() throws Exception {
+		_persistence.countByCTCollectionId(RandomTestUtil.nextLong());
+
+		_persistence.countByCTCollectionId(0L);
+	}
+
+	@Test
 	public void testCountByModelClassNameId() throws Exception {
 		_persistence.countByModelClassNameId(RandomTestUtil.nextLong());
 
