@@ -72,6 +72,7 @@ public class CTEntryModelImpl
 		{"ctEntryId", Types.BIGINT}, {"companyId", Types.BIGINT},
 		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
+		{"ctCollectionId", Types.BIGINT},
 		{"originalCTCollectionId", Types.BIGINT},
 		{"modelClassNameId", Types.BIGINT}, {"modelClassPK", Types.BIGINT},
 		{"modelResourcePrimKey", Types.BIGINT}, {"changeType", Types.INTEGER},
@@ -88,6 +89,7 @@ public class CTEntryModelImpl
 		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("ctCollectionId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("originalCTCollectionId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("modelClassNameId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("modelClassPK", Types.BIGINT);
@@ -98,7 +100,7 @@ public class CTEntryModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table CTEntry (ctEntryId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,originalCTCollectionId LONG,modelClassNameId LONG,modelClassPK LONG,modelResourcePrimKey LONG,changeType INTEGER,collision BOOLEAN,status INTEGER)";
+		"create table CTEntry (ctEntryId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,ctCollectionId LONG,originalCTCollectionId LONG,modelClassNameId LONG,modelClassPK LONG,modelResourcePrimKey LONG,changeType INTEGER,collision BOOLEAN,status INTEGER)";
 
 	public static final String TABLE_SQL_DROP = "drop table CTEntry";
 
@@ -283,6 +285,11 @@ public class CTEntryModelImpl
 			"modifiedDate",
 			(BiConsumer<CTEntry, Date>)CTEntry::setModifiedDate);
 		attributeGetterFunctions.put(
+			"ctCollectionId", CTEntry::getCtCollectionId);
+		attributeSetterBiConsumers.put(
+			"ctCollectionId",
+			(BiConsumer<CTEntry, Long>)CTEntry::setCtCollectionId);
+		attributeGetterFunctions.put(
 			"originalCTCollectionId", CTEntry::getOriginalCTCollectionId);
 		attributeSetterBiConsumers.put(
 			"originalCTCollectionId",
@@ -402,6 +409,16 @@ public class CTEntryModelImpl
 		_setModifiedDate = true;
 
 		_modifiedDate = modifiedDate;
+	}
+
+	@Override
+	public long getCtCollectionId() {
+		return _ctCollectionId;
+	}
+
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		_ctCollectionId = ctCollectionId;
 	}
 
 	@Override
@@ -545,6 +562,7 @@ public class CTEntryModelImpl
 		ctEntryImpl.setUserName(getUserName());
 		ctEntryImpl.setCreateDate(getCreateDate());
 		ctEntryImpl.setModifiedDate(getModifiedDate());
+		ctEntryImpl.setCtCollectionId(getCtCollectionId());
 		ctEntryImpl.setOriginalCTCollectionId(getOriginalCTCollectionId());
 		ctEntryImpl.setModelClassNameId(getModelClassNameId());
 		ctEntryImpl.setModelClassPK(getModelClassPK());
@@ -664,6 +682,8 @@ public class CTEntryModelImpl
 			ctEntryCacheModel.modifiedDate = Long.MIN_VALUE;
 		}
 
+		ctEntryCacheModel.ctCollectionId = getCtCollectionId();
+
 		ctEntryCacheModel.originalCTCollectionId = getOriginalCTCollectionId();
 
 		ctEntryCacheModel.modelClassNameId = getModelClassNameId();
@@ -761,6 +781,7 @@ public class CTEntryModelImpl
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
+	private long _ctCollectionId;
 	private long _originalCTCollectionId;
 	private long _modelClassNameId;
 	private long _originalModelClassNameId;

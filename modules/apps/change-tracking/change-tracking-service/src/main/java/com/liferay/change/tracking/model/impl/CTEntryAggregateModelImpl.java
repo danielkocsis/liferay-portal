@@ -72,7 +72,8 @@ public class CTEntryAggregateModelImpl
 		{"ctEntryAggregateId", Types.BIGINT}, {"companyId", Types.BIGINT},
 		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
-		{"ownerCTEntryId", Types.BIGINT}, {"status", Types.INTEGER}
+		{"ctCollectionId", Types.BIGINT}, {"ownerCTEntryId", Types.BIGINT},
+		{"status", Types.INTEGER}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -85,12 +86,13 @@ public class CTEntryAggregateModelImpl
 		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("ctCollectionId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("ownerCTEntryId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table CTEntryAggregate (ctEntryAggregateId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,ownerCTEntryId LONG,status INTEGER)";
+		"create table CTEntryAggregate (ctEntryAggregateId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,ctCollectionId LONG,ownerCTEntryId LONG,status INTEGER)";
 
 	public static final String TABLE_SQL_DROP = "drop table CTEntryAggregate";
 
@@ -291,6 +293,12 @@ public class CTEntryAggregateModelImpl
 			(BiConsumer<CTEntryAggregate, Date>)
 				CTEntryAggregate::setModifiedDate);
 		attributeGetterFunctions.put(
+			"ctCollectionId", CTEntryAggregate::getCtCollectionId);
+		attributeSetterBiConsumers.put(
+			"ctCollectionId",
+			(BiConsumer<CTEntryAggregate, Long>)
+				CTEntryAggregate::setCtCollectionId);
+		attributeGetterFunctions.put(
 			"ownerCTEntryId", CTEntryAggregate::getOwnerCTEntryId);
 		attributeSetterBiConsumers.put(
 			"ownerCTEntryId",
@@ -395,6 +403,16 @@ public class CTEntryAggregateModelImpl
 	}
 
 	@Override
+	public long getCtCollectionId() {
+		return _ctCollectionId;
+	}
+
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		_ctCollectionId = ctCollectionId;
+	}
+
+	@Override
 	public long getOwnerCTEntryId() {
 		return _ownerCTEntryId;
 	}
@@ -468,6 +486,7 @@ public class CTEntryAggregateModelImpl
 		ctEntryAggregateImpl.setUserName(getUserName());
 		ctEntryAggregateImpl.setCreateDate(getCreateDate());
 		ctEntryAggregateImpl.setModifiedDate(getModifiedDate());
+		ctEntryAggregateImpl.setCtCollectionId(getCtCollectionId());
 		ctEntryAggregateImpl.setOwnerCTEntryId(getOwnerCTEntryId());
 		ctEntryAggregateImpl.setStatus(getStatus());
 
@@ -579,6 +598,8 @@ public class CTEntryAggregateModelImpl
 			ctEntryAggregateCacheModel.modifiedDate = Long.MIN_VALUE;
 		}
 
+		ctEntryAggregateCacheModel.ctCollectionId = getCtCollectionId();
+
 		ctEntryAggregateCacheModel.ownerCTEntryId = getOwnerCTEntryId();
 
 		ctEntryAggregateCacheModel.status = getStatus();
@@ -666,6 +687,7 @@ public class CTEntryAggregateModelImpl
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
+	private long _ctCollectionId;
 	private long _ownerCTEntryId;
 	private long _originalOwnerCTEntryId;
 	private boolean _setOriginalOwnerCTEntryId;
