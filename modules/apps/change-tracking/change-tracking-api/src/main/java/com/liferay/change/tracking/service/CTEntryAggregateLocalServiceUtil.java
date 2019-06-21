@@ -39,37 +39,6 @@ public class CTEntryAggregateLocalServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.change.tracking.service.impl.CTEntryAggregateLocalServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static void addCTCollectionCTEntryAggregate(
-		long ctCollectionId,
-		com.liferay.change.tracking.model.CTEntryAggregate ctEntryAggregate) {
-
-		getService().addCTCollectionCTEntryAggregate(
-			ctCollectionId, ctEntryAggregate);
-	}
-
-	public static void addCTCollectionCTEntryAggregate(
-		long ctCollectionId, long ctEntryAggregateId) {
-
-		getService().addCTCollectionCTEntryAggregate(
-			ctCollectionId, ctEntryAggregateId);
-	}
-
-	public static void addCTCollectionCTEntryAggregates(
-		long ctCollectionId,
-		java.util.List<com.liferay.change.tracking.model.CTEntryAggregate>
-			ctEntryAggregates) {
-
-		getService().addCTCollectionCTEntryAggregates(
-			ctCollectionId, ctEntryAggregates);
-	}
-
-	public static void addCTCollectionCTEntryAggregates(
-		long ctCollectionId, long[] ctEntryAggregateIds) {
-
-		getService().addCTCollectionCTEntryAggregates(
-			ctCollectionId, ctEntryAggregateIds);
-	}
-
 	public static void addCTEntry(
 		com.liferay.change.tracking.model.CTEntryAggregate ctEntryAggregate,
 		com.liferay.change.tracking.model.CTEntry ctEntry) {
@@ -129,10 +98,6 @@ public class CTEntryAggregateLocalServiceUtil {
 			ctEntryId, ctEntryAggregateIds);
 	}
 
-	public static void clearCTCollectionCTEntryAggregates(long ctCollectionId) {
-		getService().clearCTCollectionCTEntryAggregates(ctCollectionId);
-	}
-
 	public static void clearCTEntryCTEntryAggregates(long ctEntryId) {
 		getService().clearCTEntryCTEntryAggregates(ctEntryId);
 	}
@@ -147,37 +112,6 @@ public class CTEntryAggregateLocalServiceUtil {
 		createCTEntryAggregate(long ctEntryAggregateId) {
 
 		return getService().createCTEntryAggregate(ctEntryAggregateId);
-	}
-
-	public static void deleteCTCollectionCTEntryAggregate(
-		long ctCollectionId,
-		com.liferay.change.tracking.model.CTEntryAggregate ctEntryAggregate) {
-
-		getService().deleteCTCollectionCTEntryAggregate(
-			ctCollectionId, ctEntryAggregate);
-	}
-
-	public static void deleteCTCollectionCTEntryAggregate(
-		long ctCollectionId, long ctEntryAggregateId) {
-
-		getService().deleteCTCollectionCTEntryAggregate(
-			ctCollectionId, ctEntryAggregateId);
-	}
-
-	public static void deleteCTCollectionCTEntryAggregates(
-		long ctCollectionId,
-		java.util.List<com.liferay.change.tracking.model.CTEntryAggregate>
-			ctEntryAggregates) {
-
-		getService().deleteCTCollectionCTEntryAggregates(
-			ctCollectionId, ctEntryAggregates);
-	}
-
-	public static void deleteCTCollectionCTEntryAggregates(
-		long ctCollectionId, long[] ctEntryAggregateIds) {
-
-		getService().deleteCTCollectionCTEntryAggregates(
-			ctCollectionId, ctEntryAggregateIds);
 	}
 
 	/**
@@ -361,51 +295,6 @@ public class CTEntryAggregateLocalServiceUtil {
 		return getService().getActionableDynamicQuery();
 	}
 
-	public static java.util.List
-		<com.liferay.change.tracking.model.CTEntryAggregate>
-			getCTCollectionCTEntryAggregates(long ctCollectionId) {
-
-		return getService().getCTCollectionCTEntryAggregates(ctCollectionId);
-	}
-
-	public static java.util.List
-		<com.liferay.change.tracking.model.CTEntryAggregate>
-			getCTCollectionCTEntryAggregates(
-				long ctCollectionId, int start, int end) {
-
-		return getService().getCTCollectionCTEntryAggregates(
-			ctCollectionId, start, end);
-	}
-
-	public static java.util.List
-		<com.liferay.change.tracking.model.CTEntryAggregate>
-			getCTCollectionCTEntryAggregates(
-				long ctCollectionId, int start, int end,
-				com.liferay.portal.kernel.util.OrderByComparator
-					<com.liferay.change.tracking.model.CTEntryAggregate>
-						orderByComparator) {
-
-		return getService().getCTCollectionCTEntryAggregates(
-			ctCollectionId, start, end, orderByComparator);
-	}
-
-	public static int getCTCollectionCTEntryAggregatesCount(
-		long ctCollectionId) {
-
-		return getService().getCTCollectionCTEntryAggregatesCount(
-			ctCollectionId);
-	}
-
-	/**
-	 * Returns the ctCollectionIds of the ct collections associated with the ct entry aggregate.
-	 *
-	 * @param ctEntryAggregateId the ctEntryAggregateId of the ct entry aggregate
-	 * @return long[] the ctCollectionIds of ct collections associated with the ct entry aggregate
-	 */
-	public static long[] getCTCollectionPrimaryKeys(long ctEntryAggregateId) {
-		return getService().getCTCollectionPrimaryKeys(ctEntryAggregateId);
-	}
-
 	/**
 	 * Returns the ct entry aggregate with the primary key.
 	 *
@@ -510,19 +399,6 @@ public class CTEntryAggregateLocalServiceUtil {
 		return getService().getPersistedModel(primaryKeyObj);
 	}
 
-	public static boolean hasCTCollectionCTEntryAggregate(
-		long ctCollectionId, long ctEntryAggregateId) {
-
-		return getService().hasCTCollectionCTEntryAggregate(
-			ctCollectionId, ctEntryAggregateId);
-	}
-
-	public static boolean hasCTCollectionCTEntryAggregates(
-		long ctCollectionId) {
-
-		return getService().hasCTCollectionCTEntryAggregates(ctCollectionId);
-	}
-
 	public static boolean hasCTEntry(
 		com.liferay.change.tracking.model.CTEntryAggregate ctEntryAggregate,
 		com.liferay.change.tracking.model.CTEntry ctEntry) {
@@ -546,13 +422,6 @@ public class CTEntryAggregateLocalServiceUtil {
 		com.liferay.change.tracking.model.CTEntry ctEntry) {
 
 		getService().removeCTEntry(ctEntryAggregate, ctEntry);
-	}
-
-	public static void setCTCollectionCTEntryAggregates(
-		long ctCollectionId, long[] ctEntryAggregateIds) {
-
-		getService().setCTCollectionCTEntryAggregates(
-			ctCollectionId, ctEntryAggregateIds);
 	}
 
 	public static void setCTEntryCTEntryAggregates(

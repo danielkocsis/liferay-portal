@@ -140,19 +140,6 @@ public class CTEntryModelImpl
 		MAPPING_TABLE_CTENTRYAGGREGATES_CTENTRIES_SQL_CREATE =
 			"create table CTEntryAggregates_CTEntries (companyId LONG not null,ctEntryId LONG not null,ctEntryAggregateId LONG not null,primary key (ctEntryId, ctEntryAggregateId))";
 
-	public static final String MAPPING_TABLE_CTCOLLECTIONS_CTENTRIES_NAME =
-		"CTCollections_CTEntries";
-
-	public static final Object[][]
-		MAPPING_TABLE_CTCOLLECTIONS_CTENTRIES_COLUMNS = {
-			{"companyId", Types.BIGINT}, {"ctCollectionId", Types.BIGINT},
-			{"ctEntryId", Types.BIGINT}
-		};
-
-	public static final String
-		MAPPING_TABLE_CTCOLLECTIONS_CTENTRIES_SQL_CREATE =
-			"create table CTCollections_CTEntries (companyId LONG not null,ctCollectionId LONG not null,ctEntryId LONG not null,primary key (ctCollectionId, ctEntryId))";
-
 	public CTEntryModelImpl() {
 	}
 
