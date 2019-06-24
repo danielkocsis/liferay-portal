@@ -97,6 +97,11 @@ public class CTEntryAggregateLocalServiceImpl
 	}
 
 	@Override
+	public List<CTEntryAggregate> fetchCTEntryAggregates(long ctCollectionId) {
+		return ctEntryAggregatePersistence.findByCTCollectionId(ctCollectionId);
+	}
+
+	@Override
 	public List<CTEntryAggregate> fetchCTEntryAggregates(
 		long ctCollectionId, long ownerCTEntryId) {
 
