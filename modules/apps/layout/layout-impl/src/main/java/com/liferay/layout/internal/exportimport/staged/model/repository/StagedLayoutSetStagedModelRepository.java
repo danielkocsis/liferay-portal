@@ -26,15 +26,19 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutRevision;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.model.adapter.ModelAdapterUtil;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.LayoutRevisionLocalService;
 import com.liferay.portal.kernel.service.LayoutSetLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -97,7 +101,17 @@ public class StagedLayoutSetStagedModelRepository
 		List<Layout> layouts = _layoutLocalService.getLayouts(
 			stagedLayoutSet.getGroupId(), stagedLayoutSet.isPrivateLayout());
 
-		Stream<Layout> layoutsStream = layouts.stream();
+		List<Layout> filteredLayouts = new ArrayList<>();
+
+		for (Layout layout : layouts) {
+			if (_isLayoutRevisionInReview(layout)) {
+				continue;
+			}
+
+			filteredLayouts.add(layout);
+		}
+
+		Stream<Layout> layoutsStream = filteredLayouts.stream();
 
 		return layoutsStream.map(
 			layout -> (StagedModel)layout
@@ -258,11 +272,31 @@ public class StagedLayoutSetStagedModelRepository
 			existingLayoutSet, LayoutSet.class, StagedLayoutSet.class);
 	}
 
+	private boolean _isLayoutRevisionInReview(Layout stagedLayout) {
+		List<LayoutRevision> layoutRevisions =
+			_layoutRevisionLocalService.getLayoutRevisions(
+				stagedLayout.getPlid());
+
+		Stream<LayoutRevision> layoutRevisionStream = layoutRevisions.stream();
+
+		if (layoutRevisionStream.anyMatch(
+				revision ->
+					revision.getStatus() == WorkflowConstants.STATUS_PENDING)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		StagedLayoutSetStagedModelRepository.class);
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
+
+	@Reference
+	private LayoutRevisionLocalService _layoutRevisionLocalService;
 
 	@Reference
 	private LayoutSetLocalService _layoutSetLocalService;
