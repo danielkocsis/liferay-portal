@@ -212,6 +212,9 @@ public interface CTEntryAggregateLocalService
 	public CTEntryAggregate fetchCTEntryAggregate(long ctEntryAggregateId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<CTEntryAggregate> fetchCTEntryAggregates(long ctCollectionId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<CTEntryAggregate> fetchCTEntryAggregates(
 		long ctCollectionId, long ownerCTEntryId);
 

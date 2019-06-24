@@ -305,6 +305,14 @@ public class CTEntryAggregateLocalServiceWrapper
 
 	@Override
 	public java.util.List<com.liferay.change.tracking.model.CTEntryAggregate>
+		fetchCTEntryAggregates(long ctCollectionId) {
+
+		return _ctEntryAggregateLocalService.fetchCTEntryAggregates(
+			ctCollectionId);
+	}
+
+	@Override
+	public java.util.List<com.liferay.change.tracking.model.CTEntryAggregate>
 		fetchCTEntryAggregates(long ctCollectionId, long ownerCTEntryId) {
 
 		return _ctEntryAggregateLocalService.fetchCTEntryAggregates(

@@ -187,6 +187,14 @@ public class CTEntryAggregatePersistenceTest {
 	}
 
 	@Test
+	public void testCountByCTCID_OCEID() throws Exception {
+		_persistence.countByCTCID_OCEID(
+			RandomTestUtil.nextLong(), RandomTestUtil.nextLong());
+
+		_persistence.countByCTCID_OCEID(0L, 0L);
+	}
+
+	@Test
 	public void testFindByPrimaryKeyExisting() throws Exception {
 		CTEntryAggregate newCTEntryAggregate = addCTEntryAggregate();
 

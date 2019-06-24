@@ -276,6 +276,13 @@ public class CTEntryAggregateLocalServiceUtil {
 
 	public static java.util.List
 		<com.liferay.change.tracking.model.CTEntryAggregate>
+			fetchCTEntryAggregates(long ctCollectionId) {
+
+		return getService().fetchCTEntryAggregates(ctCollectionId);
+	}
+
+	public static java.util.List
+		<com.liferay.change.tracking.model.CTEntryAggregate>
 			fetchCTEntryAggregates(long ctCollectionId, long ownerCTEntryId) {
 
 		return getService().fetchCTEntryAggregates(
