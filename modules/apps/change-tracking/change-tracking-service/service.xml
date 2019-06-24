@@ -125,6 +125,10 @@
 		<finder name="OwnerCTEntryId" return-type="Collection">
 			<finder-column name="ownerCTEntryId" />
 		</finder>
+		<finder name="CTCID_OCEID" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+			<finder-column name="ownerCTEntryId" />
+		</finder>
 
 		<!-- References -->
 
