@@ -14,6 +14,7 @@
 
 package com.liferay.change.tracking.definition;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -53,12 +54,21 @@ public class CTDefinitionRegistryUtil {
 
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
+		if (ctDefinition == null) {
+			return "model.resource.".concat(
+				PortalUtil.getClassName(classNameId));
+		}
+
 		return ctDefinition.getContentTypeLanguageKey();
 	}
 
 	@SuppressWarnings("unchecked")
 	public static long getVersionEntityGroupId(long classNameId, long classPK) {
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
+
+		if (ctDefinition == null) {
+			return 0;
+		}
 
 		Function versionEntityByVersionEntityIdFunction =
 			ctDefinition.getVersionEntityByVersionEntityIdFunction();
@@ -81,6 +91,10 @@ public class CTDefinitionRegistryUtil {
 
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
+		if (ctDefinition == null) {
+			return StringPool.BLANK;
+		}
+
 		Function versionEntityByVersionEntityIdFunction =
 			ctDefinition.getVersionEntityByVersionEntityIdFunction();
 
@@ -97,6 +111,10 @@ public class CTDefinitionRegistryUtil {
 	@SuppressWarnings("unchecked")
 	public static String getVersionEntityTitle(long classNameId, long classPK) {
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
+
+		if (ctDefinition == null) {
+			return StringPool.BLANK;
+		}
 
 		Function versionEntityByVersionEntityIdFunction =
 			ctDefinition.getVersionEntityByVersionEntityIdFunction();
@@ -117,6 +135,10 @@ public class CTDefinitionRegistryUtil {
 
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
+		if (ctDefinition == null) {
+			return StringPool.BLANK;
+		}
+
 		Function versionEntityByVersionEntityIdFunction =
 			ctDefinition.getVersionEntityByVersionEntityIdFunction();
 
@@ -136,7 +158,7 @@ public class CTDefinitionRegistryUtil {
 				getCTDefinitionOptionalByVersionClassName(
 					PortalUtil.getClassName(classNameId));
 
-		return ctDefinitionOptional.get();
+		return ctDefinitionOptional.orElse(null);
 	}
 
 	private static CTDefinitionRegistry _getCTDefinitionRegistry() {
