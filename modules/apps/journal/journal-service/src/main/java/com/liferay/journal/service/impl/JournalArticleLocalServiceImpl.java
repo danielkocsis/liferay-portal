@@ -398,7 +398,7 @@ public class JournalArticleLocalServiceImpl
 			}
 			catch (ExportImportContentValidationException eicve) {
 				eicve.setStagedModelClassName(JournalArticle.class.getName());
-				eicve.setStagedModelClassPK(articleId);
+				eicve.setStagedModelPrimaryKeyObj(articleId);
 
 				throw eicve;
 			}
@@ -5748,7 +5748,7 @@ public class JournalArticleLocalServiceImpl
 			}
 			catch (ExportImportContentValidationException eicve) {
 				eicve.setStagedModelClassName(JournalArticle.class.getName());
-				eicve.setStagedModelClassPK(articleId);
+				eicve.setStagedModelPrimaryKeyObj(articleId);
 
 				throw eicve;
 			}
