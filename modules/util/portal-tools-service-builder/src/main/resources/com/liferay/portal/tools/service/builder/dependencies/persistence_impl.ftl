@@ -733,7 +733,7 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 				</#if>
 			}
 
-			<#if entity.hasLazyBlobEntityColumn()>
+			<#if entity.hasLazyBlobEntityColumn() || entity.isChangeTrackedModel()>
 				session.flush();
 				session.clear();
 			</#if>
