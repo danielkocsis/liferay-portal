@@ -171,6 +171,11 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 			return Collections.emptyList();
 		}
 
+		if (status == WorkflowConstants.STATUS_ANY) {
+			return ctEntryPersistence.findByCTCollectionId(
+				ctCollectionId, start, end, orderByComparator);
+		}
+
 		return ctEntryPersistence.findByC_S(
 			ctCollectionId, status, start, end, orderByComparator);
 	}
@@ -178,6 +183,10 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 	@Override
 	public int getCTEntriesCount(
 		long ctCollectionId, QueryDefinition<CTEntry> queryDefinition) {
+
+		if (queryDefinition.getStatus() == WorkflowConstants.STATUS_ANY) {
+			return ctEntryPersistence.countByCTCollectionId(ctCollectionId);
+		}
 
 		return ctEntryPersistence.countByC_S(
 			ctCollectionId, queryDefinition.getStatus());
