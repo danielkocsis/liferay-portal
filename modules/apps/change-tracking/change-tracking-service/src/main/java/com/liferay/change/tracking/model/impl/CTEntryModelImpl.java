@@ -121,7 +121,9 @@ public class CTEntryModelImpl
 
 	public static final long MODELCLASSPK_COLUMN_BITMASK = 4L;
 
-	public static final long CTENTRYID_COLUMN_BITMASK = 8L;
+	public static final long STATUS_COLUMN_BITMASK = 8L;
+
+	public static final long CTENTRYID_COLUMN_BITMASK = 16L;
 
 	public static void setEntityCacheEnabled(boolean entityCacheEnabled) {
 		_entityCacheEnabled = entityCacheEnabled;
@@ -531,7 +533,19 @@ public class CTEntryModelImpl
 
 	@Override
 	public void setStatus(int status) {
+		_columnBitmask |= STATUS_COLUMN_BITMASK;
+
+		if (!_setOriginalStatus) {
+			_setOriginalStatus = true;
+
+			_originalStatus = _status;
+		}
+
 		_status = status;
+	}
+
+	public int getOriginalStatus() {
+		return _originalStatus;
 	}
 
 	public long getColumnBitmask() {
@@ -661,6 +675,10 @@ public class CTEntryModelImpl
 		ctEntryModelImpl._originalModelClassPK = ctEntryModelImpl._modelClassPK;
 
 		ctEntryModelImpl._setOriginalModelClassPK = false;
+
+		ctEntryModelImpl._originalStatus = ctEntryModelImpl._status;
+
+		ctEntryModelImpl._setOriginalStatus = false;
 
 		ctEntryModelImpl._columnBitmask = 0;
 	}
@@ -814,6 +832,8 @@ public class CTEntryModelImpl
 	private int _changeType;
 	private boolean _collision;
 	private int _status;
+	private int _originalStatus;
+	private boolean _setOriginalStatus;
 	private long _columnBitmask;
 	private CTEntry _escapedModel;
 
