@@ -50,6 +50,7 @@ import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -167,19 +168,11 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		OrderByComparator<CTEntry> orderByComparator) {
 
 		if (_isProductionCTCollectionId(ctCollectionId)) {
-			return super.getCTCollectionCTEntries(
-				ctCollectionId, start, end, orderByComparator);
+			return Collections.emptyList();
 		}
 
-		QueryDefinition<CTEntry> queryDefinition = new QueryDefinition<>();
-
-		queryDefinition.setEnd(end);
-		queryDefinition.setOrderByComparator(orderByComparator);
-		queryDefinition.setStart(start);
-		queryDefinition.setStatus(status);
-
-		return ctEntryFinder.findByCTCollectionId(
-			ctCollectionId, queryDefinition);
+		return ctEntryPersistence.findByC_S(
+			ctCollectionId, status, start, end, orderByComparator);
 	}
 
 	@Override
@@ -390,6 +383,7 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		ctEntry.setCreateDate(serviceContext.getCreateDate(now));
 		ctEntry.setModifiedDate(serviceContext.getModifiedDate(now));
 
+		ctEntry.setCtCollectionId(ctCollectionId);
 		ctEntry.setOriginalCTCollectionId(ctCollectionId);
 		ctEntry.setModelClassNameId(modelClassNameId);
 		ctEntry.setModelClassPK(modelClassPK);
@@ -405,8 +399,6 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		ctEntry.setStatus(status);
 
 		ctEntry = ctEntryPersistence.update(ctEntry);
-
-		ctCollectionPersistence.addCTEntry(ctCollectionId, ctEntry);
 
 		return ctEntry;
 	}
