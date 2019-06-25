@@ -483,6 +483,161 @@ public interface CTEntryPersistence extends BasePersistence<CTEntry> {
 	public int countByC_MCNI(long ctCollectionId, long modelClassNameId);
 
 	/**
+	 * Returns all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @return the matching ct entries
+	 */
+	public java.util.List<CTEntry> findByC_MRPK(
+		long ctCollectionId, long modelResourcePrimKey);
+
+	/**
+	 * Returns a range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @return the range of matching ct entries
+	 */
+	public java.util.List<CTEntry> findByC_MRPK(
+		long ctCollectionId, long modelResourcePrimKey, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching ct entries
+	 */
+	public java.util.List<CTEntry> findByC_MRPK(
+		long ctCollectionId, long modelResourcePrimKey, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching ct entries
+	 */
+	public java.util.List<CTEntry> findByC_MRPK(
+		long ctCollectionId, long modelResourcePrimKey, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator,
+		boolean retrieveFromCache);
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public CTEntry findByC_MRPK_First(
+			long ctCollectionId, long modelResourcePrimKey,
+			com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public CTEntry fetchByC_MRPK_First(
+		long ctCollectionId, long modelResourcePrimKey,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public CTEntry findByC_MRPK_Last(
+			long ctCollectionId, long modelResourcePrimKey,
+			com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public CTEntry fetchByC_MRPK_Last(
+		long ctCollectionId, long modelResourcePrimKey,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the ct entries before and after the current ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctEntryId the primary key of the current ct entry
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next ct entry
+	 * @throws NoSuchEntryException if a ct entry with the primary key could not be found
+	 */
+	public CTEntry[] findByC_MRPK_PrevAndNext(
+			long ctEntryId, long ctCollectionId, long modelResourcePrimKey,
+			com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
+	 * Removes all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 */
+	public void removeByC_MRPK(long ctCollectionId, long modelResourcePrimKey);
+
+	/**
+	 * Returns the number of ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @return the number of matching ct entries
+	 */
+	public int countByC_MRPK(long ctCollectionId, long modelResourcePrimKey);
+
+	/**
 	 * Returns all the ct entries where ctCollectionId = &#63; and status = &#63;.
 	 *
 	 * @param ctCollectionId the ct collection ID
@@ -1022,6 +1177,178 @@ public interface CTEntryPersistence extends BasePersistence<CTEntry> {
 	 */
 	public int countByC_MCNI_S(
 		long ctCollectionId, long modelClassNameId, int status);
+
+	/**
+	 * Returns all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @return the matching ct entries
+	 */
+	public java.util.List<CTEntry> findByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status);
+
+	/**
+	 * Returns a range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @return the range of matching ct entries
+	 */
+	public java.util.List<CTEntry> findByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status, int start,
+		int end);
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching ct entries
+	 */
+	public java.util.List<CTEntry> findByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status, int start,
+		int end,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching ct entries
+	 */
+	public java.util.List<CTEntry> findByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status, int start,
+		int end,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator,
+		boolean retrieveFromCache);
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public CTEntry findByC_MRPK_S_First(
+			long ctCollectionId, long modelResourcePrimKey, int status,
+			com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public CTEntry fetchByC_MRPK_S_First(
+		long ctCollectionId, long modelResourcePrimKey, int status,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public CTEntry findByC_MRPK_S_Last(
+			long ctCollectionId, long modelResourcePrimKey, int status,
+			com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public CTEntry fetchByC_MRPK_S_Last(
+		long ctCollectionId, long modelResourcePrimKey, int status,
+		com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the ct entries before and after the current ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctEntryId the primary key of the current ct entry
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next ct entry
+	 * @throws NoSuchEntryException if a ct entry with the primary key could not be found
+	 */
+	public CTEntry[] findByC_MRPK_S_PrevAndNext(
+			long ctEntryId, long ctCollectionId, long modelResourcePrimKey,
+			int status,
+			com.liferay.portal.kernel.util.OrderByComparator<CTEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
+	 * Removes all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 */
+	public void removeByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status);
+
+	/**
+	 * Returns the number of ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @return the number of matching ct entries
+	 */
+	public int countByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status);
 
 	/**
 	 * Caches the ct entry in the entity cache if it is enabled.

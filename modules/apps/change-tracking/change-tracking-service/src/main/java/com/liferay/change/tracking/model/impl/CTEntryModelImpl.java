@@ -121,9 +121,11 @@ public class CTEntryModelImpl
 
 	public static final long MODELCLASSPK_COLUMN_BITMASK = 4L;
 
-	public static final long STATUS_COLUMN_BITMASK = 8L;
+	public static final long MODELRESOURCEPRIMKEY_COLUMN_BITMASK = 8L;
 
-	public static final long CTENTRYID_COLUMN_BITMASK = 16L;
+	public static final long STATUS_COLUMN_BITMASK = 16L;
+
+	public static final long CTENTRYID_COLUMN_BITMASK = 32L;
 
 	public static void setEntityCacheEnabled(boolean entityCacheEnabled) {
 		_entityCacheEnabled = entityCacheEnabled;
@@ -498,7 +500,19 @@ public class CTEntryModelImpl
 
 	@Override
 	public void setModelResourcePrimKey(long modelResourcePrimKey) {
+		_columnBitmask |= MODELRESOURCEPRIMKEY_COLUMN_BITMASK;
+
+		if (!_setOriginalModelResourcePrimKey) {
+			_setOriginalModelResourcePrimKey = true;
+
+			_originalModelResourcePrimKey = _modelResourcePrimKey;
+		}
+
 		_modelResourcePrimKey = modelResourcePrimKey;
+	}
+
+	public long getOriginalModelResourcePrimKey() {
+		return _originalModelResourcePrimKey;
 	}
 
 	@Override
@@ -676,6 +690,11 @@ public class CTEntryModelImpl
 
 		ctEntryModelImpl._setOriginalModelClassPK = false;
 
+		ctEntryModelImpl._originalModelResourcePrimKey =
+			ctEntryModelImpl._modelResourcePrimKey;
+
+		ctEntryModelImpl._setOriginalModelResourcePrimKey = false;
+
 		ctEntryModelImpl._originalStatus = ctEntryModelImpl._status;
 
 		ctEntryModelImpl._setOriginalStatus = false;
@@ -829,6 +848,8 @@ public class CTEntryModelImpl
 	private long _originalModelClassPK;
 	private boolean _setOriginalModelClassPK;
 	private long _modelResourcePrimKey;
+	private long _originalModelResourcePrimKey;
+	private boolean _setOriginalModelResourcePrimKey;
 	private int _changeType;
 	private boolean _collision;
 	private int _status;

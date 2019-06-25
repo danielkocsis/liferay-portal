@@ -1674,6 +1674,567 @@ public class CTEntryPersistenceImpl
 	private static final String _FINDER_COLUMN_C_MCNI_MODELCLASSNAMEID_2 =
 		"ctEntry.modelClassNameId = ?";
 
+	private FinderPath _finderPathWithPaginationFindByC_MRPK;
+	private FinderPath _finderPathWithoutPaginationFindByC_MRPK;
+	private FinderPath _finderPathCountByC_MRPK;
+
+	/**
+	 * Returns all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @return the matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByC_MRPK(
+		long ctCollectionId, long modelResourcePrimKey) {
+
+		return findByC_MRPK(
+			ctCollectionId, modelResourcePrimKey, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @return the range of matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByC_MRPK(
+		long ctCollectionId, long modelResourcePrimKey, int start, int end) {
+
+		return findByC_MRPK(
+			ctCollectionId, modelResourcePrimKey, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByC_MRPK(
+		long ctCollectionId, long modelResourcePrimKey, int start, int end,
+		OrderByComparator<CTEntry> orderByComparator) {
+
+		return findByC_MRPK(
+			ctCollectionId, modelResourcePrimKey, start, end, orderByComparator,
+			true);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByC_MRPK(
+		long ctCollectionId, long modelResourcePrimKey, int start, int end,
+		OrderByComparator<CTEntry> orderByComparator,
+		boolean retrieveFromCache) {
+
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+			(orderByComparator == null)) {
+
+			pagination = false;
+			finderPath = _finderPathWithoutPaginationFindByC_MRPK;
+			finderArgs = new Object[] {ctCollectionId, modelResourcePrimKey};
+		}
+		else {
+			finderPath = _finderPathWithPaginationFindByC_MRPK;
+			finderArgs = new Object[] {
+				ctCollectionId, modelResourcePrimKey, start, end,
+				orderByComparator
+			};
+		}
+
+		List<CTEntry> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<CTEntry>)finderCache.getResult(
+				finderPath, finderArgs, this);
+
+			if ((list != null) && !list.isEmpty()) {
+				for (CTEntry ctEntry : list) {
+					if ((ctCollectionId != ctEntry.getCtCollectionId()) ||
+						(modelResourcePrimKey !=
+							ctEntry.getModelResourcePrimKey())) {
+
+						list = null;
+
+						break;
+					}
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(
+					4 + (orderByComparator.getOrderByFields().length * 2));
+			}
+			else {
+				query = new StringBundler(4);
+			}
+
+			query.append(_SQL_SELECT_CTENTRY_WHERE);
+
+			query.append(_FINDER_COLUMN_C_MRPK_CTCOLLECTIONID_2);
+
+			query.append(_FINDER_COLUMN_C_MRPK_MODELRESOURCEPRIMKEY_2);
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+			}
+			else if (pagination) {
+				query.append(CTEntryModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				qPos.add(modelResourcePrimKey);
+
+				if (!pagination) {
+					list = (List<CTEntry>)QueryUtil.list(
+						q, getDialect(), start, end, false);
+
+					Collections.sort(list);
+
+					list = Collections.unmodifiableList(list);
+				}
+				else {
+					list = (List<CTEntry>)QueryUtil.list(
+						q, getDialect(), start, end);
+				}
+
+				cacheResult(list);
+
+				finderCache.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				finderCache.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry findByC_MRPK_First(
+			long ctCollectionId, long modelResourcePrimKey,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		CTEntry ctEntry = fetchByC_MRPK_First(
+			ctCollectionId, modelResourcePrimKey, orderByComparator);
+
+		if (ctEntry != null) {
+			return ctEntry;
+		}
+
+		StringBundler msg = new StringBundler(6);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append(", modelResourcePrimKey=");
+		msg.append(modelResourcePrimKey);
+
+		msg.append("}");
+
+		throw new NoSuchEntryException(msg.toString());
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry fetchByC_MRPK_First(
+		long ctCollectionId, long modelResourcePrimKey,
+		OrderByComparator<CTEntry> orderByComparator) {
+
+		List<CTEntry> list = findByC_MRPK(
+			ctCollectionId, modelResourcePrimKey, 0, 1, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry findByC_MRPK_Last(
+			long ctCollectionId, long modelResourcePrimKey,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		CTEntry ctEntry = fetchByC_MRPK_Last(
+			ctCollectionId, modelResourcePrimKey, orderByComparator);
+
+		if (ctEntry != null) {
+			return ctEntry;
+		}
+
+		StringBundler msg = new StringBundler(6);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append(", modelResourcePrimKey=");
+		msg.append(modelResourcePrimKey);
+
+		msg.append("}");
+
+		throw new NoSuchEntryException(msg.toString());
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry fetchByC_MRPK_Last(
+		long ctCollectionId, long modelResourcePrimKey,
+		OrderByComparator<CTEntry> orderByComparator) {
+
+		int count = countByC_MRPK(ctCollectionId, modelResourcePrimKey);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<CTEntry> list = findByC_MRPK(
+			ctCollectionId, modelResourcePrimKey, count - 1, count,
+			orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the ct entries before and after the current ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctEntryId the primary key of the current ct entry
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next ct entry
+	 * @throws NoSuchEntryException if a ct entry with the primary key could not be found
+	 */
+	@Override
+	public CTEntry[] findByC_MRPK_PrevAndNext(
+			long ctEntryId, long ctCollectionId, long modelResourcePrimKey,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		CTEntry ctEntry = findByPrimaryKey(ctEntryId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			CTEntry[] array = new CTEntryImpl[3];
+
+			array[0] = getByC_MRPK_PrevAndNext(
+				session, ctEntry, ctCollectionId, modelResourcePrimKey,
+				orderByComparator, true);
+
+			array[1] = ctEntry;
+
+			array[2] = getByC_MRPK_PrevAndNext(
+				session, ctEntry, ctCollectionId, modelResourcePrimKey,
+				orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected CTEntry getByC_MRPK_PrevAndNext(
+		Session session, CTEntry ctEntry, long ctCollectionId,
+		long modelResourcePrimKey, OrderByComparator<CTEntry> orderByComparator,
+		boolean previous) {
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(
+				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(4);
+		}
+
+		query.append(_SQL_SELECT_CTENTRY_WHERE);
+
+		query.append(_FINDER_COLUMN_C_MRPK_CTCOLLECTIONID_2);
+
+		query.append(_FINDER_COLUMN_C_MRPK_MODELRESOURCEPRIMKEY_2);
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(CTEntryModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(ctCollectionId);
+
+		qPos.add(modelResourcePrimKey);
+
+		if (orderByComparator != null) {
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(ctEntry)) {
+
+				qPos.add(orderByConditionValue);
+			}
+		}
+
+		List<CTEntry> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 */
+	@Override
+	public void removeByC_MRPK(long ctCollectionId, long modelResourcePrimKey) {
+		for (CTEntry ctEntry :
+				findByC_MRPK(
+					ctCollectionId, modelResourcePrimKey, QueryUtil.ALL_POS,
+					QueryUtil.ALL_POS, null)) {
+
+			remove(ctEntry);
+		}
+	}
+
+	/**
+	 * Returns the number of ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @return the number of matching ct entries
+	 */
+	@Override
+	public int countByC_MRPK(long ctCollectionId, long modelResourcePrimKey) {
+		FinderPath finderPath = _finderPathCountByC_MRPK;
+
+		Object[] finderArgs = new Object[] {
+			ctCollectionId, modelResourcePrimKey
+		};
+
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(3);
+
+			query.append(_SQL_COUNT_CTENTRY_WHERE);
+
+			query.append(_FINDER_COLUMN_C_MRPK_CTCOLLECTIONID_2);
+
+			query.append(_FINDER_COLUMN_C_MRPK_MODELRESOURCEPRIMKEY_2);
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				qPos.add(modelResourcePrimKey);
+
+				count = (Long)q.uniqueResult();
+
+				finderCache.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				finderCache.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_C_MRPK_CTCOLLECTIONID_2 =
+		"ctEntry.ctCollectionId = ? AND ";
+
+	private static final String _FINDER_COLUMN_C_MRPK_MODELRESOURCEPRIMKEY_2 =
+		"ctEntry.modelResourcePrimKey = ?";
+
 	private FinderPath _finderPathWithPaginationFindByC_S;
 	private FinderPath _finderPathWithoutPaginationFindByC_S;
 	private FinderPath _finderPathCountByC_S;
@@ -3633,6 +4194,609 @@ public class CTEntryPersistenceImpl
 	private static final String _FINDER_COLUMN_C_MCNI_S_STATUS_2 =
 		"ctEntry.status = ?";
 
+	private FinderPath _finderPathWithPaginationFindByC_MRPK_S;
+	private FinderPath _finderPathWithoutPaginationFindByC_MRPK_S;
+	private FinderPath _finderPathCountByC_MRPK_S;
+
+	/**
+	 * Returns all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @return the matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status) {
+
+		return findByC_MRPK_S(
+			ctCollectionId, modelResourcePrimKey, status, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @return the range of matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status, int start,
+		int end) {
+
+		return findByC_MRPK_S(
+			ctCollectionId, modelResourcePrimKey, status, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status, int start,
+		int end, OrderByComparator<CTEntry> orderByComparator) {
+
+		return findByC_MRPK_S(
+			ctCollectionId, modelResourcePrimKey, status, start, end,
+			orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching ct entries
+	 */
+	@Override
+	public List<CTEntry> findByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status, int start,
+		int end, OrderByComparator<CTEntry> orderByComparator,
+		boolean retrieveFromCache) {
+
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+			(orderByComparator == null)) {
+
+			pagination = false;
+			finderPath = _finderPathWithoutPaginationFindByC_MRPK_S;
+			finderArgs = new Object[] {
+				ctCollectionId, modelResourcePrimKey, status
+			};
+		}
+		else {
+			finderPath = _finderPathWithPaginationFindByC_MRPK_S;
+			finderArgs = new Object[] {
+				ctCollectionId, modelResourcePrimKey, status, start, end,
+				orderByComparator
+			};
+		}
+
+		List<CTEntry> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<CTEntry>)finderCache.getResult(
+				finderPath, finderArgs, this);
+
+			if ((list != null) && !list.isEmpty()) {
+				for (CTEntry ctEntry : list) {
+					if ((ctCollectionId != ctEntry.getCtCollectionId()) ||
+						(modelResourcePrimKey !=
+							ctEntry.getModelResourcePrimKey()) ||
+						(status != ctEntry.getStatus())) {
+
+						list = null;
+
+						break;
+					}
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(
+					5 + (orderByComparator.getOrderByFields().length * 2));
+			}
+			else {
+				query = new StringBundler(5);
+			}
+
+			query.append(_SQL_SELECT_CTENTRY_WHERE);
+
+			query.append(_FINDER_COLUMN_C_MRPK_S_CTCOLLECTIONID_2);
+
+			query.append(_FINDER_COLUMN_C_MRPK_S_MODELRESOURCEPRIMKEY_2);
+
+			query.append(_FINDER_COLUMN_C_MRPK_S_STATUS_2);
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+			}
+			else if (pagination) {
+				query.append(CTEntryModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				qPos.add(modelResourcePrimKey);
+
+				qPos.add(status);
+
+				if (!pagination) {
+					list = (List<CTEntry>)QueryUtil.list(
+						q, getDialect(), start, end, false);
+
+					Collections.sort(list);
+
+					list = Collections.unmodifiableList(list);
+				}
+				else {
+					list = (List<CTEntry>)QueryUtil.list(
+						q, getDialect(), start, end);
+				}
+
+				cacheResult(list);
+
+				finderCache.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				finderCache.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry findByC_MRPK_S_First(
+			long ctCollectionId, long modelResourcePrimKey, int status,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		CTEntry ctEntry = fetchByC_MRPK_S_First(
+			ctCollectionId, modelResourcePrimKey, status, orderByComparator);
+
+		if (ctEntry != null) {
+			return ctEntry;
+		}
+
+		StringBundler msg = new StringBundler(8);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append(", modelResourcePrimKey=");
+		msg.append(modelResourcePrimKey);
+
+		msg.append(", status=");
+		msg.append(status);
+
+		msg.append("}");
+
+		throw new NoSuchEntryException(msg.toString());
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry fetchByC_MRPK_S_First(
+		long ctCollectionId, long modelResourcePrimKey, int status,
+		OrderByComparator<CTEntry> orderByComparator) {
+
+		List<CTEntry> list = findByC_MRPK_S(
+			ctCollectionId, modelResourcePrimKey, status, 0, 1,
+			orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry findByC_MRPK_S_Last(
+			long ctCollectionId, long modelResourcePrimKey, int status,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		CTEntry ctEntry = fetchByC_MRPK_S_Last(
+			ctCollectionId, modelResourcePrimKey, status, orderByComparator);
+
+		if (ctEntry != null) {
+			return ctEntry;
+		}
+
+		StringBundler msg = new StringBundler(8);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append(", modelResourcePrimKey=");
+		msg.append(modelResourcePrimKey);
+
+		msg.append(", status=");
+		msg.append(status);
+
+		msg.append("}");
+
+		throw new NoSuchEntryException(msg.toString());
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	@Override
+	public CTEntry fetchByC_MRPK_S_Last(
+		long ctCollectionId, long modelResourcePrimKey, int status,
+		OrderByComparator<CTEntry> orderByComparator) {
+
+		int count = countByC_MRPK_S(
+			ctCollectionId, modelResourcePrimKey, status);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<CTEntry> list = findByC_MRPK_S(
+			ctCollectionId, modelResourcePrimKey, status, count - 1, count,
+			orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the ct entries before and after the current ct entry in the ordered set where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctEntryId the primary key of the current ct entry
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next ct entry
+	 * @throws NoSuchEntryException if a ct entry with the primary key could not be found
+	 */
+	@Override
+	public CTEntry[] findByC_MRPK_S_PrevAndNext(
+			long ctEntryId, long ctCollectionId, long modelResourcePrimKey,
+			int status, OrderByComparator<CTEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		CTEntry ctEntry = findByPrimaryKey(ctEntryId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			CTEntry[] array = new CTEntryImpl[3];
+
+			array[0] = getByC_MRPK_S_PrevAndNext(
+				session, ctEntry, ctCollectionId, modelResourcePrimKey, status,
+				orderByComparator, true);
+
+			array[1] = ctEntry;
+
+			array[2] = getByC_MRPK_S_PrevAndNext(
+				session, ctEntry, ctCollectionId, modelResourcePrimKey, status,
+				orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected CTEntry getByC_MRPK_S_PrevAndNext(
+		Session session, CTEntry ctEntry, long ctCollectionId,
+		long modelResourcePrimKey, int status,
+		OrderByComparator<CTEntry> orderByComparator, boolean previous) {
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(
+				6 + (orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(5);
+		}
+
+		query.append(_SQL_SELECT_CTENTRY_WHERE);
+
+		query.append(_FINDER_COLUMN_C_MRPK_S_CTCOLLECTIONID_2);
+
+		query.append(_FINDER_COLUMN_C_MRPK_S_MODELRESOURCEPRIMKEY_2);
+
+		query.append(_FINDER_COLUMN_C_MRPK_S_STATUS_2);
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(CTEntryModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(ctCollectionId);
+
+		qPos.add(modelResourcePrimKey);
+
+		qPos.add(status);
+
+		if (orderByComparator != null) {
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(ctEntry)) {
+
+				qPos.add(orderByConditionValue);
+			}
+		}
+
+		List<CTEntry> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 */
+	@Override
+	public void removeByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status) {
+
+		for (CTEntry ctEntry :
+				findByC_MRPK_S(
+					ctCollectionId, modelResourcePrimKey, status,
+					QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
+
+			remove(ctEntry);
+		}
+	}
+
+	/**
+	 * Returns the number of ct entries where ctCollectionId = &#63; and modelResourcePrimKey = &#63; and status = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param modelResourcePrimKey the model resource prim key
+	 * @param status the status
+	 * @return the number of matching ct entries
+	 */
+	@Override
+	public int countByC_MRPK_S(
+		long ctCollectionId, long modelResourcePrimKey, int status) {
+
+		FinderPath finderPath = _finderPathCountByC_MRPK_S;
+
+		Object[] finderArgs = new Object[] {
+			ctCollectionId, modelResourcePrimKey, status
+		};
+
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(4);
+
+			query.append(_SQL_COUNT_CTENTRY_WHERE);
+
+			query.append(_FINDER_COLUMN_C_MRPK_S_CTCOLLECTIONID_2);
+
+			query.append(_FINDER_COLUMN_C_MRPK_S_MODELRESOURCEPRIMKEY_2);
+
+			query.append(_FINDER_COLUMN_C_MRPK_S_STATUS_2);
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				qPos.add(modelResourcePrimKey);
+
+				qPos.add(status);
+
+				count = (Long)q.uniqueResult();
+
+				finderCache.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				finderCache.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_C_MRPK_S_CTCOLLECTIONID_2 =
+		"ctEntry.ctCollectionId = ? AND ";
+
+	private static final String _FINDER_COLUMN_C_MRPK_S_MODELRESOURCEPRIMKEY_2 =
+		"ctEntry.modelResourcePrimKey = ? AND ";
+
+	private static final String _FINDER_COLUMN_C_MRPK_S_STATUS_2 =
+		"ctEntry.status = ?";
+
 	public CTEntryPersistenceImpl() {
 		setModelClass(CTEntry.class);
 
@@ -3967,6 +5131,15 @@ public class CTEntryPersistenceImpl
 
 			args = new Object[] {
 				ctEntryModelImpl.getCtCollectionId(),
+				ctEntryModelImpl.getModelResourcePrimKey()
+			};
+
+			finderCache.removeResult(_finderPathCountByC_MRPK, args);
+			finderCache.removeResult(
+				_finderPathWithoutPaginationFindByC_MRPK, args);
+
+			args = new Object[] {
+				ctEntryModelImpl.getCtCollectionId(),
 				ctEntryModelImpl.getStatus()
 			};
 
@@ -3992,6 +5165,16 @@ public class CTEntryPersistenceImpl
 			finderCache.removeResult(_finderPathCountByC_MCNI_S, args);
 			finderCache.removeResult(
 				_finderPathWithoutPaginationFindByC_MCNI_S, args);
+
+			args = new Object[] {
+				ctEntryModelImpl.getCtCollectionId(),
+				ctEntryModelImpl.getModelResourcePrimKey(),
+				ctEntryModelImpl.getStatus()
+			};
+
+			finderCache.removeResult(_finderPathCountByC_MRPK_S, args);
+			finderCache.removeResult(
+				_finderPathWithoutPaginationFindByC_MRPK_S, args);
 
 			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
 			finderCache.removeResult(
@@ -4064,6 +5247,29 @@ public class CTEntryPersistenceImpl
 			}
 
 			if ((ctEntryModelImpl.getColumnBitmask() &
+				 _finderPathWithoutPaginationFindByC_MRPK.getColumnBitmask()) !=
+					 0) {
+
+				Object[] args = new Object[] {
+					ctEntryModelImpl.getOriginalCtCollectionId(),
+					ctEntryModelImpl.getOriginalModelResourcePrimKey()
+				};
+
+				finderCache.removeResult(_finderPathCountByC_MRPK, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByC_MRPK, args);
+
+				args = new Object[] {
+					ctEntryModelImpl.getCtCollectionId(),
+					ctEntryModelImpl.getModelResourcePrimKey()
+				};
+
+				finderCache.removeResult(_finderPathCountByC_MRPK, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByC_MRPK, args);
+			}
+
+			if ((ctEntryModelImpl.getColumnBitmask() &
 				 _finderPathWithoutPaginationFindByC_S.getColumnBitmask()) !=
 					 0) {
 
@@ -4132,6 +5338,31 @@ public class CTEntryPersistenceImpl
 				finderCache.removeResult(_finderPathCountByC_MCNI_S, args);
 				finderCache.removeResult(
 					_finderPathWithoutPaginationFindByC_MCNI_S, args);
+			}
+
+			if ((ctEntryModelImpl.getColumnBitmask() &
+				 _finderPathWithoutPaginationFindByC_MRPK_S.
+					 getColumnBitmask()) != 0) {
+
+				Object[] args = new Object[] {
+					ctEntryModelImpl.getOriginalCtCollectionId(),
+					ctEntryModelImpl.getOriginalModelResourcePrimKey(),
+					ctEntryModelImpl.getOriginalStatus()
+				};
+
+				finderCache.removeResult(_finderPathCountByC_MRPK_S, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByC_MRPK_S, args);
+
+				args = new Object[] {
+					ctEntryModelImpl.getCtCollectionId(),
+					ctEntryModelImpl.getModelResourcePrimKey(),
+					ctEntryModelImpl.getStatus()
+				};
+
+				finderCache.removeResult(_finderPathCountByC_MRPK_S, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByC_MRPK_S, args);
 			}
 		}
 
@@ -4821,6 +6052,27 @@ public class CTEntryPersistenceImpl
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_MCNI",
 			new String[] {Long.class.getName(), Long.class.getName()});
 
+		_finderPathWithPaginationFindByC_MRPK = new FinderPath(
+			entityCacheEnabled, finderCacheEnabled, CTEntryImpl.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByC_MRPK",
+			new String[] {
+				Long.class.getName(), Long.class.getName(),
+				Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
+			});
+
+		_finderPathWithoutPaginationFindByC_MRPK = new FinderPath(
+			entityCacheEnabled, finderCacheEnabled, CTEntryImpl.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByC_MRPK",
+			new String[] {Long.class.getName(), Long.class.getName()},
+			CTEntryModelImpl.CTCOLLECTIONID_COLUMN_BITMASK |
+			CTEntryModelImpl.MODELRESOURCEPRIMKEY_COLUMN_BITMASK);
+
+		_finderPathCountByC_MRPK = new FinderPath(
+			entityCacheEnabled, finderCacheEnabled, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_MRPK",
+			new String[] {Long.class.getName(), Long.class.getName()});
+
 		_finderPathWithPaginationFindByC_S = new FinderPath(
 			entityCacheEnabled, finderCacheEnabled, CTEntryImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByC_S",
@@ -4903,6 +6155,34 @@ public class CTEntryPersistenceImpl
 		_finderPathCountByC_MCNI_S = new FinderPath(
 			entityCacheEnabled, finderCacheEnabled, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_MCNI_S",
+			new String[] {
+				Long.class.getName(), Long.class.getName(),
+				Integer.class.getName()
+			});
+
+		_finderPathWithPaginationFindByC_MRPK_S = new FinderPath(
+			entityCacheEnabled, finderCacheEnabled, CTEntryImpl.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByC_MRPK_S",
+			new String[] {
+				Long.class.getName(), Long.class.getName(),
+				Integer.class.getName(), Integer.class.getName(),
+				Integer.class.getName(), OrderByComparator.class.getName()
+			});
+
+		_finderPathWithoutPaginationFindByC_MRPK_S = new FinderPath(
+			entityCacheEnabled, finderCacheEnabled, CTEntryImpl.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByC_MRPK_S",
+			new String[] {
+				Long.class.getName(), Long.class.getName(),
+				Integer.class.getName()
+			},
+			CTEntryModelImpl.CTCOLLECTIONID_COLUMN_BITMASK |
+			CTEntryModelImpl.MODELRESOURCEPRIMKEY_COLUMN_BITMASK |
+			CTEntryModelImpl.STATUS_COLUMN_BITMASK);
+
+		_finderPathCountByC_MRPK_S = new FinderPath(
+			entityCacheEnabled, finderCacheEnabled, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_MRPK_S",
 			new String[] {
 				Long.class.getName(), Long.class.getName(),
 				Integer.class.getName()
