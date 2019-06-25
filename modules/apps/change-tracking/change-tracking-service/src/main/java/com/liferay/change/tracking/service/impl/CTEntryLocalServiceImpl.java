@@ -81,8 +81,8 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		boolean force = GetterUtil.getBoolean(
 			serviceContext.getAttribute("force"));
 
-		CTEntry ctEntry = ctEntryPersistence.fetchByMCNI_MCPK(
-			modelClassNameId, modelClassPK);
+		CTEntry ctEntry = ctEntryPersistence.fetchByC_MCNI_MCPK(
+			ctCollectionId, modelClassNameId, modelClassPK);
 
 		_validate(ctEntry, changeType, ctCollectionId, force);
 
@@ -157,12 +157,6 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 			ctCollectionId, modelClassNameId, status,
 			queryDefinition.getStart(), queryDefinition.getEnd(),
 			queryDefinition.getOrderByComparator());
-	}
-
-	@Override
-	public CTEntry fetchCTEntry(long modelClassNameId, long modelClassPK) {
-		return ctEntryPersistence.fetchByMCNI_MCPK(
-			modelClassNameId, modelClassPK);
 	}
 
 	@Override
