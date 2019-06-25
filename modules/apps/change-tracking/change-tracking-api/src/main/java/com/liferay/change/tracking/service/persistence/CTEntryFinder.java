@@ -34,7 +34,4 @@ public interface CTEntryFinder {
 			com.liferay.portal.kernel.dao.orm.QueryDefinition
 				<com.liferay.change.tracking.model.CTEntry> queryDefinition);
 
-	public com.liferay.change.tracking.model.CTEntry findByCTCI_MCNI_MCPK(
-		long ctCollectionId, long modelClassNameId, long modelClassPK);
-
 }
