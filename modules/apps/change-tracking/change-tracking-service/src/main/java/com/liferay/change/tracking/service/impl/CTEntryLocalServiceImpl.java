@@ -107,16 +107,31 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		long ctCollectionId, long modelResourcePrimKey,
 		QueryDefinition<CTEntry> queryDefinition) {
 
-		return ctEntryFinder.findByCTCI_MRPK(
-			ctCollectionId, modelResourcePrimKey, queryDefinition);
+		if (modelResourcePrimKey == 0) {
+			return fetchCTEntries(ctCollectionId, queryDefinition);
+		}
+
+		return ctEntryPersistence.findByC_MCNI(
+			ctCollectionId, modelResourcePrimKey, queryDefinition.getStart(),
+			queryDefinition.getEnd(), queryDefinition.getOrderByComparator());
 	}
 
 	@Override
 	public List<CTEntry> fetchCTEntries(
 		long ctCollectionId, QueryDefinition<CTEntry> queryDefinition) {
 
-		return ctEntryFinder.findByCTCI_MRPK(
-			ctCollectionId, 0, queryDefinition);
+		int status = queryDefinition.getStatus();
+
+		if (status == WorkflowConstants.STATUS_ANY) {
+			return ctEntryPersistence.findByCTCollectionId(
+				ctCollectionId, queryDefinition.getStart(),
+				queryDefinition.getEnd(),
+				queryDefinition.getOrderByComparator());
+		}
+
+		return ctEntryPersistence.findByC_S(
+			ctCollectionId, status, queryDefinition.getStart(),
+			queryDefinition.getEnd(), queryDefinition.getOrderByComparator());
 	}
 
 	@Override
