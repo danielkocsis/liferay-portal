@@ -87,6 +87,10 @@
 			<finder-column name="ctCollectionId" />
 			<finder-column name="modelClassNameId" />
 		</finder>
+		<finder name="C_MRPK" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+			<finder-column name="modelResourcePrimKey" />
+		</finder>
 		<finder name="C_S" return-type="Collection">
 			<finder-column name="ctCollectionId" />
 			<finder-column name="status" />
@@ -103,6 +107,11 @@
 		<finder name="C_MCNI_S" return-type="Collection">
 			<finder-column name="ctCollectionId" />
 			<finder-column name="modelClassNameId" />
+			<finder-column name="status" />
+		</finder>
+		<finder name="C_MRPK_S" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+			<finder-column name="modelResourcePrimKey" />
 			<finder-column name="status" />
 		</finder>
 
