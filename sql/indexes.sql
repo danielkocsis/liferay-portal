@@ -180,6 +180,7 @@ create index IX_6A925A4D on Image (size_);
 create index IX_51E088F9 on Layout (classNameId, classPK, head);
 create index IX_2784596C on Layout (companyId, head);
 create index IX_9053895F on Layout (companyId, layoutPrototypeUuid[$COLUMN_LENGTH:75$], head);
+create index IX_D765AE42 on Layout (ctCollectionId, head);
 create index IX_59537C6E on Layout (groupId, head);
 create unique index IX_C1143B45 on Layout (groupId, privateLayout, friendlyURL[$COLUMN_LENGTH:255$], head);
 create index IX_671BB637 on Layout (groupId, privateLayout, head);
@@ -202,6 +203,8 @@ create index IX_C4F95DF8 on Layout (uuid_[$COLUMN_LENGTH:75$], head);
 
 create index IX_A705FF94 on LayoutBranch (layoutSetBranchId, plid, master);
 create unique index IX_FD57097D on LayoutBranch (layoutSetBranchId, plid, name[$COLUMN_LENGTH:75$]);
+
+create index IX_2D271A9F on LayoutCT (ctCollectionId);
 
 create index IX_EAB317C8 on LayoutFriendlyURL (companyId);
 create unique index IX_A6FC2B28 on LayoutFriendlyURL (groupId, privateLayout, friendlyURL[$COLUMN_LENGTH:255$], languageId[$COLUMN_LENGTH:75$]);
@@ -245,6 +248,7 @@ create index IX_1D356397 on LayoutSetVersion (privateLayout, logoId, version);
 create index IX_7A62EE5F on LayoutVersion (classNameId, classPK, version);
 create index IX_FBF6F939 on LayoutVersion (companyId, layoutPrototypeUuid[$COLUMN_LENGTH:75$], version);
 create index IX_DEFEF354 on LayoutVersion (companyId, version);
+create index IX_C4CA3D76 on LayoutVersion (ctCollectionId, version);
 create unique index IX_6A5941DB on LayoutVersion (groupId, privateLayout, friendlyURL[$COLUMN_LENGTH:255$], version);
 create unique index IX_B816A2A8 on LayoutVersion (groupId, privateLayout, layoutId, version);
 create index IX_944302D on LayoutVersion (groupId, privateLayout, parentLayoutId, hidden_, version);

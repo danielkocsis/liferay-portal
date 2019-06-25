@@ -25,6 +25,8 @@ import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.exportimport.kernel.service.persistence.ExportImportConfigurationFinder;
 import com.liferay.exportimport.kernel.service.persistence.ExportImportConfigurationPersistence;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.model.CTModelAdapter;
+import com.liferay.portal.kernel.change.tracking.service.CTServiceAdapter;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -41,6 +43,7 @@ import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutCT;
 import com.liferay.portal.kernel.model.LayoutVersion;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
@@ -53,6 +56,8 @@ import com.liferay.portal.kernel.service.persistence.ClassNamePersistence;
 import com.liferay.portal.kernel.service.persistence.GroupFinder;
 import com.liferay.portal.kernel.service.persistence.GroupPersistence;
 import com.liferay.portal.kernel.service.persistence.ImagePersistence;
+import com.liferay.portal.kernel.service.persistence.LayoutCTPK;
+import com.liferay.portal.kernel.service.persistence.LayoutCTPersistence;
 import com.liferay.portal.kernel.service.persistence.LayoutFinder;
 import com.liferay.portal.kernel.service.persistence.LayoutFriendlyURLPersistence;
 import com.liferay.portal.kernel.service.persistence.LayoutPersistence;
@@ -103,8 +108,8 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public abstract class LayoutLocalServiceBaseImpl
 	extends BaseLocalServiceImpl
-	implements LayoutLocalService, IdentifiableOSGiService,
-			   VersionService<Layout, LayoutVersion> {
+	implements LayoutLocalService, CTServiceAdapter<Layout, LayoutCT>,
+			   IdentifiableOSGiService, VersionService<Layout, LayoutVersion> {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -1817,6 +1822,7 @@ public abstract class LayoutLocalServiceBaseImpl
 		draftLayout.setParentLayoutId(publishedLayout.getParentLayoutId());
 		draftLayout.setClassNameId(publishedLayout.getClassNameId());
 		draftLayout.setClassPK(publishedLayout.getClassPK());
+		draftLayout.setCtCollectionId(publishedLayout.getCtCollectionId());
 		draftLayout.setName(publishedLayout.getName());
 		draftLayout.setTitle(publishedLayout.getTitle());
 		draftLayout.setDescription(publishedLayout.getDescription());
@@ -1859,6 +1865,118 @@ public abstract class LayoutLocalServiceBaseImpl
 	@Override
 	public String getOSGiServiceIdentifier() {
 		return LayoutLocalService.class.getName();
+	}
+
+	@Override
+	public LayoutCT createModelCT(long plid, long ctCollectionId) {
+		return layoutCTPersistence.create(new LayoutCTPK(plid, ctCollectionId));
+	}
+
+	@Override
+	public Layout fetchByPrimaryKey(long plid) {
+		return layoutPersistence.fetchByPrimaryKey(plid);
+	}
+
+	@Override
+	public LayoutCT fetchModelCT(long plid, long ctCollectionId) {
+		return layoutCTPersistence.fetchByPrimaryKey(
+			new LayoutCTPK(plid, ctCollectionId));
+	}
+
+	@Override
+	public List<LayoutCT> fetchModelCTs(long[] plids, long ctCollectionId) {
+		return layoutCTPersistence.findByC_C(plids, ctCollectionId);
+	}
+
+	@Override
+	public List<Layout> findByCTCollectionId(long ctCollectionId) {
+		return layoutPersistence.findByCTCollectionId(ctCollectionId);
+	}
+
+	@Override
+	public CTModelAdapter<Layout, LayoutCT> getCTModelAdapter() {
+		return new CTModelAdapter<Layout, LayoutCT>() {
+
+			@Override
+			public long getCTCollectionId(Layout layout) {
+				return layout.getCtCollectionId();
+			}
+
+			@Override
+			public long getGroupId(Layout layout) {
+				return layout.getGroupId();
+			}
+
+			@Override
+			public Class<Layout> getModelClass() {
+				return Layout.class;
+			}
+
+			@Override
+			public long getModelPrimaryKey(LayoutCT layoutCT) {
+				return layoutCT.getClassPK();
+			}
+
+			@Override
+			public long getPrimaryKey(Layout layout) {
+				return layout.getPrimaryKey();
+			}
+
+			@Override
+			public String getPrimaryKeyColumnDBName() {
+				return "plid";
+			}
+
+			@Override
+			public String getPrimaryKeyColumnName() {
+				return "plid";
+			}
+
+			@Override
+			public void populateModel(Layout layout, LayoutCT layoutCT) {
+				layout.setTypeSettings(layoutCT.getTypeSettings());
+			}
+
+			@Override
+			public void populateModelCT(Layout layout, LayoutCT layoutCT) {
+				layoutCT.setTypeSettings(layout.getTypeSettings());
+			}
+
+			@Override
+			public void setModelCTCollectionId(
+				Layout layout, long ctCollectionId) {
+
+				layout.setCtCollectionId(ctCollectionId);
+			}
+
+			@Override
+			public void setModelCTCTCollectionId(
+				LayoutCT layoutCT, long ctCollectionId) {
+
+				layoutCT.setCtCollectionId(ctCollectionId);
+			}
+
+		};
+	}
+
+	@Override
+	public void removeModelCT(LayoutCT layoutCT) {
+		layoutCTPersistence.remove(layoutCT);
+	}
+
+	@Override
+	public void removeModelCTs(long plid) {
+		layoutCTPersistence.removeByClassPK(plid);
+	}
+
+	@Override
+	public void updateModel(Layout layout) {
+		layoutPersistence.update(layout);
+	}
+
+	@Override
+	public void updateModelCT(LayoutCT layoutCT) {
+		layoutCTPersistence.update(layoutCT);
 	}
 
 	protected Class<?> getModelClass() {
@@ -2095,6 +2213,9 @@ public abstract class LayoutLocalServiceBaseImpl
 
 	@BeanReference(type = UserGroupFinder.class)
 	protected UserGroupFinder userGroupFinder;
+
+	@BeanReference(type = LayoutCTPersistence.class)
+	protected LayoutCTPersistence layoutCTPersistence;
 
 	@BeanReference(type = PersistedModelLocalServiceRegistry.class)
 	protected PersistedModelLocalServiceRegistry

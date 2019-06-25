@@ -15,6 +15,8 @@
 package com.liferay.portal.kernel.service;
 
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
+import com.liferay.portal.kernel.change.tracking.model.CTModelAdapter;
+import com.liferay.portal.kernel.change.tracking.service.CTServiceAdapter;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
@@ -24,6 +26,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutCT;
 import com.liferay.portal.kernel.model.LayoutReference;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutVersion;
@@ -72,8 +75,8 @@ import org.osgi.annotation.versioning.ProviderType;
 	rollbackFor = {PortalException.class, SystemException.class}
 )
 public interface LayoutLocalService
-	extends BaseLocalService, PersistedModelLocalService,
-			VersionService<Layout, LayoutVersion> {
+	extends BaseLocalService, CTServiceAdapter<Layout, LayoutCT>,
+			PersistedModelLocalService, VersionService<Layout, LayoutVersion> {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -396,6 +399,9 @@ public interface LayoutLocalService
 	@Override
 	public Layout create();
 
+	@Override
+	public LayoutCT createModelCT(long plid, long ctCollectionId);
+
 	@Indexable(type = IndexableType.DELETE)
 	@Override
 	public Layout delete(Layout publishedLayout) throws PortalException;
@@ -561,6 +567,10 @@ public interface LayoutLocalService
 	public long dynamicQueryCount(
 		DynamicQuery dynamicQuery, Projection projection);
 
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public Layout fetchByPrimaryKey(long plid);
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public Layout fetchDefaultLayout(long groupId, boolean privateLayout);
 
@@ -625,14 +635,29 @@ public interface LayoutLocalService
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public LayoutCT fetchModelCT(long plid, long ctCollectionId);
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<LayoutCT> fetchModelCTs(long[] plids, long ctCollectionId);
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public Layout fetchPublished(Layout layout);
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public Layout fetchPublished(long primaryKey);
 
+	@Override
+	public List<Layout> findByCTCollectionId(long ctCollectionId);
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ActionableDynamicQuery getActionableDynamicQuery();
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public CTModelAdapter<Layout, LayoutCT> getCTModelAdapter();
 
 	/**
 	 * Returns the primary key of the default layout for the group.
@@ -1191,6 +1216,12 @@ public interface LayoutLocalService
 	public void registerListener(
 		VersionServiceListener<Layout, LayoutVersion> versionServiceListener);
 
+	@Override
+	public void removeModelCT(LayoutCT layoutCT);
+
+	@Override
+	public void removeModelCTs(long plid);
+
 	/**
 	 * Sets the layouts for the group, replacing and prioritizing all layouts of
 	 * the parent layout.
@@ -1358,6 +1389,12 @@ public interface LayoutLocalService
 			long groupId, boolean privateLayout, long layoutId, String themeId,
 			String colorSchemeId, String css)
 		throws PortalException;
+
+	@Override
+	public void updateModel(Layout layout);
+
+	@Override
+	public void updateModelCT(LayoutCT layoutCT);
 
 	/**
 	 * Updates the name of the layout.
