@@ -328,14 +328,6 @@ public class CTEntryLocalServiceWrapper
 
 	@Override
 	public com.liferay.change.tracking.model.CTEntry fetchCTEntry(
-		long modelClassNameId, long modelClassPK) {
-
-		return _ctEntryLocalService.fetchCTEntry(
-			modelClassNameId, modelClassPK);
-	}
-
-	@Override
-	public com.liferay.change.tracking.model.CTEntry fetchCTEntry(
 		long ctCollectionId, long modelClassNameId, long modelClassPK) {
 
 		return _ctEntryLocalService.fetchCTEntry(

@@ -306,12 +306,6 @@ public class CTEntryLocalServiceUtil {
 	}
 
 	public static com.liferay.change.tracking.model.CTEntry fetchCTEntry(
-		long modelClassNameId, long modelClassPK) {
-
-		return getService().fetchCTEntry(modelClassNameId, modelClassPK);
-	}
-
-	public static com.liferay.change.tracking.model.CTEntry fetchCTEntry(
 		long ctCollectionId, long modelClassNameId, long modelClassPK) {
 
 		return getService().fetchCTEntry(
