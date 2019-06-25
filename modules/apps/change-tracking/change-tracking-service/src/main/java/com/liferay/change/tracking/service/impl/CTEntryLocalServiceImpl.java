@@ -129,8 +129,19 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		long ctCollectionId, long modelClassNameId,
 		QueryDefinition<CTEntry> queryDefinition) {
 
-		return ctEntryFinder.findByCTCI_MCNI(
-			ctCollectionId, modelClassNameId, queryDefinition);
+		int status = queryDefinition.getStatus();
+
+		if (status == WorkflowConstants.STATUS_ANY) {
+			return ctEntryPersistence.findByC_MCNI(
+				ctCollectionId, modelClassNameId, queryDefinition.getStart(),
+				queryDefinition.getEnd(),
+				queryDefinition.getOrderByComparator());
+		}
+
+		return ctEntryPersistence.findByC_MCNI_S(
+			ctCollectionId, modelClassNameId, status,
+			queryDefinition.getStart(), queryDefinition.getEnd(),
+			queryDefinition.getOrderByComparator());
 	}
 
 	@Override
