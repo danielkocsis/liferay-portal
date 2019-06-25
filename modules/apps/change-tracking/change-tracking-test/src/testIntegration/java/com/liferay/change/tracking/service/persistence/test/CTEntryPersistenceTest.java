@@ -229,6 +229,15 @@ public class CTEntryPersistenceTest {
 	}
 
 	@Test
+	public void testCountByC_MCNI_MCPK() throws Exception {
+		_persistence.countByC_MCNI_MCPK(
+			RandomTestUtil.nextLong(), RandomTestUtil.nextLong(),
+			RandomTestUtil.nextLong());
+
+		_persistence.countByC_MCNI_MCPK(0L, 0L, 0L);
+	}
+
+	@Test
 	public void testCountByC_MCNI_S() throws Exception {
 		_persistence.countByC_MCNI_S(
 			RandomTestUtil.nextLong(), RandomTestUtil.nextLong(),
@@ -482,6 +491,10 @@ public class CTEntryPersistenceTest {
 		CTEntry existingCTEntry = _persistence.findByPrimaryKey(
 			newCTEntry.getPrimaryKey());
 
+		Assert.assertEquals(
+			Long.valueOf(existingCTEntry.getCtCollectionId()),
+			ReflectionTestUtil.<Long>invoke(
+				existingCTEntry, "getOriginalCtCollectionId", new Class<?>[0]));
 		Assert.assertEquals(
 			Long.valueOf(existingCTEntry.getModelClassNameId()),
 			ReflectionTestUtil.<Long>invoke(
