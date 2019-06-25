@@ -179,8 +179,8 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 	public int getCTEntriesCount(
 		long ctCollectionId, QueryDefinition<CTEntry> queryDefinition) {
 
-		return ctEntryFinder.countByCTCollectionId(
-			ctCollectionId, queryDefinition);
+		return ctEntryPersistence.countByC_S(
+			ctCollectionId, queryDefinition.getStatus());
 	}
 
 	@Override
