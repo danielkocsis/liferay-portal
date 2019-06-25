@@ -43,9 +43,6 @@ public class CTEntryFinderImpl
 	public static final String COUNT_BY_RELATED_CT_ENTRIES =
 		CTEntryFinder.class.getName() + ".countByRelatedCTEntries";
 
-	public static final String FIND_BY_CT_COLLECTION_ID =
-		CTEntryFinder.class.getName() + ".findByCTCollectionId";
-
 	public static final String FIND_BY_RELATED_CT_ENTRIES =
 		CTEntryFinder.class.getName() + ".findByRelatedCTEntries";
 
@@ -151,50 +148,6 @@ public class CTEntryFinderImpl
 			return (List<CTEntry>)QueryUtil.list(
 				q, getDialect(), queryDefinition.getStart(),
 				queryDefinition.getEnd());
-		}
-		catch (Exception e) {
-			throw new SystemException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public CTEntry findByCTCI_MCNI_MCPK(
-		long ctCollectionId, long modelClassNameId, long modelClassPK) {
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			String sql = _customSQL.get(getClass(), FIND_BY_CT_COLLECTION_ID);
-
-			sql = _customSQL.appendCriteria(
-				sql, "AND (CTEntry.modelClassNameId = ?)");
-
-			sql = _customSQL.appendCriteria(
-				sql, "AND (CTEntry.modelClassPK = ?)");
-
-			SQLQuery q = session.createSynchronizedSQLQuery(sql);
-
-			q.addEntity("CTEntry", CTEntryImpl.class);
-
-			QueryPos qPos = QueryPos.getInstance(q);
-
-			qPos.add(ctCollectionId);
-			qPos.add(modelClassNameId);
-			qPos.add(modelClassPK);
-
-			List<CTEntry> ctEntries = q.list();
-
-			if (!ctEntries.isEmpty()) {
-				return ctEntries.get(0);
-			}
-
-			return null;
 		}
 		catch (Exception e) {
 			throw new SystemException(e);

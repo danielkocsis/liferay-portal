@@ -169,7 +169,7 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 	public CTEntry fetchCTEntry(
 		long ctCollectionId, long modelClassNameId, long modelClassPK) {
 
-		return ctEntryFinder.findByCTCI_MCNI_MCPK(
+		return ctEntryPersistence.fetchByC_MCNI_MCPK(
 			ctCollectionId, modelClassNameId, modelClassPK);
 	}
 
