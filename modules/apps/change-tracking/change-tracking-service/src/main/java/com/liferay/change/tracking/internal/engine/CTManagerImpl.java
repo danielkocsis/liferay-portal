@@ -235,13 +235,9 @@ public class CTManagerImpl implements CTManager {
 			ctEntryCTEntryAggregates.parallelStream();
 
 		return ctEntryAggregateStream.filter(
-			ctEntryAggregate -> {
-				List<CTCollection> ctEntryAggregateCTCollections =
-					_ctCollectionLocalService.getCTEntryAggregateCTCollections(
-						ctEntryAggregate.getCtEntryAggregateId());
-
-				return ctEntryAggregateCTCollections.contains(ctCollection);
-			}
+			ctEntryAggregate ->
+				ctEntryAggregate.getCtCollectionId() ==
+					ctCollection.getCtCollectionId()
 		).findAny();
 	}
 
