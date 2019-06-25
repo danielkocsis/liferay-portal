@@ -231,9 +231,6 @@ public interface CTEntryLocalService
 	public CTEntry fetchCTEntry(long ctEntryId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public CTEntry fetchCTEntry(long modelClassNameId, long modelClassPK);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public CTEntry fetchCTEntry(
 		long ctCollectionId, long modelClassNameId, long modelClassPK);
 
