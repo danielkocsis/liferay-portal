@@ -79,7 +79,7 @@ public class LayoutCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(73);
+		StringBundler sb = new StringBundler(75);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -113,6 +113,8 @@ public class LayoutCacheModel
 		sb.append(classNameId);
 		sb.append(", classPK=");
 		sb.append(classPK);
+		sb.append(", ctCollectionId=");
+		sb.append(ctCollectionId);
 		sb.append(", name=");
 		sb.append(name);
 		sb.append(", title=");
@@ -205,6 +207,7 @@ public class LayoutCacheModel
 		layoutImpl.setParentLayoutId(parentLayoutId);
 		layoutImpl.setClassNameId(classNameId);
 		layoutImpl.setClassPK(classPK);
+		layoutImpl.setCtCollectionId(ctCollectionId);
 
 		if (name == null) {
 			layoutImpl.setName("");
@@ -356,6 +359,8 @@ public class LayoutCacheModel
 		classNameId = objectInput.readLong();
 
 		classPK = objectInput.readLong();
+
+		ctCollectionId = objectInput.readLong();
 		name = objectInput.readUTF();
 		title = objectInput.readUTF();
 		description = objectInput.readUTF();
@@ -427,6 +432,8 @@ public class LayoutCacheModel
 		objectOutput.writeLong(classNameId);
 
 		objectOutput.writeLong(classPK);
+
+		objectOutput.writeLong(ctCollectionId);
 
 		if (name == null) {
 			objectOutput.writeUTF("");
@@ -550,6 +557,7 @@ public class LayoutCacheModel
 	public long parentLayoutId;
 	public long classNameId;
 	public long classPK;
+	public long ctCollectionId;
 	public String name;
 	public String title;
 	public String description;

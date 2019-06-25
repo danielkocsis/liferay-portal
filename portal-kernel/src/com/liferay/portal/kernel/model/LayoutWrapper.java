@@ -60,6 +60,7 @@ public class LayoutWrapper
 		attributes.put("parentLayoutId", getParentLayoutId());
 		attributes.put("classNameId", getClassNameId());
 		attributes.put("classPK", getClassPK());
+		attributes.put("ctCollectionId", getCtCollectionId());
 		attributes.put("name", getName());
 		attributes.put("title", getTitle());
 		attributes.put("description", getDescription());
@@ -182,6 +183,12 @@ public class LayoutWrapper
 
 		if (classPK != null) {
 			setClassPK(classPK);
+		}
+
+		Long ctCollectionId = (Long)attributes.get("ctCollectionId");
+
+		if (ctCollectionId != null) {
+			setCtCollectionId(ctCollectionId);
 		}
 
 		String name = (String)attributes.get("name");
@@ -496,6 +503,16 @@ public class LayoutWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return model.getCssText();
+	}
+
+	/**
+	 * Returns the ct collection ID of this layout.
+	 *
+	 * @return the ct collection ID of this layout
+	 */
+	@Override
+	public long getCtCollectionId() {
+		return model.getCtCollectionId();
 	}
 
 	@Override
@@ -1716,6 +1733,16 @@ public class LayoutWrapper
 	@Override
 	public void setCss(String css) {
 		model.setCss(css);
+	}
+
+	/**
+	 * Sets the ct collection ID of this layout.
+	 *
+	 * @param ctCollectionId the ct collection ID of this layout
+	 */
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		model.setCtCollectionId(ctCollectionId);
 	}
 
 	/**

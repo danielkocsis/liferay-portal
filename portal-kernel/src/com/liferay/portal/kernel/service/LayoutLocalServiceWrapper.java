@@ -402,6 +402,13 @@ public class LayoutLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.portal.kernel.model.LayoutCT createModelCT(
+		long plid, long ctCollectionId) {
+
+		return _layoutLocalService.createModelCT(plid, ctCollectionId);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.model.Layout delete(
 			com.liferay.portal.kernel.model.Layout publishedLayout)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -630,6 +637,11 @@ public class LayoutLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.portal.kernel.model.Layout fetchByPrimaryKey(long plid) {
+		return _layoutLocalService.fetchByPrimaryKey(plid);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.model.Layout fetchDefaultLayout(
 		long groupId, boolean privateLayout) {
 
@@ -741,6 +753,20 @@ public class LayoutLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.portal.kernel.model.LayoutCT fetchModelCT(
+		long plid, long ctCollectionId) {
+
+		return _layoutLocalService.fetchModelCT(plid, ctCollectionId);
+	}
+
+	@Override
+	public java.util.List<com.liferay.portal.kernel.model.LayoutCT>
+		fetchModelCTs(long[] plids, long ctCollectionId) {
+
+		return _layoutLocalService.fetchModelCTs(plids, ctCollectionId);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.model.Layout fetchPublished(
 		com.liferay.portal.kernel.model.Layout layout) {
 
@@ -755,10 +781,25 @@ public class LayoutLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.List<com.liferay.portal.kernel.model.Layout>
+		findByCTCollectionId(long ctCollectionId) {
+
+		return _layoutLocalService.findByCTCollectionId(ctCollectionId);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
 		getActionableDynamicQuery() {
 
 		return _layoutLocalService.getActionableDynamicQuery();
+	}
+
+	@Override
+	public com.liferay.portal.kernel.change.tracking.model.CTModelAdapter
+		<com.liferay.portal.kernel.model.Layout,
+		 com.liferay.portal.kernel.model.LayoutCT> getCTModelAdapter() {
+
+		return _layoutLocalService.getCTModelAdapter();
 	}
 
 	/**
@@ -1577,6 +1618,18 @@ public class LayoutLocalServiceWrapper
 		_layoutLocalService.registerListener(versionServiceListener);
 	}
 
+	@Override
+	public void removeModelCT(
+		com.liferay.portal.kernel.model.LayoutCT layoutCT) {
+
+		_layoutLocalService.removeModelCT(layoutCT);
+	}
+
+	@Override
+	public void removeModelCTs(long plid) {
+		_layoutLocalService.removeModelCTs(plid);
+	}
+
 	/**
 	 * Sets the layouts for the group, replacing and prioritizing all layouts of
 	 * the parent layout.
@@ -1809,6 +1862,18 @@ public class LayoutLocalServiceWrapper
 
 		return _layoutLocalService.updateLookAndFeel(
 			groupId, privateLayout, layoutId, themeId, colorSchemeId, css);
+	}
+
+	@Override
+	public void updateModel(com.liferay.portal.kernel.model.Layout layout) {
+		_layoutLocalService.updateModel(layout);
+	}
+
+	@Override
+	public void updateModelCT(
+		com.liferay.portal.kernel.model.LayoutCT layoutCT) {
+
+		_layoutLocalService.updateModelCT(layoutCT);
 	}
 
 	/**

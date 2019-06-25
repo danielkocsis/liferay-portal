@@ -400,6 +400,12 @@ public class LayoutLocalServiceUtil {
 		return getService().create();
 	}
 
+	public static com.liferay.portal.kernel.model.LayoutCT createModelCT(
+		long plid, long ctCollectionId) {
+
+		return getService().createModelCT(plid, ctCollectionId);
+	}
+
 	public static com.liferay.portal.kernel.model.Layout delete(
 			com.liferay.portal.kernel.model.Layout publishedLayout)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -613,6 +619,12 @@ public class LayoutLocalServiceUtil {
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
+	public static com.liferay.portal.kernel.model.Layout fetchByPrimaryKey(
+		long plid) {
+
+		return getService().fetchByPrimaryKey(plid);
+	}
+
 	public static com.liferay.portal.kernel.model.Layout fetchDefaultLayout(
 		long groupId, boolean privateLayout) {
 
@@ -715,6 +727,18 @@ public class LayoutLocalServiceUtil {
 		return getService().fetchLayoutVersion(layoutVersionId);
 	}
 
+	public static com.liferay.portal.kernel.model.LayoutCT fetchModelCT(
+		long plid, long ctCollectionId) {
+
+		return getService().fetchModelCT(plid, ctCollectionId);
+	}
+
+	public static java.util.List<com.liferay.portal.kernel.model.LayoutCT>
+		fetchModelCTs(long[] plids, long ctCollectionId) {
+
+		return getService().fetchModelCTs(plids, ctCollectionId);
+	}
+
 	public static com.liferay.portal.kernel.model.Layout fetchPublished(
 		com.liferay.portal.kernel.model.Layout layout) {
 
@@ -727,10 +751,23 @@ public class LayoutLocalServiceUtil {
 		return getService().fetchPublished(primaryKey);
 	}
 
+	public static java.util.List<com.liferay.portal.kernel.model.Layout>
+		findByCTCollectionId(long ctCollectionId) {
+
+		return getService().findByCTCollectionId(ctCollectionId);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
 		getActionableDynamicQuery() {
 
 		return getService().getActionableDynamicQuery();
+	}
+
+	public static com.liferay.portal.kernel.change.tracking.model.CTModelAdapter
+		<com.liferay.portal.kernel.model.Layout,
+		 com.liferay.portal.kernel.model.LayoutCT> getCTModelAdapter() {
+
+		return getService().getCTModelAdapter();
 	}
 
 	/**
@@ -1488,6 +1525,16 @@ public class LayoutLocalServiceUtil {
 		getService().registerListener(versionServiceListener);
 	}
 
+	public static void removeModelCT(
+		com.liferay.portal.kernel.model.LayoutCT layoutCT) {
+
+		getService().removeModelCT(layoutCT);
+	}
+
+	public static void removeModelCTs(long plid) {
+		getService().removeModelCTs(plid);
+	}
+
 	/**
 	 * Sets the layouts for the group, replacing and prioritizing all layouts of
 	 * the parent layout.
@@ -1708,6 +1755,18 @@ public class LayoutLocalServiceUtil {
 
 		return getService().updateLookAndFeel(
 			groupId, privateLayout, layoutId, themeId, colorSchemeId, css);
+	}
+
+	public static void updateModel(
+		com.liferay.portal.kernel.model.Layout layout) {
+
+		getService().updateModel(layout);
+	}
+
+	public static void updateModelCT(
+		com.liferay.portal.kernel.model.LayoutCT layoutCT) {
+
+		getService().updateModelCT(layoutCT);
 	}
 
 	/**
