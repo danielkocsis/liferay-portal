@@ -205,6 +205,14 @@ public class CTEntryPersistenceTest {
 	}
 
 	@Test
+	public void testCountByC_MCNI() throws Exception {
+		_persistence.countByC_MCNI(
+			RandomTestUtil.nextLong(), RandomTestUtil.nextLong());
+
+		_persistence.countByC_MCNI(0L, 0L);
+	}
+
+	@Test
 	public void testCountByC_S() throws Exception {
 		_persistence.countByC_S(
 			RandomTestUtil.nextLong(), RandomTestUtil.nextInt());
@@ -218,6 +226,15 @@ public class CTEntryPersistenceTest {
 			RandomTestUtil.nextLong(), RandomTestUtil.nextLong());
 
 		_persistence.countByMCNI_MCPK(0L, 0L);
+	}
+
+	@Test
+	public void testCountByC_MCNI_S() throws Exception {
+		_persistence.countByC_MCNI_S(
+			RandomTestUtil.nextLong(), RandomTestUtil.nextLong(),
+			RandomTestUtil.nextInt());
+
+		_persistence.countByC_MCNI_S(0L, 0L, 0);
 	}
 
 	@Test
