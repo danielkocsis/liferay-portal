@@ -23,21 +23,10 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface CTEntryFinder {
 
-	public int countByCTCollectionId(
-		long ctCollectionId,
-		com.liferay.portal.kernel.dao.orm.QueryDefinition
-			<com.liferay.change.tracking.model.CTEntry> queryDefinition);
-
 	public int countByRelatedCTEntries(
 		long ctEntryId,
 		com.liferay.portal.kernel.dao.orm.QueryDefinition
 			<com.liferay.change.tracking.model.CTEntry> queryDefinition);
-
-	public java.util.List<com.liferay.change.tracking.model.CTEntry>
-		findByCTCollectionId(
-			long ctCollectionId,
-			com.liferay.portal.kernel.dao.orm.QueryDefinition
-				<com.liferay.change.tracking.model.CTEntry> queryDefinition);
 
 	public java.util.List<com.liferay.change.tracking.model.CTEntry>
 		findByRelatedCTEntries(
