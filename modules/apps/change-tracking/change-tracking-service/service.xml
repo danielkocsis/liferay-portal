@@ -83,6 +83,10 @@
 		<finder name="ModelClassNameId" return-type="Collection">
 			<finder-column name="modelClassNameId" />
 		</finder>
+		<finder name="C_MCNI" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+			<finder-column name="modelClassNameId" />
+		</finder>
 		<finder name="C_S" return-type="Collection">
 			<finder-column name="ctCollectionId" />
 			<finder-column name="status" />
@@ -90,6 +94,11 @@
 		<finder name="MCNI_MCPK" return-type="CTEntry" unique="true">
 			<finder-column name="modelClassNameId" />
 			<finder-column name="modelClassPK" />
+		</finder>
+		<finder name="C_MCNI_S" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+			<finder-column name="modelClassNameId" />
+			<finder-column name="status" />
 		</finder>
 
 		<!-- References -->
