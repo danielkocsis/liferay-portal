@@ -54,6 +54,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
+import com.liferay.portal.kernel.model.LayoutRevision;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.StagedGroupedModel;
 import com.liferay.portal.kernel.model.StagedModel;
@@ -67,6 +68,7 @@ import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.xml.SecureXMLFactoryProviderUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.LayoutRevisionLocalService;
 import com.liferay.portal.kernel.service.LayoutService;
 import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.service.SystemEventLocalService;
@@ -88,6 +90,7 @@ import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.ElementHandler;
@@ -113,6 +116,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -851,6 +855,22 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 			(referencedContentBehavior.equals("include-if-modified") &&
 			 portletDataContext.isWithinDateRange(
 				 referenceStagedModel.getModifiedDate()))) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isLayoutRevisionInReview(Layout layout) {
+		List<LayoutRevision> layoutRevisions =
+			_layoutRevisionLocalService.getLayoutRevisions(layout.getPlid());
+
+		Stream<LayoutRevision> layoutRevisionStream = layoutRevisions.stream();
+
+		if (layoutRevisionStream.anyMatch(
+				revision ->
+					revision.getStatus() == WorkflowConstants.STATUS_PENDING)) {
 
 			return true;
 		}
@@ -1793,6 +1813,13 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 	}
 
 	@Reference(unbind = "-")
+	protected void setLayoutRevisionLocalService(
+		LayoutRevisionLocalService layoutRevisionLocalService) {
+
+		_layoutRevisionLocalService = layoutRevisionLocalService;
+	}
+
+	@Reference(unbind = "-")
 	protected void setLayoutService(LayoutService layoutService) {
 		_layoutService = layoutService;
 	}
@@ -1958,6 +1985,7 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 	private ExportImportServiceConfiguration _exportImportServiceConfiguration;
 	private GroupLocalService _groupLocalService;
 	private LayoutLocalService _layoutLocalService;
+	private LayoutRevisionLocalService _layoutRevisionLocalService;
 	private LayoutService _layoutService;
 
 	@Reference

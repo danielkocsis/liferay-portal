@@ -14,6 +14,7 @@
 
 package com.liferay.layout.internal.exportimport.staged.model.repository;
 
+import com.liferay.exportimport.kernel.lar.ExportImportHelper;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
@@ -35,6 +36,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -97,7 +99,17 @@ public class StagedLayoutSetStagedModelRepository
 		List<Layout> layouts = _layoutLocalService.getLayouts(
 			stagedLayoutSet.getGroupId(), stagedLayoutSet.isPrivateLayout());
 
-		Stream<Layout> layoutsStream = layouts.stream();
+		List<Layout> filteredLayouts = new ArrayList<>();
+
+		for (Layout layout : layouts) {
+			if (_exportImportHelper.isLayoutRevisionInReview(layout)) {
+				continue;
+			}
+
+			filteredLayouts.add(layout);
+		}
+
+		Stream<Layout> layoutsStream = filteredLayouts.stream();
 
 		return layoutsStream.map(
 			layout -> (StagedModel)layout
@@ -260,6 +272,9 @@ public class StagedLayoutSetStagedModelRepository
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		StagedLayoutSetStagedModelRepository.class);
+
+	@Reference
+	private ExportImportHelper _exportImportHelper;
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
