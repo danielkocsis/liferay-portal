@@ -199,13 +199,15 @@ public class CTCollectionLocalServiceImpl
 
 		int status = queryDefinition.getStatus();
 
-		Property statusProperty = PropertyFactoryUtil.forName("status");
+		if (status != WorkflowConstants.STATUS_ANY) {
+			Property statusProperty = PropertyFactoryUtil.forName("status");
 
-		if (queryDefinition.isExcludeStatus()) {
-			dynamicQuery.add(statusProperty.ne(status));
-		}
-		else {
-			dynamicQuery.add(statusProperty.eq(status));
+			if (queryDefinition.isExcludeStatus()) {
+				dynamicQuery.add(statusProperty.ne(status));
+			}
+			else {
+				dynamicQuery.add(statusProperty.eq(status));
+			}
 		}
 
 		return ctCollectionLocalService.dynamicQuery(
