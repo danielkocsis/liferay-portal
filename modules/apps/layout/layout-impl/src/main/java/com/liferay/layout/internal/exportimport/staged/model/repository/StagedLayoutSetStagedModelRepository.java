@@ -36,7 +36,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -99,19 +98,11 @@ public class StagedLayoutSetStagedModelRepository
 		List<Layout> layouts = _layoutLocalService.getLayouts(
 			stagedLayoutSet.getGroupId(), stagedLayoutSet.isPrivateLayout());
 
-		List<Layout> filteredLayouts = new ArrayList<>();
+		Stream<Layout> layoutsStream = layouts.stream();
 
-		for (Layout layout : layouts) {
-			if (_exportImportHelper.isLayoutRevisionInReview(layout)) {
-				continue;
-			}
-
-			filteredLayouts.add(layout);
-		}
-
-		Stream<Layout> layoutsStream = filteredLayouts.stream();
-
-		return layoutsStream.map(
+		return layoutsStream.filter(
+			layout -> !_exportImportHelper.isLayoutRevisionInReview(layout)
+		).map(
 			layout -> (StagedModel)layout
 		).collect(
 			Collectors.toList()
