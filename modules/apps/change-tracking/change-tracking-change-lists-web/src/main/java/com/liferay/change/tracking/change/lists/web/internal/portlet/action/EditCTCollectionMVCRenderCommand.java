@@ -60,9 +60,12 @@ public class EditCTCollectionMVCRenderCommand implements MVCRenderCommand {
 			_ctEngineManager.getCTCollectionOptional(
 				themeDisplay.getCompanyId(), ctCollectionId);
 
-		ctCollectionOptional.ifPresent(
+		ctCollectionOptional.filter(
+			ctCollection -> !ctCollection.isProduction()
+		).ifPresent(
 			ctCollection -> renderRequest.setAttribute(
-				"ctCollection", ctCollection));
+				"ctCollection", ctCollection)
+		);
 
 		return "/edit_ct_collection.jsp";
 	}
