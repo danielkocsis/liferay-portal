@@ -198,7 +198,7 @@ public class StagedLayoutSetStagedModelDataHandler
 							layoutUUID, stagingGroupID,
 							!layout.isPublicLayout());
 
-					if ((stagedLayout != null) ||
+					if ((stagedLayout != null) &&
 						_exportImportHelper.isLayoutRevisionInReview(
 							stagedLayout)) {
 
