@@ -402,11 +402,15 @@ public class JournalArticleExportImportContentProcessor
 					JournalArticle.class + ".primaryKey");
 
 			long articlePrimaryKey = MapUtil.getLong(
-				articlePrimaryKeys, classPK, classPK);
+				articlePrimaryKeys, classPK);
 
-			JournalArticle journalArticle =
-				_journalArticleLocalService.fetchJournalArticle(
-					articlePrimaryKey);
+			JournalArticle journalArticle = null;
+
+			if (articlePrimaryKey != 0) {
+				journalArticle =
+					_journalArticleLocalService.fetchJournalArticle(
+						articlePrimaryKey);
+			}
 
 			if (journalArticle == null) {
 				if (_log.isWarnEnabled()) {
