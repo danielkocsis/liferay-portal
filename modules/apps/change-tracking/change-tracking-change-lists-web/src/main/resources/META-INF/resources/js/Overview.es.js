@@ -398,7 +398,7 @@ class Overview extends PortletBase {
 
 			const entityNameTranslation = this.entityNameTranslations.find(
 				entityNameTranslation =>
-					entityNameTranslation.key == changeEntry.contentType
+					entityNameTranslation.key == changeEntry.classNameId
 			);
 
 			this.changeEntries.push({
