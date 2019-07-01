@@ -14,18 +14,27 @@
 
 package com.liferay.change.tracking.internal.display;
 
+import com.liferay.change.tracking.definition.CTDefinition;
+import com.liferay.change.tracking.definition.CTDefinitionRegistry;
 import com.liferay.change.tracking.display.CTDisplayHelper;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.change.tracking.display.CTDisplayAdapter;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -108,11 +117,49 @@ public class CTDisplayHelperImpl implements CTDisplayHelper {
 		return ctDisplayAdapter.getModelDisplayName(model, locale);
 	}
 
+	@Override
+	public Map<Long, String> getDisplayNames(Locale locale) {
+		Collection<CTDisplayAdapter> values = _serviceTrackerMap.values();
+
+		Map<Long, String> displayNames = new HashMap<>(values.size());
+
+		for (CTDisplayAdapter<?> ctDisplayAdapter : values) {
+			displayNames.put(
+				_classNameLocalService.getClassNameId(
+					ctDisplayAdapter.getModelClass()),
+				ctDisplayAdapter.getModelDisplayName(locale));
+		}
+
+		List<CTDefinition<?, ?>> ctDefinitions =
+			_ctDefinitionRegistry.getAllCTDefinitions();
+
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			locale, CTDisplayHelperImpl.class);
+
+		for (CTDefinition<?, ?> ctDefinition : ctDefinitions) {
+			String translation = ResourceBundleUtil.getString(
+				resourceBundle, ctDefinition.getContentTypeLanguageKey());
+
+			displayNames.put(
+				_classNameLocalService.getClassNameId(
+					ctDefinition.getVersionEntityClass()),
+				translation);
+		}
+
+		return displayNames;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		CTDisplayHelperImpl.class);
 
 	@Reference
 	private ClassNameLocalService _classNameLocalService;
+
+	@Reference
+	private CTDefinitionRegistry _ctDefinitionRegistry;
+
+	@Reference
+	private Language _language;
 
 	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED)
 	private ModuleServiceLifecycle _moduleServiceLifecycle;

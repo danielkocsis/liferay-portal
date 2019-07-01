@@ -14,8 +14,9 @@
 
 package com.liferay.change.tracking.change.lists.web.internal.display.context;
 
+import com.liferay.change.tracking.change.lists.web.internal.util.CTDisplayHelperUtil;
 import com.liferay.change.tracking.constants.CTPortletKeys;
-import com.liferay.change.tracking.definition.CTDefinitionRegistryUtil;
+import com.liferay.change.tracking.display.CTDisplayHelper;
 import com.liferay.change.tracking.engine.CTEngineManager;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
@@ -37,6 +38,7 @@ import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -83,16 +85,21 @@ public class ChangeListsDisplayContext {
 	public SoyContext getChangeListsContext() throws Exception {
 		SoyContext soyContext = SoyContextFactoryUtil.createSoyContext();
 
+		CTDisplayHelper ctDisplayHelper =
+			CTDisplayHelperUtil.getCTDisplayHelper();
+
+		Map<Long, String> displayNames = ctDisplayHelper.getDisplayNames(
+			PortalUtil.getLocale(_httpServletRequest));
+
 		soyContext.put(
 			"entityNameTranslations",
 			JSONUtil.toJSONArray(
-				CTDefinitionRegistryUtil.getContentTypeLanguageKeys(),
-				contentTypeLanguageKey -> JSONUtil.put(
-					"key", contentTypeLanguageKey
+				displayNames.keySet(
+				).toArray(),
+				displayNameClassName -> JSONUtil.put(
+					"key", String.valueOf(displayNameClassName)
 				).put(
-					"translation",
-					LanguageUtil.get(
-						_httpServletRequest, contentTypeLanguageKey)
+					"translation", displayNames.get(displayNameClassName)
 				))
 		).put(
 			"namespace", _renderResponse.getNamespace()
