@@ -30,8 +30,8 @@ import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.model.CTEntryAggregate;
 import com.liferay.change.tracking.model.CTProcess;
 import com.liferay.change.tracking.service.CTCollectionLocalServiceUtil;
-import com.liferay.change.tracking.service.CTEntryAggregateLocalServiceUtil;
-import com.liferay.change.tracking.service.CTEntryLocalServiceUtil;
+import com.liferay.change.tracking.service.CTEntryAggregateLocalService;
+import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.service.CTProcessLocalServiceUtil;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants;
@@ -75,7 +75,9 @@ public class CTPublishBackgroundTaskExecutor
 	extends BaseBackgroundTaskExecutor {
 
 	public CTPublishBackgroundTaskExecutor(
-		CTAdapterHelper ctAdapterHelper, CTEngineManager ctEngineManager) {
+		CTAdapterHelper ctAdapterHelper, CTEngineManager ctEngineManager,
+		CTEntryLocalService ctEntryLocalService,
+		CTEntryAggregateLocalService ctEntryAggregateLocalService) {
 
 		setBackgroundTaskStatusMessageTranslator(
 			new CTPublishBackgroundTaskStatusMessageTranslator());
@@ -83,12 +85,15 @@ public class CTPublishBackgroundTaskExecutor
 
 		_ctAdapterHelper = ctAdapterHelper;
 		_ctEngineManager = ctEngineManager;
+		_ctEntryLocalService = ctEntryLocalService;
+		_ctEntryAggregateLocalService = ctEntryAggregateLocalService;
 	}
 
 	@Override
 	public BackgroundTaskExecutor clone() {
 		return new CTPublishBackgroundTaskExecutor(
-			_ctAdapterHelper, _ctEngineManager);
+			_ctAdapterHelper, _ctEngineManager, _ctEntryLocalService,
+			_ctEntryAggregateLocalService);
 	}
 
 	@Override
@@ -194,83 +199,19 @@ public class CTPublishBackgroundTaskExecutor
 			return;
 		}
 
+		List<CTEntryAggregate> ctEntryAggregates =
+			_ctEngineManager.getCTEntryAggregates(ctCollectionId);
+
 		_ctAdapterHelper.getInProduction(
 			() -> {
-				_publishCTContextHolderModels(ctCollectionId, ctEntries);
+				_publishCTEntriesAndCTEntryAggregates(
+					backgroundTask.getUserId(), ctCollectionId, ctEntries,
+					ctEntryAggregates, ignoreCollision);
 
 				return null;
 			});
 
-		List<CTEntryAggregate> ctEntryAggregates =
-			_ctEngineManager.getCTEntryAggregates(ctCollectionId);
-
-		_publishCTEntriesAndCTEntryAggregates(
-			backgroundTask.getUserId(), ctCollectionId, ctEntries,
-			ctEntryAggregates, ignoreCollision);
-
 		_attachLogs(backgroundTask);
-	}
-
-	private <T extends BaseModel<T>, C extends BaseModel<C>> void
-		_publishCTContextHolderModels(
-			long ctCollectionId, List<CTEntry> ctEntries) {
-
-		for (CTEntry ctEntry : ctEntries) {
-			CTAdapterBag<T, C> ctAdapterBag = _ctAdapterHelper.getCTAdapterBag(
-				ctEntry.getModelClassNameId());
-
-			CTModelAdapter<T, C> ctModelAdapter =
-				ctAdapterBag.getCTModelAdapter();
-
-			CTServiceAdapter<T, C> ctServiceAdapter =
-				ctAdapterBag.getCTServiceAdapter();
-
-			T model = ctServiceAdapter.fetchByPrimaryKey(
-				ctEntry.getModelClassPK());
-
-			if (CTConstants.CT_CHANGE_TYPE_ADDITION ==
-					ctEntry.getChangeType()) {
-
-				ctModelAdapter.setModelCTCollectionId(model, 0);
-
-				ctServiceAdapter.updateModel(model);
-			}
-			else if (CTConstants.CT_CHANGE_TYPE_MODIFICATION ==
-						ctEntry.getChangeType()) {
-
-				C modelCT = ctServiceAdapter.fetchModelCT(
-					ctModelAdapter.getPrimaryKey(model), ctCollectionId);
-
-				if (modelCT == null) {
-					continue;
-				}
-
-				C tempModelCT = ctServiceAdapter.createModelCT(
-					ctModelAdapter.getPrimaryKey(model), 0);
-
-				ctModelAdapter.populateModelCT(model, tempModelCT);
-
-				ctModelAdapter.populateModel(model, modelCT);
-
-				ctServiceAdapter.updateModel(model);
-
-				ctModelAdapter.populateModel(model, tempModelCT);
-
-				ctModelAdapter.populateModelCT(model, modelCT);
-
-				ctModelAdapter.setModelCTCTCollectionId(
-					modelCT, ctCollectionId);
-
-				ctServiceAdapter.updateModelCT(modelCT);
-			}
-			else if (CTConstants.CT_CHANGE_TYPE_DELETION ==
-						ctEntry.getChangeType()) {
-
-				ctModelAdapter.setModelCTCollectionId(model, ctCollectionId);
-
-				ctServiceAdapter.updateModel(model);
-			}
-		}
 	}
 
 	private void _publishCTEntriesAndCTEntryAggregates(
@@ -281,7 +222,23 @@ public class CTPublishBackgroundTaskExecutor
 		User user = UserLocalServiceUtil.getUser(userId);
 
 		for (CTEntry ctEntry : ctEntries) {
-			_publishCTEntry(ctEntry, ignoreCollision);
+			_checkExistingCollisions(ctEntry, ignoreCollision);
+
+			_publishCTEntry(ctCollectionId, ctEntry);
+
+			_ctEntryLocalService.updateStatus(
+				ctEntry.getCtEntryId(), WorkflowConstants.STATUS_APPROVED);
+
+			if (ctEntry.getModelResourcePrimKey() == 0) {
+				_ctEntryLocalService.updateCollisions(
+					ctEntry.getCompanyId(), ctEntry.getModelClassNameId(),
+					ctEntry.getModelClassPK());
+			}
+			else {
+				CTEntryCollisionUtil.checkCollidingCTEntries(
+					ctEntry.getCompanyId(), ctEntry.getModelClassPK(),
+					ctEntry.getModelResourcePrimKey());
+			}
 
 			CTProcessMessageSenderUtil.logCTEntryPublished(ctEntry);
 		}
@@ -290,7 +247,10 @@ public class CTPublishBackgroundTaskExecutor
 			Stream<CTEntryAggregate> ctEntryAggregatesStream =
 				ctEntryAggregates.stream();
 
-			ctEntryAggregatesStream.forEach(this::_publishCTEntryAggregate);
+			ctEntryAggregatesStream.forEach(
+				ctEntryAggregate -> _ctEntryAggregateLocalService.updateStatus(
+					ctEntryAggregate.getCtEntryAggregateId(),
+					WorkflowConstants.STATUS_APPROVED));
 		}
 
 		Optional<CTCollection> ctCollectionOptional =
@@ -317,21 +277,62 @@ public class CTPublishBackgroundTaskExecutor
 		}
 	}
 
-	private void _publishCTEntry(CTEntry ctEntry, boolean ignoreCollision)
-		throws CTEntryCollisionCTEngineException {
+	private <T extends BaseModel<T>, C extends BaseModel<C>> void
+		_publishCTEntry(long ctCollectionId, CTEntry ctEntry) {
 
-		_checkExistingCollisions(ctEntry, ignoreCollision);
+		CTAdapterBag<T, C> ctAdapterBag = _ctAdapterHelper.getCTAdapterBag(
+			ctEntry.getModelClassNameId());
 
-		CTEntryLocalServiceUtil.updateStatus(
-			ctEntry.getCtEntryId(), WorkflowConstants.STATUS_APPROVED);
+		if (ctAdapterBag == null) {
+			return;
+		}
 
-		CTEntryCollisionUtil.checkCollidingCTEntries(ctEntry);
-	}
+		CTModelAdapter<T, C> ctModelAdapter = ctAdapterBag.getCTModelAdapter();
 
-	private void _publishCTEntryAggregate(CTEntryAggregate ctEntryAggregate) {
-		CTEntryAggregateLocalServiceUtil.updateStatus(
-			ctEntryAggregate.getCtEntryAggregateId(),
-			WorkflowConstants.STATUS_APPROVED);
+		CTServiceAdapter<T, C> ctServiceAdapter =
+			ctAdapterBag.getCTServiceAdapter();
+
+		T model = ctServiceAdapter.fetchByPrimaryKey(ctEntry.getModelClassPK());
+
+		if (CTConstants.CT_CHANGE_TYPE_ADDITION == ctEntry.getChangeType()) {
+			ctModelAdapter.setModelCTCollectionId(model, 0);
+
+			ctServiceAdapter.updateModel(model);
+		}
+		else if (CTConstants.CT_CHANGE_TYPE_MODIFICATION ==
+					ctEntry.getChangeType()) {
+
+			C modelCT = ctServiceAdapter.fetchModelCT(
+				ctModelAdapter.getPrimaryKey(model), ctCollectionId);
+
+			if (modelCT == null) {
+				return;
+			}
+
+			C tempModelCT = ctServiceAdapter.createModelCT(
+				ctModelAdapter.getPrimaryKey(model), 0);
+
+			ctModelAdapter.populateModelCT(model, tempModelCT);
+
+			ctModelAdapter.populateModel(model, modelCT);
+
+			ctServiceAdapter.updateModel(model);
+
+			ctModelAdapter.populateModel(model, tempModelCT);
+
+			ctModelAdapter.populateModelCT(model, modelCT);
+
+			ctModelAdapter.setModelCTCTCollectionId(modelCT, ctCollectionId);
+
+			ctServiceAdapter.updateModelCT(modelCT);
+		}
+		else if (CTConstants.CT_CHANGE_TYPE_DELETION ==
+					ctEntry.getChangeType()) {
+
+			ctModelAdapter.setModelCTCollectionId(model, ctCollectionId);
+
+			ctServiceAdapter.updateModel(model);
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
@@ -339,6 +340,8 @@ public class CTPublishBackgroundTaskExecutor
 
 	private final CTAdapterHelper _ctAdapterHelper;
 	private final CTEngineManager _ctEngineManager;
+	private final CTEntryAggregateLocalService _ctEntryAggregateLocalService;
+	private final CTEntryLocalService _ctEntryLocalService;
 	private final TransactionConfig _transactionConfig =
 		TransactionConfig.Factory.create(
 			Propagation.REQUIRED, new Class<?>[] {Exception.class});

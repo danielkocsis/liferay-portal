@@ -16,6 +16,8 @@ package com.liferay.change.tracking.internal.background.task;
 
 import com.liferay.change.tracking.engine.CTEngineManager;
 import com.liferay.change.tracking.internal.adapter.CTAdapterHelper;
+import com.liferay.change.tracking.service.CTEntryAggregateLocalService;
+import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 
@@ -40,7 +42,8 @@ public class BackgroundTaskExecutorConfigurator {
 	protected void activate(BundleContext bundleContext) {
 		BackgroundTaskExecutor ctPublishBackgroundTaskExecutor =
 			new CTPublishBackgroundTaskExecutor(
-				_ctAdapterHelper, _ctEngineManager);
+				_ctAdapterHelper, _ctEngineManager, _ctEntryLocalService,
+				_ctEntryAggregateLocalService);
 
 		_registerBackgroundTaskExecutor(
 			bundleContext, ctPublishBackgroundTaskExecutor);
@@ -78,6 +81,12 @@ public class BackgroundTaskExecutorConfigurator {
 
 	@Reference
 	private CTEngineManager _ctEngineManager;
+
+	@Reference
+	private CTEntryAggregateLocalService _ctEntryAggregateLocalService;
+
+	@Reference
+	private CTEntryLocalService _ctEntryLocalService;
 
 	private final Set<ServiceRegistration<BackgroundTaskExecutor>>
 		_serviceRegistrations = new HashSet<>();
