@@ -373,6 +373,8 @@ public class CTPersistenceHelperFactoryImpl
 			sb.append(_ctCollection.getCtCollectionId());
 
 			if (!ctEntries.isEmpty()) {
+				int index = sb.index();
+
 				CTModelAdapter<T, C> ctModelAdapter =
 					_ctAdapterBag.getCTModelAdapter();
 
@@ -383,11 +385,20 @@ public class CTPersistenceHelperFactoryImpl
 				sb.append(" NOT IN (");
 
 				for (CTEntry ctEntry : ctEntries) {
-					sb.append(ctEntry.getModelClassPK());
-					sb.append(",");
+					if (ctEntry.getChangeType() ==
+							CTConstants.CT_CHANGE_TYPE_DELETION) {
+
+						sb.append(ctEntry.getModelClassPK());
+						sb.append(",");
+					}
 				}
 
-				sb.setIndex(sb.index() - 1);
+				if (sb.index() == (index + 5)) {
+					sb.setIndex(index);
+				}
+				else {
+					sb.setIndex(sb.index() - 1);
+				}
 			}
 
 			sb.append(") ");
