@@ -25,11 +25,13 @@ import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutFriendlyURL;
 import com.liferay.portal.kernel.model.LayoutRevision;
 import com.liferay.portal.kernel.model.LayoutType;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.service.LayoutFriendlyURLLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.permission.LayoutPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -84,7 +86,7 @@ public class LayoutSiteNavigationMenuItemType
 			SiteNavigationMenuItem siteNavigationMenuItem)
 		throws PortalException {
 
-		Layout layout = _getLayout(siteNavigationMenuItem);
+		Layout layout = _getLayout(portletDataContext, siteNavigationMenuItem);
 
 		LayoutRevision layoutRevision = _layoutStaging.getLayoutRevision(
 			layout);
@@ -95,6 +97,9 @@ public class LayoutSiteNavigationMenuItemType
 
 			return false;
 		}
+
+		siteNavigationMenuItemElement.addAttribute(
+			"layout-friendly-url", layout.getFriendlyURL());
 
 		portletDataContext.addReferenceElement(
 			siteNavigationMenuItem, siteNavigationMenuItemElement, layout,
@@ -288,7 +293,8 @@ public class LayoutSiteNavigationMenuItemType
 			SiteNavigationMenuItem importedSiteNavigationMenuItem)
 		throws PortalException {
 
-		Layout layout = _getLayout(importedSiteNavigationMenuItem);
+		Layout layout = _getLayout(
+			portletDataContext, importedSiteNavigationMenuItem);
 
 		if (layout == null) {
 			if (ExportImportThreadLocal.isPortletImportInProcess()) {
@@ -430,7 +436,10 @@ public class LayoutSiteNavigationMenuItemType
 			layoutUuid, siteNavigationMenuItem.getGroupId(), privateLayout);
 	}
 
-	private Layout _getLayout(SiteNavigationMenuItem siteNavigationMenuItem) {
+	private Layout _getLayout(
+		PortletDataContext portletDataContext,
+		SiteNavigationMenuItem siteNavigationMenuItem) {
+
 		UnicodeProperties typeSettingsProperties = new UnicodeProperties();
 
 		typeSettingsProperties.fastLoad(
@@ -448,6 +457,24 @@ public class LayoutSiteNavigationMenuItemType
 			layout = _layoutLocalService.fetchLayoutByUuidAndGroupId(
 				layoutUuid, siteNavigationMenuItem.getGroupId(),
 				!privateLayout);
+		}
+
+		if (layout == null) {
+			Element layoutElement = portletDataContext.getImportDataElement(
+				siteNavigationMenuItem);
+
+			String friendlyURL = layoutElement.attributeValue(
+				"layout-friendly-url");
+
+			LayoutFriendlyURL layoutFriendlyURL =
+				_layoutFriendlyURLLocalService.fetchFirstLayoutFriendlyURL(
+					siteNavigationMenuItem.getGroupId(), privateLayout,
+					friendlyURL);
+
+			if (layoutFriendlyURL != null) {
+				layout = _layoutLocalService.fetchLayout(
+					layoutFriendlyURL.getPlid());
+			}
 		}
 
 		return layout;
@@ -470,6 +497,9 @@ public class LayoutSiteNavigationMenuItemType
 
 	@Reference
 	private JSPRenderer _jspRenderer;
+
+	@Reference
+	private LayoutFriendlyURLLocalService _layoutFriendlyURLLocalService;
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
