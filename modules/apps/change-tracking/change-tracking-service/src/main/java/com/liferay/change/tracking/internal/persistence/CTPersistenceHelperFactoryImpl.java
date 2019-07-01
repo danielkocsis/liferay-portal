@@ -27,6 +27,7 @@ import com.liferay.petra.lang.CentralizedThreadLocal;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
+import com.liferay.portal.change.tracking.CTCollectionIdProvider;
 import com.liferay.portal.kernel.change.tracking.model.CTModelAdapter;
 import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelper;
 import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelperFactory;
@@ -59,10 +60,14 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  */
 @Component(
 	immediate = true,
-	service = {CTAdapterHelper.class, CTPersistenceHelperFactory.class}
+	service = {
+		CTAdapterHelper.class, CTCollectionIdProvider.class,
+		CTPersistenceHelperFactory.class
+	}
 )
 public class CTPersistenceHelperFactoryImpl
-	implements CTAdapterHelper, CTPersistenceHelperFactory {
+	implements CTAdapterHelper, CTCollectionIdProvider,
+			   CTPersistenceHelperFactory {
 
 	@Override
 	public <T extends BaseModel<T>> CTPersistenceHelper<T> create(
@@ -101,6 +106,23 @@ public class CTPersistenceHelperFactoryImpl
 		getCTAdapterBag(long classNameId) {
 
 		return (CTAdapterBag<T, C>)_ctAdapterBags.get(classNameId);
+	}
+
+	@Override
+	public long getCTCollectionId() {
+		ActiveCTCollectionHolder activeCTCollectionHolder =
+			_activeCTCollectionHolderThreadLocal.get();
+
+		Optional<CTCollection> ctCollectionOptional =
+			activeCTCollectionHolder.getActiveCTCollectionOptional();
+
+		if (!ctCollectionOptional.isPresent()) {
+			return 0;
+		}
+
+		CTCollection ctCollection = ctCollectionOptional.get();
+
+		return ctCollection.getCtCollectionId();
 	}
 
 	@Override

@@ -14,6 +14,7 @@
 
 package com.liferay.portlet;
 
+import com.liferay.portal.change.tracking.CTCollectionIdProviderUtil;
 import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cache.PortalCacheHelperUtil;
 import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
@@ -28,6 +29,10 @@ public class PortalPreferencesWrapperCacheUtil {
 		PortalPreferencesWrapperCacheUtil.class.getName();
 
 	public static PortalPreferencesWrapper get(long ownerId, int ownerType) {
+		if (CTCollectionIdProviderUtil.getCTCollectionId() != 0) {
+			return null;
+		}
+
 		String cacheKey = _getCacheKey(ownerId, ownerType);
 
 		return _portalPreferencesWrapperPortalCache.get(cacheKey);
@@ -36,6 +41,10 @@ public class PortalPreferencesWrapperCacheUtil {
 	public static void put(
 		long ownerId, int ownerType,
 		PortalPreferencesWrapper portalPreferencesWrapper) {
+
+		if (CTCollectionIdProviderUtil.getCTCollectionId() != 0) {
+			return;
+		}
 
 		String cacheKey = _getCacheKey(ownerId, ownerType);
 
