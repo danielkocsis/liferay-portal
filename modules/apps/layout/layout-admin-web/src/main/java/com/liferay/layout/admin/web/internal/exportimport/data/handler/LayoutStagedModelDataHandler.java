@@ -279,7 +279,10 @@ public class LayoutStagedModelDataHandler
 			Layout parentLayout = _layoutLocalService.fetchLayout(
 				layout.getGroupId(), layout.isPrivateLayout(), parentLayoutId);
 
-			if (parentLayout != null) {
+			if ((parentLayout != null) &&
+				!portletDataContext.isPathProcessed(
+					ExportImportPathUtil.getModelPath(parentLayout))) {
+
 				StagedModelDataHandlerUtil.exportReferenceStagedModel(
 					portletDataContext, layout, parentLayout,
 					PortletDataContext.REFERENCE_TYPE_PARENT);
@@ -292,10 +295,7 @@ public class LayoutStagedModelDataHandler
 		Layout draftLayout = _layoutLocalService.fetchLayout(
 			_portal.getClassNameId(Layout.class), layout.getPlid());
 
-		if ((draftLayout != null) &&
-			portletDataContext.isPathProcessed(
-				ExportImportPathUtil.getModelPath(draftLayout))) {
-
+		if (draftLayout != null) {
 			StagedModelDataHandlerUtil.exportReferenceStagedModel(
 				portletDataContext, layout, draftLayout,
 				PortletDataContext.REFERENCE_TYPE_PARENT);
