@@ -609,6 +609,15 @@ public class CTEntryLocalServiceWrapper
 		return _ctEntryLocalService.updateCollision(ctEntryId, collision);
 	}
 
+	@Override
+	public void updateCollisions(
+			long companyId, long modelClassNameId, long modelClassPK)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_ctEntryLocalService.updateCollisions(
+			companyId, modelClassNameId, modelClassPK);
+	}
+
 	/**
 	 * Updates the ct entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *

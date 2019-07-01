@@ -377,6 +377,10 @@ public interface CTEntryLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public CTEntry updateCollision(long ctEntryId, boolean collision);
 
+	public void updateCollisions(
+			long companyId, long modelClassNameId, long modelClassPK)
+		throws PortalException;
+
 	/**
 	 * Updates the ct entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *

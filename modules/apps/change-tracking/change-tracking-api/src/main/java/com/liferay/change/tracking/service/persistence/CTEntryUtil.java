@@ -1231,6 +1231,215 @@ public class CTEntryUtil {
 	}
 
 	/**
+	 * Returns all the ct entries where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @return the matching ct entries
+	 */
+	public static List<CTEntry> findByCompanyId_MCNI_MCPK(
+		long companyId, long modelClassNameId, long modelClassPK) {
+
+		return getPersistence().findByCompanyId_MCNI_MCPK(
+			companyId, modelClassNameId, modelClassPK);
+	}
+
+	/**
+	 * Returns a range of all the ct entries where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @return the range of matching ct entries
+	 */
+	public static List<CTEntry> findByCompanyId_MCNI_MCPK(
+		long companyId, long modelClassNameId, long modelClassPK, int start,
+		int end) {
+
+		return getPersistence().findByCompanyId_MCNI_MCPK(
+			companyId, modelClassNameId, modelClassPK, start, end);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching ct entries
+	 */
+	public static List<CTEntry> findByCompanyId_MCNI_MCPK(
+		long companyId, long modelClassNameId, long modelClassPK, int start,
+		int end, OrderByComparator<CTEntry> orderByComparator) {
+
+		return getPersistence().findByCompanyId_MCNI_MCPK(
+			companyId, modelClassNameId, modelClassPK, start, end,
+			orderByComparator);
+	}
+
+	/**
+	 * Returns an ordered range of all the ct entries where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>CTEntryModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param start the lower bound of the range of ct entries
+	 * @param end the upper bound of the range of ct entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching ct entries
+	 */
+	public static List<CTEntry> findByCompanyId_MCNI_MCPK(
+		long companyId, long modelClassNameId, long modelClassPK, int start,
+		int end, OrderByComparator<CTEntry> orderByComparator,
+		boolean retrieveFromCache) {
+
+		return getPersistence().findByCompanyId_MCNI_MCPK(
+			companyId, modelClassNameId, modelClassPK, start, end,
+			orderByComparator, retrieveFromCache);
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public static CTEntry findByCompanyId_MCNI_MCPK_First(
+			long companyId, long modelClassNameId, long modelClassPK,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws com.liferay.change.tracking.exception.NoSuchEntryException {
+
+		return getPersistence().findByCompanyId_MCNI_MCPK_First(
+			companyId, modelClassNameId, modelClassPK, orderByComparator);
+	}
+
+	/**
+	 * Returns the first ct entry in the ordered set where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public static CTEntry fetchByCompanyId_MCNI_MCPK_First(
+		long companyId, long modelClassNameId, long modelClassPK,
+		OrderByComparator<CTEntry> orderByComparator) {
+
+		return getPersistence().fetchByCompanyId_MCNI_MCPK_First(
+			companyId, modelClassNameId, modelClassPK, orderByComparator);
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry
+	 * @throws NoSuchEntryException if a matching ct entry could not be found
+	 */
+	public static CTEntry findByCompanyId_MCNI_MCPK_Last(
+			long companyId, long modelClassNameId, long modelClassPK,
+			OrderByComparator<CTEntry> orderByComparator)
+		throws com.liferay.change.tracking.exception.NoSuchEntryException {
+
+		return getPersistence().findByCompanyId_MCNI_MCPK_Last(
+			companyId, modelClassNameId, modelClassPK, orderByComparator);
+	}
+
+	/**
+	 * Returns the last ct entry in the ordered set where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching ct entry, or <code>null</code> if a matching ct entry could not be found
+	 */
+	public static CTEntry fetchByCompanyId_MCNI_MCPK_Last(
+		long companyId, long modelClassNameId, long modelClassPK,
+		OrderByComparator<CTEntry> orderByComparator) {
+
+		return getPersistence().fetchByCompanyId_MCNI_MCPK_Last(
+			companyId, modelClassNameId, modelClassPK, orderByComparator);
+	}
+
+	/**
+	 * Returns the ct entries before and after the current ct entry in the ordered set where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param ctEntryId the primary key of the current ct entry
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next ct entry
+	 * @throws NoSuchEntryException if a ct entry with the primary key could not be found
+	 */
+	public static CTEntry[] findByCompanyId_MCNI_MCPK_PrevAndNext(
+			long ctEntryId, long companyId, long modelClassNameId,
+			long modelClassPK, OrderByComparator<CTEntry> orderByComparator)
+		throws com.liferay.change.tracking.exception.NoSuchEntryException {
+
+		return getPersistence().findByCompanyId_MCNI_MCPK_PrevAndNext(
+			ctEntryId, companyId, modelClassNameId, modelClassPK,
+			orderByComparator);
+	}
+
+	/**
+	 * Removes all the ct entries where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63; from the database.
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 */
+	public static void removeByCompanyId_MCNI_MCPK(
+		long companyId, long modelClassNameId, long modelClassPK) {
+
+		getPersistence().removeByCompanyId_MCNI_MCPK(
+			companyId, modelClassNameId, modelClassPK);
+	}
+
+	/**
+	 * Returns the number of ct entries where companyId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param modelClassNameId the model class name ID
+	 * @param modelClassPK the model class pk
+	 * @return the number of matching ct entries
+	 */
+	public static int countByCompanyId_MCNI_MCPK(
+		long companyId, long modelClassNameId, long modelClassPK) {
+
+		return getPersistence().countByCompanyId_MCNI_MCPK(
+			companyId, modelClassNameId, modelClassPK);
+	}
+
+	/**
 	 * Returns the ct entry where ctCollectionId = &#63; and modelClassNameId = &#63; and modelClassPK = &#63; or throws a <code>NoSuchEntryException</code> if it could not be found.
 	 *
 	 * @param ctCollectionId the ct collection ID

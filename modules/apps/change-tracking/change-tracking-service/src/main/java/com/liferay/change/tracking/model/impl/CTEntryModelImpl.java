@@ -115,17 +115,19 @@ public class CTEntryModelImpl
 
 	public static final String TX_MANAGER = "liferayTransactionManager";
 
-	public static final long CTCOLLECTIONID_COLUMN_BITMASK = 1L;
+	public static final long COMPANYID_COLUMN_BITMASK = 1L;
 
-	public static final long MODELCLASSNAMEID_COLUMN_BITMASK = 2L;
+	public static final long CTCOLLECTIONID_COLUMN_BITMASK = 2L;
 
-	public static final long MODELCLASSPK_COLUMN_BITMASK = 4L;
+	public static final long MODELCLASSNAMEID_COLUMN_BITMASK = 4L;
 
-	public static final long MODELRESOURCEPRIMKEY_COLUMN_BITMASK = 8L;
+	public static final long MODELCLASSPK_COLUMN_BITMASK = 8L;
 
-	public static final long STATUS_COLUMN_BITMASK = 16L;
+	public static final long MODELRESOURCEPRIMKEY_COLUMN_BITMASK = 16L;
 
-	public static final long CTENTRYID_COLUMN_BITMASK = 32L;
+	public static final long STATUS_COLUMN_BITMASK = 32L;
+
+	public static final long CTENTRYID_COLUMN_BITMASK = 64L;
 
 	public static void setEntityCacheEnabled(boolean entityCacheEnabled) {
 		_entityCacheEnabled = entityCacheEnabled;
@@ -347,7 +349,19 @@ public class CTEntryModelImpl
 
 	@Override
 	public void setCompanyId(long companyId) {
+		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
+
+		if (!_setOriginalCompanyId) {
+			_setOriginalCompanyId = true;
+
+			_originalCompanyId = _companyId;
+		}
+
 		_companyId = companyId;
+	}
+
+	public long getOriginalCompanyId() {
+		return _originalCompanyId;
 	}
 
 	@Override
@@ -674,6 +688,10 @@ public class CTEntryModelImpl
 	public void resetOriginalValues() {
 		CTEntryModelImpl ctEntryModelImpl = this;
 
+		ctEntryModelImpl._originalCompanyId = ctEntryModelImpl._companyId;
+
+		ctEntryModelImpl._setOriginalCompanyId = false;
+
 		ctEntryModelImpl._setModifiedDate = false;
 
 		ctEntryModelImpl._originalCtCollectionId =
@@ -832,6 +850,8 @@ public class CTEntryModelImpl
 
 	private long _ctEntryId;
 	private long _companyId;
+	private long _originalCompanyId;
+	private boolean _setOriginalCompanyId;
 	private long _userId;
 	private String _userName;
 	private Date _createDate;
