@@ -519,8 +519,19 @@ public class CTManagerImpl implements CTManager {
 		CTCollection ctCollection = ctCollectionOptional.get();
 
 		if (ctCollection.isProduction()) {
-			CTEntryCollisionUtil.checkCollidingCTEntries(
-				companyId, modelClassPK, modelResourcePrimKey);
+			try {
+				if (modelResourcePrimKey == 0) {
+					_ctEntryLocalService.updateCollisions(
+						companyId, modelClassNameId, modelClassPK);
+				}
+				else {
+					CTEntryCollisionUtil.checkCollidingCTEntries(
+						companyId, modelClassPK, modelResourcePrimKey);
+				}
+			}
+			catch (PortalException pe) {
+				throw new CTEngineException(companyId, pe);
+			}
 
 			return Optional.empty();
 		}

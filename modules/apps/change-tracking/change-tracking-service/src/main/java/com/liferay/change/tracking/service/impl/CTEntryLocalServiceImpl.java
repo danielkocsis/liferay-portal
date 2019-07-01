@@ -27,6 +27,8 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -335,6 +337,32 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		ctEntry.setCollision(collision);
 
 		return ctEntryPersistence.update(ctEntry);
+	}
+
+	@Override
+	public void updateCollisions(
+			long companyId, long modelClassNameId, long modelClassPK)
+		throws PortalException {
+
+		List<CTEntry> ctEntries = ctEntryPersistence.findByCompanyId_MCNI_MCPK(
+			companyId, modelClassNameId, modelClassPK);
+
+		if (ctEntries.size() < 2) {
+			return;
+		}
+
+		Indexer<CTEntry> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+			CTEntry.class);
+
+		for (CTEntry ctEntry : ctEntries) {
+			if (ctEntry.getStatus() == WorkflowConstants.STATUS_DRAFT) {
+				ctEntry.setCollision(true);
+
+				ctEntryPersistence.update(ctEntry);
+
+				indexer.reindex(ctEntry);
+			}
+		}
 	}
 
 	@Indexable(type = IndexableType.REINDEX)

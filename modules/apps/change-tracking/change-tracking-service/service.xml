@@ -100,6 +100,11 @@
 			<finder-column name="modelClassNameId" />
 			<finder-column name="modelClassPK" />
 		</finder>
+		<finder name="CompanyId_MCNI_MCPK" return-type="Collection">
+			<finder-column name="companyId" />
+			<finder-column name="modelClassNameId" />
+			<finder-column name="modelClassPK" />
+		</finder>
 		<finder name="C_MCNI_MCPK" return-type="CTEntry" unique="true">
 			<finder-column name="ctCollectionId" />
 			<finder-column name="modelClassNameId" />
