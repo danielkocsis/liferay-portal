@@ -1808,14 +1808,18 @@
 
 		<!-- Other fields -->
 
+		<column name="ctCollectionId" type="long" />
 		<column name="ownerId" type="long" />
 		<column name="ownerType" type="int" />
 		<column name="plid" type="long" />
 		<column name="portletId" type="String" />
-		<column name="preferences" type="String" />
+		<column change-tracked="true" name="preferences" type="String" />
 
 		<!-- Finder methods -->
 
+		<finder name="CTCollectionId" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+		</finder>
 		<finder name="OwnerId" return-type="Collection">
 			<finder-column name="ownerId" />
 		</finder>
@@ -1868,6 +1872,30 @@
 		<reference entity="Portlet" package-path="com.liferay.portal" />
 		<reference entity="PortletItem" package-path="com.liferay.portal" />
 		<reference entity="User" package-path="com.liferay.portal" />
+	</entity>
+	<entity local-service="false" name="PortletPreferencesCT" remote-service="false">
+
+		<!-- PK fields -->
+
+		<column name="classPK" primary="true" type="long" />
+		<column name="ctCollectionId" primary="true" type="long" />
+
+		<!-- CT fields -->
+
+		<column name="preferences" type="String" />
+
+		<!-- Finder methods -->
+
+		<finder name="ClassPK" return-type="Collection">
+			<finder-column name="classPK" />
+		</finder>
+		<finder name="CTCollectionId" return-type="Collection">
+			<finder-column name="ctCollectionId" />
+		</finder>
+		<finder name="C_C" return-type="Collection">
+			<finder-column arrayable-operator="OR" name="classPK" />
+			<finder-column name="ctCollectionId" />
+		</finder>
 	</entity>
 	<entity local-service="true" name="RecentLayoutBranch" remote-service="false" uuid="false">
 
