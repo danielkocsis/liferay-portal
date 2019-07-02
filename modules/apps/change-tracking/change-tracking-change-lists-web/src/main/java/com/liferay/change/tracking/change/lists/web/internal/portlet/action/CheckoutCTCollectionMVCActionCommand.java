@@ -14,10 +14,9 @@
 
 package com.liferay.change.tracking.change.lists.web.internal.portlet.action;
 
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.engine.CTEngineManager;
-import com.liferay.change.tracking.model.CTCollection;
-import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.servlet.SessionMessages;
@@ -56,22 +55,16 @@ public class CheckoutCTCollectionMVCActionCommand extends BaseMVCActionCommand {
 		long ctCollectionId = ParamUtil.getLong(
 			actionRequest, "ctCollectionId");
 
-		CTCollection ctCollection = _ctCollectionLocalService.getCTCollection(
-			ctCollectionId);
-
 		_ctEngineManager.checkoutCTCollection(
 			themeDisplay.getUserId(), ctCollectionId);
 
-		if (ctCollection.isProduction()) {
+		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
 			SessionMessages.add(
 				actionRequest,
 				_portal.getPortletId(actionRequest) +
 					"checkoutProductionSuccess");
 		}
 	}
-
-	@Reference
-	private CTCollectionLocalService _ctCollectionLocalService;
 
 	@Reference
 	private CTEngineManager _ctEngineManager;
