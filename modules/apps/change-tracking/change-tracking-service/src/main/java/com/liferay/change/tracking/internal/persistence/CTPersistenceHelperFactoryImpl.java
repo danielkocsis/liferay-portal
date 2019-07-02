@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.change.tracking.model.CTModelAdapter;
 import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelper;
 import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelperFactory;
 import com.liferay.portal.kernel.change.tracking.service.CTServiceAdapter;
+import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
@@ -603,10 +604,11 @@ public class CTPersistenceHelperFactoryImpl
 
 		private List<CTEntry> _getCTEntries() {
 			if (_ctEntries == null) {
-				_ctEntries = _ctManager.getCTCollectionCTEntries(
-					_ctCollection.getCompanyId(),
-					_ctCollection.getCtCollectionId(),
-					_ctAdapterBag.getClassNameId());
+				_ctEntries =
+					_ctEntryLocalService.fetchCTEntriesByModelClassNameId(
+						_ctCollection.getCtCollectionId(),
+						_ctAdapterBag.getClassNameId(),
+						new QueryDefinition<>());
 			}
 
 			return _ctEntries;
