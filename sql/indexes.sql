@@ -310,12 +310,15 @@ create index IX_D699243F on PortletItem (groupId, name[$COLUMN_LENGTH:75$], port
 create index IX_E922D6C0 on PortletItem (groupId, portletId[$COLUMN_LENGTH:200$], classNameId);
 
 create index IX_60C49142 on PortletPreferences (companyId, ownerId, ownerType, portletId[$COLUMN_LENGTH:200$]);
+create index IX_BA6B0F62 on PortletPreferences (ctCollectionId);
 create unique index IX_C7057FF7 on PortletPreferences (ownerId, ownerType, plid, portletId[$COLUMN_LENGTH:200$]);
 create index IX_C9A3FCE2 on PortletPreferences (ownerId, ownerType, portletId[$COLUMN_LENGTH:200$]);
 create index IX_D5EDA3A1 on PortletPreferences (ownerType, plid, portletId[$COLUMN_LENGTH:200$]);
 create index IX_A3B2A80C on PortletPreferences (ownerType, portletId[$COLUMN_LENGTH:200$]);
 create index IX_D340DB76 on PortletPreferences (plid, portletId[$COLUMN_LENGTH:200$]);
 create index IX_8E6DA3A1 on PortletPreferences (portletId[$COLUMN_LENGTH:200$]);
+
+create index IX_E692E613 on PortletPreferencesCT (ctCollectionId);
 
 create index IX_A1A8CB8B on RatingsEntry (classNameId, classPK, score);
 create unique index IX_B47E3C11 on RatingsEntry (userId, classNameId, classPK);

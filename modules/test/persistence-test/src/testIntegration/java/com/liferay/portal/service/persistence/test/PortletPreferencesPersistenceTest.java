@@ -128,6 +128,8 @@ public class PortletPreferencesPersistenceTest {
 
 		newPortletPreferences.setCompanyId(RandomTestUtil.nextLong());
 
+		newPortletPreferences.setCtCollectionId(RandomTestUtil.nextLong());
+
 		newPortletPreferences.setOwnerId(RandomTestUtil.nextLong());
 
 		newPortletPreferences.setOwnerType(RandomTestUtil.nextInt());
@@ -154,6 +156,9 @@ public class PortletPreferencesPersistenceTest {
 			existingPortletPreferences.getCompanyId(),
 			newPortletPreferences.getCompanyId());
 		Assert.assertEquals(
+			existingPortletPreferences.getCtCollectionId(),
+			newPortletPreferences.getCtCollectionId());
+		Assert.assertEquals(
 			existingPortletPreferences.getOwnerId(),
 			newPortletPreferences.getOwnerId());
 		Assert.assertEquals(
@@ -168,6 +173,13 @@ public class PortletPreferencesPersistenceTest {
 		Assert.assertEquals(
 			existingPortletPreferences.getPreferences(),
 			newPortletPreferences.getPreferences());
+	}
+
+	@Test
+	public void testCountByCTCollectionId() throws Exception {
+		_persistence.countByCTCollectionId(RandomTestUtil.nextLong());
+
+		_persistence.countByCTCollectionId(0L);
 	}
 
 	@Test
@@ -289,8 +301,8 @@ public class PortletPreferencesPersistenceTest {
 	protected OrderByComparator<PortletPreferences> getOrderByComparator() {
 		return OrderByComparatorFactoryUtil.create(
 			"PortletPreferences", "mvccVersion", true, "portletPreferencesId",
-			true, "companyId", true, "ownerId", true, "ownerType", true, "plid",
-			true, "portletId", true);
+			true, "companyId", true, "ctCollectionId", true, "ownerId", true,
+			"ownerType", true, "plid", true, "portletId", true);
 	}
 
 	@Test
@@ -557,6 +569,8 @@ public class PortletPreferencesPersistenceTest {
 		portletPreferences.setMvccVersion(RandomTestUtil.nextLong());
 
 		portletPreferences.setCompanyId(RandomTestUtil.nextLong());
+
+		portletPreferences.setCtCollectionId(RandomTestUtil.nextLong());
 
 		portletPreferences.setOwnerId(RandomTestUtil.nextLong());
 

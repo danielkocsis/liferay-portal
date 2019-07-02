@@ -36,6 +36,7 @@ public class PortletPreferencesSoap implements Serializable {
 		soapModel.setMvccVersion(model.getMvccVersion());
 		soapModel.setPortletPreferencesId(model.getPortletPreferencesId());
 		soapModel.setCompanyId(model.getCompanyId());
+		soapModel.setCtCollectionId(model.getCtCollectionId());
 		soapModel.setOwnerId(model.getOwnerId());
 		soapModel.setOwnerType(model.getOwnerType());
 		soapModel.setPlid(model.getPlid());
@@ -127,6 +128,14 @@ public class PortletPreferencesSoap implements Serializable {
 		_companyId = companyId;
 	}
 
+	public long getCtCollectionId() {
+		return _ctCollectionId;
+	}
+
+	public void setCtCollectionId(long ctCollectionId) {
+		_ctCollectionId = ctCollectionId;
+	}
+
 	public long getOwnerId() {
 		return _ownerId;
 	}
@@ -170,6 +179,7 @@ public class PortletPreferencesSoap implements Serializable {
 	private long _mvccVersion;
 	private long _portletPreferencesId;
 	private long _companyId;
+	private long _ctCollectionId;
 	private long _ownerId;
 	private int _ownerType;
 	private long _plid;

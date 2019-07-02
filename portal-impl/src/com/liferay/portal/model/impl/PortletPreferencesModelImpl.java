@@ -73,9 +73,10 @@ public class PortletPreferencesModelImpl
 
 	public static final Object[][] TABLE_COLUMNS = {
 		{"mvccVersion", Types.BIGINT}, {"portletPreferencesId", Types.BIGINT},
-		{"companyId", Types.BIGINT}, {"ownerId", Types.BIGINT},
-		{"ownerType", Types.INTEGER}, {"plid", Types.BIGINT},
-		{"portletId", Types.VARCHAR}, {"preferences", Types.CLOB}
+		{"companyId", Types.BIGINT}, {"ctCollectionId", Types.BIGINT},
+		{"ownerId", Types.BIGINT}, {"ownerType", Types.INTEGER},
+		{"plid", Types.BIGINT}, {"portletId", Types.VARCHAR},
+		{"preferences", Types.CLOB}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -85,6 +86,7 @@ public class PortletPreferencesModelImpl
 		TABLE_COLUMNS_MAP.put("mvccVersion", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("portletPreferencesId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("ctCollectionId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("ownerId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("ownerType", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("plid", Types.BIGINT);
@@ -93,7 +95,7 @@ public class PortletPreferencesModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table PortletPreferences (mvccVersion LONG default 0 not null,portletPreferencesId LONG not null primary key,companyId LONG,ownerId LONG,ownerType INTEGER,plid LONG,portletId VARCHAR(200) null,preferences TEXT null)";
+		"create table PortletPreferences (mvccVersion LONG default 0 not null,portletPreferencesId LONG not null primary key,companyId LONG,ctCollectionId LONG,ownerId LONG,ownerType INTEGER,plid LONG,portletId VARCHAR(200) null,preferences TEXT null)";
 
 	public static final String TABLE_SQL_DROP = "drop table PortletPreferences";
 
@@ -126,15 +128,17 @@ public class PortletPreferencesModelImpl
 
 	public static final long COMPANYID_COLUMN_BITMASK = 1L;
 
-	public static final long OWNERID_COLUMN_BITMASK = 2L;
+	public static final long CTCOLLECTIONID_COLUMN_BITMASK = 2L;
 
-	public static final long OWNERTYPE_COLUMN_BITMASK = 4L;
+	public static final long OWNERID_COLUMN_BITMASK = 4L;
 
-	public static final long PLID_COLUMN_BITMASK = 8L;
+	public static final long OWNERTYPE_COLUMN_BITMASK = 8L;
 
-	public static final long PORTLETID_COLUMN_BITMASK = 16L;
+	public static final long PLID_COLUMN_BITMASK = 16L;
 
-	public static final long PORTLETPREFERENCESID_COLUMN_BITMASK = 32L;
+	public static final long PORTLETID_COLUMN_BITMASK = 32L;
+
+	public static final long PORTLETPREFERENCESID_COLUMN_BITMASK = 64L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -152,6 +156,7 @@ public class PortletPreferencesModelImpl
 		model.setMvccVersion(soapModel.getMvccVersion());
 		model.setPortletPreferencesId(soapModel.getPortletPreferencesId());
 		model.setCompanyId(soapModel.getCompanyId());
+		model.setCtCollectionId(soapModel.getCtCollectionId());
 		model.setOwnerId(soapModel.getOwnerId());
 		model.setOwnerType(soapModel.getOwnerType());
 		model.setPlid(soapModel.getPlid());
@@ -335,6 +340,12 @@ public class PortletPreferencesModelImpl
 			"companyId",
 			(BiConsumer<PortletPreferences, Long>)
 				PortletPreferences::setCompanyId);
+		attributeGetterFunctions.put(
+			"ctCollectionId", PortletPreferences::getCtCollectionId);
+		attributeSetterBiConsumers.put(
+			"ctCollectionId",
+			(BiConsumer<PortletPreferences, Long>)
+				PortletPreferences::setCtCollectionId);
 		attributeGetterFunctions.put("ownerId", PortletPreferences::getOwnerId);
 		attributeSetterBiConsumers.put(
 			"ownerId",
@@ -412,6 +423,29 @@ public class PortletPreferencesModelImpl
 
 	public long getOriginalCompanyId() {
 		return _originalCompanyId;
+	}
+
+	@JSON
+	@Override
+	public long getCtCollectionId() {
+		return _ctCollectionId;
+	}
+
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		_columnBitmask |= CTCOLLECTIONID_COLUMN_BITMASK;
+
+		if (!_setOriginalCtCollectionId) {
+			_setOriginalCtCollectionId = true;
+
+			_originalCtCollectionId = _ctCollectionId;
+		}
+
+		_ctCollectionId = ctCollectionId;
+	}
+
+	public long getOriginalCtCollectionId() {
+		return _originalCtCollectionId;
 	}
 
 	@JSON
@@ -567,6 +601,7 @@ public class PortletPreferencesModelImpl
 		portletPreferencesImpl.setPortletPreferencesId(
 			getPortletPreferencesId());
 		portletPreferencesImpl.setCompanyId(getCompanyId());
+		portletPreferencesImpl.setCtCollectionId(getCtCollectionId());
 		portletPreferencesImpl.setOwnerId(getOwnerId());
 		portletPreferencesImpl.setOwnerType(getOwnerType());
 		portletPreferencesImpl.setPlid(getPlid());
@@ -639,6 +674,11 @@ public class PortletPreferencesModelImpl
 
 		portletPreferencesModelImpl._setOriginalCompanyId = false;
 
+		portletPreferencesModelImpl._originalCtCollectionId =
+			portletPreferencesModelImpl._ctCollectionId;
+
+		portletPreferencesModelImpl._setOriginalCtCollectionId = false;
+
 		portletPreferencesModelImpl._originalOwnerId =
 			portletPreferencesModelImpl._ownerId;
 
@@ -671,6 +711,8 @@ public class PortletPreferencesModelImpl
 			getPortletPreferencesId();
 
 		portletPreferencesCacheModel.companyId = getCompanyId();
+
+		portletPreferencesCacheModel.ctCollectionId = getCtCollectionId();
 
 		portletPreferencesCacheModel.ownerId = getOwnerId();
 
@@ -772,6 +814,9 @@ public class PortletPreferencesModelImpl
 	private long _companyId;
 	private long _originalCompanyId;
 	private boolean _setOriginalCompanyId;
+	private long _ctCollectionId;
+	private long _originalCtCollectionId;
+	private boolean _setOriginalCtCollectionId;
 	private long _ownerId;
 	private long _originalOwnerId;
 	private boolean _setOriginalOwnerId;

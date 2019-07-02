@@ -14,6 +14,8 @@
 
 package com.liferay.portal.kernel.service;
 
+import com.liferay.portal.kernel.change.tracking.model.CTModelAdapter;
+import com.liferay.portal.kernel.change.tracking.service.CTServiceAdapter;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
@@ -24,6 +26,7 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.PortletPreferences;
+import com.liferay.portal.kernel.model.PortletPreferencesCT;
 import com.liferay.portal.kernel.model.PortletPreferencesIds;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
@@ -59,7 +62,9 @@ import org.osgi.annotation.versioning.ProviderType;
 	rollbackFor = {PortalException.class, SystemException.class}
 )
 public interface PortletPreferencesLocalService
-	extends BaseLocalService, PersistedModelLocalService {
+	extends BaseLocalService,
+			CTServiceAdapter<PortletPreferences, PortletPreferencesCT>,
+			PersistedModelLocalService {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -79,6 +84,10 @@ public interface PortletPreferencesLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public PortletPreferences addPortletPreferences(
 		PortletPreferences portletPreferences);
+
+	@Override
+	public PortletPreferencesCT createModelCT(
+		long portletPreferencesId, long ctCollectionId);
 
 	/**
 	 * Creates a new portlet preferences with the primary key. Does not add the portlet preferences to the database.
@@ -196,6 +205,20 @@ public interface PortletPreferencesLocalService
 	public long dynamicQueryCount(
 		DynamicQuery dynamicQuery, Projection projection);
 
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public PortletPreferences fetchByPrimaryKey(long portletPreferencesId);
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public PortletPreferencesCT fetchModelCT(
+		long portletPreferencesId, long ctCollectionId);
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<PortletPreferencesCT> fetchModelCTs(
+		long[] portletPreferencesIds, long ctCollectionId);
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public PortletPreferences fetchPortletPreferences(
 		long portletPreferencesId);
@@ -213,8 +236,16 @@ public interface PortletPreferencesLocalService
 	public javax.portlet.PortletPreferences fetchPreferences(
 		PortletPreferencesIds portletPreferencesIds);
 
+	@Override
+	public List<PortletPreferences> findByCTCollectionId(long ctCollectionId);
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ActionableDynamicQuery getActionableDynamicQuery();
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public CTModelAdapter<PortletPreferences, PortletPreferencesCT>
+		getCTModelAdapter();
 
 	@Transactional(enabled = false)
 	public javax.portlet.PortletPreferences getDefaultPreferences(
@@ -381,6 +412,18 @@ public interface PortletPreferencesLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public javax.portlet.PortletPreferences getStrictPreferences(
 		PortletPreferencesIds portletPreferencesIds);
+
+	@Override
+	public void removeModelCT(PortletPreferencesCT portletPreferencesCT);
+
+	@Override
+	public void removeModelCTs(long portletPreferencesId);
+
+	@Override
+	public void updateModel(PortletPreferences portletPreferences);
+
+	@Override
+	public void updateModelCT(PortletPreferencesCT portletPreferencesCT);
 
 	/**
 	 * Updates the portlet preferences in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.

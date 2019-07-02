@@ -62,6 +62,14 @@ public class PortletPreferencesLocalServiceWrapper
 			portletPreferences);
 	}
 
+	@Override
+	public com.liferay.portal.kernel.model.PortletPreferencesCT createModelCT(
+		long portletPreferencesId, long ctCollectionId) {
+
+		return _portletPreferencesLocalService.createModelCT(
+			portletPreferencesId, ctCollectionId);
+	}
+
 	/**
 	 * Creates a new portlet preferences with the primary key. Does not add the portlet preferences to the database.
 	 *
@@ -240,6 +248,30 @@ public class PortletPreferencesLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.portal.kernel.model.PortletPreferences fetchByPrimaryKey(
+		long portletPreferencesId) {
+
+		return _portletPreferencesLocalService.fetchByPrimaryKey(
+			portletPreferencesId);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.model.PortletPreferencesCT fetchModelCT(
+		long portletPreferencesId, long ctCollectionId) {
+
+		return _portletPreferencesLocalService.fetchModelCT(
+			portletPreferencesId, ctCollectionId);
+	}
+
+	@Override
+	public java.util.List<com.liferay.portal.kernel.model.PortletPreferencesCT>
+		fetchModelCTs(long[] portletPreferencesIds, long ctCollectionId) {
+
+		return _portletPreferencesLocalService.fetchModelCTs(
+			portletPreferencesIds, ctCollectionId);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.model.PortletPreferences
 		fetchPortletPreferences(long portletPreferencesId) {
 
@@ -275,10 +307,27 @@ public class PortletPreferencesLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.List<com.liferay.portal.kernel.model.PortletPreferences>
+		findByCTCollectionId(long ctCollectionId) {
+
+		return _portletPreferencesLocalService.findByCTCollectionId(
+			ctCollectionId);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
 		getActionableDynamicQuery() {
 
 		return _portletPreferencesLocalService.getActionableDynamicQuery();
+	}
+
+	@Override
+	public com.liferay.portal.kernel.change.tracking.model.CTModelAdapter
+		<com.liferay.portal.kernel.model.PortletPreferences,
+		 com.liferay.portal.kernel.model.PortletPreferencesCT>
+			getCTModelAdapter() {
+
+		return _portletPreferencesLocalService.getCTModelAdapter();
 	}
 
 	@Override
@@ -537,6 +586,34 @@ public class PortletPreferencesLocalServiceWrapper
 
 		return _portletPreferencesLocalService.getStrictPreferences(
 			portletPreferencesIds);
+	}
+
+	@Override
+	public void removeModelCT(
+		com.liferay.portal.kernel.model.PortletPreferencesCT
+			portletPreferencesCT) {
+
+		_portletPreferencesLocalService.removeModelCT(portletPreferencesCT);
+	}
+
+	@Override
+	public void removeModelCTs(long portletPreferencesId) {
+		_portletPreferencesLocalService.removeModelCTs(portletPreferencesId);
+	}
+
+	@Override
+	public void updateModel(
+		com.liferay.portal.kernel.model.PortletPreferences portletPreferences) {
+
+		_portletPreferencesLocalService.updateModel(portletPreferences);
+	}
+
+	@Override
+	public void updateModelCT(
+		com.liferay.portal.kernel.model.PortletPreferencesCT
+			portletPreferencesCT) {
+
+		_portletPreferencesLocalService.updateModelCT(portletPreferencesCT);
 	}
 
 	/**

@@ -100,6 +100,20 @@ public interface PortletPreferencesModel
 	public void setCompanyId(long companyId);
 
 	/**
+	 * Returns the ct collection ID of this portlet preferences.
+	 *
+	 * @return the ct collection ID of this portlet preferences
+	 */
+	public long getCtCollectionId();
+
+	/**
+	 * Sets the ct collection ID of this portlet preferences.
+	 *
+	 * @param ctCollectionId the ct collection ID of this portlet preferences
+	 */
+	public void setCtCollectionId(long ctCollectionId);
+
+	/**
 	 * Returns the owner ID of this portlet preferences.
 	 *
 	 * @return the owner ID of this portlet preferences

@@ -15,6 +15,8 @@
 package com.liferay.portal.service.persistence.impl;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelper;
+import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelperFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
@@ -79,6 +81,548 @@ public class PortletPreferencesPersistenceImpl
 	private FinderPath _finderPathWithPaginationFindAll;
 	private FinderPath _finderPathWithoutPaginationFindAll;
 	private FinderPath _finderPathCountAll;
+	private FinderPath _finderPathWithPaginationFindByCTCollectionId;
+	private FinderPath _finderPathWithoutPaginationFindByCTCollectionId;
+	private FinderPath _finderPathCountByCTCollectionId;
+
+	/**
+	 * Returns all the portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the matching portlet preferenceses
+	 */
+	@Override
+	public List<PortletPreferences> findByCTCollectionId(long ctCollectionId) {
+		return findByCTCollectionId(
+			ctCollectionId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PortletPreferencesModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of portlet preferenceses
+	 * @param end the upper bound of the range of portlet preferenceses (not inclusive)
+	 * @return the range of matching portlet preferenceses
+	 */
+	@Override
+	public List<PortletPreferences> findByCTCollectionId(
+		long ctCollectionId, int start, int end) {
+
+		return findByCTCollectionId(ctCollectionId, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PortletPreferencesModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of portlet preferenceses
+	 * @param end the upper bound of the range of portlet preferenceses (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching portlet preferenceses
+	 */
+	@Override
+	public List<PortletPreferences> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		OrderByComparator<PortletPreferences> orderByComparator) {
+
+		return findByCTCollectionId(
+			ctCollectionId, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PortletPreferencesModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of portlet preferenceses
+	 * @param end the upper bound of the range of portlet preferenceses (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching portlet preferenceses
+	 */
+	@Override
+	public List<PortletPreferences> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		OrderByComparator<PortletPreferences> orderByComparator,
+		boolean retrieveFromCache) {
+
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+			(orderByComparator == null)) {
+
+			pagination = false;
+			finderPath = _finderPathWithoutPaginationFindByCTCollectionId;
+			finderArgs = new Object[] {ctCollectionId};
+		}
+		else {
+			finderPath = _finderPathWithPaginationFindByCTCollectionId;
+			finderArgs = new Object[] {
+				ctCollectionId, start, end, orderByComparator
+			};
+		}
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
+
+		List<PortletPreferences> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<PortletPreferences>)FinderCacheUtil.getResult(
+				finderPath, finderArgs, this);
+
+			if ((list != null) && !list.isEmpty()) {
+				for (PortletPreferences portletPreferences : list) {
+					if ((ctCollectionId !=
+							portletPreferences.getCtCollectionId())) {
+
+						list = null;
+
+						break;
+					}
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(
+					3 + (orderByComparator.getOrderByFields().length * 2));
+			}
+			else {
+				query = new StringBundler(3);
+			}
+
+			query.append(_SQL_SELECT_PORTLETPREFERENCES_WHERE);
+
+			query.append(_FINDER_COLUMN_CTCOLLECTIONID_CTCOLLECTIONID_2);
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+			}
+			else if (pagination) {
+				query.append(PortletPreferencesModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				if (!pagination) {
+					list = (List<PortletPreferences>)QueryUtil.list(
+						q, getDialect(), start, end, false);
+
+					Collections.sort(list);
+
+					list = Collections.unmodifiableList(list);
+				}
+				else {
+					list = (List<PortletPreferences>)QueryUtil.list(
+						q, getDialect(), start, end);
+				}
+
+				cacheResult(list);
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return ctPersistenceHelper.populate(list);
+	}
+
+	/**
+	 * Returns the first portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching portlet preferences
+	 * @throws NoSuchPortletPreferencesException if a matching portlet preferences could not be found
+	 */
+	@Override
+	public PortletPreferences findByCTCollectionId_First(
+			long ctCollectionId,
+			OrderByComparator<PortletPreferences> orderByComparator)
+		throws NoSuchPortletPreferencesException {
+
+		PortletPreferences portletPreferences = fetchByCTCollectionId_First(
+			ctCollectionId, orderByComparator);
+
+		if (portletPreferences != null) {
+			return portletPreferences;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append("}");
+
+		throw new NoSuchPortletPreferencesException(msg.toString());
+	}
+
+	/**
+	 * Returns the first portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching portlet preferences, or <code>null</code> if a matching portlet preferences could not be found
+	 */
+	@Override
+	public PortletPreferences fetchByCTCollectionId_First(
+		long ctCollectionId,
+		OrderByComparator<PortletPreferences> orderByComparator) {
+
+		List<PortletPreferences> list = findByCTCollectionId(
+			ctCollectionId, 0, 1, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching portlet preferences
+	 * @throws NoSuchPortletPreferencesException if a matching portlet preferences could not be found
+	 */
+	@Override
+	public PortletPreferences findByCTCollectionId_Last(
+			long ctCollectionId,
+			OrderByComparator<PortletPreferences> orderByComparator)
+		throws NoSuchPortletPreferencesException {
+
+		PortletPreferences portletPreferences = fetchByCTCollectionId_Last(
+			ctCollectionId, orderByComparator);
+
+		if (portletPreferences != null) {
+			return portletPreferences;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ctCollectionId=");
+		msg.append(ctCollectionId);
+
+		msg.append("}");
+
+		throw new NoSuchPortletPreferencesException(msg.toString());
+	}
+
+	/**
+	 * Returns the last portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching portlet preferences, or <code>null</code> if a matching portlet preferences could not be found
+	 */
+	@Override
+	public PortletPreferences fetchByCTCollectionId_Last(
+		long ctCollectionId,
+		OrderByComparator<PortletPreferences> orderByComparator) {
+
+		int count = countByCTCollectionId(ctCollectionId);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<PortletPreferences> list = findByCTCollectionId(
+			ctCollectionId, count - 1, count, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the portlet preferenceses before and after the current portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param portletPreferencesId the primary key of the current portlet preferences
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next portlet preferences
+	 * @throws NoSuchPortletPreferencesException if a portlet preferences with the primary key could not be found
+	 */
+	@Override
+	public PortletPreferences[] findByCTCollectionId_PrevAndNext(
+			long portletPreferencesId, long ctCollectionId,
+			OrderByComparator<PortletPreferences> orderByComparator)
+		throws NoSuchPortletPreferencesException {
+
+		PortletPreferences portletPreferences = findByPrimaryKey(
+			portletPreferencesId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			PortletPreferences[] array = new PortletPreferencesImpl[3];
+
+			array[0] = getByCTCollectionId_PrevAndNext(
+				session, portletPreferences, ctCollectionId, orderByComparator,
+				true);
+
+			array[1] = portletPreferences;
+
+			array[2] = getByCTCollectionId_PrevAndNext(
+				session, portletPreferences, ctCollectionId, orderByComparator,
+				false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected PortletPreferences getByCTCollectionId_PrevAndNext(
+		Session session, PortletPreferences portletPreferences,
+		long ctCollectionId,
+		OrderByComparator<PortletPreferences> orderByComparator,
+		boolean previous) {
+
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(
+				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		query.append(_SQL_SELECT_PORTLETPREFERENCES_WHERE);
+
+		query.append(_FINDER_COLUMN_CTCOLLECTIONID_CTCOLLECTIONID_2);
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(PortletPreferencesModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(ctCollectionId);
+
+		if (orderByComparator != null) {
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(
+						portletPreferences)) {
+
+				qPos.add(orderByConditionValue);
+			}
+		}
+
+		List<PortletPreferences> list = q.list();
+
+		if (list.size() == 2) {
+			return ctPersistenceHelper.populate(list.get(1));
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the portlet preferenceses where ctCollectionId = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 */
+	@Override
+	public void removeByCTCollectionId(long ctCollectionId) {
+		for (PortletPreferences portletPreferences :
+				findByCTCollectionId(
+					ctCollectionId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+					null)) {
+
+			remove(portletPreferences);
+		}
+	}
+
+	/**
+	 * Returns the number of portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the number of matching portlet preferenceses
+	 */
+	@Override
+	public int countByCTCollectionId(long ctCollectionId) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
+		FinderPath finderPath = _finderPathCountByCTCollectionId;
+
+		Object[] finderArgs = new Object[] {ctCollectionId};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
+
+		Long count = (Long)FinderCacheUtil.getResult(
+			finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(2);
+
+			query.append(_SQL_COUNT_PORTLETPREFERENCES_WHERE);
+
+			query.append(_FINDER_COLUMN_CTCOLLECTIONID_CTCOLLECTIONID_2);
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(ctCollectionId);
+
+				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_CTCOLLECTIONID_CTCOLLECTIONID_2 =
+		"portletPreferences.ctCollectionId = ?";
+
 	private FinderPath _finderPathWithPaginationFindByOwnerId;
 	private FinderPath _finderPathWithoutPaginationFindByOwnerId;
 	private FinderPath _finderPathCountByOwnerId;
@@ -155,6 +699,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -170,6 +717,8 @@ public class PortletPreferencesPersistenceImpl
 			finderPath = _finderPathWithPaginationFindByOwnerId;
 			finderArgs = new Object[] {ownerId, start, end, orderByComparator};
 		}
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		List<PortletPreferences> list = null;
 
@@ -202,6 +751,8 @@ public class PortletPreferencesPersistenceImpl
 			query.append(_SQL_SELECT_PORTLETPREFERENCES_WHERE);
 
 			query.append(_FINDER_COLUMN_OWNERID_OWNERID_2);
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -251,7 +802,7 @@ public class PortletPreferencesPersistenceImpl
 			}
 		}
 
-		return list;
+		return ctPersistenceHelper.populate(list);
 	}
 
 	/**
@@ -416,6 +967,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean previous) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -430,6 +984,8 @@ public class PortletPreferencesPersistenceImpl
 		query.append(_SQL_SELECT_PORTLETPREFERENCES_WHERE);
 
 		query.append(_FINDER_COLUMN_OWNERID_OWNERID_2);
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -514,7 +1070,7 @@ public class PortletPreferencesPersistenceImpl
 		List<PortletPreferences> list = q.list();
 
 		if (list.size() == 2) {
-			return list.get(1);
+			return ctPersistenceHelper.populate(list.get(1));
 		}
 		else {
 			return null;
@@ -544,9 +1100,14 @@ public class PortletPreferencesPersistenceImpl
 	 */
 	@Override
 	public int countByOwnerId(long ownerId) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		FinderPath finderPath = _finderPathCountByOwnerId;
 
 		Object[] finderArgs = new Object[] {ownerId};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -557,6 +1118,8 @@ public class PortletPreferencesPersistenceImpl
 			query.append(_SQL_COUNT_PORTLETPREFERENCES_WHERE);
 
 			query.append(_FINDER_COLUMN_OWNERID_OWNERID_2);
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -664,6 +1227,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -679,6 +1245,8 @@ public class PortletPreferencesPersistenceImpl
 			finderPath = _finderPathWithPaginationFindByPlid;
 			finderArgs = new Object[] {plid, start, end, orderByComparator};
 		}
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		List<PortletPreferences> list = null;
 
@@ -711,6 +1279,8 @@ public class PortletPreferencesPersistenceImpl
 			query.append(_SQL_SELECT_PORTLETPREFERENCES_WHERE);
 
 			query.append(_FINDER_COLUMN_PLID_PLID_2);
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -760,7 +1330,7 @@ public class PortletPreferencesPersistenceImpl
 			}
 		}
 
-		return list;
+		return ctPersistenceHelper.populate(list);
 	}
 
 	/**
@@ -923,6 +1493,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean previous) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -937,6 +1510,8 @@ public class PortletPreferencesPersistenceImpl
 		query.append(_SQL_SELECT_PORTLETPREFERENCES_WHERE);
 
 		query.append(_FINDER_COLUMN_PLID_PLID_2);
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -1021,7 +1596,7 @@ public class PortletPreferencesPersistenceImpl
 		List<PortletPreferences> list = q.list();
 
 		if (list.size() == 2) {
-			return list.get(1);
+			return ctPersistenceHelper.populate(list.get(1));
 		}
 		else {
 			return null;
@@ -1050,9 +1625,14 @@ public class PortletPreferencesPersistenceImpl
 	 */
 	@Override
 	public int countByPlid(long plid) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		FinderPath finderPath = _finderPathCountByPlid;
 
 		Object[] finderArgs = new Object[] {plid};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -1063,6 +1643,8 @@ public class PortletPreferencesPersistenceImpl
 			query.append(_SQL_COUNT_PORTLETPREFERENCES_WHERE);
 
 			query.append(_FINDER_COLUMN_PLID_PLID_2);
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -1173,6 +1755,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		boolean pagination = true;
@@ -1192,6 +1777,8 @@ public class PortletPreferencesPersistenceImpl
 				portletId, start, end, orderByComparator
 			};
 		}
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		List<PortletPreferences> list = null;
 
@@ -1233,6 +1820,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_PORTLETID_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -1284,7 +1873,7 @@ public class PortletPreferencesPersistenceImpl
 			}
 		}
 
-		return list;
+		return ctPersistenceHelper.populate(list);
 	}
 
 	/**
@@ -1456,6 +2045,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean previous) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -1479,6 +2071,8 @@ public class PortletPreferencesPersistenceImpl
 
 			query.append(_FINDER_COLUMN_PORTLETID_PORTLETID_2);
 		}
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -1565,7 +2159,7 @@ public class PortletPreferencesPersistenceImpl
 		List<PortletPreferences> list = q.list();
 
 		if (list.size() == 2) {
-			return list.get(1);
+			return ctPersistenceHelper.populate(list.get(1));
 		}
 		else {
 			return null;
@@ -1595,11 +2189,16 @@ public class PortletPreferencesPersistenceImpl
 	 */
 	@Override
 	public int countByPortletId(String portletId) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		FinderPath finderPath = _finderPathCountByPortletId;
 
 		Object[] finderArgs = new Object[] {portletId};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -1619,6 +2218,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_PORTLETID_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -1739,6 +2340,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		boolean pagination = true;
@@ -1758,6 +2362,8 @@ public class PortletPreferencesPersistenceImpl
 				ownerType, portletId, start, end, orderByComparator
 			};
 		}
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		List<PortletPreferences> list = null;
 
@@ -1803,6 +2409,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_O_P_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -1856,7 +2464,7 @@ public class PortletPreferencesPersistenceImpl
 			}
 		}
 
-		return list;
+		return ctPersistenceHelper.populate(list);
 	}
 
 	/**
@@ -2039,6 +2647,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean previous) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -2064,6 +2675,8 @@ public class PortletPreferencesPersistenceImpl
 
 			query.append(_FINDER_COLUMN_O_P_PORTLETID_2);
 		}
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -2152,7 +2765,7 @@ public class PortletPreferencesPersistenceImpl
 		List<PortletPreferences> list = q.list();
 
 		if (list.size() == 2) {
-			return list.get(1);
+			return ctPersistenceHelper.populate(list.get(1));
 		}
 		else {
 			return null;
@@ -2185,11 +2798,16 @@ public class PortletPreferencesPersistenceImpl
 	 */
 	@Override
 	public int countByO_P(int ownerType, String portletId) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		FinderPath finderPath = _finderPathCountByO_P;
 
 		Object[] finderArgs = new Object[] {ownerType, portletId};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -2211,6 +2829,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_O_P_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -2335,6 +2955,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		boolean pagination = true;
@@ -2354,6 +2977,8 @@ public class PortletPreferencesPersistenceImpl
 				plid, portletId, start, end, orderByComparator
 			};
 		}
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		List<PortletPreferences> list = null;
 
@@ -2399,6 +3024,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_P_P_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -2452,7 +3079,7 @@ public class PortletPreferencesPersistenceImpl
 			}
 		}
 
-		return list;
+		return ctPersistenceHelper.populate(list);
 	}
 
 	/**
@@ -2635,6 +3262,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean previous) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -2660,6 +3290,8 @@ public class PortletPreferencesPersistenceImpl
 
 			query.append(_FINDER_COLUMN_P_P_PORTLETID_2);
 		}
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -2748,7 +3380,7 @@ public class PortletPreferencesPersistenceImpl
 		List<PortletPreferences> list = q.list();
 
 		if (list.size() == 2) {
-			return list.get(1);
+			return ctPersistenceHelper.populate(list.get(1));
 		}
 		else {
 			return null;
@@ -2781,11 +3413,16 @@ public class PortletPreferencesPersistenceImpl
 	 */
 	@Override
 	public int countByP_P(long plid, String portletId) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		FinderPath finderPath = _finderPathCountByP_P;
 
 		Object[] finderArgs = new Object[] {plid, portletId};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -2807,6 +3444,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_P_P_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -2939,6 +3578,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2956,6 +3598,8 @@ public class PortletPreferencesPersistenceImpl
 				ownerId, ownerType, plid, start, end, orderByComparator
 			};
 		}
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		List<PortletPreferences> list = null;
 
@@ -2995,6 +3639,8 @@ public class PortletPreferencesPersistenceImpl
 			query.append(_FINDER_COLUMN_O_O_P_OWNERTYPE_2);
 
 			query.append(_FINDER_COLUMN_O_O_P_PLID_2);
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -3048,7 +3694,7 @@ public class PortletPreferencesPersistenceImpl
 			}
 		}
 
-		return list;
+		return ctPersistenceHelper.populate(list);
 	}
 
 	/**
@@ -3240,6 +3886,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean previous) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -3258,6 +3907,8 @@ public class PortletPreferencesPersistenceImpl
 		query.append(_FINDER_COLUMN_O_O_P_OWNERTYPE_2);
 
 		query.append(_FINDER_COLUMN_O_O_P_PLID_2);
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -3346,7 +3997,7 @@ public class PortletPreferencesPersistenceImpl
 		List<PortletPreferences> list = q.list();
 
 		if (list.size() == 2) {
-			return list.get(1);
+			return ctPersistenceHelper.populate(list.get(1));
 		}
 		else {
 			return null;
@@ -3381,9 +4032,14 @@ public class PortletPreferencesPersistenceImpl
 	 */
 	@Override
 	public int countByO_O_P(long ownerId, int ownerType, long plid) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		FinderPath finderPath = _finderPathCountByO_O_P;
 
 		Object[] finderArgs = new Object[] {ownerId, ownerType, plid};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -3398,6 +4054,8 @@ public class PortletPreferencesPersistenceImpl
 			query.append(_FINDER_COLUMN_O_O_P_OWNERTYPE_2);
 
 			query.append(_FINDER_COLUMN_O_O_P_PLID_2);
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -3530,6 +4188,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		boolean pagination = true;
@@ -3549,6 +4210,8 @@ public class PortletPreferencesPersistenceImpl
 				ownerId, ownerType, portletId, start, end, orderByComparator
 			};
 		}
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		List<PortletPreferences> list = null;
 
@@ -3597,6 +4260,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_O_O_PI_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -3652,7 +4317,7 @@ public class PortletPreferencesPersistenceImpl
 			}
 		}
 
-		return list;
+		return ctPersistenceHelper.populate(list);
 	}
 
 	/**
@@ -3847,6 +4512,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean previous) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -3874,6 +4542,8 @@ public class PortletPreferencesPersistenceImpl
 
 			query.append(_FINDER_COLUMN_O_O_PI_PORTLETID_2);
 		}
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -3964,7 +4634,7 @@ public class PortletPreferencesPersistenceImpl
 		List<PortletPreferences> list = q.list();
 
 		if (list.size() == 2) {
-			return list.get(1);
+			return ctPersistenceHelper.populate(list.get(1));
 		}
 		else {
 			return null;
@@ -3999,11 +4669,16 @@ public class PortletPreferencesPersistenceImpl
 	 */
 	@Override
 	public int countByO_O_PI(long ownerId, int ownerType, String portletId) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		FinderPath finderPath = _finderPathCountByO_O_PI;
 
 		Object[] finderArgs = new Object[] {ownerId, ownerType, portletId};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -4027,6 +4702,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_O_O_PI_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -4164,6 +4841,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		boolean pagination = true;
@@ -4183,6 +4863,8 @@ public class PortletPreferencesPersistenceImpl
 				ownerType, plid, portletId, start, end, orderByComparator
 			};
 		}
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		List<PortletPreferences> list = null;
 
@@ -4231,6 +4913,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_O_P_P_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -4286,7 +4970,7 @@ public class PortletPreferencesPersistenceImpl
 			}
 		}
 
-		return list;
+		return ctPersistenceHelper.populate(list);
 	}
 
 	/**
@@ -4481,6 +5165,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean previous) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -4508,6 +5195,8 @@ public class PortletPreferencesPersistenceImpl
 
 			query.append(_FINDER_COLUMN_O_P_P_PORTLETID_2);
 		}
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -4598,7 +5287,7 @@ public class PortletPreferencesPersistenceImpl
 		List<PortletPreferences> list = q.list();
 
 		if (list.size() == 2) {
-			return list.get(1);
+			return ctPersistenceHelper.populate(list.get(1));
 		}
 		else {
 			return null;
@@ -4633,11 +5322,16 @@ public class PortletPreferencesPersistenceImpl
 	 */
 	@Override
 	public int countByO_P_P(int ownerType, long plid, String portletId) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		FinderPath finderPath = _finderPathCountByO_P_P;
 
 		Object[] finderArgs = new Object[] {ownerType, plid, portletId};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -4661,6 +5355,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_O_P_P_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -4806,6 +5502,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		boolean pagination = true;
@@ -4817,6 +5516,8 @@ public class PortletPreferencesPersistenceImpl
 			companyId, ownerId, ownerType, portletId, start, end,
 			orderByComparator
 		};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		List<PortletPreferences> list = null;
 
@@ -4870,6 +5571,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_C_O_O_LIKEP_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
@@ -4927,7 +5630,7 @@ public class PortletPreferencesPersistenceImpl
 			}
 		}
 
-		return list;
+		return ctPersistenceHelper.populate(list);
 	}
 
 	/**
@@ -5135,6 +5838,9 @@ public class PortletPreferencesPersistenceImpl
 		OrderByComparator<PortletPreferences> orderByComparator,
 		boolean previous) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -5164,6 +5870,8 @@ public class PortletPreferencesPersistenceImpl
 
 			query.append(_FINDER_COLUMN_C_O_O_LIKEP_PORTLETID_2);
 		}
+
+		query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
@@ -5256,7 +5964,7 @@ public class PortletPreferencesPersistenceImpl
 		List<PortletPreferences> list = q.list();
 
 		if (list.size() == 2) {
-			return list.get(1);
+			return ctPersistenceHelper.populate(list.get(1));
 		}
 		else {
 			return null;
@@ -5297,6 +6005,9 @@ public class PortletPreferencesPersistenceImpl
 	public int countByC_O_O_LikeP(
 		long companyId, long ownerId, int ownerType, String portletId) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		FinderPath finderPath = _finderPathWithPaginationCountByC_O_O_LikeP;
@@ -5304,6 +6015,8 @@ public class PortletPreferencesPersistenceImpl
 		Object[] finderArgs = new Object[] {
 			companyId, ownerId, ownerType, portletId
 		};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -5329,6 +6042,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_C_O_O_LIKEP_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -5464,11 +6179,16 @@ public class PortletPreferencesPersistenceImpl
 		long ownerId, int ownerType, long plid, String portletId,
 		boolean retrieveFromCache) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		Object[] finderArgs = new Object[] {
 			ownerId, ownerType, plid, portletId
 		};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Object result = null;
 
@@ -5483,7 +6203,8 @@ public class PortletPreferencesPersistenceImpl
 			if ((ownerId != portletPreferences.getOwnerId()) ||
 				(ownerType != portletPreferences.getOwnerType()) ||
 				(plid != portletPreferences.getPlid()) ||
-				!Objects.equals(portletId, portletPreferences.getPortletId())) {
+				!Objects.equals(portletId, portletPreferences.getPortletId()) ||
+				!ctPersistenceHelper.isValidFinderResult(portletPreferences)) {
 
 				result = null;
 			}
@@ -5510,6 +6231,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_O_O_P_P_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -5561,7 +6284,7 @@ public class PortletPreferencesPersistenceImpl
 			return null;
 		}
 		else {
-			return (PortletPreferences)result;
+			return ctPersistenceHelper.populate((PortletPreferences)result);
 		}
 	}
 
@@ -5598,6 +6321,9 @@ public class PortletPreferencesPersistenceImpl
 	public int countByO_O_P_P(
 		long ownerId, int ownerType, long plid, String portletId) {
 
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
 		portletId = Objects.toString(portletId, "");
 
 		FinderPath finderPath = _finderPathCountByO_O_P_P;
@@ -5605,6 +6331,8 @@ public class PortletPreferencesPersistenceImpl
 		Object[] finderArgs = new Object[] {
 			ownerId, ownerType, plid, portletId
 		};
+
+		finderArgs = ctPersistenceHelper.appendFinderArgs(finderArgs);
 
 		Long count = (Long)FinderCacheUtil.getResult(
 			finderPath, finderArgs, this);
@@ -5630,6 +6358,8 @@ public class PortletPreferencesPersistenceImpl
 
 				query.append(_FINDER_COLUMN_O_O_P_P_PORTLETID_2);
 			}
+
+			query = ctPersistenceHelper.appendSQL("portletPreferences", query);
 
 			String sql = query.toString();
 
@@ -5912,6 +6642,18 @@ public class PortletPreferencesPersistenceImpl
 	}
 
 	@Override
+	public PortletPreferences remove(PortletPreferences portletPreferences) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
+		ctPersistenceHelper.remove(portletPreferences);
+
+		portletPreferences = super.remove(portletPreferences);
+
+		return ctPersistenceHelper.populate(portletPreferences);
+	}
+
+	@Override
 	protected PortletPreferences removeImpl(
 		PortletPreferences portletPreferences) {
 
@@ -5942,6 +6684,18 @@ public class PortletPreferencesPersistenceImpl
 		}
 
 		return portletPreferences;
+	}
+
+	@Override
+	public PortletPreferences update(PortletPreferences portletPreferences) {
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
+		ctPersistenceHelper.update(portletPreferences);
+
+		portletPreferences = super.update(portletPreferences);
+
+		return ctPersistenceHelper.populate(portletPreferences);
 	}
 
 	@Override
@@ -5984,6 +6738,9 @@ public class PortletPreferencesPersistenceImpl
 				portletPreferences = (PortletPreferences)session.merge(
 					portletPreferences);
 			}
+
+			session.flush();
+			session.clear();
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -6000,8 +6757,15 @@ public class PortletPreferencesPersistenceImpl
 		}
 		else if (isNew) {
 			Object[] args = new Object[] {
-				portletPreferencesModelImpl.getOwnerId()
+				portletPreferencesModelImpl.getCtCollectionId()
 			};
+
+			FinderCacheUtil.removeResult(
+				_finderPathCountByCTCollectionId, args);
+			FinderCacheUtil.removeResult(
+				_finderPathWithoutPaginationFindByCTCollectionId, args);
+
+			args = new Object[] {portletPreferencesModelImpl.getOwnerId()};
 
 			FinderCacheUtil.removeResult(_finderPathCountByOwnerId, args);
 			FinderCacheUtil.removeResult(
@@ -6073,6 +6837,29 @@ public class PortletPreferencesPersistenceImpl
 				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
 		}
 		else {
+			if ((portletPreferencesModelImpl.getColumnBitmask() &
+				 _finderPathWithoutPaginationFindByCTCollectionId.
+					 getColumnBitmask()) != 0) {
+
+				Object[] args = new Object[] {
+					portletPreferencesModelImpl.getOriginalCtCollectionId()
+				};
+
+				FinderCacheUtil.removeResult(
+					_finderPathCountByCTCollectionId, args);
+				FinderCacheUtil.removeResult(
+					_finderPathWithoutPaginationFindByCTCollectionId, args);
+
+				args = new Object[] {
+					portletPreferencesModelImpl.getCtCollectionId()
+				};
+
+				FinderCacheUtil.removeResult(
+					_finderPathCountByCTCollectionId, args);
+				FinderCacheUtil.removeResult(
+					_finderPathWithoutPaginationFindByCTCollectionId, args);
+			}
+
 			if ((portletPreferencesModelImpl.getColumnBitmask() &
 				 _finderPathWithoutPaginationFindByOwnerId.
 					 getColumnBitmask()) != 0) {
@@ -6304,6 +7091,27 @@ public class PortletPreferencesPersistenceImpl
 		throws NoSuchPortletPreferencesException {
 
 		return findByPrimaryKey((Serializable)portletPreferencesId);
+	}
+
+	/**
+	 * Returns the portlet preferences with the primary key or returns <code>null</code> if it could not be found.
+	 *
+	 * @param primaryKey the primary key of the portlet preferences
+	 * @return the portlet preferences, or <code>null</code> if a portlet preferences with the primary key could not be found
+	 */
+	@Override
+	public PortletPreferences fetchByPrimaryKey(Serializable primaryKey) {
+		PortletPreferences portletPreferences = super.fetchByPrimaryKey(
+			primaryKey);
+
+		if (portletPreferences == null) {
+			return portletPreferences;
+		}
+
+		CTPersistenceHelper<PortletPreferences> ctPersistenceHelper =
+			CTPersistenceHelperFactoryUtil.create(PortletPreferences.class);
+
+		return ctPersistenceHelper.populate(portletPreferences);
 	}
 
 	/**
@@ -6555,6 +7363,30 @@ public class PortletPreferencesPersistenceImpl
 			PortletPreferencesModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
 			new String[0]);
+
+		_finderPathWithPaginationFindByCTCollectionId = new FinderPath(
+			PortletPreferencesModelImpl.ENTITY_CACHE_ENABLED,
+			PortletPreferencesModelImpl.FINDER_CACHE_ENABLED,
+			PortletPreferencesImpl.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByCTCollectionId",
+			new String[] {
+				Long.class.getName(), Integer.class.getName(),
+				Integer.class.getName(), OrderByComparator.class.getName()
+			});
+
+		_finderPathWithoutPaginationFindByCTCollectionId = new FinderPath(
+			PortletPreferencesModelImpl.ENTITY_CACHE_ENABLED,
+			PortletPreferencesModelImpl.FINDER_CACHE_ENABLED,
+			PortletPreferencesImpl.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByCTCollectionId",
+			new String[] {Long.class.getName()},
+			PortletPreferencesModelImpl.CTCOLLECTIONID_COLUMN_BITMASK);
+
+		_finderPathCountByCTCollectionId = new FinderPath(
+			PortletPreferencesModelImpl.ENTITY_CACHE_ENABLED,
+			PortletPreferencesModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByCTCollectionId",
+			new String[] {Long.class.getName()});
 
 		_finderPathWithPaginationFindByOwnerId = new FinderPath(
 			PortletPreferencesModelImpl.ENTITY_CACHE_ENABLED,

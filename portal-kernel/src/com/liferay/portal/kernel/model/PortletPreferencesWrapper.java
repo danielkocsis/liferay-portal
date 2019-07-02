@@ -46,6 +46,7 @@ public class PortletPreferencesWrapper
 		attributes.put("mvccVersion", getMvccVersion());
 		attributes.put("portletPreferencesId", getPortletPreferencesId());
 		attributes.put("companyId", getCompanyId());
+		attributes.put("ctCollectionId", getCtCollectionId());
 		attributes.put("ownerId", getOwnerId());
 		attributes.put("ownerType", getOwnerType());
 		attributes.put("plid", getPlid());
@@ -74,6 +75,12 @@ public class PortletPreferencesWrapper
 
 		if (companyId != null) {
 			setCompanyId(companyId);
+		}
+
+		Long ctCollectionId = (Long)attributes.get("ctCollectionId");
+
+		if (ctCollectionId != null) {
+			setCtCollectionId(ctCollectionId);
 		}
 
 		Long ownerId = (Long)attributes.get("ownerId");
@@ -115,6 +122,16 @@ public class PortletPreferencesWrapper
 	@Override
 	public long getCompanyId() {
 		return model.getCompanyId();
+	}
+
+	/**
+	 * Returns the ct collection ID of this portlet preferences.
+	 *
+	 * @return the ct collection ID of this portlet preferences
+	 */
+	@Override
+	public long getCtCollectionId() {
+		return model.getCtCollectionId();
 	}
 
 	/**
@@ -210,6 +227,16 @@ public class PortletPreferencesWrapper
 	@Override
 	public void setCompanyId(long companyId) {
 		model.setCompanyId(companyId);
+	}
+
+	/**
+	 * Sets the ct collection ID of this portlet preferences.
+	 *
+	 * @param ctCollectionId the ct collection ID of this portlet preferences
+	 */
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		model.setCtCollectionId(ctCollectionId);
 	}
 
 	/**

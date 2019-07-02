@@ -978,11 +978,20 @@ create table PortletPreferences (
 	mvccVersion LONG default 0 not null,
 	portletPreferencesId LONG not null primary key,
 	companyId LONG,
+	ctCollectionId LONG,
 	ownerId LONG,
 	ownerType INTEGER,
 	plid LONG,
 	portletId VARCHAR(200) null,
 	preferences TEXT null
+);
+
+create table PortletPreferencesCT (
+	mvccVersion LONG default 0 not null,
+	classPK LONG not null,
+	ctCollectionId LONG not null,
+	preferences VARCHAR(75) null,
+	primary key (classPK, ctCollectionId)
 );
 
 create table RatingsEntry (

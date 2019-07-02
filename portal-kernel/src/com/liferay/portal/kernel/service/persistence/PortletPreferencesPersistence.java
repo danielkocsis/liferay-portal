@@ -41,6 +41,150 @@ public interface PortletPreferencesPersistence
 	 */
 
 	/**
+	 * Returns all the portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the matching portlet preferenceses
+	 */
+	public java.util.List<PortletPreferences> findByCTCollectionId(
+		long ctCollectionId);
+
+	/**
+	 * Returns a range of all the portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PortletPreferencesModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of portlet preferenceses
+	 * @param end the upper bound of the range of portlet preferenceses (not inclusive)
+	 * @return the range of matching portlet preferenceses
+	 */
+	public java.util.List<PortletPreferences> findByCTCollectionId(
+		long ctCollectionId, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PortletPreferencesModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of portlet preferenceses
+	 * @param end the upper bound of the range of portlet preferenceses (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching portlet preferenceses
+	 */
+	public java.util.List<PortletPreferences> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<PortletPreferences>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PortletPreferencesModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param start the lower bound of the range of portlet preferenceses
+	 * @param end the upper bound of the range of portlet preferenceses (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching portlet preferenceses
+	 */
+	public java.util.List<PortletPreferences> findByCTCollectionId(
+		long ctCollectionId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<PortletPreferences>
+			orderByComparator,
+		boolean retrieveFromCache);
+
+	/**
+	 * Returns the first portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching portlet preferences
+	 * @throws NoSuchPortletPreferencesException if a matching portlet preferences could not be found
+	 */
+	public PortletPreferences findByCTCollectionId_First(
+			long ctCollectionId,
+			com.liferay.portal.kernel.util.OrderByComparator<PortletPreferences>
+				orderByComparator)
+		throws NoSuchPortletPreferencesException;
+
+	/**
+	 * Returns the first portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching portlet preferences, or <code>null</code> if a matching portlet preferences could not be found
+	 */
+	public PortletPreferences fetchByCTCollectionId_First(
+		long ctCollectionId,
+		com.liferay.portal.kernel.util.OrderByComparator<PortletPreferences>
+			orderByComparator);
+
+	/**
+	 * Returns the last portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching portlet preferences
+	 * @throws NoSuchPortletPreferencesException if a matching portlet preferences could not be found
+	 */
+	public PortletPreferences findByCTCollectionId_Last(
+			long ctCollectionId,
+			com.liferay.portal.kernel.util.OrderByComparator<PortletPreferences>
+				orderByComparator)
+		throws NoSuchPortletPreferencesException;
+
+	/**
+	 * Returns the last portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching portlet preferences, or <code>null</code> if a matching portlet preferences could not be found
+	 */
+	public PortletPreferences fetchByCTCollectionId_Last(
+		long ctCollectionId,
+		com.liferay.portal.kernel.util.OrderByComparator<PortletPreferences>
+			orderByComparator);
+
+	/**
+	 * Returns the portlet preferenceses before and after the current portlet preferences in the ordered set where ctCollectionId = &#63;.
+	 *
+	 * @param portletPreferencesId the primary key of the current portlet preferences
+	 * @param ctCollectionId the ct collection ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next portlet preferences
+	 * @throws NoSuchPortletPreferencesException if a portlet preferences with the primary key could not be found
+	 */
+	public PortletPreferences[] findByCTCollectionId_PrevAndNext(
+			long portletPreferencesId, long ctCollectionId,
+			com.liferay.portal.kernel.util.OrderByComparator<PortletPreferences>
+				orderByComparator)
+		throws NoSuchPortletPreferencesException;
+
+	/**
+	 * Removes all the portlet preferenceses where ctCollectionId = &#63; from the database.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 */
+	public void removeByCTCollectionId(long ctCollectionId);
+
+	/**
+	 * Returns the number of portlet preferenceses where ctCollectionId = &#63;.
+	 *
+	 * @param ctCollectionId the ct collection ID
+	 * @return the number of matching portlet preferenceses
+	 */
+	public int countByCTCollectionId(long ctCollectionId);
+
+	/**
 	 * Returns all the portlet preferenceses where ownerId = &#63;.
 	 *
 	 * @param ownerId the owner ID

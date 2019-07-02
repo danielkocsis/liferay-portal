@@ -15,6 +15,8 @@
 package com.liferay.portal.service.base;
 
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.change.tracking.model.CTModelAdapter;
+import com.liferay.portal.kernel.change.tracking.service.CTServiceAdapter;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -29,6 +31,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.model.PortletPreferences;
+import com.liferay.portal.kernel.model.PortletPreferencesCT;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
@@ -40,6 +43,8 @@ import com.liferay.portal.kernel.service.persistence.LayoutPersistence;
 import com.liferay.portal.kernel.service.persistence.LayoutRevisionPersistence;
 import com.liferay.portal.kernel.service.persistence.PortletItemPersistence;
 import com.liferay.portal.kernel.service.persistence.PortletPersistence;
+import com.liferay.portal.kernel.service.persistence.PortletPreferencesCTPK;
+import com.liferay.portal.kernel.service.persistence.PortletPreferencesCTPersistence;
 import com.liferay.portal.kernel.service.persistence.PortletPreferencesFinder;
 import com.liferay.portal.kernel.service.persistence.PortletPreferencesPersistence;
 import com.liferay.portal.kernel.service.persistence.UserFinder;
@@ -70,7 +75,9 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public abstract class PortletPreferencesLocalServiceBaseImpl
 	extends BaseLocalServiceImpl
-	implements PortletPreferencesLocalService, IdentifiableOSGiService {
+	implements PortletPreferencesLocalService,
+			   CTServiceAdapter<PortletPreferences, PortletPreferencesCT>,
+			   IdentifiableOSGiService {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -703,6 +710,138 @@ public abstract class PortletPreferencesLocalServiceBaseImpl
 		return PortletPreferencesLocalService.class.getName();
 	}
 
+	@Override
+	public PortletPreferencesCT createModelCT(
+		long portletPreferencesId, long ctCollectionId) {
+
+		return portletPreferencesCTPersistence.create(
+			new PortletPreferencesCTPK(portletPreferencesId, ctCollectionId));
+	}
+
+	@Override
+	public PortletPreferences fetchByPrimaryKey(long portletPreferencesId) {
+		return portletPreferencesPersistence.fetchByPrimaryKey(
+			portletPreferencesId);
+	}
+
+	@Override
+	public PortletPreferencesCT fetchModelCT(
+		long portletPreferencesId, long ctCollectionId) {
+
+		return portletPreferencesCTPersistence.fetchByPrimaryKey(
+			new PortletPreferencesCTPK(portletPreferencesId, ctCollectionId));
+	}
+
+	@Override
+	public List<PortletPreferencesCT> fetchModelCTs(
+		long[] portletPreferencesIds, long ctCollectionId) {
+
+		return portletPreferencesCTPersistence.findByC_C(
+			portletPreferencesIds, ctCollectionId);
+	}
+
+	@Override
+	public List<PortletPreferences> findByCTCollectionId(long ctCollectionId) {
+		return portletPreferencesPersistence.findByCTCollectionId(
+			ctCollectionId);
+	}
+
+	@Override
+	public CTModelAdapter<PortletPreferences, PortletPreferencesCT>
+		getCTModelAdapter() {
+
+		return new CTModelAdapter<PortletPreferences, PortletPreferencesCT>() {
+
+			@Override
+			public long getCTCollectionId(
+				PortletPreferences portletPreferences) {
+
+				return portletPreferences.getCtCollectionId();
+			}
+
+			@Override
+			public Class<PortletPreferences> getModelClass() {
+				return PortletPreferences.class;
+			}
+
+			@Override
+			public long getModelPrimaryKey(
+				PortletPreferencesCT portletPreferencesCT) {
+
+				return portletPreferencesCT.getClassPK();
+			}
+
+			@Override
+			public long getPrimaryKey(PortletPreferences portletPreferences) {
+				return portletPreferences.getPrimaryKey();
+			}
+
+			@Override
+			public String getPrimaryKeyColumnDBName() {
+				return "portletPreferencesId";
+			}
+
+			@Override
+			public String getPrimaryKeyColumnName() {
+				return "portletPreferencesId";
+			}
+
+			@Override
+			public void populateModel(
+				PortletPreferences portletPreferences,
+				PortletPreferencesCT portletPreferencesCT) {
+
+				portletPreferences.setPreferences(
+					portletPreferencesCT.getPreferences());
+			}
+
+			@Override
+			public void populateModelCT(
+				PortletPreferences portletPreferences,
+				PortletPreferencesCT portletPreferencesCT) {
+
+				portletPreferencesCT.setPreferences(
+					portletPreferences.getPreferences());
+			}
+
+			@Override
+			public void setModelCTCollectionId(
+				PortletPreferences portletPreferences, long ctCollectionId) {
+
+				portletPreferences.setCtCollectionId(ctCollectionId);
+			}
+
+			@Override
+			public void setModelCTCTCollectionId(
+				PortletPreferencesCT portletPreferencesCT,
+				long ctCollectionId) {
+
+				portletPreferencesCT.setCtCollectionId(ctCollectionId);
+			}
+
+		};
+	}
+
+	@Override
+	public void removeModelCT(PortletPreferencesCT portletPreferencesCT) {
+		portletPreferencesCTPersistence.remove(portletPreferencesCT);
+	}
+
+	@Override
+	public void removeModelCTs(long portletPreferencesId) {
+		portletPreferencesCTPersistence.removeByClassPK(portletPreferencesId);
+	}
+
+	@Override
+	public void updateModel(PortletPreferences portletPreferences) {
+		portletPreferencesPersistence.update(portletPreferences);
+	}
+
+	@Override
+	public void updateModelCT(PortletPreferencesCT portletPreferencesCT) {
+		portletPreferencesCTPersistence.update(portletPreferencesCT);
+	}
+
 	protected Class<?> getModelClass() {
 		return PortletPreferences.class;
 	}
@@ -801,6 +940,9 @@ public abstract class PortletPreferencesLocalServiceBaseImpl
 
 	@BeanReference(type = UserFinder.class)
 	protected UserFinder userFinder;
+
+	@BeanReference(type = PortletPreferencesCTPersistence.class)
+	protected PortletPreferencesCTPersistence portletPreferencesCTPersistence;
 
 	@BeanReference(type = PersistedModelLocalServiceRegistry.class)
 	protected PersistedModelLocalServiceRegistry
