@@ -22,8 +22,7 @@ import com.liferay.portal.kernel.util.ServiceProxyFactory;
 public class CTCollectionIdProviderUtil {
 
 	public static long getCTCollectionId() {
-		CTCollectionIdProvider ctCollectionIdProvider =
-			_ctCollectionIdProvider;
+		CTCollectionIdProvider ctCollectionIdProvider = _ctCollectionIdProvider;
 
 		if (ctCollectionIdProvider == null) {
 			return 0;
@@ -35,10 +34,9 @@ public class CTCollectionIdProviderUtil {
 	private CTCollectionIdProviderUtil() {
 	}
 
-	private static volatile CTCollectionIdProvider
-		_ctCollectionIdProvider = ServiceProxyFactory.newServiceTrackedInstance(
-			CTCollectionIdProvider.class,
-			CTCollectionIdProviderUtil.class,
+	private static volatile CTCollectionIdProvider _ctCollectionIdProvider =
+		ServiceProxyFactory.newServiceTrackedInstance(
+			CTCollectionIdProvider.class, CTCollectionIdProviderUtil.class,
 			"_ctCollectionIdProvider", false, true);
 
 }

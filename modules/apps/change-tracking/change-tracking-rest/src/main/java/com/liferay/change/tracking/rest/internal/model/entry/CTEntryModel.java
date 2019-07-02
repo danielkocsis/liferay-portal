@@ -15,9 +15,7 @@
 package com.liferay.change.tracking.rest.internal.model.entry;
 
 import com.liferay.change.tracking.definition.CTDefinitionRegistryUtil;
-import com.liferay.change.tracking.display.CTDisplayHelper;
 import com.liferay.change.tracking.model.CTEntry;
-import com.liferay.change.tracking.rest.internal.util.CTDisplayHelperUtil;
 import com.liferay.change.tracking.service.CTEntryLocalServiceUtil;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 
