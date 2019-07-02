@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.change.tracking.model.CTModelAdapter;
 import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelper;
 import com.liferay.portal.kernel.change.tracking.persistence.CTPersistenceHelperFactory;
 import com.liferay.portal.kernel.change.tracking.service.CTServiceAdapter;
+import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -245,6 +246,15 @@ public class CTPersistenceHelperFactoryImpl
 
 		@Override
 		public void update(T baseModel) {
+
+			// todo: this is a quick and dirty to resolve caching issues when
+			//  adding/editing entities in the prod directly.
+			//  We need to invalidate all the finder caches plus the CT specific
+			//  ones because of the non-baseline behavior.
+			//  This probably should be some extra generated code with a utility
+			//  method call
+
+			FinderCacheUtil.clearCache();
 		}
 
 	}
