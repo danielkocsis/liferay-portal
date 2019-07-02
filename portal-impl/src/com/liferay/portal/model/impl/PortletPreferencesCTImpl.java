@@ -28,7 +28,7 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public class PortletPreferencesCTImpl extends PortletPreferencesCTBaseImpl {
 
-	/*
+	/**
 	 * NOTE FOR DEVELOPERS:
 	 *
 	 * Never reference this class directly. All methods that expect a portlet preferences ct model instance should use the {@link com.liferay.portal.kernel.model.PortletPreferencesCT} interface instead.
