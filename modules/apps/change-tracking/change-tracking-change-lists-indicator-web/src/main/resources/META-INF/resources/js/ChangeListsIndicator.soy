@@ -4,13 +4,14 @@
  * This renders the Change lists indicator element.
  */
 {template .render}
+	{@param activeChangeListId: ?}
 	{@param activeChangeListName: ?}
 	{@param urlChangeListsOverview: string}
-	{@param productionCollectionName: ?}
+	{@param productionCollectionId: ?}
 	{@param spritemap: string}
 
 	{let $tooltipContentText kind="text"}
-		{if $activeChangeListName != $productionCollectionName}
+		{if $activeChangeListId != $productionCollectionId}
 			{msg desc=""}active-change-list{/msg}:{sp}{$activeChangeListName}
 		{else}
 			{msg desc=""}production{/msg}

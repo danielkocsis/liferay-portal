@@ -28,7 +28,7 @@ const CHANGE_LISTS_INDICATOR_QUERY_SELECTOR = '[data-change-lists-indicator]';
 
 const GREEN_BACKGROUND_TOOLTIP_CSS_CLASS_NAME = 'tooltip-background-green';
 
-const PRODUCTION_COLLECTION_NAME = 'productionCTCollectionName';
+const PRODUCTION_COLLECTION_ID = 0;
 
 const TOOLTIP_QUERY_SELECTOR = '.yui3-widget.tooltip';
 
@@ -277,8 +277,9 @@ class ChangeListsIndicator extends PortletBase {
 	_render(urlActiveCollection) {
 		this._getDataRequest(urlActiveCollection, response => {
 			if (response) {
+				this.activeChangeListId = response[0].ctCollectionId;
 				this.activeChangeListName = response[0].name;
-				this._setTooltipCssClassName(this.activeChangeListName);
+				this._setTooltipCssClassName(this.activeChangeListId);
 				this._setEventHandlers();
 			}
 		});
@@ -344,9 +345,9 @@ class ChangeListsIndicator extends PortletBase {
 	 * @param {!Event} event
 	 * @private
 	 */
-	_setTooltipCssClassName(activeChangeListName) {
+	_setTooltipCssClassName(activeChangeListId) {
 		this._tooltipCssClassName =
-			activeChangeListName != PRODUCTION_COLLECTION_NAME
+			activeChangeListId !== PRODUCTION_COLLECTION_ID
 				? BLUE_BACKGROUND_TOOLTIP_CSS_CLASS_NAME
 				: GREEN_BACKGROUND_TOOLTIP_CSS_CLASS_NAME;
 	}
@@ -388,6 +389,17 @@ ChangeListsIndicator.STATE = {
 	_tooltipCssClassName: Config.string().value(''),
 
 	/**
+	 * Id of the active change list.
+	 * @default
+	 * @instance
+	 * @memberOf ChangeListsIndicator
+	 * @review
+	 * @type {!string}
+	 */
+
+	activeChangeListId: Config.number(),
+
+	/**
 	 * Name of the active change list.
 	 * @default
 	 * @instance
@@ -399,7 +411,7 @@ ChangeListsIndicator.STATE = {
 	activeChangeListName: Config.string().value(''),
 
 	/**
-	 * Name of production collection.
+	 * Id of production collection.
 	 * @default
 	 * @instance
 	 * @memberOf ChangeListsIndicator
@@ -407,7 +419,7 @@ ChangeListsIndicator.STATE = {
 	 * @type {!string}
 	 */
 
-	productionCollectionName: Config.string().value(PRODUCTION_COLLECTION_NAME),
+	productionCollectionId: Config.number().value(PRODUCTION_COLLECTION_ID),
 
 	/**
 	 * Path of the available icons.
