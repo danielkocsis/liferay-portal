@@ -55,13 +55,16 @@ import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -385,7 +388,20 @@ public class CTEngineManagerImpl implements CTEngineManager {
 			companyId);
 
 		if (productionCTCollection == null) {
-			productionCTCollection = new CTCollectionImpl();
+			productionCTCollection = new CTCollectionImpl() {
+
+				@Override
+				public String getName() {
+					ResourceBundle resourceBundle =
+						ResourceBundleUtil.getBundle(
+							LocaleThreadLocal.getDefaultLocale(),
+							CTEngineManagerImpl.class);
+
+					return ResourceBundleUtil.getString(
+						resourceBundle, "production");
+				}
+
+			};
 
 			productionCTCollection.setCtCollectionId(
 				CTConstants.CT_COLLECTION_ID_PRODUCTION);
