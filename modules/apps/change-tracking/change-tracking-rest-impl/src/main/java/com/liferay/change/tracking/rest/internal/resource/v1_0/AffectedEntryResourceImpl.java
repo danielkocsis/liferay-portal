@@ -14,13 +14,15 @@
 
 package com.liferay.change.tracking.rest.internal.resource.v1_0;
 
-import com.liferay.change.tracking.definition.CTDefinitionRegistryUtil;
+import com.liferay.change.tracking.display.CTDisplayHelper;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.rest.dto.v1_0.AffectedEntry;
+import com.liferay.change.tracking.rest.internal.util.CTDisplayHelperUtil;
 import com.liferay.change.tracking.rest.resource.v1_0.AffectedEntryResource;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -86,14 +88,16 @@ public class AffectedEntryResourceImpl extends BaseAffectedEntryResourceImpl {
 	}
 
 	private AffectedEntry _toAffectedEntry(CTEntry ctEntry) {
+		CTDisplayHelper ctDisplayHelper =
+			CTDisplayHelperUtil.getCTDisplayHelper();
+
 		return new AffectedEntry() {
 			{
-				contentType =
-					CTDefinitionRegistryUtil.
-						getVersionEntityContentTypeLanguageKey(
-							ctEntry.getModelClassNameId());
-				title = CTDefinitionRegistryUtil.getVersionEntityTitle(
-					ctEntry.getModelClassNameId(), ctEntry.getModelClassPK());
+				contentType = ctDisplayHelper.getDisplayName(
+					ctEntry.getModelClassNameId(), LocaleUtil.getDefault());
+				title = ctDisplayHelper.getDisplayName(
+					ctEntry.getModelClassNameId(), ctEntry.getModelClassPK(),
+					LocaleUtil.getDefault());
 			}
 		};
 	}

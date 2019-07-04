@@ -15,16 +15,19 @@
 package com.liferay.change.tracking.rest.internal.resource.v1_0;
 
 import com.liferay.change.tracking.definition.CTDefinitionRegistryUtil;
+import com.liferay.change.tracking.display.CTDisplayHelper;
 import com.liferay.change.tracking.engine.CTEngineManager;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.rest.dto.v1_0.Entry;
+import com.liferay.change.tracking.rest.internal.util.CTDisplayHelperUtil;
 import com.liferay.change.tracking.rest.resource.v1_0.EntryResource;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.util.SearchUtil;
@@ -88,6 +91,9 @@ public class EntryResourceImpl extends BaseEntryResourceImpl {
 	}
 
 	private Entry _toEntry(CTEntry ctEntry) {
+		CTDisplayHelper ctDisplayHelper =
+			CTDisplayHelperUtil.getCTDisplayHelper();
+
 		return new Entry() {
 			{
 				affectedByEntriesCount =
@@ -97,17 +103,17 @@ public class EntryResourceImpl extends BaseEntryResourceImpl {
 				classNameId = ctEntry.getModelClassNameId();
 				classPK = ctEntry.getModelClassPK();
 				collision = ctEntry.isCollision();
-				contentType =
-					CTDefinitionRegistryUtil.
-						getVersionEntityContentTypeLanguageKey(
-							ctEntry.getModelClassNameId());
+				contentType = ctDisplayHelper.getDisplayName(
+					ctEntry.getModelClassNameId(), LocaleUtil.getDefault());
 				dateModified = ctEntry.getModifiedDate();
 				entryId = ctEntry.getCtEntryId();
 				key = ctEntry.getModelResourcePrimKey();
-				siteName = CTDefinitionRegistryUtil.getVersionEntitySiteName(
-					ctEntry.getModelClassNameId(), ctEntry.getModelClassPK());
-				title = CTDefinitionRegistryUtil.getVersionEntityTitle(
-					ctEntry.getModelClassNameId(), ctEntry.getModelClassPK());
+				siteName = ctDisplayHelper.getSiteDisplayName(
+					ctEntry.getModelClassNameId(), ctEntry.getModelClassPK(),
+					LocaleUtil.getDefault());
+				title = ctDisplayHelper.getDisplayName(
+					ctEntry.getModelClassNameId(), ctEntry.getModelClassPK(),
+					LocaleUtil.getDefault());
 				userName = ctEntry.getUserName();
 				version = String.valueOf(
 					CTDefinitionRegistryUtil.getVersionEntityVersion(

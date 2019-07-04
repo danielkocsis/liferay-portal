@@ -64,11 +64,13 @@ public class CTEntryModel {
 		).setResourcePrimKey(
 			ctEntry.getModelResourcePrimKey()
 		).setSiteName(
-			CTDefinitionRegistryUtil.getVersionEntitySiteName(
-				ctEntry.getModelClassNameId(), ctEntry.getModelClassPK())
+			ctDisplayHelper.getSiteDisplayName(
+				ctEntry.getModelClassNameId(), ctEntry.getModelClassPK(),
+				LocaleUtil.getDefault())
 		).setTitle(
-			CTDefinitionRegistryUtil.getVersionEntityTitle(
-				ctEntry.getModelClassNameId(), ctEntry.getModelClassPK())
+			ctDisplayHelper.getDisplayName(
+				ctEntry.getModelClassNameId(), ctEntry.getModelClassPK(),
+				LocaleUtil.getDefault())
 		).setUserName(
 			ctEntry.getUserName()
 		).setVersion(

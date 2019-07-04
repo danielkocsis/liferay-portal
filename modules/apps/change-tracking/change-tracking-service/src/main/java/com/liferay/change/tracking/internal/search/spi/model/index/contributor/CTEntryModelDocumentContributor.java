@@ -15,10 +15,12 @@
 package com.liferay.change.tracking.internal.search.spi.model.index.contributor;
 
 import com.liferay.change.tracking.definition.CTDefinitionRegistryUtil;
+import com.liferay.change.tracking.display.CTDisplayHelper;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.model.CTEntryAggregate;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
 
@@ -46,7 +48,11 @@ public class CTEntryModelDocumentContributor
 		document.addKeyword(Field.GROUP_ID, _getGroupId(ctEntry));
 		document.addDate(Field.MODIFIED_DATE, ctEntry.getModifiedDate());
 		document.addKeyword(Field.STATUS, ctEntry.getStatus());
-		document.addText(Field.TITLE, _getTitle(ctEntry));
+		document.addText(
+			Field.TITLE,
+			_ctDisplayHelper.getDisplayName(
+				ctEntry.getModelClassNameId(), ctEntry.getModelClassPK(),
+				LocaleUtil.getDefault()));
 		document.addKeyword(
 			"affectedByCTEntryIds", _getAffectedByCTEntryIds(ctEntry));
 		document.addKeyword("changeType", ctEntry.getChangeType());
@@ -87,10 +93,8 @@ public class CTEntryModelDocumentContributor
 			ctEntry.getModelClassNameId(), ctEntry.getModelClassPK());
 	}
 
-	private String _getTitle(CTEntry ctEntry) {
-		return CTDefinitionRegistryUtil.getVersionEntityTitle(
-			ctEntry.getModelClassNameId(), ctEntry.getModelClassPK());
-	}
+	@Reference
+	private CTDisplayHelper _ctDisplayHelper;
 
 	@Reference
 	private Portal _portal;

@@ -24,8 +24,10 @@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
 <%@ page import="com.liferay.change.tracking.change.lists.history.web.internal.display.context.ChangeListsHistoryDetailsDisplayContext" %><%@
 page import="com.liferay.change.tracking.change.lists.history.web.internal.display.context.ChangeListsHistoryDisplayContext" %><%@
+page import="com.liferay.change.tracking.change.lists.history.web.internal.util.CTDisplayHelperUtil" %><%@
 page import="com.liferay.change.tracking.constants.CTWebKeys" %><%@
 page import="com.liferay.change.tracking.definition.CTDefinitionRegistryUtil" %><%@
+page import="com.liferay.change.tracking.display.CTDisplayHelper" %><%@
 page import="com.liferay.change.tracking.model.CTCollection" %><%@
 page import="com.liferay.change.tracking.model.CTEntry" %><%@
 page import="com.liferay.petra.string.StringPool" %><%@
@@ -41,6 +43,8 @@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
 portletDisplay.setShowStagingIcon(false);
 
 ChangeListsHistoryDisplayContext changeListsHistoryDisplayContext = new ChangeListsHistoryDisplayContext(request, renderRequest, renderResponse);
+
+CTDisplayHelper ctDisplayHelper = CTDisplayHelperUtil.getCTDisplayHelper();
 %>
 
 <%@ include file="/init-ext.jsp" %>

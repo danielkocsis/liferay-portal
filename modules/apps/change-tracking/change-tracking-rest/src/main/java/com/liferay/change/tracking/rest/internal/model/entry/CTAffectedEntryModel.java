@@ -14,8 +14,10 @@
 
 package com.liferay.change.tracking.rest.internal.model.entry;
 
-import com.liferay.change.tracking.definition.CTDefinitionRegistryUtil;
+import com.liferay.change.tracking.display.CTDisplayHelper;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.rest.internal.util.CTDisplayHelperUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,12 +31,16 @@ public class CTAffectedEntryModel {
 	public static CTAffectedEntryModel forCTEntry(CTEntry ctEntry) {
 		Builder builder = new Builder();
 
+		CTDisplayHelper ctDisplayHelper =
+			CTDisplayHelperUtil.getCTDisplayHelper();
+
 		return builder.setContentType(
-			CTDefinitionRegistryUtil.getVersionEntityContentTypeLanguageKey(
-				ctEntry.getModelClassNameId())
+			ctDisplayHelper.getDisplayName(
+				ctEntry.getModelClassNameId(), LocaleUtil.getDefault())
 		).setTitle(
-			CTDefinitionRegistryUtil.getVersionEntityTitle(
-				ctEntry.getModelClassNameId(), ctEntry.getModelClassPK())
+			ctDisplayHelper.getDisplayName(
+				ctEntry.getModelClassNameId(), ctEntry.getModelClassPK(),
+				LocaleUtil.getDefault())
 		).build();
 	}
 
