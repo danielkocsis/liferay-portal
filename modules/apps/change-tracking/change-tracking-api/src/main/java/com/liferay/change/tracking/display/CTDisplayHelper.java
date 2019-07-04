@@ -14,7 +14,6 @@
 
 package com.liferay.change.tracking.display;
 
-import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.portal.kernel.model.BaseModel;
 
 import java.util.Locale;
@@ -27,11 +26,14 @@ public interface CTDisplayHelper {
 
 	public String getDisplayName(long classNameId, Locale locale);
 
+	public String getDisplayName(long classNameId, long classPK, Locale locale);
+
 	public <T extends BaseModel<T>> String getDisplayName(
 		T model, Locale locale);
 
-	public String getDisplayName(CTEntry ctEntry, Locale locale);
-
 	public Map<Long, String> getDisplayNames(Locale locale);
+
+	public String getSiteDisplayName(
+		long classNameId, long classPK, Locale locale);
 
 }

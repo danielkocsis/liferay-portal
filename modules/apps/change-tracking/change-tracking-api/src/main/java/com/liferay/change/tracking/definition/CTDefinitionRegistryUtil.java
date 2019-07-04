@@ -39,11 +39,6 @@ public class CTDefinitionRegistryUtil {
 
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
-		if (ctDefinition == null) {
-			return "model.resource.".concat(
-				PortalUtil.getClassName(classNameId));
-		}
-
 		return ctDefinition.getContentTypeLanguageKey();
 	}
 
@@ -76,10 +71,6 @@ public class CTDefinitionRegistryUtil {
 
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
-		if (ctDefinition == null) {
-			return "versionEntitySiteName";
-		}
-
 		Function versionEntityByVersionEntityIdFunction =
 			ctDefinition.getVersionEntityByVersionEntityIdFunction();
 
@@ -96,10 +87,6 @@ public class CTDefinitionRegistryUtil {
 	@SuppressWarnings("unchecked")
 	public static String getVersionEntityTitle(long classNameId, long classPK) {
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
-
-		if (ctDefinition == null) {
-			return "versionEntityTitle";
-		}
 
 		Function versionEntityByVersionEntityIdFunction =
 			ctDefinition.getVersionEntityByVersionEntityIdFunction();
