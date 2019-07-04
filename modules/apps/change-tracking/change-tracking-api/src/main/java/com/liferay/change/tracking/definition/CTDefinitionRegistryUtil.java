@@ -14,7 +14,6 @@
 
 package com.liferay.change.tracking.definition;
 
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -34,20 +33,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author Máté Thurzó
  */
 public class CTDefinitionRegistryUtil {
-
-	public static List<String> getContentTypeLanguageKeys() {
-		List<String> contentTypeLanguageKeys = new ArrayList<>();
-
-		List<CTDefinition<?, ?>> ctDefinitions =
-			_getCTDefinitionRegistry().getAllCTDefinitions();
-
-		for (CTDefinition ctDefinition : ctDefinitions) {
-			contentTypeLanguageKeys.add(
-				ctDefinition.getContentTypeLanguageKey());
-		}
-
-		return contentTypeLanguageKeys;
-	}
 
 	public static String getVersionEntityContentTypeLanguageKey(
 		long classNameId) {
@@ -92,7 +77,7 @@ public class CTDefinitionRegistryUtil {
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
 		if (ctDefinition == null) {
-			return StringPool.BLANK;
+			return "versionEntitySiteName";
 		}
 
 		Function versionEntityByVersionEntityIdFunction =
@@ -113,7 +98,7 @@ public class CTDefinitionRegistryUtil {
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
 		if (ctDefinition == null) {
-			return StringPool.BLANK;
+			return "versionEntityTitle";
 		}
 
 		Function versionEntityByVersionEntityIdFunction =
@@ -136,7 +121,7 @@ public class CTDefinitionRegistryUtil {
 		CTDefinition<?, ?> ctDefinition = _getCTDefinition(classNameId);
 
 		if (ctDefinition == null) {
-			return StringPool.BLANK;
+			return 1;
 		}
 
 		Function versionEntityByVersionEntityIdFunction =

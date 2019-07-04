@@ -21,6 +21,7 @@ import java.util.Locale;
 /**
  * @author Preston Crary
  */
+// todo: move this to the module
 public interface CTDisplayAdapter<T extends BaseModel<T>> {
 
 	public Class<T> getModelClass();

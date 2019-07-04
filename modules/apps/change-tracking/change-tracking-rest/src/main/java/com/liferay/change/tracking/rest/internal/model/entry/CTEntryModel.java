@@ -15,9 +15,12 @@
 package com.liferay.change.tracking.rest.internal.model.entry;
 
 import com.liferay.change.tracking.definition.CTDefinitionRegistryUtil;
+import com.liferay.change.tracking.display.CTDisplayHelper;
 import com.liferay.change.tracking.model.CTEntry;
+import com.liferay.change.tracking.rest.internal.util.CTDisplayHelperUtil;
 import com.liferay.change.tracking.service.CTEntryLocalServiceUtil;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
+import com.liferay.portal.kernel.util.LocaleUtil;
 
 import java.io.Serializable;
 
@@ -37,6 +40,9 @@ public class CTEntryModel {
 	public static CTEntryModel forCTEntry(CTEntry ctEntry) {
 		Builder builder = new Builder();
 
+		CTDisplayHelper ctDisplayHelper =
+			CTDisplayHelperUtil.getCTDisplayHelper();
+
 		return builder.setAffectedByCTEntriesCount(
 			CTEntryLocalServiceUtil.getRelatedOwnerCTEntriesCount(
 				ctEntry.getCtEntryId(), new QueryDefinition<>())
@@ -49,8 +55,8 @@ public class CTEntryModel {
 		).setCollision(
 			ctEntry.isCollision()
 		).setContentType(
-			CTDefinitionRegistryUtil.getVersionEntityContentTypeLanguageKey(
-				ctEntry.getModelClassNameId())
+			ctDisplayHelper.getDisplayName(
+				ctEntry.getModelClassNameId(), LocaleUtil.getDefault())
 		).setCTEntryId(
 			ctEntry.getCtEntryId()
 		).setModifiedDate(
