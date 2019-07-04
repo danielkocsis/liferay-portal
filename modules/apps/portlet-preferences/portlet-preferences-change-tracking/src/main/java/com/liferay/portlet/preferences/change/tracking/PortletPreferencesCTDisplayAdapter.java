@@ -15,13 +15,16 @@
 package com.liferay.portlet.preferences.change.tracking;
 
 import com.liferay.portal.kernel.change.tracking.display.CTDisplayAdapter;
-import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.PortletPreferences;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import com.liferay.portal.kernel.service.PortletLocalService;
 
 import java.util.Locale;
+import java.util.ResourceBundle;
+
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Gergely Mathe
@@ -37,16 +40,31 @@ public class PortletPreferencesCTDisplayAdapter
 
 	@Override
 	public String getModelDisplayName(Locale locale) {
-		return null;
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			locale, PortletPreferencesCTDisplayAdapter.class);
+
+		return ResourceBundleUtil.getString(
+			resourceBundle,
+			"model.resource.com.liferay.portal.kernel.model." +
+				"PortletPreferences");
 	}
 
 	@Override
 	public String getModelDisplayName(
-		PortletPreferences model, Locale locale) {
-		return null;
+		PortletPreferences portletPreferences, Locale locale) {
+
+		Portlet portlet = _portletLocalService.fetchPortletById(
+			portletPreferences.getCompanyId(),
+			portletPreferences.getPortletId());
+
+		if (portlet == null) {
+			return portletPreferences.getPortletId();
+		}
+
+		return portlet.getDisplayName();
 	}
 
 	@Reference
-	private Language _language;
+	private PortletLocalService _portletLocalService;
 
 }
