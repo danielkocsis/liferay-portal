@@ -66,7 +66,7 @@ public class PortletPreferencesCTModelImpl
 
 	public static final Object[][] TABLE_COLUMNS = {
 		{"mvccVersion", Types.BIGINT}, {"classPK", Types.BIGINT},
-		{"ctCollectionId", Types.BIGINT}, {"preferences", Types.VARCHAR}
+		{"ctCollectionId", Types.BIGINT}, {"preferences", Types.CLOB}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -76,11 +76,11 @@ public class PortletPreferencesCTModelImpl
 		TABLE_COLUMNS_MAP.put("mvccVersion", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("classPK", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("ctCollectionId", Types.BIGINT);
-		TABLE_COLUMNS_MAP.put("preferences", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("preferences", Types.CLOB);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table PortletPreferencesCT (mvccVersion LONG default 0 not null,classPK LONG not null,ctCollectionId LONG not null,preferences VARCHAR(75) null,primary key (classPK, ctCollectionId))";
+		"create table PortletPreferencesCT (mvccVersion LONG default 0 not null,classPK LONG not null,ctCollectionId LONG not null,preferences TEXT null,primary key (classPK, ctCollectionId))";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table PortletPreferencesCT";

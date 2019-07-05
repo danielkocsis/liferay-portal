@@ -990,7 +990,7 @@ create table PortletPreferencesCT (
 	mvccVersion LONG default 0 not null,
 	classPK LONG not null,
 	ctCollectionId LONG not null,
-	preferences VARCHAR(75) null,
+	preferences TEXT null,
 	primary key (classPK, ctCollectionId)
 );
 
