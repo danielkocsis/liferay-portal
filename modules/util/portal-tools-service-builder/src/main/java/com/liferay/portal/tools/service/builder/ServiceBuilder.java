@@ -5837,12 +5837,12 @@ public class ServiceBuilder {
 					"\" with a UUID without a primary key");
 		}
 
-		if (changeTrackedModel) {
-			if (entityColumns.indexOf(new EntityColumn("ctCollectionId")) < 0) {
-				throw new IllegalArgumentException(
-					"Please add ctCollectionId column to " + entityName +
-						" to use change tracked columns");
-			}
+		if (changeTrackedModel &&
+			(entityColumns.indexOf(new EntityColumn("ctCollectionId")) < 0)) {
+
+			throw new IllegalArgumentException(
+				"Please add ctCollectionId column to " + entityName +
+					" to use change tracked columns");
 		}
 
 		EntityOrder entityOrder = null;
