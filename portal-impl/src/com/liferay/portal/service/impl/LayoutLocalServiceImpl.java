@@ -1600,8 +1600,8 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 		checkParentLayoutIds.add(LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
 
-		LayoutSet layoutSet = layoutSetPersistence.findByG_P_Head(
-			groupId, privateLayout, false);
+		LayoutSet layoutSet = layoutSetPersistence.findByG_P(
+			groupId, privateLayout);
 
 		while (!checkParentLayoutIds.isEmpty()) {
 			long parentLayoutId = checkParentLayoutIds.poll();
@@ -2138,7 +2138,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 	@Override
 	public boolean hasLayouts(Group group) throws PortalException {
 		List<LayoutSet> groupLayoutSets =
-			layoutSetPersistence.findByGroupId_Head(group.getGroupId(), false);
+			layoutSetPersistence.findByGroupId(group.getGroupId());
 
 		for (LayoutSet layoutSet : groupLayoutSets) {
 			if (layoutSet.getPageCount() > 0) {
@@ -2162,8 +2162,8 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 					group.getCompanyId(), userGroupClassNameId, userGroupId);
 
 				List<LayoutSet> userGroupGroupLayoutSets =
-					layoutSetPersistence.findByGroupId_Head(
-						userGroupGroup.getGroupId(), false);
+					layoutSetPersistence.findByGroupId(
+						userGroupGroup.getGroupId());
 
 				for (LayoutSet layoutSet : userGroupGroupLayoutSets) {
 					if (layoutSet.getPageCount() > 0) {
@@ -2188,8 +2188,8 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 			Group group, boolean privateLayout, boolean includeUserGroups)
 		throws PortalException {
 
-		LayoutSet layoutSet = layoutSetPersistence.findByG_P_Head(
-			group.getGroupId(), privateLayout, false);
+		LayoutSet layoutSet = layoutSetPersistence.findByG_P(
+			group.getGroupId(), privateLayout);
 
 		if (layoutSet.getPageCount() > 0) {
 			return true;
@@ -2210,8 +2210,8 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 				Group userGroupGroup = groupPersistence.findByC_C_C(
 					group.getCompanyId(), userGroupClassNameId, userGroupId);
 
-				layoutSet = layoutSetPersistence.findByG_P_Head(
-					userGroupGroup.getGroupId(), privateLayout, false);
+				layoutSet = layoutSetPersistence.findByG_P(
+					userGroupGroup.getGroupId(), privateLayout);
 
 				if (layoutSet.getPageCount() > 0) {
 					return true;
