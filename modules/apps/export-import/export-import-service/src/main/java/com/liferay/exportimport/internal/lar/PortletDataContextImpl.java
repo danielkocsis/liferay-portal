@@ -233,6 +233,12 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 		populateClassNameAttribute(classedModel, element);
 
+		Serializable classPK = ExportImportClassedModelUtil.getPrimaryKeyObj(
+			classedModel);
+
+		long classNameId = ExportImportClassedModelUtil.getClassNameId(
+			classedModel);
+
 		if (!hasPrimaryKey(String.class, path)) {
 			if (classedModel instanceof AuditedModel) {
 				AuditedModel auditedModel = (AuditedModel)classedModel;
@@ -241,15 +247,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			}
 
 			if (isResourceMain(classedModel)) {
-				Serializable classPK =
-					ExportImportClassedModelUtil.getPrimaryKeyObj(classedModel);
-
-				long classNameId = ExportImportClassedModelUtil.getClassNameId(
-					classedModel);
-
 				_addAssetLinks(classNameId, GetterUtil.getLong(classPK));
-				_addAssetPriority(
-					element, classNameId, GetterUtil.getLong(classPK));
 
 				addExpando(element, path, classedModel, clazz);
 				addLocks(clazz, String.valueOf(classPK));
@@ -263,6 +261,11 @@ public class PortletDataContextImpl implements PortletDataContext {
 			AuditedModel auditedModel = (AuditedModel)classedModel;
 
 			_addUserUuid(element, auditedModel.getUserUuid());
+		}
+
+		if (isResourceMain(classedModel)) {
+			_addAssetPriority(
+				element, classNameId, GetterUtil.getLong(classPK));
 		}
 
 		_addWorkflowDefinitionLink(classedModel);
