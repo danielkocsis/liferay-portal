@@ -175,10 +175,20 @@ renderResponse.setTitle(LanguageUtil.get(request, "select-change-list"));
 											<liferay-portlet:param name="mvcRenderCommandName" value="/change_lists/publish_modal" />
 											<liferay-portlet:param name="ctCollectionId" value="<%= String.valueOf(curCTCollection.getCtCollectionId()) %>" />
 										</liferay-portlet:renderURL>
+										
+										<%
+										Map<String, Object> publishChangeListData = new HashMap<String, Object>();
+
+										publishChangeListData.put("change-list-description", HtmlUtil.escape(curCTCollection.getDescription()));
+										publishChangeListData.put("change-list-has-collision", changeListsDisplayContext.hasCollision(curCTCollection.getCtCollectionId()));
+										publishChangeListData.put("change-list-name", HtmlUtil.escape(curCTCollection.getName()));
+										publishChangeListData.put("collection-id", String.valueOf(curCTCollection.getCtCollectionId()));
+										%>
 
 										<liferay-ui:icon
+											cssClass='<%= renderResponse.getNamespace() + "publish" %>'
+											data="<%= publishChangeListData %>"
 											message="publish"
-											onClick='<%= "javascript:" + renderResponse.getNamespace() + "handleClickPublish(\'" + publishModalURL.toString() + "\', \'" + confirmationMessage +"\');" %>'
 											url="#"
 										/>
 									</c:when>
@@ -415,10 +425,20 @@ renderResponse.setTitle(LanguageUtil.get(request, "select-change-list"));
 															<liferay-portlet:param name="mvcRenderCommandName" value="/change_lists/publish_modal" />
 															<liferay-portlet:param name="ctCollectionId" value="<%= String.valueOf(curCTCollection.getCtCollectionId()) %>" />
 														</liferay-portlet:renderURL>
+														
+														<%
+														Map<String, Object> publishChangeListData = new HashMap<String, Object>();
+
+														publishChangeListData.put("change-list-description", HtmlUtil.escape(curCTCollection.getDescription()));
+														publishChangeListData.put("change-list-has-collision", changeListsDisplayContext.hasCollision(curCTCollection.getCtCollectionId()));
+														publishChangeListData.put("change-list-name", HtmlUtil.escape(curCTCollection.getName()));
+														publishChangeListData.put("collection-id", String.valueOf(curCTCollection.getCtCollectionId()));
+														%>
 
 														<liferay-ui:icon
+															cssClass='<%= renderResponse.getNamespace() + "publish" %>'
+															data="<%= publishChangeListData %>"
 															message="publish"
-															onClick='<%= "javascript:" + renderResponse.getNamespace() + "handleClickPublish(\'" + publishModalURL.toString() + "\');" %>'
 															url="#"
 														/>
 													</c:when>
@@ -483,7 +503,7 @@ renderResponse.setTitle(LanguageUtil.get(request, "select-change-list"));
 					Liferay.Util.navigate('<%= refreshURL.toString() %>');
 				},
 				1000);
-		});
+	});
 
 	if (<%= ParamUtil.getBoolean(request, "refresh") %>) {
 		Liferay.fire('<portlet:namespace/>refreshSelectChangeList');
@@ -496,29 +516,32 @@ renderResponse.setTitle(LanguageUtil.get(request, "select-change-list"));
 			submitForm(document.hrefFm, url);
 		}
 	}
-
-	function <portlet:namespace/>handleClickPublish(url) {
-		this.event.preventDefault();
-		this.event.stopPropagation();
-
-		Liferay.Menu._INSTANCE._closeActiveMenu();
-
-		Liferay.Util.openWindow(
-			{
-				dialog: {
-					center: true,
-					destroyOnHide: false,
-					height: 389,
-					modal: true,
-					width: 500
-				},
-				dialogIframe: {
-					bodyCssClass: 'dialog-with-footer change-list-publish-modal'
-				},
-				id: '<portlet:namespace/>publishIconDialog',
-				title: '<%= LanguageUtil.get(request, "publish-change-list") %>',
-				uri: url,
-				zIndex: 10000
-			});
-	}
 </script>
+
+<aui:script require='<%= "metal-dom/src/all/dom as dom, " + npmResolvedPackageName + "/js/OpenPublishChangeList.es as openPublishChangeList" %>'>
+	var publishClickHandler = dom.delegate(
+		document.body,
+		'click',
+		'.<portlet:namespace />publish > a',
+		function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			
+			Liferay.Menu._INSTANCE._closeActiveMenu();
+			
+			var data = event.delegateTarget.dataset;
+			
+			openPublishChangeList.openPublishChangeList(
+				{
+					changeListDescription: data.changeListDescription,
+					changeListHasCollision: data.changeListHasCollision == 'true',
+					changeListName: data.changeListName,
+					spritemap: Liferay.ThemeDisplay.getPathThemeImages() + '/lexicon/icons.svg',
+					urlChangeListsHistory: '<%= PortletURLFactoryUtil.create(request, CTPortletKeys.CHANGE_LISTS_HISTORY, PortletRequest.RENDER_PHASE) %>',
+					urlCheckoutProduction: '/o/change-tracking/collections/' + data.collectionId + '/checkout?companyId=' + Liferay.ThemeDisplay.getCompanyId() + '&userId=' + Liferay.ThemeDisplay.getUserId(),
+					urlPublishChangeList: {href: '/o/change-tracking/collections/' + data.collectionId + '/publish', rel: 'publish', type: 'POST'}
+				}
+			);
+		}
+	);
+</aui:script>

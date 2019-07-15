@@ -156,7 +156,7 @@ PublishChangeList.STATE = {
 
 	changeListName: Config.string(),
 
-	ignoreCollision: Config.bool(),
+	ignoreCollision: Config.bool().value(false),
 
 	/**
 	 * Path to the images.
