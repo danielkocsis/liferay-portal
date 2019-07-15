@@ -130,13 +130,13 @@ public class LayoutSetPrototypePropagationTest
 	}
 
 	@Test
-	public void testLayoutDeleteAndReAddWithSameFriendlyURL()
-		throws Exception {
-
+	public void testLayoutDeleteAndReAddWithSameFriendlyURL() throws Exception {
 		setLinkEnabled(true);
 
 		Layout layout = LayoutTestUtil.addLayout(
 			_layoutSetPrototypeGroup.getGroupId(), "test", true);
+
+		String friendlyURL = layout.getFriendlyURL();
 
 		Assert.assertEquals(
 			_initialPrototypeLayoutCount, getGroupLayoutCount());
@@ -152,6 +152,8 @@ public class LayoutSetPrototypePropagationTest
 		Layout newLayout = LayoutTestUtil.addLayout(
 			_layoutSetPrototypeGroup.getGroupId(), "test", true);
 
+		Assert.assertEquals(friendlyURL, newLayout.getFriendlyURL());
+
 		Assert.assertEquals(
 			_initialPrototypeLayoutCount + 1, getGroupLayoutCount());
 
@@ -160,17 +162,18 @@ public class LayoutSetPrototypePropagationTest
 		Assert.assertEquals(
 			_initialPrototypeLayoutCount + 1, getGroupLayoutCount());
 
-		Layout foundLayout = LayoutLocalServiceUtil.fetchLayoutByUuidAndGroupId(
-			newLayout.getUuid(), group.getGroupId(), false);
+		Layout propagatedLayout =
+			LayoutLocalServiceUtil.fetchLayoutByUuidAndGroupId(
+				newLayout.getUuid(), group.getGroupId(), false);
 
 		Assert.assertNotNull(
 			"Deleted and re-added Layout could not be found on propagated " +
 				"site.",
-			foundLayout);
+			propagatedLayout);
 
 		Assert.assertEquals(
 			"Friendly URLs of the source and target Layouts should match.",
-			newLayout.getFriendlyURL(), foundLayout.getFriendlyURL());
+			friendlyURL, propagatedLayout.getFriendlyURL());
 	}
 
 	@Test
