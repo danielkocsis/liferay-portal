@@ -260,12 +260,16 @@ public class PortletDataContextImpl implements PortletDataContext {
 		if (classedModel instanceof AuditedModel) {
 			AuditedModel auditedModel = (AuditedModel)classedModel;
 
-			_addUserUuid(element, auditedModel.getUserUuid());
+			element.addAttribute("user-uuid", auditedModel.getUserUuid());
 		}
 
 		if (isResourceMain(classedModel)) {
-			_addAssetPriority(
-				element, classNameId, GetterUtil.getLong(classPK));
+			double assetEntryPriority =
+				AssetEntryLocalServiceUtil.getEntryPriority(
+					classNameId, GetterUtil.getLong(classPK));
+
+			element.addAttribute(
+				"asset-entry-priority", String.valueOf(assetEntryPriority));
 		}
 
 		_addWorkflowDefinitionLink(classedModel);
@@ -2816,20 +2820,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 		for (AssetLink assetLink : assetLinks) {
 			_assetLinkIds.add(assetLink.getLinkId());
 		}
-	}
-
-	private void _addAssetPriority(
-		Element element, long classNameId, long classPK) {
-
-		double assetEntryPriority = AssetEntryLocalServiceUtil.getEntryPriority(
-			classNameId, classPK);
-
-		element.addAttribute(
-			"asset-entry-priority", String.valueOf(assetEntryPriority));
-	}
-
-	private void _addUserUuid(Element element, String userUuid) {
-		element.addAttribute("user-uuid", userUuid);
 	}
 
 	private void _addWorkflowDefinitionLink(ClassedModel classedModel)
