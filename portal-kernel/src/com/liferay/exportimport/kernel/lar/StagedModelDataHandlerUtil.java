@@ -557,6 +557,7 @@ public class StagedModelDataHandlerUtil {
 				String entry = iterator.next();
 
 				if (entry.endsWith(".xml") &&
+					!entry.contains("com.liferay.portal.kernel.model.Image") &&
 					_containsStagedModel(
 						portletDataContext, entry, stagedModel)) {
 
