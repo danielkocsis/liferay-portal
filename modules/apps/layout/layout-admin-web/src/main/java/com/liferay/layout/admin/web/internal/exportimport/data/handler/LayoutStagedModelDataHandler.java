@@ -806,13 +806,10 @@ public class LayoutStagedModelDataHandler
 
 		if ((image != null) && (image.getTextObj() != null)) {
 			String iconPath = ExportImportPathUtil.getModelPath(
-				portletDataContext.getScopeGroupId(), Image.class.getName(),
-				image.getImageId());
+				layout,
+				image.getImageId() + StringPool.PERIOD + image.getType());
 
-			Element iconImagePathElement = layoutElement.addElement(
-				"icon-image-path");
-
-			iconImagePathElement.addText(iconPath);
+			layoutElement.addAttribute("icon-image-path", iconPath);
 
 			portletDataContext.addZipEntry(iconPath, image.getTextObj());
 		}
@@ -1336,7 +1333,7 @@ public class LayoutStagedModelDataHandler
 			Element layoutElement)
 		throws Exception {
 
-		String iconImagePath = layoutElement.elementText("icon-image-path");
+		String iconImagePath = layoutElement.attributeValue("icon-image-path");
 
 		byte[] iconBytes = portletDataContext.getZipEntryAsByteArray(
 			iconImagePath);

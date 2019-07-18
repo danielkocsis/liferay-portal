@@ -483,10 +483,9 @@ public class StagedLayoutSetStagedModelDataHandler
 		}
 
 		if ((image != null) && (image.getTextObj() != null)) {
-			String logoPath = ExportImportPathUtil.getRootPath(
-				portletDataContext);
-
-			logoPath += "/logo";
+			String logoPath = ExportImportPathUtil.getModelPath(
+				stagedLayoutSet,
+				image.getImageId() + StringPool.PERIOD + image.getType());
 
 			Element rootElement = portletDataContext.getExportDataRootElement();
 
