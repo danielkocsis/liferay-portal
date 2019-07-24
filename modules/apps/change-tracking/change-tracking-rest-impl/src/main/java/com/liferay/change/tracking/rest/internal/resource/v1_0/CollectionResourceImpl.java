@@ -96,7 +96,7 @@ public class CollectionResourceImpl
 	}
 
 	@Override
-	public Collection getCollection(Long companyId, Long collectionId)
+	public Collection getCollection(Long collectionId, Long companyId)
 		throws Exception {
 
 		Optional<CTCollection> ctCollectionOptional =
