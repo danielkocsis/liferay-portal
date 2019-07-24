@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
 		"osgi.jaxrs.application.base=/change-tracking",
 		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=jaxb-json)",
 		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=Liferay.Vulcan)",
-		"osgi.jaxrs.name=Liferay.Change.Tracking.REST"
+		"osgi.jaxrs.name=Liferay.Change.Tracking.Legacy.REST"
 	},
 	service = Application.class
 )

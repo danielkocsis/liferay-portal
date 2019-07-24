@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"osgi.jaxrs.application.select=(osgi.jaxrs.name=Liferay.Change.Tracking.REST)",
+		"osgi.jaxrs.application.select=(osgi.jaxrs.name=Liferay.Change.Tracking.Legacy.REST)",
 		"osgi.jaxrs.extension=true"
 	},
 	service = ExceptionMapper.class

@@ -46,7 +46,7 @@ import org.osgi.service.component.annotations.Modified;
 	configurationPid = "com.liferay.change.tracking.configuration.CTConfiguration",
 	configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true,
 	property = {
-		"osgi.jaxrs.application.select=(osgi.jaxrs.name=Liferay.Change.Tracking.REST)",
+		"osgi.jaxrs.application.select=(osgi.jaxrs.name=Liferay.Change.Tracking.Legacy.REST)",
 		"osgi.jaxrs.extension=true",
 		"osgi.jaxrs.name=AdministratorCheckContainerRequestFilter"
 	},
