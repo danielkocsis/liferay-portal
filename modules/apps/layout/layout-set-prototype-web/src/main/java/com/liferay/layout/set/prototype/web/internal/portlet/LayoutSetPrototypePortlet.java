@@ -79,11 +79,36 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class LayoutSetPrototypePortlet extends MVCPortlet {
 
-	public void activate(
+	public void activateDeactivateLayoutSetPrototype(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		_updateActive(actionRequest, true);
+		long layoutSetPrototypeId = ParamUtil.getLong(
+			actionRequest, "layoutSetPrototypeId");
+
+		LayoutSetPrototype layoutSetPrototype =
+			layoutSetPrototypeService.fetchLayoutSetPrototype(
+				layoutSetPrototypeId);
+
+		if (layoutSetPrototype == null) {
+			return;
+		}
+
+		boolean active = ParamUtil.getBoolean(actionRequest, "active");
+
+		UnicodeProperties settingsProperties =
+			layoutSetPrototype.getSettingsProperties();
+
+		boolean layoutsUpdateable = GetterUtil.getBoolean(
+			settingsProperties.getProperty("layoutsUpdateable"));
+
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			actionRequest);
+
+		layoutSetPrototypeService.updateLayoutSetPrototype(
+			layoutSetPrototypeId, layoutSetPrototype.getNameMap(),
+			layoutSetPrototype.getDescriptionMap(), active, layoutsUpdateable,
+			serviceContext);
 	}
 
 	public void changeDisplayStyle(
@@ -100,13 +125,6 @@ public class LayoutSetPrototypePortlet extends MVCPortlet {
 		portalPreferences.setValue(
 			LayoutSetPrototypePortletKeys.LAYOUT_SET_PROTOTYPE, "display-style",
 			displayStyle);
-	}
-
-	public void deactivate(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		_updateActive(actionRequest, false);
 	}
 
 	public void deleteLayoutSetPrototypes(
@@ -255,30 +273,5 @@ public class LayoutSetPrototypePortlet extends MVCPortlet {
 	protected LayoutSetPrototypeService layoutSetPrototypeService;
 	protected PanelAppRegistry panelAppRegistry;
 	protected PanelCategoryRegistry panelCategoryRegistry;
-
-	private void _updateActive(ActionRequest actionRequest, boolean active)
-		throws Exception {
-
-		long layoutSetPrototypeId = ParamUtil.getLong(
-			actionRequest, "layoutSetPrototypeId");
-
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			actionRequest);
-
-		LayoutSetPrototype layoutSetPrototype =
-			layoutSetPrototypeService.getLayoutSetPrototype(
-				layoutSetPrototypeId);
-
-		UnicodeProperties settingsProperties =
-			layoutSetPrototype.getSettingsProperties();
-
-		boolean layoutsUpdateable = GetterUtil.getBoolean(
-			settingsProperties.getProperty("layoutsUpdateable"));
-
-		layoutSetPrototypeService.updateLayoutSetPrototype(
-			layoutSetPrototypeId, layoutSetPrototype.getNameMap(),
-			layoutSetPrototype.getDescriptionMap(), active, layoutsUpdateable,
-			serviceContext);
-	}
 
 }
