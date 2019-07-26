@@ -84,10 +84,12 @@ public class CTCollectionModel {
 		ModelLinkModel.Builder builder = new ModelLinkModel.Builder();
 
 		return builder.addModelLinkModel(
-			"/o/change-tracking/collections/" + _ctCollectionId + "/entries",
+			"/o/change-tracking-legacy/collections/" + _ctCollectionId +
+				"/entries",
 			"entries", "GET"
 		).addModelLinkModel(
-			"/o/change-tracking/collections/" + _ctCollectionId + "/publish",
+			"/o/change-tracking-legacy/collections/" + _ctCollectionId +
+				"/publish",
 			"publish", "POST"
 		).build();
 	}
