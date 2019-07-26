@@ -92,7 +92,7 @@ public class ChangeListsConfigurationDisplayContext {
 		).put(
 			"urlChangeTrackingConfiguration",
 			_themeDisplay.getPortalURL() +
-				"/o/change-tracking/configurations/" +
+				"/o/change-tracking-legacy/configurations/" +
 					_themeDisplay.getCompanyId()
 		).put(
 			"urlChangeTrackingUserConfiguration",
@@ -120,7 +120,7 @@ public class ChangeListsConfigurationDisplayContext {
 		StringBundler sb = new StringBundler(5);
 
 		sb.append(themeDisplay.getPortalURL());
-		sb.append("/o/change-tracking/configurations/");
+		sb.append("/o/change-tracking-legacy/configurations/");
 		sb.append(themeDisplay.getCompanyId());
 		sb.append("/user/");
 		sb.append(themeDisplay.getUserId());

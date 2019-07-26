@@ -74,12 +74,13 @@ public class ChangeListsIndicatorDisplayContext {
 			"urlChangeListsOverview", portletURL.toString()
 		).put(
 			"urlCollectionsBase",
-			_themeDisplay.getPortalURL() + "/o/change-tracking/collections"
+			_themeDisplay.getPortalURL() +
+				"/o/change-tracking-legacy/collections"
 		).put(
 			"urlProductionInformation",
 			StringBundler.concat(
 				_themeDisplay.getPortalURL(),
-				"/o/change-tracking/processes?companyId=",
+				"/o/change-tracking-legacy/processes?companyId=",
 				_themeDisplay.getCompanyId(), "&published=true")
 		);
 

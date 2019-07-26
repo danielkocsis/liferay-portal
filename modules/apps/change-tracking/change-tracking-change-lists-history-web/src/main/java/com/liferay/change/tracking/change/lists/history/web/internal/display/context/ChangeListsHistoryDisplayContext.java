@@ -71,12 +71,12 @@ public class ChangeListsHistoryDisplayContext {
 		).put(
 			"urlProcesses",
 			_themeDisplay.getPortalURL() +
-				"/o/change-tracking/processes?companyId=" +
+				"/o/change-tracking-legacy/processes?companyId=" +
 					_themeDisplay.getCompanyId()
 		).put(
 			"urlProcessUsers",
 			_themeDisplay.getPortalURL() +
-				"/o/change-tracking/processes/users?companyId=" +
+				"/o/change-tracking-legacy/processes/users?companyId=" +
 					_themeDisplay.getCompanyId()
 		);
 

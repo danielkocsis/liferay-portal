@@ -101,12 +101,13 @@ public class ChangeListsDisplayContext {
 			_themeDisplay.getPathThemeImages() + "/lexicon/icons.svg"
 		).put(
 			"urlCollectionsBase",
-			_themeDisplay.getPortalURL() + "/o/change-tracking/collections"
+			_themeDisplay.getPortalURL() +
+				"/o/change-tracking-legacy/collections"
 		).put(
 			"urlProductionInformation",
 			StringBundler.concat(
 				_themeDisplay.getPortalURL(),
-				"/o/change-tracking/processes?companyId=",
+				"/o/change-tracking-legacy/processes?companyId=",
 				_themeDisplay.getCompanyId(), "&type=published-latest")
 		).put(
 			"urlProductionView", _themeDisplay.getPortalURL()
@@ -114,7 +115,7 @@ public class ChangeListsDisplayContext {
 			"urlUserSettings",
 			StringBundler.concat(
 				_themeDisplay.getPortalURL(),
-				"/o/change-tracking/configurations/",
+				"/o/change-tracking-legacy/configurations/",
 				_themeDisplay.getCompanyId(), "/user/",
 				_themeDisplay.getUserId())
 		);
