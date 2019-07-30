@@ -124,6 +124,15 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 		processResource = builder.locale(
 			LocaleUtil.getDefault()
 		).build();
+
+		_ctCollection = _ctCollectionLocalService.addCTCollection(
+			_user.getUserId(), RandomTestUtil.randomString(),
+			RandomTestUtil.randomString(), new ServiceContext());
+
+		_ctEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassName.getClassNameId(), 0,
+			RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+			_ctCollection.getCtCollectionId(), new ServiceContext());
 	}
 
 	@After
@@ -148,8 +157,6 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 
 	@Test
 	public void testGetProcess() throws Exception {
-		_createChangeEntry();
-
 		CTProcess ctProcess = _ctProcessLocalService.addCTProcess(
 			_user.getUserId(), _ctCollection.getCtCollectionId(), true,
 			new ServiceContext());
@@ -158,18 +165,15 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 			ctProcess.getCtProcessId());
 
 		Assert.assertEquals(
-			"", Long.valueOf(ctProcess.getCtProcessId()), process.getId());
+			"Wrong process is returned",
+			Long.valueOf(ctProcess.getCtProcessId()), process.getId());
 	}
 
 	@Test
 	public void testGetProcessesPage() throws Exception {
-		_createChangeEntry();
-
 		_ctProcessLocalService.addCTProcess(
 			_user.getUserId(), _ctCollection.getCtCollectionId(), true,
 			new ServiceContext());
-
-		_createChangeEntry();
 
 		_ctProcessLocalService.addCTProcess(
 			_user.getUserId(), _ctCollection.getCtCollectionId(), true,
@@ -185,9 +189,7 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 
 	@Override
 	public void testGetProcessesPageWithPagination() throws Exception {
-		for (int i = 0; i < 20; i++) {
-			_createChangeEntry();
-
+		for (int i = 0; i < 10; i++) {
 			_ctProcessLocalService.addCTProcess(
 				_user.getUserId(), _ctCollection.getCtCollectionId(), true,
 				new ServiceContext());
@@ -199,17 +201,23 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 			TestPropsValues.getCompanyId(), StringPool.BLANK, ProcessType.ALL,
 			_user.getUserId(), pagination, null);
 
-		Assert.assertEquals("Wrong page number", 2, processPage.getPage());
+		Collection<Process> processPageItems = processPage.getItems();
+
+		Assert.assertEquals(
+			"Wrong number of items", 5, processPageItems.size());
+
+		Assert.assertEquals("Wrong number of pages", 2, processPage.getPage());
+		Assert.assertEquals("Wrong page size", 5, processPage.getPageSize());
+		Assert.assertEquals(
+			"Wrong total number of page items", 10,
+			processPage.getTotalCount());
 	}
 
 	@Override
 	public void testGetProcessesPageWithSortDateTime() throws Exception {
-		_createChangeEntry();
-
 		_ctProcessLocalService.addCTProcess(
 			_user.getUserId(), _ctCollection.getCtCollectionId(), true,
 			new ServiceContext());
-		_createChangeEntry();
 
 		CTProcess ctProcess = _ctProcessLocalService.addCTProcess(
 			_user.getUserId(), _ctCollection.getCtCollectionId(), true,
@@ -231,28 +239,11 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 	@Ignore
 	@Override
 	public void testGetProcessesPageWithSortInteger() throws Exception {
-		Assert.assertTrue(true);
 	}
 
 	@Ignore
 	@Override
 	public void testGetProcessesPageWithSortString() throws Exception {
-		Assert.assertTrue(true);
-	}
-
-	private void _createChangeEntry() throws Exception {
-		String name = RandomTestUtil.randomString();
-
-		long modelResourcePrimKey = RandomTestUtil.nextLong();
-
-		_ctCollection = _ctCollectionLocalService.addCTCollection(
-			_user.getUserId(), name, RandomTestUtil.randomString(),
-			new ServiceContext());
-
-		_ctEntry = _ctEntryLocalService.addCTEntry(
-			_user.getUserId(), _testVersionClassName.getClassNameId(), 0,
-			modelResourcePrimKey, CTConstants.CT_CHANGE_TYPE_ADDITION,
-			_ctCollection.getCtCollectionId(), new ServiceContext());
 	}
 
 	@Inject
