@@ -51,7 +51,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -123,6 +122,10 @@ public class EntryResourceTest extends BaseEntryResourceTestCase {
 		entryResource = builder.locale(
 			LocaleUtil.getDefault()
 		).build();
+
+		_ctCollection = _ctCollectionLocalService.addCTCollection(
+			_user.getUserId(), RandomTestUtil.randomString(),
+			RandomTestUtil.randomString(), new ServiceContext());
 	}
 
 	@After
@@ -148,40 +151,42 @@ public class EntryResourceTest extends BaseEntryResourceTestCase {
 	@Override
 	public void testGetCollectionEntriesPage() throws Exception {
 		Set<Long> ctEntryIds = new HashSet<>();
+		CTEntry ctEntry1 = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassName.getClassNameId(), 1L,
+			RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+			_ctCollection.getCtCollectionId(), new ServiceContext());
 
-		_createCollection();
+		CTEntry ctEntry2 = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassName.getClassNameId(), 2L,
+			RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+			_ctCollection.getCtCollectionId(), new ServiceContext());
 
-		_createChangeEntry(_ctCollection.getCtCollectionId(), 1);
-
-		ctEntryIds.add(_ctEntry.getCtEntryId());
-
-		_createChangeEntry(_ctCollection.getCtCollectionId(), 2);
-
-		ctEntryIds.add(_ctEntry.getCtEntryId());
+		ctEntryIds.add(ctEntry1.getCtEntryId());
+		ctEntryIds.add(ctEntry2.getCtEntryId());
 
 		Page<Entry> entriesPage = entryResource.getCollectionEntriesPage(
 			_ctCollection.getCtCollectionId(), null, null, null, null, null,
 			null, null, null);
 
+		Assert.assertEquals("Wrong number of pages", 1, entriesPage.getPage());
 		Assert.assertEquals(
-			"Wrong number of entries", 2,
-			GetterUtil.getLong(entriesPage.getTotalCount()));
+			"Wrong total number of page items", 2, entriesPage.getTotalCount());
 
-		Collection<Entry> entries = entriesPage.getItems();
+		for (Entry entry : entriesPage.getItems()) {
+			ctEntryIds.remove(entry.getId());
+		}
 
-		Stream<Entry> entryStream = entries.stream();
-
-		entryStream.forEach(entry -> ctEntryIds.remove(entry.getId()));
-
-		Assert.assertTrue("ctEntryIds should be empty", ctEntryIds.isEmpty());
+		Assert.assertTrue(
+			"All change entry must be returned", ctEntryIds.isEmpty());
 	}
 
 	@Override
 	public void testGetCollectionEntriesPageWithPagination() throws Exception {
-		_createCollection();
-
-		for (int i = 1; i <= 20; i++) {
-			_createChangeEntry(_ctCollection.getCtCollectionId(), i);
+		for (int i = 1; i <= 10; i++) {
+			_ctEntryLocalService.addCTEntry(
+				_user.getUserId(), _testVersionClassName.getClassNameId(), i,
+				RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+				_ctCollection.getCtCollectionId(), new ServiceContext());
 		}
 
 		Page<Entry> entriesPage = entryResource.getCollectionEntriesPage(
@@ -194,11 +199,16 @@ public class EntryResourceTest extends BaseEntryResourceTestCase {
 			new String[] {String.valueOf(_user.getUserId())},
 			Pagination.of(2, 5), null);
 
-		Assert.assertEquals(
-			"Wrong page number", 2, GetterUtil.getLong(entriesPage.getPage()));
+		Collection<Entry> entriesPageItems = entriesPage.getItems();
 
 		Assert.assertEquals(
-			"Wrong total count", 20, entriesPage.getTotalCount());
+			"Wrong number of items", 5, entriesPageItems.size());
+
+		Assert.assertEquals("Wrong number of pages", 2, entriesPage.getPage());
+		Assert.assertEquals("Wrong page size", 5, entriesPage.getPageSize());
+		Assert.assertEquals(
+			"Wrong total number of page items", 10,
+			entriesPage.getTotalCount());
 	}
 
 	@Ignore
@@ -206,11 +216,15 @@ public class EntryResourceTest extends BaseEntryResourceTestCase {
 	public void testGetCollectionEntriesPageWithSortDateTime()
 		throws Exception {
 
-		_createCollection();
+		_ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassName.getClassNameId(), 1L,
+			RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+			_ctCollection.getCtCollectionId(), new ServiceContext());
 
-		_createChangeEntry(_ctCollection.getCtCollectionId(), 1);
-
-		_createChangeEntry(_ctCollection.getCtCollectionId(), 2);
+		CTEntry ctEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassName.getClassNameId(), 2L,
+			RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+			_ctCollection.getCtCollectionId(), new ServiceContext());
 
 		Page<Entry> entriesPage = entryResource.getCollectionEntriesPage(
 			_ctCollection.getCtCollectionId(), null, null, null, null, null,
@@ -221,7 +235,7 @@ public class EntryResourceTest extends BaseEntryResourceTestCase {
 		Entry entry = (Entry)ArrayUtil.getValue(items.toArray(), 0);
 
 		Assert.assertEquals(
-			"Wrong order of items", _ctEntry.getCtEntryId(),
+			"Wrong order of items", ctEntry.getCtEntryId(),
 			GetterUtil.getLong(entry.getId()));
 	}
 
@@ -239,32 +253,15 @@ public class EntryResourceTest extends BaseEntryResourceTestCase {
 
 	@Override
 	public void testGetEntry() throws Exception {
-		_createCollection();
+		CTEntry ctEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassName.getClassNameId(), 1L,
+			RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+			_ctCollection.getCtCollectionId(), new ServiceContext());
 
-		_createChangeEntry(_ctCollection.getCtCollectionId(), 1);
-
-		Entry entry = entryResource.getEntry(_ctEntry.getCtEntryId());
+		Entry entry = entryResource.getEntry(ctEntry.getCtEntryId());
 
 		Assert.assertEquals(
-			_ctEntry.getCtEntryId(), GetterUtil.getLong(entry.getId()));
-	}
-
-	private void _createChangeEntry(long ctCollectionId, long modelClassPK)
-		throws Exception {
-
-		long modelResourcePrimKey = RandomTestUtil.nextLong();
-
-		_ctEntry = _ctEntryLocalService.addCTEntry(
-			_user.getUserId(), _testVersionClassName.getClassNameId(),
-			modelClassPK, modelResourcePrimKey,
-			CTConstants.CT_CHANGE_TYPE_ADDITION, ctCollectionId,
-			new ServiceContext());
-	}
-
-	private void _createCollection() throws Exception {
-		_ctCollection = _ctCollectionLocalService.addCTCollection(
-			_user.getUserId(), RandomTestUtil.randomString(),
-			RandomTestUtil.randomString(), new ServiceContext());
+			ctEntry.getCtEntryId(), GetterUtil.getLong(entry.getId()));
 	}
 
 	@Inject
@@ -287,9 +284,6 @@ public class EntryResourceTest extends BaseEntryResourceTestCase {
 
 	@Inject
 	private CTEngineManager _ctEngineManager;
-
-	@DeleteAfterTestRun
-	private CTEntry _ctEntry;
 
 	@Inject
 	private CTEntryLocalService _ctEntryLocalService;
