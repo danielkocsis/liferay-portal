@@ -50,8 +50,7 @@ import com.liferay.portal.test.rule.Inject;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Iterator;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -83,6 +82,9 @@ public class AffectedEntryResourceTest
 			_ctEngineManager.disableChangeTracking(
 				TestPropsValues.getCompanyId());
 		}
+
+		_ctEngineManager.enableChangeTracking(
+			TestPropsValues.getCompanyId(), _user.getUserId());
 
 		_testVersionClassName = _classNameLocalService.addClassName(
 			TestVersionModelClass.class.getName());
@@ -123,6 +125,10 @@ public class AffectedEntryResourceTest
 		affectedEntryResource = builder.locale(
 			LocaleUtil.getDefault()
 		).build();
+
+		_ctCollection = _ctCollectionLocalService.addCTCollection(
+			_user.getUserId(), RandomTestUtil.randomString(),
+			RandomTestUtil.randomString(), new ServiceContext());
 	}
 
 	@After
@@ -147,19 +153,18 @@ public class AffectedEntryResourceTest
 
 	@Override
 	public void testGetCollectionEntryAffectedEntriesPage() throws Exception {
-		_ctEngineManager.enableChangeTracking(
-			TestPropsValues.getCompanyId(), _user.getUserId());
-
-		_createCollection();
-
 		_ctEngineManager.checkoutCTCollection(
 			_user.getUserId(), _ctCollection.getCtCollectionId());
 
-		CTEntry ownerCTEntry = _createChangeEntry(
-			_ctCollection.getCtCollectionId(), 1);
+		CTEntry ownerCTEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassName.getClassNameId(), (long)1,
+			RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+			_ctCollection.getCtCollectionId(), new ServiceContext());
 
-		CTEntry relatedCTEntry = _createChangeEntry(
-			_ctCollection.getCtCollectionId(), 2);
+		CTEntry relatedCTEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassName.getClassNameId(), (long)2,
+			RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+			_ctCollection.getCtCollectionId(), new ServiceContext());
 
 		_ctManager.addRelatedCTEntry(
 			TestPropsValues.getCompanyId(), _user.getUserId(), ownerCTEntry,
@@ -177,12 +182,10 @@ public class AffectedEntryResourceTest
 		Collection<AffectedEntry> affectedEntries =
 			affectedEntriesPage.getItems();
 
-		Stream<AffectedEntry> affectedEntryStream = affectedEntries.stream();
+		Iterator<AffectedEntry> affectedEntriesIterator =
+			affectedEntries.iterator();
 
-		Optional<AffectedEntry> affectedEntryOptional =
-			affectedEntryStream.findFirst();
-
-		AffectedEntry affectedEntry = affectedEntryOptional.get();
+		AffectedEntry affectedEntry = affectedEntriesIterator.next();
 
 		String title = CTDefinitionRegistryUtil.getVersionEntityTitle(
 			ownerCTEntry.getModelClassNameId(), ownerCTEntry.getModelClassPK());
@@ -195,20 +198,20 @@ public class AffectedEntryResourceTest
 	public void testGetCollectionEntryAffectedEntriesPageWithPagination()
 		throws Exception {
 
-		_ctEngineManager.enableChangeTracking(
-			TestPropsValues.getCompanyId(), _user.getUserId());
-
-		_createCollection();
-
 		_ctEngineManager.checkoutCTCollection(
 			_user.getUserId(), _ctCollection.getCtCollectionId());
 
-		CTEntry relatedCTEntry = _createChangeEntry(
-			_ctCollection.getCtCollectionId(), 101);
+		CTEntry relatedCTEntry = _ctEntryLocalService.addCTEntry(
+			_user.getUserId(), _testVersionClassName.getClassNameId(),
+			(long)101, RandomTestUtil.nextLong(),
+			CTConstants.CT_CHANGE_TYPE_ADDITION,
+			_ctCollection.getCtCollectionId(), new ServiceContext());
 
-		for (int i = 1; i <= 20; i++) {
-			CTEntry ownerCTEntry = _createChangeEntry(
-				_ctCollection.getCtCollectionId(), i);
+		for (int i = 1; i <= 10; i++) {
+			CTEntry ownerCTEntry = _ctEntryLocalService.addCTEntry(
+				_user.getUserId(), _testVersionClassName.getClassNameId(), i,
+				RandomTestUtil.nextLong(), CTConstants.CT_CHANGE_TYPE_ADDITION,
+				_ctCollection.getCtCollectionId(), new ServiceContext());
 
 			_ctManager.addRelatedCTEntry(
 				TestPropsValues.getCompanyId(), _user.getUserId(), ownerCTEntry,
@@ -221,32 +224,19 @@ public class AffectedEntryResourceTest
 				relatedCTEntry.getCtEntryId(), StringPool.BLANK,
 				Pagination.of(2, 5));
 
-		Assert.assertEquals(
-			"Wrong page number", 2,
-			GetterUtil.getLong(affectedEntriesPage.getPage()));
+		Collection<AffectedEntry> affectedEntryPageItems =
+			affectedEntriesPage.getItems();
 
 		Assert.assertEquals(
-			"Wrong total count", 20, affectedEntriesPage.getTotalCount());
-	}
+			"Wrong number of items", 5, affectedEntryPageItems.size());
 
-	private CTEntry _createChangeEntry(long ctCollectionId, long modelClassPK)
-		throws Exception {
-
-		long modelResourcePrimKey = RandomTestUtil.nextLong();
-
-		_ctEntry = _ctEntryLocalService.addCTEntry(
-			_user.getUserId(), _testVersionClassName.getClassNameId(),
-			modelClassPK, modelResourcePrimKey,
-			CTConstants.CT_CHANGE_TYPE_ADDITION, ctCollectionId,
-			new ServiceContext());
-
-		return _ctEntry;
-	}
-
-	private void _createCollection() throws Exception {
-		_ctCollection = _ctCollectionLocalService.addCTCollection(
-			_user.getUserId(), RandomTestUtil.randomString(),
-			RandomTestUtil.randomString(), new ServiceContext());
+		Assert.assertEquals(
+			"Wrong number of pages", 2, affectedEntriesPage.getPage());
+		Assert.assertEquals(
+			"Wrong page size", 5, affectedEntriesPage.getPageSize());
+		Assert.assertEquals(
+			"Wrong total number of page items", 10,
+			affectedEntriesPage.getTotalCount());
 	}
 
 	@Inject
@@ -269,9 +259,6 @@ public class AffectedEntryResourceTest
 
 	@Inject
 	private CTEngineManager _ctEngineManager;
-
-	@DeleteAfterTestRun
-	private CTEntry _ctEntry;
 
 	@Inject
 	private CTEntryLocalService _ctEntryLocalService;
